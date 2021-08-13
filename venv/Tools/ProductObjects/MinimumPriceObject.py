@@ -92,7 +92,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         elif ('UnitOfIssue' not in row):
             unit_of_issue_id = row['UnitOfIssueId']
-            unit_of_issue = self.self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueId'] == unit_of_issue_id),'UnitOfIssueSymbol']
+            unit_of_issue = self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueId'] == unit_of_issue_id),'UnitOfIssueSymbol']
         else:
             unit_of_issue = row['UnitOfIssue']
 
@@ -173,7 +173,11 @@ class MinimumProductPrice(BasicProcessObject):
     def minimum_product_price(self,df_line_product):
         # ship it!
         for colName, row in df_line_product.iterrows():
-            fy_product_number = row['FyProductNumber']
+            try:
+                fy_product_number = row['FyProductNumber']
+            except KeyError:
+                print('missing fy product number some how: '+row['VendorPartNumber'])
+                continue
 
             allow_purchases = row['AllowPurchases']
             fy_part_number = row['FyPartNumber']
