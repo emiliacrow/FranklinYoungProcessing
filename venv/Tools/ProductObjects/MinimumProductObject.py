@@ -1,0 +1,378 @@
+# CreatedBy: Emilia Crow
+# CreateDate: 20210527
+# Updated: 20210528
+# CreateFor: Franklin Young International
+
+import pandas
+from Tools.BasicProcess import BasicProcessObject
+
+
+# keep this
+class MinimumProduct(BasicProcessObject):
+    req_fields = ['ProductName', 'ShortDescription', 'ManufacturerPartNumber',
+                                'CountryOfOrigin', 'ManufacturerName','VendorName','Category']
+    sup_fields = []
+    att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
+    gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
+                                'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
+                                'ExpectedLeadTimeId']
+
+    def __init__(self,df_product,is_testing):
+        super().__init__(df_product,is_testing)
+        self.name = 'Minimum Product'
+        self.quick_country = {}
+
+
+    def batch_preprocessing(self):
+        # TODO add something here to allow the user to just select the vendor name.
+        self.define_new()
+        self.batch_process_category()
+
+        if 'RecommendedStorage' not in self.df_product.columns:
+            self.df_product['RecommendedStorageId'] = '1'
+        else:
+            self.df_product['RecommendedStorage'].replace(to_replace = '',value='No storage info.',inplace=True)
+            self.batch_process_attribute('RecommendedStorage')
+
+        if 'CountryOfOrigin' not in self.df_product.columns:
+            self.df_product['CountryOfOrigin'] = 'UNKNOWN'
+        else:
+            self.df_product['CountryOfOrigin'].replace(to_replace = '',value='UNKNOWN',inplace=True)
+
+        self.batch_process_country()
+
+        return self.df_product
+
+    def define_new(self):
+        if 'VendorId' not in self.df_product.columns:
+            df_attribute = self.df_product[['VendorName']]
+            df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+            lst_vendor_names = df_attribute['VendorName'].tolist()
+            if len(lst_vendor_names) == 1:
+                vendor_name = lst_vendor_names[0]
+                self.df_loaded_product = self.obIngester.get_product_lookup_vendor_name(vendor_name)
+            else:
+                print(lst_vendor_names)
+                x = input('x')
+
+        else:
+            df_attribute = self.df_product[['VendorId']]
+            df_attribute = df_attribute.drop_duplicates(subset=['VendorId']).astype(str)
+            lst_vendor_ids = df_attribute['VendorId'].tolist()
+            if len(lst_vendor_ids) == 1:
+                vendor_id = lst_vendor_ids[0]
+                self.df_loaded_product = self.obIngester.get_product_lookup_vendor_id(vendor_id)
+            else:
+                print(lst_vendor_ids)
+                x = input('x')
+
+        self.df_loaded_product['Filter'] = 'Update'
+        self.df_loaded_product['ManufacturerPartNumber'].astype(str)
+        self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
+        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
+
+
+        # at the end of this there must be two df's
+        # an update and a new
+        # the update will be split based on what needs to update
+
+
+    def batch_process_category(self):
+        df_attribute = self.df_product[['Category']]
+        df_attribute = df_attribute.drop_duplicates(subset=['Category'])
+        lst_ids = []
+        for colName, row in df_attribute.iterrows():
+            category = row['Category']
+            category_name = category.rpartition('/')[2]
+            if category_name in self.df_category_names['CategoryName']:
+                new_category_id = self.df_category_names.loc[
+                    (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
+            else:
+                new_category_id = self.obDal.category_cap(category_name, category)
+
+            lst_ids.append(new_category_id)
+
+        df_attribute['CategoryId'] = lst_ids
+
+        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                 how='left', on=['Category'])
+
+
+    def batch_process_country(self):
+        if 'CountryOfOriginId' not in self.df_product.columns:
+
+            df_attribute = self.df_product[['CountryOfOrigin']]
+            df_attribute = df_attribute.drop_duplicates(subset=['CountryOfOrigin'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                country = row['CountryOfOrigin']
+                country = self.obValidator.clean_part_number(country)
+                country = country.upper()
+                if (len(country) == 2):
+                    if country in self.df_country_translator['CountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        print(self.df_country_translator['CountryCode'])
+                        print('-'+country+'-')
+                        x = input('1 Bad country')
+
+
+                elif (len(country) == 3):
+                    if country in self.df_country_translator['ECATCountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        print('-'+country+'-')
+                        x = input('2 Bad country')
+
+                elif (len(country) > 3):
+                    if country in self.df_country_translator['CountryName'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        print('-'+country+'-')
+                        x = input('3 Bad country')
+                else:
+                    lst_ids.append(259)
+
+            df_attribute['CountryOfOriginId'] = lst_ids
+            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                              how='left', on=['CountryOfOrigin'])
+
+
+
+    def batch_process_attribute(self,attribute):
+        set_128 = ['RecommendedStorageId']
+        str_attribute_id = attribute +'Id'
+        if str_attribute_id not in self.df_product.columns:
+            df_attribute = self.df_product[[attribute]]
+            df_attribute = df_attribute.drop_duplicates(subset=[attribute])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                attribute_phrase = row[attribute]
+                if attribute_phrase in set_128:
+                    attribute_phrase = attribute_phrase[:128]
+
+                attribute_id = self.obIngester.ingest_attribute(attribute_phrase, attribute)
+                lst_ids.append(attribute_id)
+
+            df_attribute[str_attribute_id] = lst_ids
+
+            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                              how='left', on=[attribute])
+
+    def process_product_line(self, df_line_product):
+        is_controlled = 0
+        is_disposible = 0
+        is_green = 0
+        is_latex_free = 0
+        is_rx = 0
+
+        success = True
+        df_collect_product_base_data = df_line_product.copy()
+
+        df_collect_product_base_data = self.process_attribute_data(df_collect_product_base_data)
+
+        df_line_product = df_collect_product_base_data.copy()
+        # this is also stupid, but it gets the point across for testing purposes
+        for colName, row in df_line_product.iterrows():
+            if 'Filter' in row:
+                if row['Filter'] == 'Update':
+                    df_collect_product_base_data['FinalReport'] = ['This product was not new']
+                    return False, df_collect_product_base_data
+
+            success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
+            if success == False:
+                df_collect_product_base_data['FinalReport'] = ['Failed in process long description']
+                return success, df_collect_product_base_data
+
+            if ('CountryOfOriginId' not in row):
+                df_collect_product_base_data['FinalReport'] = ['Failed in process country of origin']
+                return False, df_collect_product_base_data
+
+            if ('ManufacturerId' not in row):
+                success, df_collect_product_base_data = self.process_manufacturer(df_collect_product_base_data, row)
+                if success == False:
+                    df_collect_product_base_data['FinalReport'] = ['Failed in process manufacturer']
+                    return success, df_collect_product_base_data
+
+            if ('ShippingInstructionsId' not in row):
+                success, df_collect_product_base_data = self.process_shipping(df_collect_product_base_data, row)
+                if success == False:
+                    df_collect_product_base_data['FinalReport'] = ['Failed in process shipping instructions']
+                    return success, df_collect_product_base_data
+
+            if ('ExpectedLeadTimeId' not in row):
+                success, df_collect_product_base_data = self.process_lead_time(df_collect_product_base_data, row)
+                if success == False:
+                    df_collect_product_base_data['FinalReport'] = ['Failed in process lead time']
+                    return success, df_collect_product_base_data
+
+            if ('RecommendedStorageId' not in row):
+                df_collect_product_base_data['FinalReport'] = ['Failed in process recommended storage']
+                return False, df_collect_product_base_data
+
+            if 'IsControlled' in row:
+                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
+                                                                             'IsControlled')
+                if success == False:
+                    df_collect_product_base_data['FinalReport'] = ['IsControlled failed boolean evaluation']
+                    return success, df_collect_product_base_data
+            else:
+                df_collect_product_base_data['IsControlled'] = [is_controlled]
+
+            if 'IsDisposable' in row:
+                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
+                                                                             'IsDisposable')
+                if success == False:
+                    df_collect_product_base_data['FinalReport'] = ['IsDisposable failed boolean evaluation']
+                    return success, df_collect_product_base_data
+            else:
+                df_collect_product_base_data['IsDisposable'] = [is_disposible]
+
+            if 'IsGreen' in row:
+                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsGreen')
+                if success == False:
+                    df_collect_product_base_data['FinalReport'] = ['IsGreen failed boolean evaluation']
+                    return success, df_collect_product_base_data
+            else:
+                df_collect_product_base_data['IsGreen'] = [is_green]
+
+            if 'IsLatexFree' in row:
+                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
+                                                                             'IsLatexFree')
+                if success == False:
+                    df_collect_product_base_data['FinalReport'] = ['IsLatexFree failed boolean evaluation']
+                    return success, df_collect_product_base_data
+            else:
+                df_collect_product_base_data['IsLatexFree'] = [is_latex_free]
+
+            if 'IsRX' in row:
+                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsRX')
+                if success == False:
+                    df_collect_product_base_data['FinalReport'] = ['IsRX failed boolean evaluation']
+                    return success, df_collect_product_base_data
+            else:
+                df_collect_product_base_data['IsRX'] = [is_rx]
+
+        return_df_line_product = self.minimum_product(df_collect_product_base_data)
+        return True, return_df_line_product
+
+
+    def process_long_desc(self, df_collect_product_base_data, row):
+        long_desc = row['ShortDescription']
+        product_name = row['ProductName']
+        # processing/cleaning
+        if 'LongDescription' in row:
+            long_desc = row['LongDescription']
+        else:
+            df_collect_product_base_data['LongDescription'] = long_desc
+
+        if 'BigCommerceProductName' in row:
+            bc_product_name = row['BigCommerceProductName']
+        else:
+            bc_product_name = product_name
+
+        if 'ECommerceLongDescription' in row:
+            ec_long_desc = row['ECommerceLongDescription']
+        else:
+            ec_long_desc = long_desc
+
+        if len(ec_long_desc) > 700:
+            ec_long_desc = ec_long_desc[:700]
+
+
+        df_collect_product_base_data['BigCommerceProductName'] = [bc_product_name]
+        df_collect_product_base_data['ECommerceLongDescription'] = [ec_long_desc]
+        df_collect_product_base_data['LongDescription'] = [long_desc]
+
+        return True, df_collect_product_base_data
+
+
+    def process_shipping(self, df_collect_product_base_data, row):
+        shipping_desc = 'No shipping instructions.'
+        shipping_code = ''
+        is_free_shipping = 0
+        is_cold_chain = 0
+
+        if 'ShippingInstructions' in row:
+            shipping_desc = row['ShippingInstructions']
+
+        if ('ShippingCode' in row):
+            shipping_code = row['ShippingCode']
+
+        if 'IsFreeShipping' in row:
+            success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsFreeShipping')
+            if success:
+                is_free_shipping = row['IsFreeShipping']
+
+        if 'IsColdChain' in row:
+            success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsColdChain')
+            if success:
+                is_cold_chain = row['IsColdChain']
+
+
+        df_collect_product_base_data['ShippingInstructionsId'] = self.obIngester.ingest_shipping_instructions(
+            shipping_desc, shipping_code, is_free_shipping, is_cold_chain)
+
+        return True, df_collect_product_base_data
+
+
+    def process_lead_time(self, df_collect_product_base_data, row):
+        expected_lead_time = 11
+        if 'ExpectedLeadTime' in row:
+            expected_lead_time = row['ExpectedLeadTime']
+        expedited_lead_time = -1
+
+        if self.obValidator.validate_lead_time(expected_lead_time):
+            if ('LeadTimeDaysExpedited' in row):
+                expedited_lead_time = row['LeadTimeDaysExpedited']
+
+            df_collect_product_base_data['ExpectedLeadTimeId'] = self.obIngester.ingest_expected_lead_times(
+                expected_lead_time, expedited_lead_time)
+
+            return True, df_collect_product_base_data
+        else:
+            df_collect_product_base_data['Report'] = ['Lead time must be between 1-365.']
+            return False, df_collect_product_base_data
+
+    def minimum_product(self,df_line_product):
+        # here all processing and checks have been done
+        # we just get data from the DF and ship it (as planned)
+        for colName, row in df_line_product.iterrows():
+            manufacturer_product_id = row['ManufacturerPartNumber']
+            fy_catalog_number = row['FyCatalogNumber']
+            product_name = row['ProductName']
+
+            bc_product_name = row['BigCommerceProductName']
+            ec_long_desc = row['ECommerceLongDescription']
+
+            country_of_origin_id = row['CountryOfOriginId']
+
+            manufacturer_id = row['ManufacturerId']
+            category_id = row['CategoryId']
+
+            shipping_instructions_id = row['ShippingInstructionsId']
+            recommended_storage_id = row['RecommendedStorageId']
+            expected_lead_time_id = row['ExpectedLeadTimeId']
+
+            is_controlled = row['IsControlled']
+            is_disposible = row['IsDisposable']
+            is_green = row['IsGreen']
+            is_latex_free = row['IsLatexFree']
+            is_rx = row['IsRX']
+
+        self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_product_id, product_name,
+                                                 bc_product_name, ec_long_desc, country_of_origin_id, manufacturer_id,
+                                                 shipping_instructions_id, recommended_storage_id,
+                                                 expected_lead_time_id, category_id, is_controlled, is_disposible,
+                                                 is_green, is_latex_free, is_rx)
+
+        return df_line_product
+
+
+## end ##
