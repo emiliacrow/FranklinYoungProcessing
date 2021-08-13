@@ -1,0 +1,506 @@
+# CreatedBy: Emilia Crow
+# CreateDate: 20210610
+# Updated: 20210610
+# CreateFor: Franklin Young International
+
+
+import glom
+import pandas
+from fuzzywuzzy import fuzz
+from Tools.BasicProcess import BasicProcessObject
+
+# to remove duplicated columns
+# df = df.loc[:,~df.columns.duplicated()]
+
+class CategoryProcessor(BasicProcessObject):
+    req_fields = []
+    att_fields = []
+    gen_fields = []
+    def __init__(self,df_product, is_testing, proc_to_set):
+        self.proc_to_run = proc_to_set
+        super().__init__(df_product, is_testing)
+        self.name = 'Category Processor'
+
+
+    def header_viability(self):
+        if self.proc_to_run == 'Category Management':
+            self.req_fields = ['ProductNumber', 'Category']
+
+        if self.proc_to_run == 'Category Training':
+            self.req_fields = ['Word1','Word2','Category','IsGood']
+
+        if self.proc_to_run == 'Category Reconstruction-BC':
+            self.req_fields = ['ProductName', 'Category-EC-LM']
+
+        if self.proc_to_run == 'Category Assignment':
+            self.req_fields = ['ProductName']
+
+        # inital file viability check
+        product_headers = set(self.lst_product_headers)
+        required_headers = set(self.req_fields)
+        overlap = list(required_headers.intersection(product_headers))
+        if len(overlap) >= 1:
+            self.is_viable = True
+
+
+    def run_process(self):
+        if self.proc_to_run == 'Category Management':
+            self.success, self.message = self.run_management_process()
+        if self.proc_to_run == 'Category Training':
+            self.success, self.message = self.run_training_process()
+        if self.proc_to_run == 'Category Reconstruction-BC':
+            self.success, self.message = self.reconstruct_category_for_BC()
+        if self.proc_to_run == 'Category Assignment':
+            self.df_word_cat_associations = self.obDal.get_word_category_associations()
+            self.success, self.message = self.run_category_assignment()
+
+        return self.success, self.message
+
+    def run_training_process(self):
+        count_of_items = len(self.df_product.index)
+        self.dct_counts = {}
+        self.collect_return_dfs = []
+        self.set_progress_bar(count_of_items, self.name+'[extraction step]')
+        p_bar = 0
+        good = 0
+        bad = 0
+        # step one extracts all the categories into category pairs
+        for colName, row in self.df_product.iterrows():
+            df_line_product = row.to_frame().T
+            df_line_product = df_line_product.replace(r'^\s*$', self.np_nan, regex=True)
+            df_line_product = df_line_product.dropna(axis=1,how='all')
+
+            if self.line_viability(df_line_product):
+                df_line_product['FinalReport'] = ['Passed Line Viability']
+                self.success, return_df_line_product = self.category_evaluation(df_line_product)
+                return_df_line_product['FinalReport'] = 'Pass'
+
+            else:
+                df_line_product['FinalReport'] = ['Failed Line Viability']
+                self.success, return_df_line_product = self.report_missing_data(df_line_product)
+
+            self.collect_return_dfs.append(return_df_line_product)
+
+            if self.success:
+                good += 1
+            else:
+                bad += 1
+
+            p_bar+=1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
+        self.df_product = self.return_df_product
+        self.obProgressBarWindow.close()
+
+        self.message = '{2}: {0} Fail, {1} Pass.'.format(bad,good,self.name)
+
+        return self.success, self.message
+
+    def category_evaluation(self, df_line_product):
+        self.success = True
+        df_return_line_product = df_line_product.copy()
+        for colName, row in df_line_product.iterrows():
+            word1 = row['Word1'].lower()
+            word2 = row['Word2'].lower()
+            category = row['Category']
+            is_good = row['IsGood']
+            vote_count = 0
+            return_id = self.obDal.set_word_category_associations(word1, word2, category, is_good, vote_count)
+
+
+        return True, df_return_line_product
+
+
+    def reconstruct_category_for_BC(self):
+        self.set_progress_bar(len(self.df_product.index), self.name + '[reconstruction]')
+        p_bar = 0
+        self.collect_return_dfs = []
+        self.lst_long_cat = {}
+
+        for colName, row in self.df_product.iterrows():
+            df_line_product = row.to_frame().T
+            df_line_product = df_line_product.replace(r'^\s*$', self.np_nan, regex=True)
+            df_line_product = df_line_product.dropna(axis=1,how='all')
+            if self.line_viability(df_line_product):
+                df_line_product['FinalReport'] = ['Passed Line Viability']
+                self.success, return_df_line_product = self.reconstruct_for_BC(df_line_product)
+                return_df_line_product['FinalReport'] = 'Pass'
+
+            else:
+                df_line_product['FinalReport'] = ['Failed Line Viability']
+                self.success, return_df_line_product = self.report_missing_data(df_line_product)
+
+            self.collect_return_dfs.append(return_df_line_product)
+
+            p_bar+=1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
+        self.df_product = self.return_df_product
+
+        self.set_progress_bar(len(self.df_product.index), self.name + '[reconstruction]')
+        p_bar = 0
+        self.df_product['FullCategory'] = ''
+        for each_product in self.lst_long_cat.keys():
+            full_category = self.lst_long_cat[each_product]
+            self.df_product.loc[self.df_product.ProductName == each_product,'FullCategory'] = full_category
+
+            p_bar+=1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.obProgressBarWindow.close()
+        self.message = 'Reconstruction Success'
+        return self.success, self.message
+
+    def reconstruct_for_BC(self, df_product_line):
+        # from whack separated to each level listed.
+        return_df_line_product = df_product_line.copy()
+        for colName, row in df_product_line.iterrows():
+            product_name = row['ProductName']
+            new_category = row['Category-EC-LM']
+            out_category = ''
+            if product_name not in self.lst_long_cat:
+                self.lst_long_cat[product_name] = ''
+            while '/' in new_category:
+                if (new_category + ';') not in self.lst_long_cat[product_name]:
+                    self.lst_long_cat[product_name] = new_category + ';' + self.lst_long_cat[product_name]
+
+                new_category = new_category.rpartition('/')[0]
+
+            if (new_category + ';') not in self.lst_long_cat[product_name]:
+                self.lst_long_cat[product_name] = new_category + ';' + self.lst_long_cat[product_name]
+
+        return self.success, return_df_line_product
+
+    def category_assignment(self,df_product_line):
+        return_df_line_product = df_product_line.copy()
+        for colName, row in df_product_line.iterrows():
+            product_name = self.obValidator.prep_for_category_match(row['ProductName'])
+            product_description = ''
+            if 'ShortDescription' in row:
+                product_description = product_description+' '+self.obValidator.prep_for_category_match(row['ShortDescription'])
+            elif 'LongDescription' in row:
+                product_description = product_description+' '+self.obValidator.prep_for_category_match(row['LongDescription'])
+            elif 'ProductDescription' in row:
+                product_description = product_description+' '+self.obValidator.prep_for_category_match(row['ProductDescription'])
+
+            lst_match_set = self.word_split(product_name,product_description)
+
+            # if we have enough starter data, we can proceed
+            if len(lst_match_set) >= 1:
+                self.success, return_df_line_product = self.identify_word_matches(lst_match_set, return_df_line_product)
+            else:
+                return_df_line_product['Report'] = ['No category identified']
+                return_df_line_product['FinalReport'] = ['Failed']
+                self.success = False
+
+        return self.success, return_df_line_product
+
+    def word_split(self, product_name, product_description):
+        dct_match_set = {}
+        lst_match_set = []
+        combined_options = None
+        name_word_options = None
+        desc_word_options = None
+
+        # break the word or phrase down to word pairs
+        lst_prod_name = product_name.split(' ')
+        previous_word = ''
+        iteration_count = 0
+        for each_word in lst_prod_name:
+            if len(each_word) == 0:
+                continue
+
+            if iteration_count == 0:
+                previous_word = each_word
+                iteration_count += 1
+                continue
+
+            lst_match_set.append([previous_word,each_word])
+            previous_word = each_word
+            iteration_count += 1
+
+        # break the word or phrase down to word pairs
+        lst_prod_desc = product_description.split(' ')
+        previous_word = ''
+        iteration_count = 0
+        for each_word in lst_prod_desc:
+            if len(each_word) == 0:
+                continue
+
+            if iteration_count == 0:
+                previous_word = each_word
+                iteration_count += 1
+                continue
+
+            lst_match_set.append([previous_word,each_word])
+            previous_word = each_word
+            iteration_count += 1
+
+        return lst_match_set
+
+
+    def identify_word_matches(self,lst_match_set, return_df_line_product):
+        self.success == True
+        lst_all_word_matches = []
+        name_word_combined_options = None
+        b_matches = None
+        b_set_combined_df = False
+
+        for each_word_pair in lst_match_set:
+            # get the options where the two words match up
+            b_matches = self.df_word_cat_associations[['word1','word2']].isin(set(each_word_pair))
+
+            if len(b_matches.index) > 0:
+                name_word_options = self.df_word_cat_associations.loc[(b_matches['word1'] ==  True) & (b_matches['word2']== True)]
+                if b_set_combined_df:
+                    # make numbers be numbers
+                    name_word_options = name_word_options.astype(int,errors='ignore')
+                    lst_all_word_matches.append(name_word_options)
+                else:
+                    name_word_combined_options = name_word_options.astype(int,errors='ignore')
+                    b_set_combined_df = True
+
+        if len(lst_all_word_matches) > 0:
+            combined_options = name_word_combined_options.append(lst_all_word_matches)
+        else:
+            combined_options = name_word_combined_options.copy()
+
+        if len(combined_options.index) > 0:
+            # combine all the options
+            combined_options = name_word_combined_options.append(lst_all_word_matches)
+
+            # drop dupes if they exists
+            combined_options = combined_options.drop_duplicates(subset = ['word1','word2','category'])
+            combined_options = combined_options[['is_good','category']]
+
+            # sum the matches
+            combined_options['is_good'] = pandas.to_numeric(combined_options['is_good'])
+            combined_options['total'] = combined_options.groupby('category',sort=True)['is_good'].transform('sum')
+
+            # sort for the highest score
+            combined_options.sort_values(by=['total'], ascending = False, inplace=True)
+
+            pandas.options.display.max_colwidth = 100
+
+            auto_category = combined_options.iloc[0]['category']
+            auto_category_count = combined_options.iloc[0]['total']
+
+            return_df_line_product['AutoRecommendation'] =[auto_category]
+            return_df_line_product['AutoRecommendationScore'] = [auto_category_count]
+        else:
+            return_df_line_product['AutoRecommendation'] = ['']
+            return_df_line_product['AutoRecommendationScore'] = ['']
+            # step two would be to check for single hits and
+            # look for those word keys in the rest of the data
+            return_df_line_product['Report'] = ['No word match data found']
+            return_df_line_product['FinalReport'] = ['Failed']
+            self.success = False
+
+        return self.success, return_df_line_product
+
+
+    def score_by_set(self, phrase_1, phrase_2):
+        score = fuzz.token_set_ratio(phrase_1,phrase_2)
+        return score
+
+    def score_by_sort(self, phrase_1,phrase_2):
+        score = fuzz.token_sort_ratio(phrase_1,phrase_2)
+        return score
+
+    def score_by_ratio(self, phrase_1,phrase_2):
+        score = fuzz.partial_ratio(phrase_1,phrase_2)
+        return score
+
+
+    def run_category_assignment(self):
+        count_of_items = len(self.df_product.index)
+        self.lst_parentage = []
+        self.collect_return_dfs = []
+        self.set_progress_bar(count_of_items, self.name)
+        p_bar = 0
+        good = 0
+        bad = 0
+        # step one extracts all the categories into category pairs
+        for colName, row in self.df_product.iterrows():
+            df_line_product = row.to_frame().T
+            df_line_product = df_line_product.replace(r'^\s*$', self.np_nan, regex=True)
+            df_line_product = df_line_product.dropna(axis=1,how='all')
+
+            if self.line_viability(df_line_product):
+                df_line_product['FinalReport'] = ['Passed Line Viability']
+                self.success, return_df_line_product = self.category_assignment(df_line_product)
+                if self.success:
+                    good += 1
+                    return_df_line_product['FinalReport'] = ['Pass']
+                else:
+                    bad += 1
+
+            else:
+                df_line_product['FinalReport'] = ['Failed Line Viability']
+                self.success, return_df_line_product = self.report_missing_data(df_line_product)
+
+            self.collect_return_dfs.append(return_df_line_product)
+
+            p_bar+=1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
+        self.df_product = self.return_df_product
+        self.obProgressBarWindow.close()
+
+        self.message = '{2}: {0} Fail, {1} Pass.'.format(bad,good,self.name)
+
+        return self.success, self.message
+
+
+    def run_hierarchy_display_process(self):
+        import plotly.express as px
+        display_out_path = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\SpecialWorkRequests\John-20210608\category_display.html'
+        self.collect_return_dfs = []
+        self.dct_to_display = {'Child':['All Products'],'Parent':[''],'Combo':[]}
+        return_df_collect_product = self.df_product.copy()
+        dct_collection = []
+        count_of_items = len(self.df_product.index)
+        self.set_progress_bar(count_of_items, 'Generating display data')
+        p_bar = 0
+        for colName, row in self.df_product.iterrows():
+            df_line_product = row.to_frame().T
+            df_line_product = df_line_product.replace(r'^\s*$', self.np_nan, regex=True)
+            df_line_product = df_line_product.dropna(axis=1,how='all')
+
+            if self.line_viability(df_line_product):
+                df_line_product['FinalReport'] = ['Passed Line Viability']
+                self.success, return_df_line_product = self.hierarchy_display_process(df_line_product)
+                if self.success:
+                    return_df_line_product['FinalReport'] = ['Pass']
+
+            else:
+                df_line_product['FinalReport'] = ['Failed Line Viability']
+                self.success, return_df_line_product = self.report_missing_data(df_line_product)
+
+            self.collect_return_dfs.append(return_df_line_product)
+
+            p_bar+=1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
+        self.df_product = self.return_df_product
+        self.obProgressBarWindow.close()
+
+        for i in self.dct_to_display:
+            print(self.dct_to_display[i])
+
+        figure = px.treemap(names=self.dct_to_display['Child'],parents=self.dct_to_display['Parent'],)
+        figure.write_html(display_out_path)
+
+        return self.success, 'File created!'
+
+    def hierarchy_display_process(self,df_product_line):
+        df_collector_line = df_product_line.copy()
+        for colName, row in df_product_line.iterrows():
+            new_category_str = row['CategoryName']
+            while new_category_str.find("/") != -1:
+                new_category_str = new_category_str.replace('/', '§', 1)
+                top_level_pair = new_category_str[:new_category_str.find("/")]
+
+                new_category_str = new_category_str[new_category_str.find("§")+1:]
+                parent,drop,child = top_level_pair.partition('§')
+                if top_level_pair not in self.dct_to_display['Combo']:
+                    self.dct_to_display['Parent'].append(parent)
+                    self.dct_to_display['Child'].append(child)
+                    self.dct_to_display['Combo'].append(top_level_pair)
+
+
+        return True, df_collector_line
+
+
+    def set_dict_path(self, heads):
+        heads_string = str(heads)
+        heads_string = heads_string.replace('\', \'','.')
+        heads_string = heads_string.replace('\'','')
+        heads_string = heads_string.replace(']','')
+        heads_string = heads_string.replace('[','')
+        return heads_string
+
+    def dict_generator(self, indict, pre=None):
+        pre = pre[:] if pre else []
+        if isinstance(indict, dict):
+            for key, value in indict.items():
+                if isinstance(value, dict):
+                    for d in self.dict_generator(value, pre + [key]):
+                        yield d
+                else:
+                    yield pre + [key, value]
+        else:
+            yield pre + [indict]
+
+
+    def run_management_process(self):
+        count_of_items = len(self.df_product.index)
+        self.return_df_product = pandas.DataFrame(columns=self.df_product.columns)
+        self.collect_return_dfs = []
+        self.set_progress_bar(count_of_items, self.name)
+        p_bar = 0
+        good = 0
+        bad = 0
+
+        for colName, row in self.df_product.iterrows():
+            # this takes one row and builds a df for a single product
+            df_line_product = row.to_frame().T
+            # this replaces empty string values with nan
+            df_line_product = df_line_product.replace(r'^\s*$', self.np_nan, regex=True)
+            # this removes all columns with all nan
+            df_line_product = df_line_product.dropna(axis=1,how='all')
+            if self.line_viability(df_line_product):
+                df_line_product['FinalReport'] = ['Passed Line Viability']
+                self.success, return_df_line_product = self.category_management(df_line_product)
+                return_df_line_product['FinalReport'] = 'Pass'
+
+            else:
+                df_line_product['FinalReport'] = ['Failed Line Viability']
+                self.success, return_df_line_product = self.report_missing_data(df_line_product)
+
+            self.collect_return_dfs.append(return_df_line_product)
+
+            if self.success:
+                good += 1
+            else:
+                bad += 1
+
+            p_bar+=1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
+        self.df_product = self.return_df_product
+        self.message = '{2}: {0} Fail, {1} Pass.'.format(bad,good,self.name)
+
+        self.obProgressBarWindow.close()
+        return self.success, self.message
+
+    def category_management(self, df_line_product):
+        self.success = True
+        lst_out_categories = []
+        df_collect_product_data = df_line_product.copy()
+        for colName, row in df_line_product.iterrows():
+            categories_string = row['Category']
+            product_number = row['ProductNumber']
+            if (categories_string != ''):
+                lst_categories = categories_string.split(';')
+                lst_categories.sort(key = lambda x: len(x))
+
+                previous_category = lst_categories[-1]
+
+                if previous_category not in lst_out_categories:
+                    lst_out_categories.append(previous_category)
+
+        for each_out_category in lst_out_categories:
+            new_line = {'ProductNumber':product_number, 'NewCategory':each_out_category}
+            df_collect_product_data = df_collect_product_data.append(new_line, ignore_index=True)
+
+
+        return True, df_collect_product_data
+
+
+

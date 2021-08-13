@@ -1,0 +1,301 @@
+# CreatedBy: Emilia Crow
+# CreateDate: 20210330
+# Updated: 20210813
+# CreateFor: Franklin Young International
+
+import sys
+import time
+import traceback
+
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QComboBox
+from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QRadioButton
+from PyQt5.QtWidgets import QApplication
+
+from Tools.Pathway import Pathways
+
+
+def main():
+    feel = 'I feel the cosmos.'
+    sys.excepthook = excepthook
+    app = QApplication(sys.argv)
+    # make and display the gui
+    obDuckworth = DuckworthWindow()
+    obDuckworth.show()
+    # catch errors
+    ret = app.exec_()
+    sys.exit(ret)
+
+def excepthook(exc_type, exc_value, exc_tb):
+    tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+    print("error catched!:")
+    print("error message:\n", tb)
+    QApplication.quit()
+
+
+class DuckworthWindow(QWidget):
+    def __init__(self, parent=None):
+        # super means it runs the base class __init__ first
+        super(DuckworthWindow, self).__init__(parent)
+
+        self.setWindowIcon(QIcon('C:\\Users\ImGav\Documents\FranklinYoungFiles\DataMapping\images\Duckworth2.png'))
+
+        self.update_timer = QTimer()
+        self.update_timer.setInterval(5000)
+        self.update_timer.setSingleShot(False)
+        self.update_timer.timeout.connect(self.message_scroll)
+        self.update_timer.start(5000)
+
+        self.success_string_style1 = 'border: 2px solid black; color: black; background-color: white'
+        self.success_string_style2 = 'border: 2px solid black; color: black; background-color: lightgrey'
+        self.active_string_style = 'border: 2px solid black; color: yellow; background-color: darkgrey'
+        self.failure_string_style = 'border: 2px solid darkred; color: darkred; background-color: darkgrey'
+
+        self.message_style = self.success_string_style1
+        self.message_scroll_text = [['','Please make a selection',self.success_string_style1]]
+        self.message_number = 0
+
+        self.setWindowTitle('Duckworth, at your service. (Sequoia\'s butler)')
+        self.setGeometry(100, 100, 0, 0)
+        self.layout = QGridLayout()
+
+        self.is_testing_buttons()
+        self.is_testing = True
+
+        self.file_process_buttons(0)
+        self.base_data_buttons(1)
+        self.ingestion_buttons(2)
+        self.update_data_buttons(3)
+        self.contract_buttons(4)
+
+        self.setLayout(self.layout)
+        self.obPathway = Pathways()
+
+    def message_scroll(self):
+        if len(self.message_scroll_text) > 0:
+            if self.message_number == 0:
+                display_text = ':: ' + self.message_scroll_text[self.message_number][1] + ' ::'
+                self.update_timer.setInterval(4000)
+            else:
+                display_text = '(run:'+str(self.message_number) + ') '+self.message_scroll_text[self.message_number][0] + ' : ' + self.message_scroll_text[self.message_number][1]
+                self.update_timer.setInterval(5000)
+
+            result_style = self.message_scroll_text[self.message_number][2]
+
+            if result_style == self.failure_string_style:
+                self.message_style = self.failure_string_style
+
+            elif self.message_style == self.success_string_style1:
+                self.message_style = self.success_string_style2
+            else:
+                self.message_style = self.success_string_style1
+
+            self.action_label.setStyleSheet(self.message_style)
+
+            temp_message = ''
+            temp_len = 0
+            while temp_len < len(display_text):
+                time.sleep(.009)
+                temp_len += 1
+                temp_message = display_text[:temp_len]
+                self.action_label.setText(temp_message)
+                QApplication.processEvents()
+
+            if self.message_number + 1 == len(self.message_scroll_text):
+                self.message_number = 0
+            else:
+                self.message_number += 1
+
+
+    def is_testing_buttons(self):
+        # all the stuffing for the is testing value
+        self.testing_button = QRadioButton('Testing')
+        self.testing_button.setStyleSheet('border: 1px solid black; background-color: lightgreen')
+        self.testing_button.setChecked(True)
+        self.testing_button.toggled.connect(lambda : self.testing_button_action(self.testing_button))
+        self.layout.addWidget(self.testing_button, 0, 0)
+
+        self.action_label = QLabel('')
+        self.message_scroll()
+        self.layout.addWidget(self.action_label, 0, 1, 1, 3)
+
+        self.hard_exit_button = QPushButton('Quit')
+        self.hard_exit_button.setStyleSheet('background-color: pink')
+        self.hard_exit_button.clicked.connect(exit)
+        self.layout.addWidget(self.hard_exit_button, 0, 4)
+
+    def testing_button_action(self, button):
+        if button.isChecked():
+            self.testing_button.setText('Testing')
+            self.testing_button.setStyleSheet('border: 1px solid black; background-color: lightgreen')
+            self.is_testing = True
+        else:
+            self.testing_button.setText('Live')
+            self.testing_button.setStyleSheet('border: 1px solid black; background-color: pink')
+            self.is_testing = False
+
+
+    def file_process_buttons(self, column_pos):
+        # all the stuffing for file processing actions
+        self.file_action_options = ['Assign FyPartNumbers','File Merger Tool', 'Category Training', 'Category Reconstruction-BC','Category Assignment', 'Category Management', 'Data Cleansing', 'Scrape Data', 'Scrape Images','Extract Attributes','Unicode Correction','Generate BC Upload File']
+        self.file_action_options.sort()
+
+        self.process_file_button = QPushButton('Process a file')
+        self.process_file_button.setStyleSheet('background-color: lightgreen')
+        self.process_file_button.clicked.connect(self.file_process_kickoff)
+        self.layout.addWidget(self.process_file_button, 1, column_pos)
+
+        self.file_action_dropdown = QComboBox()
+        self.file_action_dropdown.addItems(self.file_action_options)
+        self.layout.addWidget(self.file_action_dropdown, 2, column_pos)
+
+    def file_process_kickoff(self):
+        file_action_selected = str(self.file_action_dropdown.currentText())
+        self.action_label.setText('Processing: ' + file_action_selected)
+        self.action_label.setStyleSheet(self.active_string_style)
+        QApplication.processEvents()
+
+        success, message = self.obPathway.file_processing_pathway(self.is_testing, file_action_selected)
+
+        if success:
+            self.message_scroll_text.append([file_action_selected,message,self.success_string_style1])
+
+        else:
+            self.message_scroll_text.append([file_action_selected,message,self.failure_string_style])
+        self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+
+
+    def base_data_buttons(self,column_pos):
+        self.base_data_tables = ['Category', 'Manufacturer', 'Vendor', 'Country', 'UNSPSC Codes', 'FSC Codes', 'Hazardous Code', 'NAICS Code', 'Unit of Issue-Symbol', 'Unit of Issue']
+        self.base_data_tables.sort()
+
+        self.base_data_button = QPushButton('Load Base Data')
+        self.base_data_button.setStyleSheet('background-color: lightgreen')
+        self.base_data_button.clicked.connect(self.base_data_kickoff)
+        self.layout.addWidget(self.base_data_button, 1, column_pos)
+
+        self.basedata_dropdown = QComboBox()
+        self.basedata_dropdown.addItems(self.base_data_tables)
+        self.layout.addWidget(self.basedata_dropdown, 2, column_pos)
+
+    def base_data_kickoff(self):
+        table_selected = str(self.basedata_dropdown.currentText())
+        self.action_label.setText('Processing {} data.'.format(table_selected))
+        self.action_label.setStyleSheet(self.active_string_style)
+        # this will cause the above code to present top the user. I know. it's dumb
+        QApplication.processEvents()
+
+        success, message = self.obPathway.base_data_pathway(self.is_testing, table_selected)
+
+        if success:
+            self.message_scroll_text.append(['Ingest '+table_selected+' data', message, self.success_string_style1])
+
+        else:
+            self.message_scroll_text.append(['Ingest '+table_selected+' data', message, self.failure_string_style])
+        self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+
+
+    def ingestion_buttons(self,column_pos):
+        self.ingestion_options = ['1-Full Product Ingestion(5 steps)', '2-Minimum Product Ingestion(3 steps)', '3-Fill Product(2 steps)', '4-Minimum Product Price(2 steps)', '5-Base Pricing(1 step)', 'GSA Pricing', 'VA Pricing', 'HTME Pricing', 'ECAT Pricing', 'FEDMALL Pricing']
+        self.ingestion_options.sort()
+
+        self.ingest_data_button = QPushButton('Ingest New Data')
+        self.ingest_data_button.setStyleSheet('background-color: lightgreen')
+        self.ingest_data_button.clicked.connect(self.ingest_data_kickoff)
+        self.layout.addWidget(self.ingest_data_button, 1, column_pos)
+
+        self.ingestion_action_dropdown = QComboBox()
+        self.ingestion_action_dropdown.addItems(self.ingestion_options)
+        self.layout.addWidget(self.ingestion_action_dropdown, 2, column_pos)
+
+    def ingest_data_kickoff(self):
+        ingestion_action_selected = str(self.ingestion_action_dropdown.currentText())
+        self.action_label.setText('Ingestion: {}.'.format(ingestion_action_selected))
+        self.action_label.setStyleSheet(self.active_string_style)
+        # this will cause the above code to present to the user. I know. it's dumb
+        QApplication.processEvents()
+
+        success, message = self.obPathway.ingest_data_pathway(self.is_testing, ingestion_action_selected)
+
+        if success:
+            self.message_scroll_text.append([ingestion_action_selected,message,self.success_string_style1])
+
+        else:
+            self.message_scroll_text.append([ingestion_action_selected,message,self.failure_string_style])
+        self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+
+
+    def update_data_buttons(self,column_pos):
+        self.update_data_options = ['Update Product Data','Update Product Sizing/Pricing', 'Update Base Pricing', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
+        self.update_data_options.sort()
+
+        self.update_data_button = QPushButton('Update Data')
+        self.update_data_button.setStyleSheet('background-color: lightgreen')
+        self.update_data_button.clicked.connect(self.update_data_kickoff)
+        self.layout.addWidget(self.update_data_button, 1, column_pos)
+
+        self.update_action_dropdown = QComboBox()
+        self.update_action_dropdown.addItems(self.update_data_options)
+        self.layout.addWidget(self.update_action_dropdown, 2, column_pos)
+
+    def update_data_kickoff(self):
+        update_action_selected = str(self.update_action_dropdown.currentText())
+        self.action_label.setText('Update: {}.'.format(update_action_selected))
+        self.action_label.setStyleSheet(self.active_string_style)
+        # this will cause the above code to present top the user. I know. it's dumb
+        QApplication.processEvents()
+
+        success, message = self.obPathway.update_data_pathway(update_action_selected)
+
+        if success:
+            self.message_scroll_text.append([update_action_selected,message,self.success_string_style1])
+
+        else:
+            self.message_scroll_text.append([update_action_selected,message,self.failure_string_style])
+        self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+
+
+    def contract_buttons(self,column_pos):
+        self.contract_options = ['GSA Contract file','ECAT contract file', 'Sensoft Contract file']
+        self.contract_options.sort()
+
+        self.contract_button = QPushButton('Update Data')
+        self.contract_button.setStyleSheet('background-color: lightgreen')
+        self.contract_button.clicked.connect(self.contract_kickoff)
+        self.layout.addWidget(self.contract_button, 1, column_pos)
+
+        self.contract_dropdown = QComboBox()
+        self.contract_dropdown.addItems(self.contract_options)
+        self.layout.addWidget(self.contract_dropdown, 2, column_pos)
+
+    def contract_kickoff(self):
+        contract_selected = str(self.contract_dropdown.currentText())
+        self.action_label.setText('Contract: {}.'.format(contract_selected))
+        self.action_label.setStyleSheet(self.active_string_style)
+        # this will cause the above code to present top the user. I know. it's dumb
+        QApplication.processEvents()
+
+        success, message = self.obPathway.contract_pathway(contract_selected)
+
+        if success:
+            self.message_scroll_text.append([contract_selected,message,self.success_string_style1])
+
+        else:
+            self.message_scroll_text.append([contract_selected,message,self.failure_string_style])
+        self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+
+
+
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    main()
+
+# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+## end ##

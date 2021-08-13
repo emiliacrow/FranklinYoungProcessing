@@ -1,0 +1,161 @@
+# CreatedBy: Emilia Crow
+# CreateDate: 20210330
+# Updated: 20210608
+# CreateFor: Franklin Young International
+
+import os
+import sys
+import datetime
+import pandas
+import threading
+import subprocess
+import numpy as np
+
+import tkinter as tk
+from tkinter import filedialog
+from random import randint
+
+from Tools.ProgressBar import ProgressBarWindow
+
+class FileFinder():
+    def __init__(self,):
+        # will have to make this a configuration
+        self.file_base_location = 'C:\\Users\ImGav\Documents\FranklinYoungFiles'
+        self.selected_file = None
+
+    def ident_file(self,window_title='Select a file',path=None):
+        if not path:
+            path = self.file_base_location
+        root = tk.Tk()
+        root.withdraw()
+
+        files = filedialog.askopenfilenames(initialdir=path, title=window_title,filetypes=(('excel files','*.xlsx*'),('text files','*.txt*')))
+        if len(files) > 0:
+            self.selected_file = files[0]
+            self.selected_file = self.selected_file.replace('/','\\\\')
+            self.process_time = str(datetime.datetime.now())
+            self.process_time = self.process_time.replace(' ','_')
+            self.process_time = self.process_time.partition('.')[0]
+            self.process_time = self.process_time.replace(':','-')
+            self.basic_out_file_path = self.selected_file.replace('.xlsx','_prcd_'+self.process_time+'.xlsx')
+
+            self.file_base_location = self.selected_file.rpartition('/')[0]
+
+            return True, self.basic_out_file_path
+        else:
+            return False, 'No file selected'
+
+
+    def read_xlsx(self, base_data_file=''):
+        if base_data_file != '':
+            self.selected_file = base_data_file
+        self.obProgressBar = ProgressBarWindow('Reading file...')
+        self.obProgressBar.set_anew(10)
+        self.obProgressBar.show()
+        self.obProgressBar.update_unknown()
+
+        # alternately add sheet_name=0,1,2,3 etc. for the tab to use
+        # this makes sure we capture any 'Na' values rather than translating to nan
+
+        excel_dataframe = pandas.read_excel(self.selected_file,keep_default_na=False, na_values=['_'],dtype=str)
+
+        self.obProgressBar.close()
+
+        return excel_dataframe
+
+    def write_xlsx(self,df_product,bumper):
+
+        self.obProgressBar = ProgressBarWindow('Creating file...')
+        self.obProgressBar.set_anew(10)
+        self.obProgressBar.show()
+        self.obProgressBar.update_unknown()
+
+        self.out_file_path = self.basic_out_file_path.replace('_prcd_','_'+bumper+'_prcd_')
+        with pandas.ExcelWriter(self.out_file_path, mode='w') as writer:
+            df_product.to_excel(writer)
+
+        self.obProgressBar.close()
+
+
+def process_file(obFileFinder, file_action_selected):
+    # this should all be broken out into a different file
+    selected_file = obFileFinder.ident_file()
+    df_excel = obFileFinder.read_xlsx(selected_file)
+    out_df_excel = df_excel.copy()
+    lst_fish_vwr = []
+    lst_vwr_thom = []
+    lst_thom_fish = []
+
+    return_count = 0
+
+    for col_name, row in df_excel.iterrows():
+        return_count += 1
+        fisher_name = str(row['FisherManufacturerName'])
+        vwr_name = str(row['VWRManufacturerName'])
+        thomas_name = str(row['ThomasManufacturerName'])
+
+        fish_vwr_val = fuzz.token_sort_ratio(fisher_name.lower(),vwr_name.lower())
+        lst_fish_vwr.append(fish_vwr_val)
+        vwr_thom_val = fuzz.token_sort_ratio(vwr_name.lower(),thomas_name.lower())
+        lst_vwr_thom.append(vwr_thom_val)
+        thom_fish_val = fuzz.token_sort_ratio(thomas_name.lower(),fisher_name.lower())
+        lst_thom_fish.append(thom_fish_val)
+
+    out_df_excel['vwr_thom'] = lst_vwr_thom
+    out_df_excel['fish_vwr'] = lst_fish_vwr
+    out_df_excel['thom_fish'] = lst_thom_fish
+
+    out_df_excel.to_excel(selected_file.replace('.xlsx','_out.xlsx'))
+
+    out_string = 'Processed {} lines of data.'.format(return_count)
+
+
+class BaseDataLoader():
+    def __init__(self):
+        self.name = 'Lou Gehrig'
+
+    def set_file_finder(self, obFileFinder):
+        self.obFileFinder = obFileFinder
+
+    def set_ingester(self, obIngester):
+        self.obIngester = obIngester
+
+
+
+class myThread (threading.Thread):
+    def __init__(self, threadID, name, counter):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+
+    def run(self):
+        run_test_frame
+        print ("Starting " + self.name)
+        print_time(self.name, 5, self.counter)
+        print ("Exiting " + self.name)
+
+def print_time(threadName, counter, delay):
+    while counter:
+        if exitFlag:
+            threadName.exit()
+        time.sleep(delay)
+        print ("{}: {}".format(threadName, time.ctime(time.time())))
+        counter -= 1
+
+def testing_threads():
+    # Create new threads
+    thread1 = myThread(1, "Thread-1", 1)
+    thread2 = myThread(2, "Thread-2", 2)
+
+    # Start new Threads
+    thread1.start()
+    thread2.start()
+
+
+
+
+# for testing
+if __name__ == '__main__':
+    print('entered at toolbox')
+    run_test_frame()
