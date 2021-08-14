@@ -3,6 +3,8 @@
 # Updated: 20210813
 # CreateFor: Franklin Young International
 
+import pandas
+
 from Tools.BasicProcess import BasicProcessObject
 
 
@@ -20,6 +22,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_uoi_lookup = self.obDal.get_unit_of_issue_lookup()
         self.df_product['ProductId'] = self.df_product.apply(self.batch_ident_product_id, axis=1)
         self.define_new()
+        self.batch_process_vendor()
 
     def define_new(self):
         pass
@@ -27,6 +30,28 @@ class MinimumProductPrice(BasicProcessObject):
     def batch_process_something(self, df_row):
         some_val = 1
         return some_val
+
+    def batch_process_vendor(self):
+        df_attribute = self.df_product[['VendorName']]
+        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+        lst_ids = []
+        for colName, row in df_attribute.iterrows():
+            vendor_name = row['VendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+            else:
+                new_vendor_id = -1
+
+            lst_ids.append(new_vendor_id)
+
+        df_attribute['VendorId'] = lst_ids
+
+        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                 how='left', on=['VendorName'])
 
     def batch_ident_product_id(self, df_row):
         if 'FyCatalogNumber' in df_row:
@@ -51,10 +76,16 @@ class MinimumProductPrice(BasicProcessObject):
                 df_collect_product_base_data['FinalReport'] = ['Failed at vendor identification']
                 return success, df_collect_product_base_data
 
+            success, df_collect_product_base_data = self.identify_fy_product_number(df_collect_product_base_data, row)
+            if success == False:
+                df_collect_product_base_data['FinalReport'] = ['Can\'t identify product number']
+                return success, df_collect_product_base_data
+
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
                 df_collect_product_base_data['FinalReport'] = ['Failed at pricing processing']
                 return success, df_collect_product_base_data
+
 
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
@@ -84,15 +115,19 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_measure = row['UnitOfMeasure']
             # this is where it will break if there is a new one.
             # and that's stupid
-            unit_of_issue_id = self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueSymbol'] == unit_of_issue &
-                                                                                           self.df_uoi_lookup['Count'] == unit_count &
-                                                                                           self.df_uoi_lookup['UnitOfMeasureSymbol'] == unit_of_measure),'UnitOfIssueId']
+
+            try:
+                unit_of_issue_id = self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueSymbol'] == unit_of_issue) &
+                                                      (self.df_uoi_lookup['Count'] == unit_count) &
+                                                      (self.df_uoi_lookup['UnitOfMeasureSymbol'] == unit_of_measure),'UnitOfIssueId'].values[0]
+            except:
+                unit_of_issue_id = self.obIngester.ingest_uoi_by_symbol(unit_of_issue, unit_count, unit_of_measure)
 
             df_collect_product_base_data['UnitOfIssueId'] = [unit_of_issue_id]
 
         elif ('UnitOfIssue' not in row):
             unit_of_issue_id = row['UnitOfIssueId']
-            unit_of_issue = self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueId'] == unit_of_issue_id),'UnitOfIssueSymbol']
+            unit_of_issue = self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueId'] == unit_of_issue_id),'UnitOfIssueSymbol'].values[0]
         else:
             unit_of_issue = row['UnitOfIssue']
 
@@ -116,6 +151,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         elif (row['FyProductNumber'] == fy_catalog_number + ' ' + unit_of_issue) or (row['FyProductNumber'] == fy_catalog_number):
             fy_product_number = row['FyProductNumber']
+            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
         else:
             df_collect_product_base_data['Report'] = ['There was a conflict at FyCatalogNumber']
             return False, df_collect_product_base_data
@@ -131,27 +167,12 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def process_vendor(self, df_collect_product_base_data, row):
-        if ('VendorName' not in row) and ('VendorCode' not in row):
+        if 'VendorId' not in row:
             df_collect_product_base_data['Report'] = ['Missing vendor name and code']
             return False, df_collect_product_base_data
-        elif ('VendorName' not in row):
-            vendor_code = row['VendorCode']
-            if (vendor_code in self.df_vendor_translator['VendorCode'].values):
-                vendor_id, vendor_name = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorCode'] == vendor_code), ['VendorId','VendorName']].values[0]
-                df_collect_product_base_data['VendorId'] = [vendor_id]
-            else:
-                df_collect_product_base_data['Report'] = ['New vendor code']
-                return False, df_collect_product_base_data
-        else:
-            vendor_name = row['VendorName']
-            if (vendor_name in self.df_vendor_translator['VendorName'].values):
-                vendor_id, vendor_code = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorName'] == vendor_name), ['VendorId','VendorCode']].values[0]
-                df_collect_product_base_data['VendorId'] = [vendor_id]
-            else:
-                df_collect_product_base_data['Report'] = ['New vendor name']
-                return False, df_collect_product_base_data
+        elif row['VendorId'] == -1:
+            df_collect_product_base_data['Report'] = ['Missing vendor name and code']
+            return False, df_collect_product_base_data
 
         return True, df_collect_product_base_data
 
@@ -173,12 +194,7 @@ class MinimumProductPrice(BasicProcessObject):
     def minimum_product_price(self,df_line_product):
         # ship it!
         for colName, row in df_line_product.iterrows():
-            try:
-                fy_product_number = row['FyProductNumber']
-            except KeyError:
-                print('missing fy product number some how: '+row['VendorPartNumber'])
-                continue
-
+            fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']
             fy_part_number = row['FyPartNumber']
             peoduct_tax_class = row['ProductTaxClass']

@@ -84,9 +84,13 @@ class MinimumProduct(BasicProcessObject):
         for colName, row in df_attribute.iterrows():
             category = row['Category']
             category_name = category.rpartition('/')[2]
-            if category_name in self.df_category_names['CategoryName']:
+            if category_name in self.df_category_names['CategoryName'].values:
                 new_category_id = self.df_category_names.loc[
                     (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
+
+            elif category in self.df_category_names['Category'].values:
+                new_category_id = self.df_category_names.loc[
+                    (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
             else:
                 new_category_id = self.obDal.category_cap(category_name, category)
 
