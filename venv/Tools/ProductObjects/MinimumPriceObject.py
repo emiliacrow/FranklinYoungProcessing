@@ -21,8 +21,9 @@ class MinimumProductPrice(BasicProcessObject):
     def batch_preprocessing(self):
         self.df_uoi_lookup = self.obDal.get_unit_of_issue_lookup()
         self.df_product['ProductId'] = self.df_product.apply(self.batch_ident_product_id, axis=1)
+        if 'VendorId' not in self.df_product.columns:
+            self.batch_process_vendor()
         self.define_new()
-        self.batch_process_vendor()
 
     def define_new(self):
         pass

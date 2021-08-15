@@ -85,8 +85,10 @@ class DalObject:
 
     def is_path_clear(self):
         # this is ridiculous
+        wait_counter = 0
         while threading.active_count() > 1:
-            print(threading.active_count())
+            wait_counter +=1
+            print('Waiting: '+str(wait_counter))
             time.sleep(1)
 
         return True

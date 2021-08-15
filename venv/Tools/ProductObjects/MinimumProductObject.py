@@ -25,6 +25,7 @@ class MinimumProduct(BasicProcessObject):
 
     def batch_preprocessing(self):
         # TODO add something here to allow the user to just select the vendor name.
+        self.batch_process_vendor()
         self.define_new()
         self.batch_process_category()
 
@@ -43,34 +44,35 @@ class MinimumProduct(BasicProcessObject):
 
         return self.df_product
 
+
+    def batch_process_vendor(self):
+        df_attribute = self.df_product[['VendorName']]
+        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+        lst_ids = []
+        for colName, row in df_attribute.iterrows():
+            vendor_name = row['VendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+            else:
+                new_vendor_id = -1
+
+            lst_ids.append(new_vendor_id)
+
+        df_attribute['VendorId'] = lst_ids
+        self.df_loaded_product = self.obIngester.get_product_lookup_vendor_id(lst_ids[0])
+
+        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                 how='left', on=['VendorName'])
+
     def define_new(self):
-        if 'VendorId' not in self.df_product.columns:
-            df_attribute = self.df_product[['VendorName']]
-            df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
-            lst_vendor_names = df_attribute['VendorName'].tolist()
-            if len(lst_vendor_names) == 1:
-                vendor_name = lst_vendor_names[0]
-                self.df_loaded_product = self.obIngester.get_product_lookup_vendor_name(vendor_name)
-            else:
-                print(lst_vendor_names)
-                x = input('x')
-
-        else:
-            df_attribute = self.df_product[['VendorId']]
-            df_attribute = df_attribute.drop_duplicates(subset=['VendorId']).astype(str)
-            lst_vendor_ids = df_attribute['VendorId'].tolist()
-            if len(lst_vendor_ids) == 1:
-                vendor_id = lst_vendor_ids[0]
-                self.df_loaded_product = self.obIngester.get_product_lookup_vendor_id(vendor_id)
-            else:
-                print(lst_vendor_ids)
-                x = input('x')
-
         self.df_loaded_product['Filter'] = 'Update'
         self.df_loaded_product['ManufacturerPartNumber'].astype(str)
         self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
-
 
         # at the end of this there must be two df's
         # an update and a new
@@ -187,7 +189,7 @@ class MinimumProduct(BasicProcessObject):
             if 'Filter' in row:
                 if row['Filter'] == 'Update':
                     df_collect_product_base_data['FinalReport'] = ['This product was not new']
-                    return False, df_collect_product_base_data
+                    return True, df_collect_product_base_data
 
             success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
             if success == False:
