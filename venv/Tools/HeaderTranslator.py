@@ -15,6 +15,8 @@ class HeaderTranslator():
                             'VendorPartNumber':['VendorPartNumber','Vendor Part Number',''],
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber'],
                             'UnitOfMeasure':['UnitOfMeasure','UOM','uom'],
+                            'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time'],
+                            'LeadTimeDaysExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited'],
 
                             'Vendor List Price':['Price','Vendor List Price','VendorListPrice','List Price'],
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent'],

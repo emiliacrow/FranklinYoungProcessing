@@ -41,6 +41,7 @@ class MinimumProduct(BasicProcessObject):
             self.df_product['CountryOfOrigin'].replace(to_replace = '',value='UNKNOWN',inplace=True)
 
         self.batch_process_country()
+        self.batch_process_lead_time()
 
         return self.df_product
 
@@ -87,13 +88,18 @@ class MinimumProduct(BasicProcessObject):
             category = row['Category']
             category_name = category.rpartition('/')[2]
             if category_name in self.df_category_names['CategoryName'].values:
+                print('cat A', category_name)
                 new_category_id = self.df_category_names.loc[
                     (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
 
             elif category in self.df_category_names['Category'].values:
+                print('cat B', category_name)
                 new_category_id = self.df_category_names.loc[
                     (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
             else:
+                print('cat C', category_name)
+                # this might be causing a slow down
+                # review this to see if it's working right, it should be
                 new_category_id = self.obDal.category_cap(category_name, category)
 
             lst_ids.append(new_category_id)
@@ -150,6 +156,34 @@ class MinimumProduct(BasicProcessObject):
                                                               how='left', on=['CountryOfOrigin'])
 
 
+    def batch_process_lead_time(self):
+        self.df_lead_times = self.obDal.get_lead_times()
+
+        if 'ExpectedLeadTime' not in self.df_product.columns:
+            self.df_product['ExpectedLeadTimeId'] = 2
+
+        else:
+            df_attribute = self.df_product[['LeadTimeDays']]
+            df_attribute = df_attribute.drop_duplicates(subset=['LeadTimeDays'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                lead_time = row['LeadTimeDays']
+                if lead_time in self.df_lead_times['LeadTimeDays'].tolist():
+                    new_lead_time_id = self.df_lead_times.loc[
+                        (self.df_lead_times['LeadTimeDays'] == lead_time), 'ExpectedLeadTimeId'].values[0]
+
+                else:
+                    if 'LeadTimeDaysExpedited' in row:
+                        expedited_lead_time = row['LeadTimeDaysExpedited']
+                    else:
+                        expedited_lead_time = lead_time
+
+                    new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
+                lst_ids.append(new_lead_time_id)
+
+            df_attribute['ExpectedLeadTimeId'] = lst_ids
+            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                              how='left', on=['ExpectedLeadTime'])
 
     def batch_process_attribute(self,attribute):
         set_128 = ['RecommendedStorageId']
@@ -322,6 +356,7 @@ class MinimumProduct(BasicProcessObject):
                 is_cold_chain = row['IsColdChain']
 
 
+        # todo: This needs to pull in the begining and check a DF here
         df_collect_product_base_data['ShippingInstructionsId'] = self.obIngester.ingest_shipping_instructions(
             shipping_desc, shipping_code, is_free_shipping, is_cold_chain)
 
@@ -338,6 +373,7 @@ class MinimumProduct(BasicProcessObject):
             if ('LeadTimeDaysExpedited' in row):
                 expedited_lead_time = row['LeadTimeDaysExpedited']
 
+            # todo: This needs to pull in the begining and check a DF here
             df_collect_product_base_data['ExpectedLeadTimeId'] = self.obIngester.ingest_expected_lead_times(
                 expected_lead_time, expedited_lead_time)
 

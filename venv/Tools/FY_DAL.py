@@ -263,6 +263,11 @@ class DalObject:
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
+    def get_lead_times(self):
+        proc_name = 'sequoia.get_LeadTime_lookup'
+        column_names = ['ExpectedLeadTimeId', 'LeadTimeDays', 'LeadTimeDaysExpedited']
+        df_lead_time_lookup = self.get_lookup(proc_name, column_names)
+        return df_lead_time_lookup
 
     def unspsc_code_cap(self,newUNSPSC,newUNSPSCTitle,newUNSPSCDesc):
         proc_name = 'sequoia.UNSPSC_capture_wrap'
