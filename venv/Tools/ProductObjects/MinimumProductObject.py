@@ -88,16 +88,13 @@ class MinimumProduct(BasicProcessObject):
             category = row['Category']
             category_name = category.rpartition('/')[2]
             if category_name in self.df_category_names['CategoryName'].values:
-                print('cat A', category_name)
                 new_category_id = self.df_category_names.loc[
                     (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
 
             elif category in self.df_category_names['Category'].values:
-                print('cat B', category_name)
                 new_category_id = self.df_category_names.loc[
                     (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
             else:
-                print('cat C', category_name)
                 # this might be causing a slow down
                 # review this to see if it's working right, it should be
                 new_category_id = self.obDal.category_cap(category_name, category)
@@ -223,7 +220,7 @@ class MinimumProduct(BasicProcessObject):
             if 'Filter' in row:
                 if row['Filter'] == 'Update':
                     df_collect_product_base_data['FinalReport'] = ['This product was not new']
-                    return True, df_collect_product_base_data
+                    #return True, df_collect_product_base_data
 
             success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
             if success == False:
