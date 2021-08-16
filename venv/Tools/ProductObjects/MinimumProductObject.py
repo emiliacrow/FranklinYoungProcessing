@@ -355,8 +355,12 @@ class MinimumProduct(BasicProcessObject):
 
 
         # todo: This needs to pull in the begining and check a DF here
-        df_collect_product_base_data['ShippingInstructionsId'] = self.obIngester.ingest_shipping_instructions(
-            shipping_desc, shipping_code, is_free_shipping, is_cold_chain)
+        # I've added a cheap fix for now, but this is a lazy solution you'll have to deal with later. I know, I'm a jerk.
+        if [shipping_desc, shipping_code, is_free_shipping, is_cold_chain] != ['No shipping instructions.','',0,0]:
+            df_collect_product_base_data['ShippingInstructionsId'] = self.obIngester.ingest_shipping_instructions(
+                shipping_desc, shipping_code, is_free_shipping, is_cold_chain)
+        else:
+            df_collect_product_base_data['ShippingInstructionsId'] = 1
 
         return True, df_collect_product_base_data
 
