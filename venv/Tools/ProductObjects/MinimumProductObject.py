@@ -246,6 +246,10 @@ class MinimumProduct(BasicProcessObject):
                     df_collect_product_base_data['FinalReport'] = ['Failed in process shipping instructions']
                     return success, df_collect_product_base_data
 
+            if ('ExpectedLeadTimeId' not in row):
+                df_collect_product_base_data['FinalReport'] = ['Failed in process lead time']
+                return success, df_collect_product_base_data
+
             if ('RecommendedStorageId' not in row):
                 df_collect_product_base_data['FinalReport'] = ['Failed in process recommended storage']
                 return False, df_collect_product_base_data
@@ -355,7 +359,6 @@ class MinimumProduct(BasicProcessObject):
             shipping_desc, shipping_code, is_free_shipping, is_cold_chain)
 
         return True, df_collect_product_base_data
-
 
     def minimum_product(self,df_line_product):
         # here all processing and checks have been done
