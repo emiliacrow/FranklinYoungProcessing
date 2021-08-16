@@ -246,12 +246,6 @@ class MinimumProduct(BasicProcessObject):
                     df_collect_product_base_data['FinalReport'] = ['Failed in process shipping instructions']
                     return success, df_collect_product_base_data
 
-            if ('ExpectedLeadTimeId' not in row):
-                success, df_collect_product_base_data = self.process_lead_time(df_collect_product_base_data, row)
-                if success == False:
-                    df_collect_product_base_data['FinalReport'] = ['Failed in process lead time']
-                    return success, df_collect_product_base_data
-
             if ('RecommendedStorageId' not in row):
                 df_collect_product_base_data['FinalReport'] = ['Failed in process recommended storage']
                 return False, df_collect_product_base_data
@@ -362,25 +356,6 @@ class MinimumProduct(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
-
-    def process_lead_time(self, df_collect_product_base_data, row):
-        expected_lead_time = 11
-        if 'ExpectedLeadTime' in row:
-            expected_lead_time = row['ExpectedLeadTime']
-        expedited_lead_time = -1
-
-        if self.obValidator.validate_lead_time(expected_lead_time):
-            if ('LeadTimeDaysExpedited' in row):
-                expedited_lead_time = row['LeadTimeDaysExpedited']
-
-            # todo: This needs to pull in the begining and check a DF here
-            df_collect_product_base_data['ExpectedLeadTimeId'] = self.obIngester.ingest_expected_lead_times(
-                expected_lead_time, expedited_lead_time)
-
-            return True, df_collect_product_base_data
-        else:
-            df_collect_product_base_data['Report'] = ['Lead time must be between 1-365.']
-            return False, df_collect_product_base_data
 
     def minimum_product(self,df_line_product):
         # here all processing and checks have been done
