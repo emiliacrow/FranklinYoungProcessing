@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyCatalogNumber','AllowPurchases','ProductTaxClass']
+    req_fields = ['VendorName','FyCatalogNumber','AllowPurchases','ProductTaxClass', 'ManufacturerPartNumber']
     sup_fields = []
     gen_fields = ['FyProductNumber', 'ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -20,21 +20,42 @@ class MinimumProductPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.df_uoi_lookup = self.obDal.get_unit_of_issue_lookup()
-        self.batch_process_vendor()
+        if 'VendorId' not in self.df_product.columns:
+            self.batch_process_vendor()
         self.define_new()
 
 
     def define_new(self):
-        match_headers = ['FyCatalogNumber','ProductId']
+        self.df_product_lookup = self.obDal.get_product_lookup()
+        self.df_product_price_lookup = self.obDal.get_product_price_lookup()
 
+        if 'Filter' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=['Filter'])
         # simple first
-        self.df_product_skinny = self.df_product_lookup[['FyCatalogNumber','ProductId']]
-        self.df_product_skinny['Filter'] = 'No Update'
+        self.df_product_lookup['Filter'] = 'Update'
         # match all products on FyProdNum
-        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_product_skinny,
-                                                 how='left', on=['FyCatalogNumber'])
-        # all products that matched on FyProdNum
-        self.df_product = self.df_update_products[(self.df_update_products['Filter'] == 'No Update')]
+        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
+                                                 how='left', on=['FyCatalogNumber','ManufacturerPartNumber'])
+        # all products that can be updated
+        self.df_product = self.df_update_products[(self.df_update_products['Filter'] != 'Update')]
+
+        # this might end up empty
+        if len(self.df_product.index) != 0:
+            if 'Filter' in self.df_product.columns:
+                self.df_product = self.df_product.drop(columns=['Filter'])
+            if 'ProductId' in self.df_product.columns:
+                self.df_product = self.df_product.drop(columns=['ProductId'])
+
+            self.df_product_price_lookup['Filter'] = 'New'
+            if 'ManufacturerPartNumber' not in self.df_product.columns:
+                self.df_new_product = pandas.DataFrame.merge(self.df_product, self.df_product_price_lookup,
+                                                             how='left', on=['FyProductNumber','ManufacturerPartNumber'])
+            else:
+                self.df_new_product = pandas.DataFrame.merge(self.df_product, self.df_product_price_lookup,
+                                                             how='left', on=['FyProductNumber'])
+
+            self.df_product = self.df_new_product[(self.df_new_product['Filter'] == 'New')]
+
 
 
     def batch_process_something(self, df_row):
@@ -59,8 +80,6 @@ class MinimumProductPrice(BasicProcessObject):
             lst_ids.append(new_vendor_id)
 
         df_attribute['VendorId'] = lst_ids
-
-        self.df_product_lookup = self.obDal.get_product_lookup_vendor_id(lst_ids[0])
 
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])

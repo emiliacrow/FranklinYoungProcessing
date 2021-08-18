@@ -328,15 +328,6 @@ class IngestionObject:
         return return_id
 
 
-    def get_product_lookup_vendor_name(self,vendor_name):
-        df_product_lookup = self.obDal.get_product_lookup_vendor_name(vendor_name)
-        return df_product_lookup
-
-    def get_product_lookup_vendor_id(self,vendor_id):
-        df_product_lookup = self.obDal.get_product_lookup_vendor_id(vendor_id)
-        return df_product_lookup
-
-
     def fill_product(self, is_last, ProductId, LongDesc='', FYProductNotes='', ShortDesc='', NatoStockNumber='', ModelNumber='', RequiredSampleSize='', NumberOfChannels='', GTIN='', SterilityId=-1, SurfaceTreatmentId=-1, PrecisionId=-1, ProductSEOId=-1, ComponentSetId=-1, FSCCodeId=-1, HazardousCodeId=-1, UNSPSCId=-1, NAICSCodeId=-1, NationalDrugCodeId=-1, ProductWarrantyId=-1, SpeciesId=-1):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append([ProductId, LongDesc, FYProductNotes, ShortDesc, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId])

@@ -65,16 +65,17 @@ class MinimumProduct(BasicProcessObject):
             lst_ids.append(new_vendor_id)
 
         df_attribute['VendorId'] = lst_ids
-        self.df_loaded_product = self.obIngester.get_product_lookup_vendor_id(lst_ids[0])
 
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])
 
     def define_new(self):
+        self.df_loaded_product = self.obDal.get_product_lookup()
         self.df_loaded_product['Filter'] = 'Update'
         self.df_loaded_product['ManufacturerPartNumber'].astype(str)
         self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
+
 
         # at the end of this there must be two df's
         # an update and a new

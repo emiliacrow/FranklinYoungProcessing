@@ -520,17 +520,17 @@ class DalObject:
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
-    def get_product_lookup_vendor_name(self,vendor_name):
-        proc_name = 'sequoia.get_Product_lookup_vendor_name'
-        column_names = ['ProductId','FyCatalogNumber','ManufacturerPartNumber']
-        df_country_lookup = self.get_lookup(proc_name,column_names,vendor_name)
-        return df_country_lookup
+    def get_product_price_lookup(self):
+        proc_name = 'sequoia.get_ProductPrice_lookup'
+        column_names = ['ProductId','ProductPriceId','FyProductNumber']
+        df_product_lookup = self.get_lookup(proc_name,column_names)
+        return df_product_lookup
 
-    def get_product_lookup_vendor_id(self,vendor_id):
-        proc_name = 'sequoia.get_Product_lookup_vendor_id'
+    def get_product_lookup(self):
+        proc_name = 'sequoia.get_Product_lookup'
         column_names = ['ProductId','FyCatalogNumber','ManufacturerPartNumber']
-        df_country_lookup = self.get_lookup(proc_name,column_names,vendor_id)
-        return df_country_lookup
+        df_product_lookup = self.get_lookup(proc_name,column_names)
+        return df_product_lookup
 
     def min_product_price_cap(self,lst_product_price):
         proc_name = 'sequoia.MinimumProductPrice_capture'
@@ -599,7 +599,7 @@ class DalObject:
 
     def get_base_product_price_lookup(self, vendor_id):
         proc_name = 'sequoia.get_BasePrice_lookup_vendor_name'
-        column_names = ['FyProductNumber','ProductPriceId','Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost', 'LandedCostMarkupPercent_FYSell','Filter']
+        column_names = ['FyProductNumber','ProductPriceId','Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost', 'LandedCostMarkupPercent_FYSell']
         df_base_price_lookup = self.get_lookup(proc_name,column_names,vendor_id)
         return df_base_price_lookup
 

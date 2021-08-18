@@ -61,21 +61,38 @@ class BasePrice(BasicProcessObject):
         match_headers = ['FyProductNumber','ProductPriceId','Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost', 'LandedCostMarkupPercent_FYSell']
 
         # simple first
+        self.df_base_price_lookup['Filter'] = 'Update'
         self.df_base_price_check_in = self.df_base_price_lookup[['FyProductNumber','ProductPriceId','Filter']]
 
+        if 'Filter' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'Filter')
         # match all products on FyProdNum
+        print(self.df_product)
+        x = input('x1')
         self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_check_in,
-                                                 how='left', on=['FyProductNumber'])
+                                                 how='left', on='FyProductNumber')
         # all products that matched on FyProdNum
-        self.df_product = self.df_update_products[(self.df_update_products['Filter'] == 'No Update')]
+        print(self.df_update_products)
+        x = input('x2')
+        self.df_product = self.df_update_products[(self.df_update_products['Filter'] == 'Update')]
 
-        self.df_base_price_lookup['Drop'] = 'This'
+        # this could end up empty
+        print(self.df_product)
+        x = input('x3')
+        self.df_product = self.df_product.drop(columns='Filter')
+        self.df_base_price_lookup['Filter'] = 'Drop'
         self.df_true_update_product = pandas.DataFrame.merge(self.df_product, self.df_base_price_lookup,
                                                  how='left', on=match_headers)
 
         # this does not seem to be matching correctly in the above
         # I suspect this has to do with the numbers being strings?
-        self.df_product = self.df_true_update_product[(self.df_true_update_product['Drop'] != 'This')]
+        print(self.df_product)
+        x = input('x4')
+        self.df_product = self.df_true_update_product[(self.df_true_update_product['Filter'] != 'Drop')]
+
+        print(self.df_product)
+        x = input('x5')
+        # this shouldn't always be 0
 
 
     def process_product_line(self, df_line_product):
