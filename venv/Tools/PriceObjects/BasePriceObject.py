@@ -37,6 +37,9 @@ class BasePrice(BasicProcessObject):
         df_attribute = self.df_product[['VendorName']]
         df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
         lst_ids = []
+        if 'VendorId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'VendorId')
+
         for colName, row in df_attribute.iterrows():
             vendor_name = row['VendorName'].upper()
             if vendor_name in self.df_vendor_translator['VendorCode'].values:
@@ -66,6 +69,8 @@ class BasePrice(BasicProcessObject):
 
         if 'Filter' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns = 'Filter')
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'ProductPriceId')
         # match all products on FyProdNum
         print(self.df_product)
         x = input('x1')

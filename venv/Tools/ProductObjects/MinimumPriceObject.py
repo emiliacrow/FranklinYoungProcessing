@@ -46,6 +46,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         # we assign a label to the products that are haven't been loaded through product yet
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Report'] = 'This product must be loaded.'
+        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
         # split the data for a moment
         self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
@@ -63,9 +64,11 @@ class MinimumProductPrice(BasicProcessObject):
                                                              how='left', on=['FyProductNumber'])
 
             self.df_update_product.loc[(self.df_update_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
-            self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
-            self.df_update_product = self.df_update_product.drop(columns=['ProductId_x'])
-            self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
+
+            if 'ProductId_x' in self.df_update_product.columns:
+                self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
+                self.df_update_product = self.df_update_product.drop(columns=['ProductId_x'])
+                self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
             # recombine with product
             self.df_product = self.df_product.append(self.df_update_product)
 
@@ -109,6 +112,8 @@ class MinimumProductPrice(BasicProcessObject):
                     return True, df_collect_product_base_data
                 elif row['Filter'] != 'Update':
                     return False, df_collect_product_base_data
+            else:
+                return False, df_collect_product_base_data
 
             # this is also stupid, but it gets the point across for testing purposes
             success, df_collect_product_base_data = self.process_vendor(df_collect_product_base_data, row)
@@ -233,6 +238,7 @@ class MinimumProductPrice(BasicProcessObject):
     def minimum_product_price(self,df_line_product):
         # ship it!
         for colName, row in df_line_product.iterrows():
+            print(row)
             fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']
             fy_part_number = row['FyPartNumber']
