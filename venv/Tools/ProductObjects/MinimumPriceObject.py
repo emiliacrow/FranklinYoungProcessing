@@ -36,7 +36,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.df_product_lookup['Filter'] = 'Update'
         # match all products on FyProdNum and Manufacturer part, clearly
-        if 'ManufacturerPartNumber' not in self.df_product.columns:
+        if 'ManufacturerPartNumber' in self.df_product.columns:
             self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
                                                             how='left',
                                                             on=['FyCatalogNumber', 'ManufacturerPartNumber'])
