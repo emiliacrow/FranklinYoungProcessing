@@ -9,8 +9,8 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['AllowPurchases','ProductTaxClass']
-    sup_fields = ['FyCatalogNumber','ManufacturerPartNumber']
+    req_fields = ['VendorName','FyCatalogNumber','AllowPurchases','ProductTaxClass']
+    sup_fields = []
     gen_fields = ['FyProductNumber', 'ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
 
@@ -20,13 +20,22 @@ class MinimumProductPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.df_uoi_lookup = self.obDal.get_unit_of_issue_lookup()
-        self.df_product['ProductId'] = self.df_product.apply(self.batch_ident_product_id, axis=1)
-        if 'VendorId' not in self.df_product.columns:
-            self.batch_process_vendor()
+        self.batch_process_vendor()
         self.define_new()
 
+
     def define_new(self):
-        pass
+        match_headers = ['FyCatalogNumber','ProductId']
+
+        # simple first
+        self.df_product_skinny = self.df_product_lookup[['FyCatalogNumber','ProductId']]
+        self.df_product_skinny['Filter'] = 'No Update'
+        # match all products on FyProdNum
+        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_product_skinny,
+                                                 how='left', on=['FyCatalogNumber'])
+        # all products that matched on FyProdNum
+        self.df_product = self.df_update_products[(self.df_update_products['Filter'] == 'No Update')]
+
 
     def batch_process_something(self, df_row):
         some_val = 1
@@ -51,18 +60,10 @@ class MinimumProductPrice(BasicProcessObject):
 
         df_attribute['VendorId'] = lst_ids
 
+        self.df_product_lookup = self.obDal.get_product_lookup_vendor_id(lst_ids[0])
+
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])
-
-    def batch_ident_product_id(self, df_row):
-        if 'FyCatalogNumber' in df_row:
-            return self.obIngester.get_product_id_by_fy_catalog_number(df_row['FyCatalogNumber'])
-
-        elif 'ManufacturerPartNumber' in df_row:
-            return self.obIngester.get_product_id_by_manufacturer_part_number(df_row['ManufacturerPartNumber'])
-
-        else:
-            return -1
 
 
     def process_product_line(self, df_line_product):
@@ -86,7 +87,6 @@ class MinimumProductPrice(BasicProcessObject):
             if success == False:
                 df_collect_product_base_data['FinalReport'] = ['Failed at pricing processing']
                 return success, df_collect_product_base_data
-
 
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)

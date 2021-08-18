@@ -47,6 +47,7 @@ class MinimumProduct(BasicProcessObject):
 
 
     def batch_process_vendor(self):
+        # there should only be one vendor, really.
         df_attribute = self.df_product[['VendorName']]
         df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
         lst_ids = []
@@ -220,7 +221,7 @@ class MinimumProduct(BasicProcessObject):
             if 'Filter' in row:
                 if row['Filter'] == 'Update':
                     df_collect_product_base_data['FinalReport'] = ['This product was not new']
-                    #return True, df_collect_product_base_data
+                    return True, df_collect_product_base_data
 
             success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
             if success == False:

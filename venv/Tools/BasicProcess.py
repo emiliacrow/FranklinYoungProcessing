@@ -145,9 +145,12 @@ class BasicProcessObject:
 
             if self.line_viability(df_line_product):
                 df_line_product['FinalReport'] = ['Passed Line Viability']
+
                 success, return_df_line_product = self.process_product_line(df_line_product)
                 if success:
                     return_df_line_product['FinalReport'] = 'Pass'
+                else:
+                    return_df_line_product['FinalReport'] = 'Failed'
 
             else:
                 df_line_product['FinalReport'] = ['Failed Line Viability']

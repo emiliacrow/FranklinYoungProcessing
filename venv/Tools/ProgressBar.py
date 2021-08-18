@@ -3,6 +3,7 @@
 # Updated: 20210609
 # CreateFor: Franklin Young International
 
+import os
 import sys
 import time
 import datetime
@@ -31,8 +32,7 @@ class ProgressBarWindow(QWidget):
         self.pbar = QProgressBar(self)
         self.layout.addWidget(self.pbar,1,0,1,3)
 
-
-        self.setWindowIcon(QIcon('C:\\Users\ImGav\Documents\FranklinYoungFiles\DataMapping\images\Processing.png'))
+        self.setWindowIcon(QIcon(os.getcwd()+'\\venv\Assets\Processing.png'))
 
         self.duration_label = QLabel('')
         self.duration_label.setText('Duration unknown.')

@@ -17,6 +17,7 @@ class HeaderTranslator():
                             'UnitOfMeasure':['UnitOfMeasure','UOM','uom'],
                             'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time'],
                             'LeadTimeDaysExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited'],
+                            'FyProductNumber':['FyProductNumber','Fy Product Number','Product Code/SKU'],
 
                             'Vendor List Price':['Price','Vendor List Price','VendorListPrice','List Price'],
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent'],

@@ -597,6 +597,11 @@ class DalObject:
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
+    def get_base_product_price_lookup(self, vendor_id):
+        proc_name = 'sequoia.get_BasePrice_lookup_vendor_name'
+        column_names = ['FyProductNumber','ProductPriceId','Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost', 'LandedCostMarkupPercent_FYSell','Filter']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names,vendor_id)
+        return df_base_price_lookup
 
 
     def naked_cap(self,thisdoesnothing,noreally):

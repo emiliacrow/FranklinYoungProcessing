@@ -3,12 +3,14 @@
 # Updated: 20210805
 # CreateFor: Franklin Young International
 
+import pandas
 import datetime
+
 from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost',
+    req_fields = ['FyProductNumber','Vendor List Price', 'VendorName', 'Discount', 'Fy Cost', 'Fixed Shipping Cost',
                   'LandedCostMarkupPercent_FYSell']
     sup_fields = []
     att_fields = []
@@ -20,9 +22,8 @@ class BasePrice(BasicProcessObject):
         self.lindas_increase = 0.25
 
     def batch_preprocessing(self):
-        # ident product price id
-        self.df_product['ProductPriceId'] = self.df_product.apply(self.batch_ident_product_price_id,axis=1)
         # define new, update, non-update
+        self.batch_process_vendor()
         self.define_new()
 
         if 'MfcDiscountPercent' not in self.df_product.columns:
@@ -30,22 +31,51 @@ class BasePrice(BasicProcessObject):
         if 'MfcDiscountPercent' not in self.df_product.columns:
             self.df_product['MfcDiscountPercent'] = 0
 
+
+    def batch_process_vendor(self):
+        # there should only be one vendor, really.
+        df_attribute = self.df_product[['VendorName']]
+        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+        lst_ids = []
+        for colName, row in df_attribute.iterrows():
+            vendor_name = row['VendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+            else:
+                new_vendor_id = -1
+
+            lst_ids.append(new_vendor_id)
+
+        df_attribute['VendorId'] = lst_ids
+        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup(lst_ids[0])
+
+        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                 how='left', on=['VendorName'])
+
+
     def define_new(self):
         match_headers = ['FyProductNumber','ProductPriceId','Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost', 'LandedCostMarkupPercent_FYSell']
-        pass
 
+        # simple first
+        self.df_base_price_check_in = self.df_base_price_lookup[['FyProductNumber','ProductPriceId','Filter']]
 
-    def batch_ident_product_price_id(self, df_row):
-        if 'FyProductNumber' in df_row:
-            return self.obIngester.get_product_price_id_by_fy_product_number(df_row['FyProductNumber'])
+        # match all products on FyProdNum
+        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_check_in,
+                                                 how='left', on=['FyProductNumber'])
+        # all products that matched on FyProdNum
+        self.df_product = self.df_update_products[(self.df_update_products['Filter'] == 'No Update')]
 
-        if 'FyPartNumber' in df_row:
-            return self.obIngester.get_product_price_id_by_fy_part_number(df_row['FyPartNumber'])
+        self.df_base_price_lookup['Drop'] = 'This'
+        self.df_true_update_product = pandas.DataFrame.merge(self.df_product, self.df_base_price_lookup,
+                                                 how='left', on=match_headers)
 
-        if 'VendorPartNumber' in df_row:
-            return self.obIngester.get_product_price_id_by_vendor_part_number(df_row['VendorPartNumber'])
-
-        return -1
+        # this does not seem to be matching correctly in the above
+        # I suspect this has to do with the numbers being strings?
+        self.df_product = self.df_true_update_product[(self.df_true_update_product['Drop'] != 'This')]
 
 
     def process_product_line(self, df_line_product):
@@ -105,7 +135,8 @@ class BasePrice(BasicProcessObject):
     def process_pricing(self, df_collect_product_base_data, row):
         vendor_list_price = float(row['Vendor List Price'])
         fy_discount_percent = float(row['Discount'])
-        fy_cost = float(row['Fy Cost'])
+        fy_cost = round(float(row['Fy Cost']),2)
+        df_collect_product_base_data['Fy Cost'] = [fy_cost]
 
         # discount and cost
         fy_cost_test = vendor_list_price - round((vendor_list_price * fy_discount_percent), 2)

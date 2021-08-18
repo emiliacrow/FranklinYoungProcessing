@@ -3,6 +3,7 @@
 # Updated: 20210813
 # CreateFor: Franklin Young International
 
+import os
 import sys
 import time
 import traceback
@@ -43,13 +44,14 @@ class DuckworthWindow(QWidget):
         # super means it runs the base class __init__ first
         super(DuckworthWindow, self).__init__(parent)
 
-        self.setWindowIcon(QIcon('C:\\Users\ImGav\Documents\FranklinYoungFiles\DataMapping\images\Duckworth2.png'))
+        self.setWindowIcon(QIcon(os.getcwd()+'\\venv\Assets\Duckworth2.png'))
+        self.base_interval = 5000
 
         self.update_timer = QTimer()
-        self.update_timer.setInterval(5000)
+        self.update_timer.setInterval(self.base_interval)
         self.update_timer.setSingleShot(False)
         self.update_timer.timeout.connect(self.message_scroll)
-        self.update_timer.start(5000)
+        self.update_timer.start(self.base_interval)
 
         self.success_string_style1 = 'border: 2px solid black; color: black; background-color: white'
         self.success_string_style2 = 'border: 2px solid black; color: black; background-color: lightgrey'
@@ -83,7 +85,7 @@ class DuckworthWindow(QWidget):
                 self.update_timer.setInterval(4000)
             else:
                 display_text = '(run:'+str(self.message_number) + ') '+self.message_scroll_text[self.message_number][0] + ' : ' + self.message_scroll_text[self.message_number][1]
-                self.update_timer.setInterval(5000)
+                self.update_timer.setInterval(self.base_interval)
 
             result_style = self.message_scroll_text[self.message_number][2]
 
