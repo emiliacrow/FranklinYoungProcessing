@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyCatalogNumber','AllowPurchases','ProductTaxClass', 'ManufacturerPartNumber']
+    req_fields = ['VendorName','FyCatalogNumber','AllowPurchases','ProductTaxClass']
     sup_fields = []
     gen_fields = ['FyProductNumber', 'ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -26,35 +26,48 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def define_new(self):
+        # these are the df's for assigning data.
         self.df_product_lookup = self.obDal.get_product_lookup()
         self.df_product_price_lookup = self.obDal.get_product_price_lookup()
 
+        # if there's already a filter column, we remove it.
         if 'Filter' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns=['Filter'])
-        # simple first
+
         self.df_product_lookup['Filter'] = 'Update'
-        # match all products on FyProdNum
-        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
-                                                 how='left', on=['FyCatalogNumber','ManufacturerPartNumber'])
-        # all products that can be updated
-        self.df_product = self.df_update_products[(self.df_update_products['Filter'] != 'Update')]
+        # match all products on FyProdNum and Manufacturer part, clearly
+        if 'ManufacturerPartNumber' not in self.df_product.columns:
+            self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
+                                                            how='left',
+                                                            on=['FyCatalogNumber', 'ManufacturerPartNumber'])
+        else:
+            self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
+                                                            how='left', on=['FyCatalogNumber'])
 
-        # this might end up empty
-        if len(self.df_product.index) != 0:
-            if 'Filter' in self.df_product.columns:
-                self.df_product = self.df_product.drop(columns=['Filter'])
-            if 'ProductId' in self.df_product.columns:
-                self.df_product = self.df_product.drop(columns=['ProductId'])
+        # we assign a label to the products that are haven't been loaded through product yet
+        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Report'] = 'This product must be loaded.'
 
-            self.df_product_price_lookup['Filter'] = 'New'
-            if 'ManufacturerPartNumber' not in self.df_product.columns:
-                self.df_new_product = pandas.DataFrame.merge(self.df_product, self.df_product_price_lookup,
-                                                             how='left', on=['FyProductNumber','ManufacturerPartNumber'])
-            else:
-                self.df_new_product = pandas.DataFrame.merge(self.df_product, self.df_product_price_lookup,
+        # split the data for a moment
+        self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'Update')]
+
+        if len(self.df_update_product.index) != 0:
+            self.df_product_price_lookup['Filter'] = 'Pass'
+            # this section evaluates if these have product data loaded
+            # drop some columns to ease processing
+            if 'Filter' in self.df_update_product.columns:
+                self.df_update_product = self.df_update_product.drop(columns=['Filter'])
+
+            # this gets the productId
+            self.df_update_product = pandas.DataFrame.merge(self.df_update_product, self.df_product_price_lookup,
                                                              how='left', on=['FyProductNumber'])
 
-            self.df_product = self.df_new_product[(self.df_new_product['Filter'] == 'New')]
+            self.df_update_product.loc[(self.df_update_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
+            self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
+            self.df_update_product = self.df_update_product.drop(columns=['ProductId_x'])
+            self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
+            # recombine with product
+            self.df_product = self.df_product.append(self.df_update_product)
 
 
 
@@ -91,6 +104,12 @@ class MinimumProductPrice(BasicProcessObject):
 
         # step-wise product processing
         for colName, row in df_line_product.iterrows():
+            if 'Filter' in row:
+                if row['Filter'] == 'Pass':
+                    return True, df_collect_product_base_data
+                elif row['Filter'] != 'Update':
+                    return False, df_collect_product_base_data
+
             # this is also stupid, but it gets the point across for testing purposes
             success, df_collect_product_base_data = self.process_vendor(df_collect_product_base_data, row)
             if success == False:
