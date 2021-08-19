@@ -9,9 +9,13 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProductPrice(BasicProcessObject):
-    req_fields = ['FyProductNumber',]
-    sup_fields = ['FyPartNumber','VendorPartNumber']
+    req_fields = ['FyProductNumber']
     att_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
+                          'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
+                          'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
+                          'Speed', 'TankCapacity', 'TemperatureRange', 'Thickness', 'Tolerance', 'Voltage', 'Wattage',
+                          'Wavelength', 'WeightRange', 'Width']
+    sup_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
                           'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
                           'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
                           'Speed', 'TankCapacity', 'TemperatureRange', 'Thickness', 'Tolerance', 'Voltage', 'Wattage',
