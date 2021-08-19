@@ -3,6 +3,8 @@
 # Updated: 20210804
 # CreateFor: Franklin Young International
 
+
+import pandas
 from Tools.BasicProcess import BasicProcessObject
 
 
@@ -17,7 +19,8 @@ class FillProduct(BasicProcessObject):
 
 
     def batch_preprocessing(self):
-        self.df_product['ProductId'] = self.df_product.apply(self.batch_ident_product_id, axis=1)
+        self.define_new()
+
         # this is here to consume values that may be more alike than different
         # for example, recommended storage might have a lot of 'keep this darn thing cold'
         if 'Sterility' in self.df_product.columns:
@@ -27,18 +30,53 @@ class FillProduct(BasicProcessObject):
         if 'Precision' in self.df_product.columns:
             self.batch_process_attribute('Precision')
 
-        return self.df_product
 
+    def define_new(self):
+        # these are the df's for assigning data.
+        self.df_product_lookup = self.obDal.get_product_lookup()
+        self.df_product_full_lookup = self.obDal.get_product_fill_lookup()
 
-    def batch_ident_product_id(self, df_row):
-        if 'FyCatalogNumber' in df_row:
-            return self.obIngester.get_product_id_by_fy_catalog_number(df_row['FyCatalogNumber'])
+        # if there's already a filter column, we remove it.
+        if 'Filter' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=['Filter'])
 
-        elif 'ManufacturerPartNumber' in df_row:
-            return self.obIngester.get_product_id_by_manufacturer_part_number(df_row['ManufacturerPartNumber'])
-
+        self.df_product_lookup['Filter'] = 'Update'
+        # match all products on FyProdNum and Manufacturer part, clearly
+        if 'ManufacturerPartNumber' in self.df_product.columns:
+            self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
+                                                            how='left',
+                                                            on=['FyCatalogNumber', 'ManufacturerPartNumber'])
         else:
-            return -1
+            self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
+                                                            how='left', on=['FyCatalogNumber'])
+
+        # we assign a label to the products that are haven't been loaded through product yet
+        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Report'] = 'This product must be loaded.'
+        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+
+        # split the data for a moment
+        self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'Update')]
+
+        if len(self.df_update_product.index) != 0:
+            self.df_product_full_lookup['Filter'] = 'Pass'
+            # this section evaluates if these have product data loaded
+            # drop some columns to ease processing
+            if 'Filter' in self.df_update_product.columns:
+                self.df_update_product = self.df_update_product.drop(columns=['Filter'])
+
+            # this gets the productId
+            self.df_update_product = pandas.DataFrame.merge(self.df_update_product, self.df_product_full_lookup,
+                                                             how='left', on=['FyProductNumber','ShortDescription'])
+
+            self.df_update_product.loc[(self.df_update_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
+
+            if 'ProductId_x' in self.df_update_product.columns:
+                self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
+                self.df_update_product = self.df_update_product.drop(columns=['ProductId_x'])
+                self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
+            # recombine with product
+            self.df_product = self.df_product.append(self.df_update_product)
 
 
     def batch_process_attribute(self,attribute):
@@ -64,6 +102,13 @@ class FillProduct(BasicProcessObject):
         df_collect_product_base_data = self.process_attribute_data(df_collect_product_base_data)
 
         for colName, row in df_line_product.iterrows():
+            if 'Filter' in row:
+                if row['Filter'] == 'Pass':
+                    return True, df_collect_product_base_data
+                elif row['Filter'] != 'Update':
+                    return False, df_collect_product_base_data
+            else:
+                return False, df_collect_product_base_data
 
             if ('LongDescription' not in row):
                 df_collect_product_base_data['Report'] = ['LongDescription is missing']

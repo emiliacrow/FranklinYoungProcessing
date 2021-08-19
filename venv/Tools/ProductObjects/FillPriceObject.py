@@ -3,12 +3,14 @@
 # Updated: 20210528
 # CreateFor: Franklin Young International
 
+import pandas
+
 from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProductPrice(BasicProcessObject):
-    req_fields = []
-    sup_fields = ['FyPartNumber','FyProductNumber','VendorPartNumber']
+    req_fields = ['FyProductNumber',]
+    sup_fields = ['FyPartNumber','VendorPartNumber']
     att_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
                           'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
                           'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
@@ -22,7 +24,8 @@ class FillProductPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         # ident product price id
-        self.df_product['ProductPriceId'] = self.df_product.apply(self.batch_ident_product_price_id,axis=1)
+        self.batch_process_vendor()
+        self.define_new()
         # this is here to consume values that may be more alike than different
         # for example, recommended storage might have a lot of 'keep this darn thing cold'
         for each_attribute in self.att_fields:
@@ -31,19 +34,53 @@ class FillProductPrice(BasicProcessObject):
 
         return self.df_product
 
+    def batch_process_vendor(self):
+        # there should only be one vendor, really.
+        df_attribute = self.df_product[['VendorName']]
+        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+        lst_ids = []
+        if 'VendorId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'VendorId')
 
-    def batch_ident_product_price_id(self, df_row):
-        if 'FyProductNumber' in df_row:
-            return self.obIngester.get_product_price_id_by_fy_product_number(df_row['FyProductNumber'])
+        for colName, row in df_attribute.iterrows():
+            vendor_name = row['VendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+            else:
+                new_vendor_id = -1
 
-        if 'FyPartNumber' in df_row:
-            return self.obIngester.get_product_price_id_by_fy_part_number(df_row['FyPartNumber'])
+            lst_ids.append(new_vendor_id)
 
-        if 'VendorPartNumber' in df_row:
-            return self.obIngester.get_product_price_id_by_vendor_part_number(df_row['VendorPartNumber'])
+        df_attribute['VendorId'] = lst_ids
+        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup(lst_ids[0])
 
-        return -1
+        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                 how='left', on=['VendorName'])
 
+
+    def define_new(self):
+        match_headers = ['FyProductNumber','ProductPriceId','Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost', 'LandedCostMarkupPercent_FYSell']
+
+        # simple first
+        self.df_base_price_lookup['Filter'] = 'Update'
+        self.df_base_price_check_in = self.df_base_price_lookup[['FyProductNumber','ProductPriceId','Filter']]
+
+        if 'Filter' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'Filter')
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'ProductPriceId')
+
+        # match all products on FyProdNum
+        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_check_in,
+                                                 how='left', on='FyProductNumber')
+        # all products that matched on FyProdNum
+        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
+
+        self.df_product = self.df_update_products
 
 
     def batch_process_attribute(self,attribute):
@@ -71,6 +108,13 @@ class FillProductPrice(BasicProcessObject):
         df_collect_product_base_data = df_line_product.copy()
         # step-wise product processing
         for colName, row in df_line_product.iterrows():
+            if 'Filter' in row:
+                if row['Filter'] == 'Pass':
+                    return True, df_collect_product_base_data
+                elif row['Filter'] != 'Update':
+                    return False, df_collect_product_base_data
+            else:
+                return False, df_collect_product_base_data
 
             if ('ProductPriceId' not in row):
                 df_collect_product_base_data['Report'] = ['ProductPriceId is missing']
