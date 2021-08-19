@@ -71,33 +71,30 @@ class BasePrice(BasicProcessObject):
             self.df_product = self.df_product.drop(columns = 'Filter')
         if 'ProductPriceId' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns = 'ProductPriceId')
+
         # match all products on FyProdNum
-        print(self.df_product)
-        x = input('x1')
         self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_check_in,
                                                  how='left', on='FyProductNumber')
         # all products that matched on FyProdNum
-        print(self.df_update_products)
-        x = input('x2')
-        self.df_product = self.df_update_products[(self.df_update_products['Filter'] == 'Update')]
+        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
-        # this could end up empty
-        print(self.df_product)
-        x = input('x3')
-        self.df_product = self.df_product.drop(columns='Filter')
-        self.df_base_price_lookup['Filter'] = 'Drop'
-        self.df_true_update_product = pandas.DataFrame.merge(self.df_product, self.df_base_price_lookup,
-                                                 how='left', on=match_headers)
+        self.df_product = self.df_update_products[(self.df_update_products['Filter'] != 'Update')]
+        self.df_update_products = self.df_update_products[(self.df_update_products['Filter'] == 'Update')]
 
-        # this does not seem to be matching correctly in the above
-        # I suspect this has to do with the numbers being strings?
-        print(self.df_product)
-        x = input('x4')
-        self.df_product = self.df_true_update_product[(self.df_true_update_product['Filter'] != 'Drop')]
+        if len(self.df_update_products.index) != 0:
+            # this could end up empty
+            self.df_base_price_lookup['Filter'] = 'Pass'
+            self.df_update_products = self.df_update_products.drop(columns='Filter')
+            self.df_update_products = pandas.DataFrame.merge(self.df_update_products, self.df_base_price_lookup,
+                                                     how='left', on=match_headers)
 
-        print(self.df_product)
-        x = input('x5')
-        # this shouldn't always be 0
+            # this does not seem to be matching correctly in the above
+            # I suspect this has to do with the numbers being strings?
+            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'Update'
+
+            self.df_product = self.df_product.append(self.df_update_products)
+
+            # this shouldn't always be 0
 
 
     def process_product_line(self, df_line_product):
@@ -105,10 +102,13 @@ class BasePrice(BasicProcessObject):
         df_collect_product_base_data = df_line_product.copy()
 
         for colName, row in df_line_product.iterrows():
-            success, df_collect_product_base_data = self.ident_product_price_id(df_collect_product_base_data, row)
-            if success == False:
-                df_collect_product_base_data['FinalReport'] = ['Failed to identify product price id']
-                return success, df_collect_product_base_data
+            if 'Filter' in row:
+                if row['Filter'] == 'Pass':
+                    return True, df_collect_product_base_data
+                elif row['Filter'] != 'Update':
+                    return False, df_collect_product_base_data
+            else:
+                return False, df_collect_product_base_data
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
@@ -117,41 +117,6 @@ class BasePrice(BasicProcessObject):
 
         success, df_line_product = self.base_price(df_collect_product_base_data)
         return success, df_line_product
-
-
-    def ident_product_price_id(self, df_collect_product_base_data, row):
-        if 'ProductPriceId' in row:
-            return True, df_collect_product_base_data
-
-        if 'FyProductNumber' in row:
-            fy_product_number = row['FyProductNumber']
-            # do lookup
-            product_price_id = self.obIngester.get_product_price_id_by_fy_product_number(fy_product_number)
-            if product_price_id != -1:
-                df_collect_product_base_data['ProductPriceId'] = product_price_id
-                return True, df_collect_product_base_data
-
-        if 'FyPartNumber' in row:
-            fy_part_number = row['FyPartNumber']
-            # do lookup
-            # if success: return True, df_collect_product_base_data
-            product_price_id = self.obIngester.get_product_price_id_by_fy_part_number(fy_part_number)
-            if product_price_id != -1:
-                df_collect_product_base_data['ProductPriceId'] = product_price_id
-                return True, df_collect_product_base_data
-
-        if 'VendorPartNumber' in row:
-            vendor_part_number = row['VendorPartNumber']
-            # do lookup
-            # if success: return True, df_collect_product_base_data
-            product_price_id = self.obIngester.get_product_price_id_by_vendor_part_number(vendor_part_number)
-            if product_price_id != -1:
-                df_collect_product_base_data['ProductPriceId'] = product_price_id
-                return True, df_collect_product_base_data
-
-
-        df_collect_product_base_data['Report'] = ['No valid product price id lookup value found.']
-        return False, df_collect_product_base_data
 
 
     def process_pricing(self, df_collect_product_base_data, row):

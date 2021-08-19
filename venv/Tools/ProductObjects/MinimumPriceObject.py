@@ -238,7 +238,6 @@ class MinimumProductPrice(BasicProcessObject):
     def minimum_product_price(self,df_line_product):
         # ship it!
         for colName, row in df_line_product.iterrows():
-            print(row)
             fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']
             fy_part_number = row['FyPartNumber']
