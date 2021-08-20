@@ -28,8 +28,8 @@ class BasePrice(BasicProcessObject):
 
         if 'MfcDiscountPercent' not in self.df_product.columns:
             self.df_product['MfcDiscountPercent'] = 0
-        if 'MfcDiscountPercent' not in self.df_product.columns:
-            self.df_product['MfcDiscountPercent'] = 0
+        if 'MfcPrice' not in self.df_product.columns:
+            self.df_product['MfcPrice'] = 0
 
 
     def batch_process_vendor(self):
