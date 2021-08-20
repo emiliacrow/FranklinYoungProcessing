@@ -24,7 +24,7 @@ class HeaderTranslator():
                             'ProductDescription':['ProductDescription','Product Description','product_description','ProductDesc','Product Desc','product_desc'],
                             'ShortDescription':['ShortDescription','Short Description','short_description','short_desc','ShortDesc','Short Desc'],
                             'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
-                            'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description']
+                            'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
 
                             'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count'],
                             'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue','unit_of_issue_qty'],
