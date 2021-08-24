@@ -247,7 +247,7 @@ class Pathways():
             b_inter_files = True
 
         self.df_product = self.obFileFinder.read_xlsx()
-        all_steps = ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)','3-Fill Product(2 steps)','4-Minimum Product Price(2 steps)','5-Base Pricing(1 step)']
+        all_steps = ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)','3-Fill Product(2 steps)','4-Minimum Product Price(2 steps)','5-Base Pricing(1 step)','GSAPrice(2 steps)']
 
         self.obYNBox.close()
 
@@ -288,7 +288,7 @@ class Pathways():
             if self.success == False or ingestion_action_selected == '3-Fill Product(2 steps)':
                 return self.success, self.message
 
-        if ingestion_action_selected in ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)','4-Minimum Product Price(2 steps)','5-Base Pricing(1 step)']:
+        if ingestion_action_selected in ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)','4-Minimum Product Price(2 steps)','5-Base Pricing(1 step)','GSA Pricing(2 steps)']:
             self.obBasePrice = BasePrice(self.df_product, is_testing)
             self.success, self.message = self.obBasePrice.begin_process()
             self.df_product = self.obBasePrice.get_df()
@@ -303,11 +303,11 @@ class Pathways():
             self.obFileFinder.write_xlsx(self.df_product,'VAPrice')
             return self.success, self.message
 
-        if ingestion_action_selected == 'GSA Pricing':
+        if ingestion_action_selected == 'GSA Pricing(2 steps)':
             self.obGSAPrice = GSAPrice(self.df_product, is_testing)
             self.success, self.message = self.obGSAPrice.begin_process()
             self.df_product = self.obGSAPrice.get_df()
-            self.obFileFinder.write_xlsx(self.df_product,'GSAPrice')
+            self.obFileFinder.write_xlsx(self.df_product,'GSAPrice(2 steps)')
             return self.success, self.message
 
         if ingestion_action_selected == 'HTME Pricing':

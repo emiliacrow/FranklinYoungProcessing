@@ -43,7 +43,7 @@ class FileProcessor(BasicProcessObject):
                                        'ShortDescription','LongDescription','Hazmat','Add to Website/GSA',
                                        'Conv Factor/QTY UOM','CountryOfOrigin','ManufacturerName',
                                        'ManufacturerPartNumber','SupplierName','Temp Control',
-                                       'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName','FyCatalogNumber']
+                                       'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName','FyCatalogNumber','FyProductNumber','FyPartNumber']
 
             self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription',
                                'Vendor List Price','Discount','Fy Cost','LandedCostMarkupPercent_FYSell',

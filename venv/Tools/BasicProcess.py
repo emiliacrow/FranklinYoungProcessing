@@ -39,7 +39,11 @@ class BasicProcessObject:
 
         self.lst_product_headers = self.obHeaderTranslator.translate_headers(list(self.df_product.columns))
         self.df_product.columns = self.lst_product_headers
-        self.out_column_headers = self.lst_product_headers
+
+        # remove duplicated columns by headers
+        self.df_product = self.df_product.loc[:, ~self.df_product.columns.duplicated()]
+
+        self.out_column_headers = self.df_product.columns
         self.return_df_product = pandas.DataFrame(columns=self.df_product.columns)
 
         self.header_viability()
@@ -156,6 +160,7 @@ class BasicProcessObject:
                 df_line_product['FinalReport'] = ['Failed Line Viability']
                 success, return_df_line_product = self.report_missing_data(df_line_product)
 
+            # appends all the product objects into a list
             self.collect_return_dfs.append(return_df_line_product)
 
             if success:
@@ -169,6 +174,7 @@ class BasicProcessObject:
         self.set_progress_bar(10,'Appending data...')
         self.obProgressBarWindow.update_unknown()
 
+        # this uses df.append to combine all the df product objects together
         self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
 
         if self.set_new_order:
@@ -241,7 +247,9 @@ class BasicProcessObject:
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
 
-            df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
+            if 'FyPartNumber' not in row:
+                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
+            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
             df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
@@ -266,8 +274,6 @@ class BasicProcessObject:
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
 
-
-            df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
 
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
@@ -295,8 +301,6 @@ class BasicProcessObject:
                     unit_of_issue = row['UnitOfMeasure']
                     if unit_of_issue != 'EA':
                         fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-
-                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
 
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]

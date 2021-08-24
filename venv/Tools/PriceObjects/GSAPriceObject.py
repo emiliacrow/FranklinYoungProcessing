@@ -7,7 +7,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['IsVisible', 'DateCatalogReceived', 'GSABasePrice', 'GSAApprovedPriceDate', 'GSAPricingApproved','GSAContractNumber',
+    req_fields = ['VendorName','FyProductNumber','IsVisible', 'DateCatalogReceived', 'GSABasePrice', 'GSAApprovedPriceDate', 'GSAPricingApproved','GSAContractNumber',
                   'GSAContractModificationNumber', 'GSA_IFFFeePercent', 'GSAProductGMPercent', 'GSAProductGMPrice', 'GSA_SIN']
 
     att_fields = []
@@ -16,8 +16,86 @@ class GSAPrice(BasicProcessObject):
         super().__init__(df_product)
         self.name = 'GSA Price Ingestion'
 
+    def batch_preprocessing(self):
+        # define new, update, non-update
+        if 'VendorId' not in self.df_product.columns:
+            self.batch_process_vendor()
+        self.define_new()
+
+        if 'MfcDiscountPercent' not in self.df_product.columns:
+            self.df_product['MfcDiscountPercent'] = 0
+        if 'MfcPrice' not in self.df_product.columns:
+            self.df_product['MfcPrice'] = 0
+
+    def batch_process_vendor(self):
+        # there should only be one vendor, really.
+        df_attribute = self.df_product[['VendorName']]
+        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+        lst_ids = []
+        if 'VendorId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'VendorId')
+
+        for colName, row in df_attribute.iterrows():
+            vendor_name = row['VendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+            else:
+                new_vendor_id = -1
+
+            lst_ids.append(new_vendor_id)
+
+        df_attribute['VendorId'] = lst_ids
+
+        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                 how='left', on=['VendorName'])
+
+    def define_new(self):
+        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
+        self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
+
+        match_headers = ['FyProductNumber', 'FyPartNumber', 'ProductPriceId', 'BaseProductPriceId', 'GSABasePrice', 'GSASellPrice',
+                         'DateCatalogRecieved', 'GSAPricingApproved', 'GSAContractModificationNumber']
+
+        # simple first
+        self.df_base_price_lookup['Filter'] = 'Update'
+
+        if 'Filter' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns='Filter')
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns='ProductPriceId')
+        if 'BaseProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns='BaseProductPriceId')
+
+        # match all products on FyProdNum
+        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_lookup,
+                                                         how='left', on='FyProductNumber')
+        # all products that matched on FyProdNum
+        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
+
+        self.df_product = self.df_update_products[(self.df_update_products['Filter'] != 'Update')]
+        self.df_update_products = self.df_update_products[(self.df_update_products['Filter'] == 'Update')]
+
+        if len(self.df_update_products.index) != 0:
+            # this step is going to require a test against the pricing in the contract price table
+            # this could end up empty
+            self.df_gsa_price_lookup['Filter'] = 'Pass'
+            self.df_update_products = self.df_update_products.drop(columns='Filter')
+            self.df_update_products = pandas.DataFrame.merge(self.df_update_products, self.df_gsa_price_lookup,
+                                                             how='left', on=match_headers)
+
+            # this does not seem to be matching correctly in the above
+            # I suspect this has to do with the numbers being strings?
+            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'Update'
+
+            self.df_product = self.df_product.append(self.df_update_products)
+
+            # this shouldn't always be 0
+
     def process_product_line(self, return_df_line_product):
-        return_df_line_product['Report'] = ['Process not built']
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
@@ -31,15 +109,6 @@ class GSAPrice(BasicProcessObject):
 
         return success, return_df_line_product
 
-    def process_contract(self, df_collect_product_base_data, row):
-        success = True
-        contract_number = row['GSAContractNumber']
-        contract_mod_number = row['GSAContractModificationNumber']
-        if contract_number not in contract_mod_number:
-            df_collect_product_base_data['Report'] = ['Contract numbers don\'t match']
-            return False, df_collect_product_base_data
-
-        return success, df_collect_product_base_data
 
     def gsa_product_price(self, df_line_product):
         success = True

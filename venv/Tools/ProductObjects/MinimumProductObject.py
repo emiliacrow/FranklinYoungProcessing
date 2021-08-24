@@ -73,6 +73,7 @@ class MinimumProduct(BasicProcessObject):
         self.df_loaded_product = self.obDal.get_product_lookup()
         self.df_loaded_product['Filter'] = 'Update'
         self.df_loaded_product['ManufacturerPartNumber'].astype(str)
+
         self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
@@ -219,6 +220,7 @@ class MinimumProduct(BasicProcessObject):
         df_line_product = df_collect_product_base_data.copy()
         # this is also stupid, but it gets the point across for testing purposes
         for colName, row in df_line_product.iterrows():
+            print(row)
             if 'Filter' in row:
                 if row['Filter'] == 'Update':
                     df_collect_product_base_data['FinalReport'] = ['This product was not new']
@@ -295,6 +297,7 @@ class MinimumProduct(BasicProcessObject):
                     return success, df_collect_product_base_data
             else:
                 df_collect_product_base_data['IsRX'] = [is_rx]
+
 
         return_df_line_product = self.minimum_product(df_collect_product_base_data)
         return True, return_df_line_product

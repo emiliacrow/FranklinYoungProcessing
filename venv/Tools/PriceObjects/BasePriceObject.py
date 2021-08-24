@@ -54,7 +54,7 @@ class BasePrice(BasicProcessObject):
             lst_ids.append(new_vendor_id)
 
         df_attribute['VendorId'] = lst_ids
-        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup(lst_ids[0])
+        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup_by_vendor_id(lst_ids[0])
 
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])

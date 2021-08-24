@@ -203,7 +203,10 @@ class DuckworthWindow(QWidget):
 
 
     def ingestion_buttons(self,column_pos):
-        self.ingestion_options = ['1-Full Product Ingestion(5 steps)', '2-Minimum Product Ingestion(3 steps)', '3-Fill Product(2 steps)', '4-Minimum Product Price(2 steps)', '5-Base Pricing(1 step)', 'GSA Pricing', 'VA Pricing', 'HTME Pricing', 'ECAT Pricing', 'FEDMALL Pricing']
+        self.ingestion_options = ['1-Full Product Ingestion(5 steps)', '2-Minimum Product Ingestion(3 steps)',
+                                  '3-Fill Product(2 steps)', '4-Minimum Product Price(2 steps)',
+                                  '5-Base Pricing(1 step)', 'GSAPrice(2 steps)', 'VA Pricing', 'HTME Pricing',
+                                  'ECAT Pricing', 'FEDMALL Pricing']
         self.ingestion_options.sort()
 
         self.ingest_data_button = QPushButton('Ingest New Data')
