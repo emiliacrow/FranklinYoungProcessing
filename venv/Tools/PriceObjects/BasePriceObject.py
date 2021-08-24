@@ -132,6 +132,10 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['Discount'] = fy_discount_percent
             else:
                 fy_discount_percent = row['Discount']
+        elif 'Vendor List Price' in row:
+                fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
+                df_collect_product_base_data['Discount'] = fy_discount_percent
+
 
         if 'Fixed Shipping Cost' not in row:
             estimated_freight = 0
@@ -142,17 +146,24 @@ class BasePrice(BasicProcessObject):
         fy_landed_cost = round(fy_cost + estimated_freight, 2)
         df_collect_product_base_data['FyLandedPrice'] = [fy_landed_cost]
 
-        mark_up_sell = float(row['LandedCostMarkupPercent_FYSell'])
-        fy_sell_price = round(fy_landed_cost * mark_up_sell, 2)
-        df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+        if 'LandedCostMarkupPercent_FYSell' in row and 'List Price' not in row:
+            mark_up_sell = float(row['LandedCostMarkupPercent_FYSell'])
+            fy_sell_price = round(fy_landed_cost * mark_up_sell, 2)
+            df_collect_product_base_data['Sell Price'] = [fy_sell_price]
 
-        if 'LandedCostMarkupPercent_FYList' not in row:
-            mark_up_list = mark_up_sell + self.lindas_increase
-            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
+            if 'LandedCostMarkupPercent_FYList' not in row:
+                mark_up_list = mark_up_sell + self.lindas_increase
+                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
+            else:
+                mark_up_list = float(row['LandedCostMarkupPercent_FYList'])
+
+            df_collect_product_base_data['List Price'] = [round(fy_landed_cost * mark_up_list, 2)]
+        elif 'List Price' in row:
+            fy_list_price = row['List Price']
+            df_collect_product_base_data['List Price'] = [round(fy_list_price, 2)]
         else:
-            mark_up_list = float(row['LandedCostMarkupPercent_FYList'])
-
-        df_collect_product_base_data['List Price'] = [round(fy_landed_cost * mark_up_list, 2)]
+            df_collect_product_base_data['Report'] = ['Missing pricing data; couldn\'t calcuate.']
+            return False, df_collect_product_base_data
 
         return True, df_collect_product_base_data
 
