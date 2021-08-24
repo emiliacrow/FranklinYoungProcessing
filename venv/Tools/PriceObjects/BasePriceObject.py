@@ -10,8 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['FyProductNumber','Vendor List Price', 'VendorName', 'Discount', 'Fy Cost', 'Fixed Shipping Cost',
-                  'LandedCostMarkupPercent_FYSell']
+    req_fields = ['FyProductNumber', 'VendorName', 'Fy Cost', 'LandedCostMarkupPercent_FYSell']
     sup_fields = []
     att_fields = []
     gen_fields = []
@@ -25,11 +24,6 @@ class BasePrice(BasicProcessObject):
         # define new, update, non-update
         self.batch_process_vendor()
         self.define_new()
-
-        if 'MfcDiscountPercent' not in self.df_product.columns:
-            self.df_product['MfcDiscountPercent'] = 0
-        if 'MfcPrice' not in self.df_product.columns:
-            self.df_product['MfcPrice'] = 0
 
 
     def batch_process_vendor(self):
@@ -120,20 +114,24 @@ class BasePrice(BasicProcessObject):
 
 
     def process_pricing(self, df_collect_product_base_data, row):
-        vendor_list_price = float(row['Vendor List Price'])
-        fy_discount_percent = float(row['Discount'])
         fy_cost = round(float(row['Fy Cost']),2)
         df_collect_product_base_data['Fy Cost'] = [fy_cost]
 
-        # discount and cost
-        fy_cost_test = vendor_list_price - round((vendor_list_price * fy_discount_percent), 2)
-        check_val = abs(fy_cost_test - fy_cost)
-        # we trust the cost provided over the discount given
-        if check_val > 0.01:
-            fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
-            df_collect_product_base_data['Discount'] = fy_discount_percent
-        else:
-            fy_discount_percent = row['Discount']
+        if 'Vendor List Price' in row and 'Discount' in row:
+            # make this nullable
+            vendor_list_price = float(row['Vendor List Price'])
+            # make this nullable
+            fy_discount_percent = float(row['Discount'])
+
+            # discount and cost
+            fy_cost_test = vendor_list_price - round((vendor_list_price * fy_discount_percent), 2)
+            check_val = abs(fy_cost_test - fy_cost)
+            # we trust the cost provided over the discount given
+            if check_val > 0.01:
+                fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
+                df_collect_product_base_data['Discount'] = fy_discount_percent
+            else:
+                fy_discount_percent = row['Discount']
 
         if 'Fixed Shipping Cost' not in row:
             estimated_freight = 0
@@ -209,11 +207,6 @@ class BasePrice(BasicProcessObject):
             if 'Date Catalog Received' in row:
                 date_catalog_received = row['Date Catalog Received']
 
-            if 'MfcDiscountPercent' in row:
-                mfc_discount_percent = float(row['MfcDiscountPercent'])
-
-            if 'MFC Price' in row:
-                mfc_price = float(row['MFC Price'])
 
             product_price_id = row['ProductPriceId']
 
@@ -223,7 +216,6 @@ class BasePrice(BasicProcessObject):
                                                           markup_percent_fy_sell, fy_sell_price,
                                                           markup_percent_fy_list, fy_list_price,
                                                           fy_list_price_variance, is_visible, date_catalog_received,
-                                                          mfc_discount_percent, mfc_price,
                                                           product_price_id, va_product_price_id, gsa_product_price_id,
                                                           htme_product_price_id, ecat_product_price_id, fedmall_product_price_id)
 
