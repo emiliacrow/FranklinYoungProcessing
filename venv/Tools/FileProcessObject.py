@@ -99,6 +99,7 @@ class FileProcessor(BasicProcessObject):
                     if self.obValidator.isEnglish(product_name) == False:
                         product_name = self.obValidator.remove_unicode(product_name)
                         df_collect_line[each_column_to_clean] = [product_name]
+                        temp_prod_name = product_name.replace('º','')
                         if self.obValidator.isEnglish(product_name) == False:
                             df_collect_line['Report'] = ['Review for unicode ' + each_column_to_clean]
 

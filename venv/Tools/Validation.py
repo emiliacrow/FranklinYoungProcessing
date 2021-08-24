@@ -107,19 +107,24 @@ class Validator:
         out_phrase = out_phrase.replace('Ïƒ','[sigma]')
 
         out_phrase = out_phrase.replace('‚„','')
+        out_phrase = out_phrase.replace('â a','')
+
         out_phrase = out_phrase.replace('”¬',' ')
         out_phrase = out_phrase.replace('ÃŽ',' ')
 
         out_phrase = out_phrase.replace('–‘','°')
         out_phrase = out_phrase.replace('Ëš','°')
         out_phrase = out_phrase.replace('Â°', '°')
+        out_phrase = out_phrase.replace('â€', '\"')
+        out_phrase = out_phrase.replace('â€™', '\'')
+        out_phrase = out_phrase.replace('"™','\'')
+
 
         out_phrase = out_phrase.replace('ˆ’','-')
         out_phrase = out_phrase.replace('"“','-')
         out_phrase = out_phrase.replace('€“','-')
         out_phrase = out_phrase.replace('‰¤','<=')
         out_phrase = out_phrase.replace('‰¥','>=')
-        out_phrase = out_phrase.replace('"™','\'')
         out_phrase = out_phrase.replace('„¢','(r)')
         out_phrase = out_phrase.replace('Â®','(r)')
 
