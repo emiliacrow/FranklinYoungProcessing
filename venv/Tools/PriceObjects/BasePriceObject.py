@@ -55,7 +55,7 @@ class BasePrice(BasicProcessObject):
 
 
     def define_new(self):
-        match_headers = ['FyProductNumber','ProductPriceId','Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost', 'LandedCostMarkupPercent_FYSell']
+        match_headers = ['FyProductNumber','ProductPriceId', 'Fy Cost']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -172,7 +172,7 @@ class BasePrice(BasicProcessObject):
             fy_list_price = round(fy_landed_cost * mark_up_list, 2)
             df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
-            df_collect_product_base_data['ECommerceDiscount'] = [float(fy_sell_price/fy_list_price)]
+            df_collect_product_base_data['ECommerceDiscount'] = [1-float(fy_sell_price/fy_list_price)]
             # here we also have
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
@@ -266,7 +266,7 @@ class BasePrice(BasicProcessObject):
         self.obIngester.ingest_base_price(self.is_last, vendor_list_price, fy_discount_percent, fy_cost,
                                                           estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price,
-                                                          markup_percent_fy_list, fy_list_price,
+                                                          markup_percent_fy_list, fy_list_price, ecommerce_discount,
                                                           is_visible, date_catalog_received,
                                                           product_price_id, va_product_price_id, gsa_product_price_id,
                                                           htme_product_price_id, ecat_product_price_id, fedmall_product_price_id)
