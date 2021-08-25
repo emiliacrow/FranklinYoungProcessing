@@ -220,7 +220,6 @@ class MinimumProduct(BasicProcessObject):
         df_line_product = df_collect_product_base_data.copy()
         # this is also stupid, but it gets the point across for testing purposes
         for colName, row in df_line_product.iterrows():
-            print(row)
             if 'Filter' in row:
                 if row['Filter'] == 'Update':
                     df_collect_product_base_data['FinalReport'] = ['This product was not new']

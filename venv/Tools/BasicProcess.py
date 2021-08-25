@@ -110,9 +110,12 @@ class BasicProcessObject:
             missing_heads = self.get_missing_heads()
             if len(missing_heads) == 1:
                 self.message = 'The file is missing a product field: ' + missing_heads[0]
-            else:
+            elif len(missing_heads) != 0:
                 self.message = 'The file is missing product fields: {} and {} more'.format(missing_heads[0],
                                                                                      str(len(missing_heads) - 1))
+            else:
+                self.message = 'The file is missing at least 1 supporting field.'
+
         return self.success, self.message
 
     def batch_preprocessing(self):

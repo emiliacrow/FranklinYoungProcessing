@@ -15,11 +15,7 @@ class FillProductPrice(BasicProcessObject):
                           'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
                           'Speed', 'TankCapacity', 'TemperatureRange', 'Thickness', 'Tolerance', 'Voltage', 'Wattage',
                           'Wavelength', 'WeightRange', 'Width']
-    sup_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
-                          'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
-                          'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
-                          'Speed', 'TankCapacity', 'TemperatureRange', 'Thickness', 'Tolerance', 'Voltage', 'Wattage',
-                          'Wavelength', 'WeightRange', 'Width']
+    sup_fields = []
     gen_fields = []
 
     def __init__(self,df_product, is_testing):
@@ -116,7 +112,7 @@ class FillProductPrice(BasicProcessObject):
                 if row['Filter'] == 'Pass':
                     return True, df_collect_product_base_data
                 elif row['Filter'] != 'Update':
-                    return False, df_collect_product_base_data
+                    return True, df_collect_product_base_data
             else:
                 return False, df_collect_product_base_data
 

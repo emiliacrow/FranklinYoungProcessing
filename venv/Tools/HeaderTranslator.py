@@ -17,8 +17,8 @@ class HeaderTranslator():
                             'CountryOfOrigin':['CountryOfOrigin','Country Of Origin','COO','Country','country_of_origin_code'],
 
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber','manufacturer_part_no'],
-                            'FyProductNumber':['FyProductNumber', 'Fy Product Number', 'Product Code/SKU'],
-                            'FyPartNumber':['FyPartNumber', 'fy_part_number', 'fy_part_no'],
+                            'FyProductNumber':['FyProductNumber', 'Fy Product Number'],
+                            'FyPartNumber':['FyPartNumber', 'fy_part_number', 'fy_part_no', 'Product Code/SKU'],
 
                             'ProductName':['ProductName','Product Name','product_name','primary_vendor_product_name'],
                             'ProductDescription':['ProductDescription','Product Description','product_description','ProductDesc','Product Desc','product_desc'],
@@ -26,8 +26,8 @@ class HeaderTranslator():
                             'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
 
-                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count'],
-                            'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue','unit_of_issue_qty'],
+                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty'],
+                            'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue'],
                             'UnitOfMeasure':['UnitOfMeasure','UOM','uom','uom_std'],
                             'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days'],
                             'LeadTimeDaysExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],

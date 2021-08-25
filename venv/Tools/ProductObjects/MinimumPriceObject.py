@@ -111,7 +111,7 @@ class MinimumProductPrice(BasicProcessObject):
                 if row['Filter'] == 'Pass':
                     return True, df_collect_product_base_data
                 elif row['Filter'] != 'Update':
-                    return False, df_collect_product_base_data
+                    return True, df_collect_product_base_data
             else:
                 return False, df_collect_product_base_data
 
@@ -193,7 +193,7 @@ class MinimumProductPrice(BasicProcessObject):
                 fy_product_number = fy_catalog_number
                 df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
 
-        elif (row['FyProductNumber'] == fy_catalog_number + ' ' + unit_of_issue) or (row['FyProductNumber'] == fy_catalog_number):
+        elif (row['FyProductNumber'] == fy_catalog_number + ' ' + unit_of_issue) and (row['FyProductNumber'] == fy_catalog_number):
             fy_product_number = row['FyProductNumber']
             df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
         else:

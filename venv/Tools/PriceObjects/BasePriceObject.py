@@ -100,7 +100,7 @@ class BasePrice(BasicProcessObject):
                 if row['Filter'] == 'Pass':
                     return True, df_collect_product_base_data
                 elif row['Filter'] != 'Update':
-                    return False, df_collect_product_base_data
+                    return True, df_collect_product_base_data
             else:
                 return False, df_collect_product_base_data
 
@@ -197,7 +197,7 @@ class BasePrice(BasicProcessObject):
 
 
         elif 'Retail Price' in row and 'ECommerceDiscount' in row:
-            fy_list_price = row['Retail Price']
+            fy_list_price = float(row['Retail Price'])
             mark_up_list = float(fy_list_price/fy_landed_cost)
             df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
 

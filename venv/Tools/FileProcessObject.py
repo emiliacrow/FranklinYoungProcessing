@@ -29,7 +29,7 @@ class FileProcessor(BasicProcessObject):
 
         if self.proc_to_run == 'Generate BC Upload File':
             self.set_new_order = True
-            self.out_column_headers = ['FinalReport','Report','Item Type', 'Product Name', 'Product Type',
+            self.out_column_headers = ['FinalReport','Report','FyCatalogNumber','FyProductNumber','FyPartNumber','Item Type', 'Product Name', 'Product Type',
                                        'Product Code/SKU', 'Brand Name', 'Option Set Align', 'Product Description',
                                        'Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost',
                                        'FyLandedCost', 'LandedCostMarkupPercent_FYSell','Sell Price',
@@ -44,7 +44,7 @@ class FileProcessor(BasicProcessObject):
                                        'ShortDescription','LongDescription','Hazmat','Add to Website/GSA',
                                        'Conv Factor/QTY UOM','CountryOfOrigin','ManufacturerName',
                                        'ManufacturerPartNumber','SupplierName','Temp Control',
-                                       'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName','FyCatalogNumber','FyProductNumber','FyPartNumber']
+                                       'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName']
 
             self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription', 'Fy Cost',
                                'Conv Factor/QTY UOM','Product URL','ManufacturerName','ManufacturerPartNumber',
