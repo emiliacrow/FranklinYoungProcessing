@@ -14,6 +14,7 @@ class FileProcessor(BasicProcessObject):
         self.proc_to_run = proc_to_set
         super().__init__(df_product, is_testing)
         self.name = 'File Processor'
+        self.lindas_increase = 0.25
 
 
     def header_viability(self):
@@ -32,7 +33,7 @@ class FileProcessor(BasicProcessObject):
                                        'Product Code/SKU', 'Brand Name', 'Option Set Align', 'Product Description',
                                        'Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost',
                                        'FyLandedCost', 'LandedCostMarkupPercent_FYSell','Sell Price',
-                                       'LandedCostMarkupPercent_FYList', 'Retail Price',
+                                       'LandedCostMarkupPercent_FYList', 'Retail Price', 'ECommerceDiscount',
                                        'Free Shipping', 'Product Weight', 'Product Width', 'Product Height',
                                        'Product Depth', 'Allow Purchases?', 'Product Visible?', 'Track Inventory',
                                        'Current Stock Level', 'Low Stock Level', 'Category', 'Product Image File - 1',
@@ -45,8 +46,7 @@ class FileProcessor(BasicProcessObject):
                                        'ManufacturerPartNumber','SupplierName','Temp Control',
                                        'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName','FyCatalogNumber','FyProductNumber','FyPartNumber']
 
-            self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription',
-                               'Vendor List Price','Discount','Fy Cost','LandedCostMarkupPercent_FYSell',
+            self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription', 'Fy Cost',
                                'Conv Factor/QTY UOM','Product URL','ManufacturerName','ManufacturerPartNumber',
                                'Image','Category']
 
