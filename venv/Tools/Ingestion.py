@@ -388,7 +388,7 @@ class IngestionObject:
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
                 [vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
-                 markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
+                 markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
                  is_visible, date_catalog_recieved, product_price_id,
                  newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId,
                  newFEDMALLProductPriceId])
