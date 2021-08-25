@@ -165,41 +165,12 @@ class FileProcessor(BasicProcessObject):
 
             df_collect_line['Product Name'] = [product_name]
 
-            vendor_list_price = float(row['Vendor List Price'])
-            fy_discount_percent = float(row['Discount'])
-            fy_cost = float(row['Fy Cost'])
 
-            # discount and cost
-            fy_cost_test = vendor_list_price - round((vendor_list_price * fy_discount_percent), 2)
-            check_val = abs(fy_cost_test - fy_cost)
-            # we trust the cost provided over the discount given
-            if check_val > 0.01:
-                fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
-                df_collect_line['Discount'] = [fy_discount_percent]
+            # this section should generate pricing correctly
+            pricing_success, df_collect_line = self.generate_pricing(df_collect_line, row)
+            if pricing_success == False:
+                return pricing_success, df_collect_line
 
-            if 'Fixed Shipping Cost' not in row:
-                estimated_freight = '0'
-                df_collect_line['Fixed Shipping Cost'] = [estimated_freight]
-            else:
-                estimated_freight = row['Fixed Shipping Cost']
-
-            landed_cost = round(fy_cost + float(estimated_freight), 2)
-            df_collect_line['FyLandedCost'] = [landed_cost]
-
-            sell_price = round(landed_cost * float(row['LandedCostMarkupPercent_FYSell']), 2)
-            df_collect_line['Sell Price'] = [sell_price]
-
-            if 'LandedCostMarkupPercent_FYList' not in row:
-                fy_list_mu = float(row['LandedCostMarkupPercent_FYSell']) + 0.25
-                df_collect_line['LandedCostMarkupPercent_FYList'] = [fy_list_mu]
-            else:
-                fy_list_mu = float(row['LandedCostMarkupPercent_FYList'])
-
-            retail_price =  round(landed_cost * fy_list_mu, 2)
-            df_collect_line['Retail Price'] = [retail_price]
-
-            # this will be needed later
-            # take your price round to two, multiply by MU == BC sell price
 
             # this deals with the image
             if 'Image' not in row:
@@ -229,8 +200,111 @@ class FileProcessor(BasicProcessObject):
 
             df_collect_line['Product Custom Fields'] = [custom_fields]
 
-
         return self.success, df_collect_line
+
+    def generate_pricing(self, df_collect_product_base_data, row):
+        success = True
+        fy_cost = round(float(row['Fy Cost']),2)
+        df_collect_product_base_data['Fy Cost'] = [fy_cost]
+
+        if 'Vendor List Price' in row and 'Discount' in row:
+            vendor_list_price = float(row['Vendor List Price'])
+            fy_discount_percent = float(row['Discount'])
+
+            # discount and cost
+            fy_cost_test = vendor_list_price - round((vendor_list_price * fy_discount_percent), 2)
+            check_val = abs(fy_cost_test - fy_cost)
+            # we trust the cost provided over the discount given
+            if check_val > 0.01:
+                fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
+                df_collect_product_base_data['Discount'] = [fy_discount_percent]
+            elif 'Discount' in row:
+                fy_discount_percent = float(row['Discount'])
+                vendor_list_price = round(fy_cost/(1-fy_discount_percent),2)
+                df_collect_product_base_data['Vendor List Price'] = [vendor_list_price]
+            else:
+                df_collect_product_base_data['Discount'] = [0]
+                df_collect_product_base_data['Vendor List Price'] = [0]
+
+        elif 'Vendor List Price' in row:
+            vendor_list_price = float(row['Vendor List Price'])
+            fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
+            df_collect_product_base_data['Discount'] = fy_discount_percent
+        else:
+            df_collect_product_base_data['Discount'] = [0]
+            df_collect_product_base_data['Vendor List Price'] = [0]
+
+        # at this point we should have collected
+        # vendor list price, discount, fy cost
+
+        if 'Fixed Shipping Cost' not in row:
+            estimated_freight = 0
+            df_collect_product_base_data['Fixed Shipping Cost'] = estimated_freight
+        else:
+            estimated_freight = float(row['Fixed Shipping Cost'])
+
+        # at this point we should have collected
+        # vendor list price, discount, fy cost, estimated frieght, landed cost
+        fy_landed_cost = round(fy_cost + estimated_freight, 2)
+        df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+
+        if 'LandedCostMarkupPercent_FYSell' in row and 'ECommerceDiscount' not in row and 'Retail Price' not in row:
+            # this is Ron's method which was applied to Thomas data
+            mark_up_sell = float(row['LandedCostMarkupPercent_FYSell'])
+            fy_sell_price = round(fy_landed_cost * mark_up_sell, 2)
+            df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+
+            if 'LandedCostMarkupPercent_FYList' not in row:
+                mark_up_list = mark_up_sell + self.lindas_increase
+                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
+            else:
+                mark_up_list = float(row['LandedCostMarkupPercent_FYList'])
+            fy_list_price = round(fy_landed_cost * mark_up_list, 2)
+            df_collect_product_base_data['Retail Price'] = [fy_list_price]
+
+            df_collect_product_base_data['ECommerceDiscount'] = [float(fy_sell_price/fy_list_price)]
+            # here we also have
+            # MU sell, sell price, MU list, list price(retail), and ecommerce discount
+
+        elif 'ECommerceDiscount' in row and 'Retail Price' not in row:
+            # this is the standard process
+            # this is where you got and you need to finish it
+            if 'LandedCostMarkupPercent_FYList' not in row:
+                df_collect_product_base_data['Report'] = ['Missing pricing data; couldn\'t calcuate.']
+                return False, df_collect_product_base_data
+            else:
+                mark_up_list = float(row['LandedCostMarkupPercent_FYList'])
+                fy_list_price = round(fy_landed_cost * mark_up_list, 2)
+                df_collect_product_base_data['Retail Price'] = fy_list_price
+
+                ecommerce_discount = float(row['ECommerceDiscount'])
+
+                fy_sell_price = round(float(fy_list_price*ecommerce_discount),2)
+                df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [fy_sell_price/fy_landed_cost]
+            # here we also have
+            # MU sell, sell price, MU list, list price(retail), and ecommerce discount
+
+
+        elif 'Retail Price' in row and 'ECommerceDiscount' in row:
+            fy_list_price = row['Retail Price']
+            mark_up_list = float(fy_list_price/fy_landed_cost)
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
+
+            ecommerce_discount = float(row['ECommerceDiscount'])
+            fy_sell_price = round(float(fy_list_price*ecommerce_discount),2)
+            df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [fy_sell_price/fy_landed_cost]
+            # here we also have
+            # MU sell, sell price, MU list, list price(retail), and ecommerce discount
+
+        else:
+            df_collect_product_base_data['Report'] = ['Missing pricing data; couldn\'t calcuate.']
+            return False, df_collect_product_base_data
+
+        return True, df_collect_product_base_data
+
+
 
     def assign_fy_part_numbers(self, df_line_product):
         self.success = True

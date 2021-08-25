@@ -384,18 +384,18 @@ class IngestionObject:
             self.product_collector.append([newProductPriceId,newUPC,newVolume,newWeight,newSize,newLength,newVariantDesc,newMinumumFlowTime,newProfile,newAmountPriceBreakLevel1,newAmountPriceBreakLevel2,newAmountPriceBreakLevel3,newQuantityPriceBreakLevel1,newQuantityPriceBreakLevel2,newQuantityPriceBreakLevel3,newThicknessId,newHeightId,newDepthId,newWidthId,newCapacityId,newTankCapacityId,newVolumeUnitId,newWeightUnitId,newLengthUnitId,newDimensionsId,newInteriorDimensionsId,newExteriorDimensionsId,newMaterialId,newColorId,newSpeedId,newTubeId,newWeightRangeId,newTemperatureRangeId,newWavelengthId,newWattageId,newVoltageId,newAmperageId,newOuterDiameterId,newInnerDiameterId,newDiameterId,newToleranceId,newAccuracyId,newMassId,newApertureSizeId,newApparelSizeId,newParticleSizeId,newPoreSizeId])
 
 
-    def ingest_base_price(self, is_last, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, fy_list_price_variance, is_visible, date_catalog_recieved, product_price_id, newVAProductPriceId=-1, newGSAProductPriceId=-1, newHTMEProductPriceId=-1, newECATProductPriceId=-1, newFEDMALLProductPriceId=-1):
+    def ingest_base_price(self, is_last, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, is_visible, date_catalog_recieved, product_price_id, newVAProductPriceId=-1, newGSAProductPriceId=-1, newHTMEProductPriceId=-1, newECATProductPriceId=-1, newFEDMALLProductPriceId=-1):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
                 [vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
-                 markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, fy_list_price_variance,
+                 markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                  is_visible, date_catalog_recieved, product_price_id,
                  newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId,
                  newFEDMALLProductPriceId])
             self.obDal.base_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, fy_list_price_variance, is_visible, date_catalog_recieved, product_price_id, newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId, newFEDMALLProductPriceId])
+            self.product_collector.append([vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, is_visible, date_catalog_recieved, product_price_id, newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId, newFEDMALLProductPriceId])
 
 
     def update_fks_base_price(self,newBaseProductPriceId, newVAProductPriceId = -1, newGSAProductPriceId = -1, newHTMEProductPriceId = -1, newECATProductPriceId = -1, newFEDMALLProductPriceId = -1):
