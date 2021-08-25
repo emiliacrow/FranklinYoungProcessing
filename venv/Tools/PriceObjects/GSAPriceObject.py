@@ -7,8 +7,8 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyProductNumber','IsVisible', 'DateCatalogReceived', 'GSABasePrice', 'GSAApprovedPriceDate', 'GSAPricingApproved','GSAContractNumber',
-                  'GSAContractModificationNumber', 'GSA_IFFFeePercent', 'GSAProductGMPercent', 'GSAProductGMPrice', 'GSA_SIN']
+    req_fields = ['VendorName','FyProductNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
+                  'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber', 'GSA_SIN']
 
     att_fields = []
     gen_fields = []
@@ -21,11 +21,6 @@ class GSAPrice(BasicProcessObject):
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
         self.define_new()
-
-        if 'MfcDiscountPercent' not in self.df_product.columns:
-            self.df_product['MfcDiscountPercent'] = 0
-        if 'MfcPrice' not in self.df_product.columns:
-            self.df_product['MfcPrice'] = 0
 
     def batch_process_vendor(self):
         # there should only be one vendor, really.
@@ -57,8 +52,8 @@ class GSAPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
 
-        match_headers = ['FyProductNumber', 'FyPartNumber', 'ProductPriceId', 'BaseProductPriceId', 'GSABasePrice', 'GSASellPrice',
-                         'DateCatalogRecieved', 'GSAPricingApproved', 'GSAContractModificationNumber']
+        match_headers = ['FyProductNumber', 'FyPartNumber', 'ProductPriceId', 'BaseProductPriceId', 'ApprovedFYListPrice',
+                         'GSASellPrice', 'DateCatalogRecieved', 'GSAPricingApproved', 'GSAContractModificationNumber']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -99,6 +94,13 @@ class GSAPrice(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            if 'Filter' in row:
+                if row['Filter'] == 'Pass':
+                    return True, df_collect_product_base_data
+                elif row['Filter'] != 'Update':
+                    return True, df_collect_product_base_data
+            else:
+                return False, df_collect_product_base_data
 
             success, df_collect_product_base_data = self.process_contract(df_collect_product_base_data, row)
             if success == False:
@@ -106,6 +108,14 @@ class GSAPrice(BasicProcessObject):
                 return success, df_collect_product_base_data
 
         success, return_df_line_product = self.gsa_product_price(df_collect_product_base_data)
+
+        return success, return_df_line_product
+
+    def process_pricing(self,df_line_product):
+        success = True
+        return_df_line_product = df_line_product.copy()
+        # DO PRICING STUFF HERE
+
 
         return success, return_df_line_product
 

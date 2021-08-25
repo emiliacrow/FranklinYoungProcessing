@@ -43,7 +43,7 @@ class HeaderTranslator():
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
                             'MfcDiscountPercent':['MfcDiscountPercent','Mfc Discount Percent','mfc_disc(%)'],
-                            'ApprovedListPrice':['ChannelApprovedFYListPrice__value','ChannelApprovedFYListPrice','ApprovedListPrice'],
+                            'ApprovedFYListPrice':['ChannelApprovedFYListPrice__value','ChannelApprovedFYListPrice'],
                             'GSADiscount':['GSAChannelDiscount','GSADiscount','GSA Channel Discount','GSA Discount'],
                             'VADiscount':['VAChannelDiscount','VADiscount','VA Channel Discount','VA Discount'],
 

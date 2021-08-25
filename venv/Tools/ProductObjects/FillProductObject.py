@@ -39,6 +39,10 @@ class FillProduct(BasicProcessObject):
         # if there's already a filter column, we remove it.
         if 'Filter' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns=['Filter'])
+        if 'ProductId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=['ProductId'])
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=['ProductPriceId'])
 
         self.df_product_lookup['Filter'] = 'Update'
         # match all products on FyProdNum and Manufacturer part, clearly
@@ -75,6 +79,12 @@ class FillProduct(BasicProcessObject):
                 self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
                 self.df_update_product = self.df_update_product.drop(columns=['ProductId_x'])
                 self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
+
+            if 'ProductPriceId_x' in self.df_update_product.columns:
+                self.df_update_product['ProductPriceId'] = self.df_update_product[['ProductPriceId_x']]
+                self.df_update_product = self.df_update_product.drop(columns=['ProductPriceId_x'])
+                self.df_update_product = self.df_update_product.drop(columns=['ProductPriceId_y'])
+
             # recombine with product
             self.df_product = self.df_product.append(self.df_update_product)
 
