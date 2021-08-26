@@ -10,10 +10,11 @@ class GSAPrice(BasicProcessObject):
     req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
                   'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber', 'GSA_SIN']
 
+    sup_fields = []
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product):
-        super().__init__(df_product)
+    def __init__(self,df_product, is_testing):
+        super().__init__(df_product, is_testing)
         self.name = 'GSA Price Ingestion'
 
     def batch_preprocessing(self):

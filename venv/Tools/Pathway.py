@@ -307,7 +307,7 @@ class Pathways():
             self.obGSAPrice = GSAPrice(self.df_product, is_testing)
             self.success, self.message = self.obGSAPrice.begin_process()
             self.df_product = self.obGSAPrice.get_df()
-            self.obFileFinder.write_xlsx(self.df_product,'GSAPrice(2 steps)')
+            self.obFileFinder.write_xlsx(self.df_product,'GSAPrice')
             return self.success, self.message
 
         if ingestion_action_selected == 'HTME Pricing':
