@@ -181,7 +181,7 @@ class BasicProcessObject:
         self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
 
         if self.set_new_order:
-            matched_header_set = set(self.out_column_headers).intersection(set(self.return_df_product.columns))
+            matched_header_set = set(self.out_column_headers).union(set(self.return_df_product.columns))
             self.return_df_product = self.return_df_product[matched_header_set]
 
         self.obProgressBarWindow.close()
