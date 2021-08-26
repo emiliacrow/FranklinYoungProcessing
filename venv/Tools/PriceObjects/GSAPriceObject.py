@@ -119,6 +119,15 @@ class GSAPrice(BasicProcessObject):
         # DO PRICING STUFF HERE
 
 
+            approved_list_price = row['GSAApprovedListPrice']
+            approved_percent = row['GSAApprovedPercent']
+
+            gsa_base_price = row['GSABasePrice']
+            gsa_sell_price = row['GSASellPrice']
+
+            mfc_precent = row['MFCPercent']
+            mfc_price = row['MFCPrice']
+
         return success, return_df_line_product
 
 
