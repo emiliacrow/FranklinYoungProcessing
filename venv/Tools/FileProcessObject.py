@@ -217,18 +217,18 @@ class FileProcessor(BasicProcessObject):
             if check_val > 0.01:
                 fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
                 df_collect_product_base_data['Discount'] = [fy_discount_percent]
-            elif 'Discount' in row:
-                fy_discount_percent = float(row['Discount'])
-                vendor_list_price = round(fy_cost/(1-fy_discount_percent),2)
+
+        elif 'Discount' in row:
+            fy_discount_percent = float(row['Discount'])
+            if fy_discount_percent != 0:
+                vendor_list_price = round(fy_cost / (1 - fy_discount_percent), 2)
                 df_collect_product_base_data['Vendor List Price'] = [vendor_list_price]
-            else:
-                df_collect_product_base_data['Discount'] = [0]
-                df_collect_product_base_data['Vendor List Price'] = [0]
 
         elif 'Vendor List Price' in row:
             vendor_list_price = float(row['Vendor List Price'])
-            fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
-            df_collect_product_base_data['Discount'] = fy_discount_percent
+            if vendor_list_price != 0:
+                fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
+                df_collect_product_base_data['Discount'] = fy_discount_percent
         else:
             df_collect_product_base_data['Discount'] = [0]
             df_collect_product_base_data['Vendor List Price'] = [0]
