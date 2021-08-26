@@ -8,7 +8,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 class GSAPrice(BasicProcessObject):
     req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'GSAApprovedListPrice',
-                  'GSAApprovedPercent', 'MfcPercent', 'GSAContractModificationNumber', 'GSA_SIN','GSAApprovedPriceDate']
+                  'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate']
 
     sup_fields = []
     att_fields = []
@@ -54,7 +54,7 @@ class GSAPrice(BasicProcessObject):
         self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
 
         match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'GSAApprovedListPrice',
-                         'GSAApprovedPercent', 'MfcPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate']
+                         'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -125,7 +125,7 @@ class GSAPrice(BasicProcessObject):
                 return_df_line_product['GSASellPrice'] = round(gsa_base_price+(gsa_base_price*iff_fee_percent))
 
             if 'MfcPrice' not in row:
-                mfc_precent = float(row['MfcPercent'])
+                mfc_precent = float(row['MfcDiscountPercent'])
                 return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
 
         return success, return_df_line_product
@@ -150,10 +150,10 @@ class GSAPrice(BasicProcessObject):
             gsa_base_price = row['GSABasePrice']
             gsa_sell_price = row['GSASellPrice']
 
-            mfc_precent = row['MFCPercent']
+            mfc_precent = row['MfcDiscountPercent']
             mfc_price = row['MFCPrice']
 
-            sin = row['GSA_SIN']
+            sin = row['GSA_Sin']
 
 
         self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, is_visible, date_catalog_received, contract_number, contract_mod_number,
