@@ -4,6 +4,9 @@
 # CreateFor: Franklin Young International
 
 import pandas
+import datetime
+import xlrd
+
 from Tools.BasicProcess import BasicProcessObject
 
 
@@ -92,7 +95,7 @@ class GSAPrice(BasicProcessObject):
 
             # this shouldn't always be 0
 
-    def process_product_line(self, return_df_line_product):
+    def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
@@ -102,7 +105,7 @@ class GSAPrice(BasicProcessObject):
             else:
                 return False, df_collect_product_base_data
 
-            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
+            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
                 df_collect_product_base_data['FinalReport'] = ['Failed in process contract']
                 return success, df_collect_product_base_data
@@ -111,7 +114,7 @@ class GSAPrice(BasicProcessObject):
 
         return success, return_df_line_product
 
-    def process_pricing(self,df_line_product):
+    def process_pricing(self, df_line_product):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
@@ -139,11 +142,14 @@ class GSAPrice(BasicProcessObject):
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
             is_visible = row['IsVisible']
-            date_catalog_received = row['DateCatalogReceived']
+            date_catalog_received = int(row['DateCatalogReceived'])
+            date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+
             contract_number = 'GSA -Sch 66'
             contract_mod_number = row['GSAContractModificationNumber']
             is_pricing_approved = row['GSAPricingApproved']
-            approved_price_date = row['GSAApprovedPriceDate']
+            approved_price_date = int(row['GSAApprovedPriceDate'])
+            approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
 
             approved_list_price = row['GSAApprovedListPrice']
             approved_percent = row['GSAApprovedPercent']
@@ -157,7 +163,7 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_Sin']
 
 
-        self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, is_visible, date_catalog_received, contract_number, contract_mod_number,
+        self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, is_visible, date_catalog_received, contract_number, contract_mod_number,
                                                              is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
                                                              gsa_base_price, gsa_sell_price, mfc_precent, mfc_price,sin)
 

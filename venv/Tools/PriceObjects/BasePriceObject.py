@@ -5,6 +5,7 @@
 
 import pandas
 import datetime
+import xlrd
 
 from Tools.BasicProcess import BasicProcessObject
 
@@ -263,7 +264,8 @@ class BasePrice(BasicProcessObject):
             ecommerce_discount = row['ECommerceDiscount']
 
             if 'Date Catalog Received' in row:
-                date_catalog_received = row['Date Catalog Received']
+                date_catalog_received = int(row['Date Catalog Received'])
+                date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
 
             product_price_id = row['ProductPriceId']
 
