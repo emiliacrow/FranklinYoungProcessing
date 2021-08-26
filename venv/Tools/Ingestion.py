@@ -414,16 +414,14 @@ class IngestionObject:
         success = self.obDal.get_product_price_id_by_vendor_part_number(vendor_part_number)
         return success
 
-    def gsa_product_price_cap(self, newBaseProductPriceId, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAAapprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
+    def gsa_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAAapprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
+                [newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
             self.obDal.gsa_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([newBaseProductPriceId, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAAapprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
-
-
+            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
 
 
 

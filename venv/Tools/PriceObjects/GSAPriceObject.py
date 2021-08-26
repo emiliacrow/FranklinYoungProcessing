@@ -113,20 +113,19 @@ class GSAPrice(BasicProcessObject):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            if 'GSABasePrice' not in row:
+                approved_list_price = float(row['GSAApprovedListPrice'])
+                approved_percent = float(row['GSAApprovedPercent'])
+                gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
+                return_df_line_product['GSABasePrice'] = gsa_base_price
 
-            'FyProductNumber', 'FyPartNumber', 'IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
-            'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber'
-        # DO PRICING STUFF HERE
+            if 'GSASellPrice' not in row:
+                iff_fee_percent = 0.0075
+                return_df_line_product['GSASellPrice'] = round(gsa_base_price+(gsa_base_price*iff_fee_percent))
 
-
-            approved_list_price = row['GSAApprovedListPrice']
-            approved_percent = row['GSAApprovedPercent']
-
-            gsa_base_price = row['GSABasePrice']
-            gsa_sell_price = row['GSASellPrice']
-
-            mfc_precent = row['MFCPercent']
-            mfc_price = row['MFCPrice']
+            if 'MFCPrice' not in row:
+                mfc_precent = float(row['MFCPercent'])
+                return_df_line_product['MFCPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
 
         return success, return_df_line_product
 
@@ -136,6 +135,7 @@ class GSAPrice(BasicProcessObject):
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
+            fy_product_number = row['FyProductNumber']
             is_visible = row['IsVisible']
             date_catalog_received = row['DateCatalogReceived']
             contract_number = 'GSA -Sch 66'
@@ -155,21 +155,10 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_SIN']
 
 
-        gsa_price_id = self.obIngester.gsa_product_price_cap(base_product_price_id, is_visible, date_catalog_received, contract_number, contract_mod_number,
+        self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, is_visible, date_catalog_received, contract_number, contract_mod_number,
                                                              is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
                                                              gsa_base_price, gsa_sell_price, mfc_precent, mfc_price,sin)
-        if gsa_price_id != -1:
-            return_df_line_product['GSAProductPriceId']=[gsa_price_id]
-        else:
-            return_df_line_product['FinalReport']=['Failed in GSA Price Ingestion']
-            return False, return_df_line_product
 
-        # this needs to be identified
-        base_price_id = -1
-        update_success = self.obIngester.update_fks_base_price(base_price_id, newGSAProductPriceId = gsa_price_id)
-        if update_success == -1:
-            return_df_line_product['FinalReport']=['Failed in Base Price update']
-            return False, return_df_line_product
 
         return success, return_df_line_product
 
