@@ -203,7 +203,6 @@ class FileProcessor(BasicProcessObject):
         return self.success, df_collect_line
 
     def generate_pricing(self, df_collect_product_base_data, row):
-        success = True
         fy_cost = round(float(row['Fy Cost']),2)
         df_collect_product_base_data['Fy Cost'] = [fy_cost]
 
@@ -262,7 +261,7 @@ class FileProcessor(BasicProcessObject):
             fy_list_price = round(fy_landed_cost * mark_up_list, 2)
             df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
-            df_collect_product_base_data['ECommerceDiscount'] = [float(fy_sell_price/fy_list_price)]
+            df_collect_product_base_data['ECommerceDiscount'] = [1-float(fy_sell_price/fy_list_price)]
             # here we also have
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
@@ -279,22 +278,22 @@ class FileProcessor(BasicProcessObject):
 
                 ecommerce_discount = float(row['ECommerceDiscount'])
 
-                fy_sell_price = round(float(fy_list_price*ecommerce_discount),2)
+                fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
                 df_collect_product_base_data['Sell Price'] = [fy_sell_price]
-                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [fy_sell_price/fy_landed_cost]
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [float(fy_sell_price/fy_landed_cost)]
             # here we also have
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
 
         elif 'Retail Price' in row and 'ECommerceDiscount' in row:
-            fy_list_price = row['Retail Price']
+            fy_list_price = float(row['Retail Price'])
             mark_up_list = float(fy_list_price/fy_landed_cost)
             df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
 
             ecommerce_discount = float(row['ECommerceDiscount'])
-            fy_sell_price = round(float(fy_list_price*ecommerce_discount),2)
+            fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
             df_collect_product_base_data['Sell Price'] = [fy_sell_price]
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [fy_sell_price/fy_landed_cost]
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [float(fy_sell_price/fy_landed_cost)]
             # here we also have
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
