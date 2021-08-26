@@ -375,6 +375,14 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, lst_gsa_product_price)
         runner.start()
 
+    def get_gsa_price_lookup(self):
+        proc_name = 'sequoia.get_GSAPrice_lookup'
+        column_names = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'GSAApprovedListPrice',
+                         'GSAApprovedPercent', 'MFCPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
+
+
 
     def ecat_product_price_cap(self,newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity):
         proc_name = 'sequoia.ECATProductPrice_capture_wrap'
@@ -614,14 +622,6 @@ class DalObject:
         column_names = ['FyProductNumber','FyPartNumber','ProductPriceId','BaseProductPriceId']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
-
-    def get_gsa_price_lookup(self):
-        proc_name = 'sequoia.get_GSAPrice_lookup'
-        column_names = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
-                         'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber']
-        df_base_price_lookup = self.get_lookup(proc_name,column_names)
-        return df_base_price_lookup
-
 
 
     def naked_cap(self,thisdoesnothing,noreally):

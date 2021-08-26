@@ -7,8 +7,8 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
-                  'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber', 'GSA_SIN']
+    req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'GSAApprovedListPrice',
+                  'GSAApprovedPercent', 'MfcPercent', 'GSAContractModificationNumber', 'GSA_SIN','GSAApprovedPriceDate']
 
     sup_fields = []
     att_fields = []
@@ -53,8 +53,8 @@ class GSAPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
 
-        match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
-                         'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber']
+        match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'GSAApprovedListPrice',
+                         'GSAApprovedPercent', 'MfcPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -124,9 +124,9 @@ class GSAPrice(BasicProcessObject):
                 iff_fee_percent = 0.0075
                 return_df_line_product['GSASellPrice'] = round(gsa_base_price+(gsa_base_price*iff_fee_percent))
 
-            if 'MFCPrice' not in row:
-                mfc_precent = float(row['MFCPercent'])
-                return_df_line_product['MFCPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
+            if 'MfcPrice' not in row:
+                mfc_precent = float(row['MfcPercent'])
+                return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
 
         return success, return_df_line_product
 

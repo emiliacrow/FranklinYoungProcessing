@@ -37,14 +37,21 @@ class HeaderTranslator():
                             'Fy Cost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
                             'Fixed Shipping Cost':['Fixed Shipping Cost','Shipping Cost','FixedShippingCost','Estimated Shipping','EstimatedShipping'],
                             'Landed Cost':['FyLandedCost','LandedCost','Fy Landed Cost','Landed Cost'],
-                            'LandedCostMarkupPercent_FYSell':['MarkUp','LandedCostMarkupPercent_FYSell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron','landed_cost_mark_up(%)'],
+                            'LandedCostMarkupPercent_FYSell':['MarkUp','LandedCostMarkupPercent_FYSell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
                             'Sell Price':['FySellPrice','FyPrice','BC Sell Price','Ecom Sell Price'],
-                            'LandedCostMarkupPercent_FYList':['LandedCostMarkupPercent_FYList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda'],
+                            'LandedCostMarkupPercent_FYList':['LandedCostMarkupPercent_FYList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
-                            'MfcDiscountPercent':['MfcDiscountPercent','Mfc Discount Percent','mfc_disc(%)'],
-                            'ApprovedFYListPrice':['ChannelApprovedFYListPrice__value','ChannelApprovedFYListPrice'],
-                            'GSADiscount':['GSAChannelDiscount','GSADiscount','GSA Channel Discount','GSA Discount'],
+                            'GSAApprovedListPrice':['ChannelApprovedFYListPrice__value', 'ChannelApprovedFYListPrice', 'ApprovedFYListPrice'],
+                            'GSAApprovedPercent':['GSAChannelDiscount','GSADiscount','GSA Channel Discount','GSA Discount','gsa_channel_discount','GSA Approved Channel%'],
+                            'GSABasePrice':['GSABasePrice','GSA Base Price'],
+                            'GSASellPrice':['GSASellPrice','GSA Sell Price'],
+                            'GSAContractModificationNumber':['GSAContractModificationNumber','GSA Contract Modification Number','GSAContractModification','GSA Contract Modification'],
+                            'GSAApprovedPriceDate':['GSAApprovedPriceDate','GSA Approved Price Date','GSA Approved Date'],
+
+                            'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)','approved MFC per'],
+                            'MfcPrice':['MfcPrice','Approved MFC Price','Mfc Price'],
+
                             'VADiscount':['VAChannelDiscount','VADiscount','VA Channel Discount','VA Discount'],
 
                             'DateCatalogRecieved':['DateCatalogRecieved','Date Catalog Recieved','date_catalog_received'],
