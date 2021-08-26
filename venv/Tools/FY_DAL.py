@@ -383,7 +383,6 @@ class DalObject:
         return df_base_price_lookup
 
 
-
     def ecat_product_price_cap(self,newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity):
         proc_name = 'sequoia.ECATProductPrice_capture_wrap'
         proc_args = (newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity)
