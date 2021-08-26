@@ -280,7 +280,7 @@ class FileProcessor(BasicProcessObject):
 
                 fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
                 df_collect_product_base_data['Sell Price'] = [fy_sell_price]
-                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [float(fy_sell_price/fy_landed_cost)]
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [round(float(fy_sell_price/fy_landed_cost),2)]
             # here we also have
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
@@ -293,7 +293,7 @@ class FileProcessor(BasicProcessObject):
             ecommerce_discount = float(row['ECommerceDiscount'])
             fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
             df_collect_product_base_data['Sell Price'] = [fy_sell_price]
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [float(fy_sell_price/fy_landed_cost)]
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [round(float(fy_sell_price/fy_landed_cost),2)]
             # here we also have
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
