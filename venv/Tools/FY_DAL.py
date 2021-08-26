@@ -369,11 +369,11 @@ class DalObject:
         return return_id
 
 
-    def gsa_product_price_cap(self,newIsVisible, newDateCatalogReceived, newGSASellPrice, newGSAAapprovedPriceDate, newGSAPricingApproved, newGSAContractNumber, newGSAContractModificationNumber, newGSA_IFFFeePercent, newGSAProductGMPercent, newGSAProductGMPrice, newGSA_SIN):
-        proc_name = 'sequoia.GSAProductPrice_capture_wrap'
-        proc_args = (newIsVisible, newDateCatalogReceived, newGSASellPrice, newGSAAapprovedPriceDate, newGSAPricingApproved, newGSAContractNumber, newGSAContractModificationNumber, newGSA_IFFFeePercent, newGSAProductGMPercent, newGSAProductGMPrice, newGSA_SIN)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
+    def gsa_product_price_cap(self,lst_gsa_product_price):
+        proc_name = 'sequoia.GSAProductPrice_capture'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, lst_gsa_product_price)
+        runner.start()
 
 
     def ecat_product_price_cap(self,newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity):
@@ -611,15 +611,15 @@ class DalObject:
 
     def get_base_product_price_lookup(self):
         proc_name = 'sequoia.get_BasePrice_lookup'
-        column_names = ['FyProductNumber','ProductPriceId','BaseProductPriceId']
+        column_names = ['FyProductNumber','FyPartNumber','ProductPriceId','BaseProductPriceId']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 
     def get_gsa_price_lookup(self):
         proc_name = 'sequoia.get_GSAPrice_lookup'
 
-        column_names = ['FyProductNumber', 'FyPartNumber', 'ProductPriceId', 'BaseProductPriceId', 'GSABasePrice', 'GSASellPrice',
-                         'DateCatalogRecieved', 'GSAPricingApproved', 'GSAContractModificationNumber']
+        column_names = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
+                         'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 

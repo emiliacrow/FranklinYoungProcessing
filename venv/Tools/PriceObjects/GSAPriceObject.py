@@ -7,7 +7,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyProductNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
+    req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
                   'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber', 'GSA_SIN']
 
     att_fields = []
@@ -52,8 +52,8 @@ class GSAPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
 
-        match_headers = ['FyProductNumber', 'FyPartNumber', 'ProductPriceId', 'BaseProductPriceId', 'ApprovedFYListPrice',
-                         'GSASellPrice', 'DateCatalogRecieved', 'GSAPricingApproved', 'GSAContractModificationNumber']
+        match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
+                         'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -67,7 +67,7 @@ class GSAPrice(BasicProcessObject):
 
         # match all products on FyProdNum
         self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_lookup,
-                                                         how='left', on='FyProductNumber')
+                                                         how='left', on=['FyProductNumber','FyPartNumber'])
         # all products that matched on FyProdNum
         self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
@@ -97,12 +97,10 @@ class GSAPrice(BasicProcessObject):
             if 'Filter' in row:
                 if row['Filter'] == 'Pass':
                     return True, df_collect_product_base_data
-                elif row['Filter'] != 'Update':
-                    return True, df_collect_product_base_data
             else:
                 return False, df_collect_product_base_data
 
-            success, df_collect_product_base_data = self.process_contract(df_collect_product_base_data, row)
+            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
                 df_collect_product_base_data['FinalReport'] = ['Failed in process contract']
                 return success, df_collect_product_base_data
@@ -114,6 +112,10 @@ class GSAPrice(BasicProcessObject):
     def process_pricing(self,df_line_product):
         success = True
         return_df_line_product = df_line_product.copy()
+        for colName, row in df_line_product.iterrows():
+
+            'FyProductNumber', 'FyPartNumber', 'IsVisible', 'DateCatalogReceived', 'ApprovedFYListPrice',
+            'ApprovedChannelDiscountPercent', 'MFCPercent', 'GSAContractModificationNumber'
         # DO PRICING STUFF HERE
 
 
@@ -124,20 +126,29 @@ class GSAPrice(BasicProcessObject):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            base_product_price_id = row['BaseProductPriceId']
             is_visible = row['IsVisible']
             date_catalog_received = row['DateCatalogReceived']
-            sell_price = row['GSASellPrice']
-            approved_price_date = row['GSAApprovedPriceDate']
-            pricing_approved = row['GSAPricingApproved']
-            contract_number = row['GSAContractNumber']
+            contract_number = 'GSA -Sch 66'
             contract_mod_number = row['GSAContractModificationNumber']
-            iff_fee_precent = row['GSA_IFFFeePercent']
-            product_gm_precent = row['GSAProductGMPercent']
-            product_gm_price = row['GSAProductGMPrice']
+            is_pricing_approved = row['GSAPricingApproved']
+            approved_price_date = row['GSAApprovedPriceDate']
+
+            approved_list_price = row['GSAApprovedListPrice']
+            approved_percent = row['GSAApprovedPercent']
+
+            gsa_base_price = row['GSABasePrice']
+            gsa_sell_price = row['GSASellPrice']
+
+            mfc_precent = row['MFCPercent']
+            mfc_price = row['MFCPrice']
+
             sin = row['GSA_SIN']
 
 
-        gsa_price_id = self.obIngester.gsa_product_price_cap(is_visible,date_catalog_received,sell_price,approved_price_date,pricing_approved, contract_number,contract_mod_number,iff_fee_precent,product_gm_precent,product_gm_price,sin)
+        gsa_price_id = self.obIngester.gsa_product_price_cap(base_product_price_id, is_visible, date_catalog_received, contract_number, contract_mod_number,
+                                                             is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
+                                                             gsa_base_price, gsa_sell_price, mfc_precent, mfc_price,sin)
         if gsa_price_id != -1:
             return_df_line_product['GSAProductPriceId']=[gsa_price_id]
         else:

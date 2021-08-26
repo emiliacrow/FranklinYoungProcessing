@@ -414,10 +414,17 @@ class IngestionObject:
         success = self.obDal.get_product_price_id_by_vendor_part_number(vendor_part_number)
         return success
 
+    def gsa_product_price_cap(self, newBaseProductPriceId, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAAapprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
+        if (len(self.product_collector) >= self.load_limit) or (is_last):
+            self.product_collector.append(
+                [newBaseProductPriceId, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAAapprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
+            self.obDal.gsa_product_price_cap(self.product_collector)
+            self.product_collector = []
+        else:
+            self.product_collector.append([newBaseProductPriceId, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAAapprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
 
-    def gsa_product_price_cap(self,newIsVisible, newDateCatalogReceived, newGSASellPrice, newGSAAapprovedPriceDate, newGSAPricingApproved, newGSAContractNumber, newGSAContractModificationNumber, newGSA_IFFFeePercent, newGSAProductGMPercent, newGSAProductGMPrice, newGSA_SIN):
-        return_id = self.obDal.gsa_product_price_cap(newIsVisible, newDateCatalogReceived, newGSASellPrice, newGSAAapprovedPriceDate, newGSAPricingApproved, newGSAContractNumber, newGSAContractModificationNumber, newGSA_IFFFeePercent, newGSAProductGMPercent, newGSAProductGMPrice, newGSA_SIN)
-        return return_id
+
+
 
 
     def va_product_price_cap(self,newIsVisible, newDateCatalogReceived, NewVASellPrice, newVAAapprovedPriceDate, newVAPricingApproved, newVAContractNumber, newVAContractModificationNumber, newVA_IFFFeePercent, newVAProductGMPercent, newVAProductGMPrice, newVA_SIN):
