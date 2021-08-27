@@ -45,6 +45,8 @@ class Pathways():
         # this doesn't behave like the rest of them
         if file_action_selected == 'File Merger Tool':
             self.success, self.message = self.file_merger_tool()
+        elif file_action_selected == 'File Splitter Tool':
+            self.success, self.message = self.file_splitter_tool()
         else:
             file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected)
             if file_ident_success == False:
@@ -71,6 +73,68 @@ class Pathways():
 
 
         return self.success, self.message
+
+
+    def file_splitter_tool(self):
+        self.success = True
+        self.message = 'It\'s finished'
+        self.split_chunk_size = 10000
+        self.full_file_count = 0
+
+        # which file you wanna split
+        file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to split.')
+        if file_ident_success == False:
+            return file_ident_success, message_or_path
+        else:
+            self.df_product = self.obFileFinder.read_xlsx()
+
+        # get the column on which to split
+        column_headers = list(self.df_product.columns)
+        self.onMergeDialog = JoinSelectionDialog(column_headers, 'Please select one column:')
+        self.onMergeDialog.exec()
+        # split on column or column
+        split_on = self.onMergeDialog.get_selected_items()
+
+        df_column_alone = self.df_product[split_on]
+
+        df_column_alone = df_column_alone.drop_duplicates(subset=split_on)
+
+        split_values = []
+        for each_row in df_column_alone.values:
+            split_values.append(each_row[0])
+
+        # split the data based on the values in the column
+        for each_value in split_values:
+            # break layer
+            file_name = each_value
+            df_layer = self.df_product.loc[(self.df_product[split_on[0]] == each_value)]
+            # get the size
+            chunk_size = len(df_layer.index)
+            # if the size is bigger than the limit
+            if chunk_size > self.split_chunk_size:
+                chunk_count = chunk_size / self.split_chunk_size
+                # we determine the number of chunks to make
+                if chunk_count%1 > 0:
+                    chunk_count = int(chunk_count/1)+1
+
+                file_number = 1
+                while chunk_count != 1:
+                    # get each layer
+                    df_layer_chunk = df_layer.loc[:self.split_chunk_size,:]
+                    df_layer = df_layer.loc[self.split_chunk_size:,:]
+
+                    layer_name = file_name+'_'+str(file_number)
+                    self.full_file_count += 1
+                    self.obFileFinder.write_xlsx(df_layer, layer_name)
+
+                    file_number += 1
+                    chunk_count -= 1
+            else:
+                self.obFileFinder.write_xlsx(df_layer, file_name)
+                self.full_file_count += 1
+
+        self.message = 'Created {} files.'.format(self.full_file_count)
+        return True, self.message
 
 
     def file_merger_tool(self):
