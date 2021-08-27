@@ -63,14 +63,20 @@ class FileFinder():
 
         return excel_dataframe
 
-    def write_xlsx(self,df_product,bumper):
+    def write_xlsx(self,df_product,bumper,include_date = True):
 
         self.obProgressBar = ProgressBarWindow('Creating file...')
         self.obProgressBar.set_anew(10)
         self.obProgressBar.show()
         self.obProgressBar.update_unknown()
 
-        self.out_file_path = self.basic_out_file_path.replace('_prcd_','_'+bumper+'_prcd_')
+        if  include_date:
+            self.out_file_path = self.basic_out_file_path.replace('_prcd_','_'+bumper+'_prcd_')
+        else:
+            split_name = self.basic_out_file_path.partition('_prcd_')
+            self.out_file_path = split_name[0]+'_prcd_.xlsx'
+            self.out_file_path = self.out_file_path.replace('_prcd_', '_' + bumper + '_')
+
         with pandas.ExcelWriter(self.out_file_path, mode='w') as writer:
             df_product.to_excel(writer)
 
