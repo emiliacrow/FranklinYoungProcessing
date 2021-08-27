@@ -10,6 +10,7 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 
+
 class GSAPrice(BasicProcessObject):
     req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'GSAApprovedListPrice',
                   'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate']

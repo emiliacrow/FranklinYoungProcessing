@@ -320,7 +320,7 @@ class Pathways():
             b_inter_files = True
 
         self.df_product = self.obFileFinder.read_xlsx()
-        all_steps = ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)','3-Fill Product(2 steps)','4-Minimum Product Price(2 steps)','5-Base Pricing(1 step)','GSA Pricing']
+        all_steps = ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)','3-Fill Product(2 steps)','4-Minimum Product Price(2 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing']
 
         self.obYNBox.close()
 
