@@ -355,11 +355,18 @@ class DalObject:
         return return_id
 
 
-    def va_product_price_cap(self, newIsVisible, newDateCatalogReceived, NewVASellPrice, newVAAapprovedPriceDate, newVAPricingApproved, newVAContractNumber, newVAContractModificationNumber, newVA_IFFFeePercent, newVAProductGMPercent, newVAProductGMPrice, newVA_SIN):
-        proc_name = 'sequoia.VAProductPrice_capture_wrap'
-        proc_args = (newIsVisible, newDateCatalogReceived, NewVASellPrice, newVAAapprovedPriceDate, newVAPricingApproved, newVAContractNumber, newVAContractModificationNumber, newVA_IFFFeePercent, newVAProductGMPercent, newVAProductGMPrice, newVA_SIN)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
+    def va_product_price_cap(self, lst_va_product_price):
+        proc_name = 'sequoia.VAProductPrice_capture'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, lst_va_product_price)
+        runner.start()
+
+    def get_va_price_lookup(self):
+        proc_name = 'sequoia.get_VAPrice_lookup'
+        column_names = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'VAApprovedListPrice',
+                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
 
 
     def htme_product_price_cap(self,newIsVisible, newDateCatalogReceived, newHTMESellPrice, newHTMEApprovedPriceDate, newHTMEPricingApproved, newHTMEContractNumber, newHTMEContractModificationNumber, newHTMEProductGMPercent, newHTMEProductGMPrice):

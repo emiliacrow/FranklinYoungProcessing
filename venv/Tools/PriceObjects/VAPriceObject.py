@@ -9,22 +9,102 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class VAPrice(BasicProcessObject):
-    req_fields = ['IsVisible',  'VASellPrice', 'DateCatalogReceived', 'VAPricingApproved', 'VAApprovedPriceDate', 'VAContractNumber',
-                  'VAContractModificationNumber', 'VA_IFFFeePercent', 'VAProductGMPercent', 'VAProductGMPrice',
-                  'VA_SIN']
+    req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'VAApprovedListPrice',
+                  'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate']
 
+    sup_fields = []
     att_fields = []
     gen_fields = []
     def __init__(self,df_product):
         super().__init__(df_product)
         self.name = 'VA Price Ingestion'
 
+    def batch_preprocessing(self):
+        # define new, update, non-update
+        if 'VendorId' not in self.df_product.columns:
+            self.batch_process_vendor()
+        self.define_new()
+
+    def batch_process_vendor(self):
+        # there should only be one vendor, really.
+        df_attribute = self.df_product[['VendorName']]
+        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+        lst_ids = []
+        if 'VendorId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns='VendorId')
+
+        for colName, row in df_attribute.iterrows():
+            vendor_name = row['VendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name), 'VendorId'].values[0]
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name), 'VendorId'].values[0]
+            else:
+                new_vendor_id = -1
+
+            lst_ids.append(new_vendor_id)
+
+        df_attribute['VendorId'] = lst_ids
+
+        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                 how='left', on=['VendorName'])
+
+
+    def define_new(self):
+        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
+        self.df_va_price_lookup = self.obDal.get_va_price_lookup()
+
+        match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'VAApprovedListPrice',
+                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate']
+
+        # simple first
+        self.df_base_price_lookup['Filter'] = 'Update'
+
+        if 'Filter' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns='Filter')
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns='ProductPriceId')
+        if 'BaseProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns='BaseProductPriceId')
+
+        # match all products on FyProdNum
+        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_lookup,
+                                                         how='left', on=['FyProductNumber','FyPartNumber'])
+        # all products that matched on FyProdNum
+        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
+
+        self.df_product = self.df_update_products[(self.df_update_products['Filter'] != 'Update')]
+        self.df_update_products = self.df_update_products[(self.df_update_products['Filter'] == 'Update')]
+
+        if len(self.df_update_products.index) != 0:
+            # this step is going to require a test against the pricing in the contract price table
+            # this could end up empty
+            self.df_va_price_lookup['Filter'] = 'Pass'
+            self.df_update_products = self.df_update_products.drop(columns='Filter')
+            self.df_update_products = pandas.DataFrame.merge(self.df_update_products, self.df_va_price_lookup,
+                                                             how='left', on=match_headers)
+
+            # this does not seem to be matching correctly in the above
+            # I suspect this has to do with the numbers being strings?
+            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'Update'
+
+            self.df_product = self.df_product.append(self.df_update_products)
+
+
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
 
         for colName, row in df_line_product.iterrows():
-            success, df_collect_product_base_data = self.process_contract(df_collect_product_base_data, row)
+            if 'Filter' in row:
+                if row['Filter'] == 'Pass':
+                    return True, df_collect_product_base_data
+            else:
+                return False, df_collect_product_base_data
+
+            success, df_collect_product_base_data = self.process_pricing(row)
             if success == False:
                 df_collect_product_base_data['FinalReport'] = ['Failed in process contract']
                 return success, df_collect_product_base_data
@@ -33,40 +113,59 @@ class VAPrice(BasicProcessObject):
 
         return False, return_df_line_product
 
-
-    def process_contract(self, df_collect_product_base_data, row):
+    def process_pricing(self, df_line_product):
         success = True
-        contract_number = row['VAContractNumber']
-        contract_mod_number = row['VAContractModificationNumber']
-        if contract_number not in contract_mod_number:
-            df_collect_product_base_data['Report'] = ['Contract numbers don\'t match']
-            return False, df_collect_product_base_data
+        return_df_line_product = df_line_product.copy()
+        for colName, row in df_line_product.iterrows():
+            if 'VABasePrice' not in row:
+                approved_list_price = float(row['VAApprovedListPrice'])
+                approved_percent = float(row['VAApprovedPercent'])
+                gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
+                return_df_line_product['VABasePrice'] = gsa_base_price
 
-        return success, df_collect_product_base_data
+            if 'VASellPrice' not in row:
+                iff_fee_percent = 0.005
+                return_df_line_product['VASellPrice'] = round(gsa_base_price+(gsa_base_price*iff_fee_percent))
+
+            if 'MfcPrice' not in row:
+                mfc_precent = float(row['MfcDiscountPercent'])
+                return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
+
+        return success, return_df_line_product
+
 
     def va_product_price(self, df_line_product):
+        success = True
         return_df_line_product = df_line_product.copy()
-
-
         for colName, row in df_line_product.iterrows():
+            base_product_price_id = row['BaseProductPriceId']
+            fy_product_number = row['FyProductNumber']
             is_visible = row['IsVisible']
-            date_catalog_received = row['DateCatalogReceived']
-            sell_price = row['VASellPrice']
-            approved_price_date = row['VAApprovedPriceDate']
-            pricing_approved = row['VAPricingApproved']
-            contract_number = row['VAContractNumber']
+            date_catalog_received = int(row['DateCatalogReceived'])
+            date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+
+            contract_number = 'VA797H-16-D-0024/SPE2D1-16-D-0019'
             contract_mod_number = row['VAContractModificationNumber']
-            iff_fee_precent = row['VA_IFFFeePercent']
-            product_gm_precent = row['VAProductGMPercent']
-            product_gm_price = row['VAProductGMPrice']
-            sin = row['VA_SIN']
+            is_pricing_approved = row['VAPricingApproved']
+            approved_price_date = int(row['VAApprovedPriceDate'])
+            approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
 
-        va_product_price_id = self.obIngester.va_product_price_cap(is_visible,date_catalog_received, sell_price, approved_price_date, pricing_approved, contract_number,contract_mod_number,iff_fee_precent,product_gm_precent,product_gm_price,sin)
-        if va_product_price_id != -1:
-            return_df_line_product['VAProductPriceId'] = [va_product_price_id]
-        else:
-            return_df_line_product['FinalReport'] = ['Failed in VA Price Ingestion']
-            return False, return_df_line_product
+            approved_list_price = row['VAApprovedListPrice']
+            approved_percent = row['VAApprovedPercent']
 
-        return True, return_df_line_product
+            va_base_price = row['VABasePrice']
+            va_sell_price = row['VASellPrice']
+
+            mfc_precent = row['MfcDiscountPercent']
+            mfc_price = row['MFCPrice']
+
+            sin = row['VA_Sin']
+
+
+        self.obIngester.va_product_price_cap(self.is_last, base_product_price_id, fy_product_number, is_visible, date_catalog_received, contract_number, contract_mod_number,
+                                                             is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
+                                                             va_base_price, va_sell_price, mfc_precent, mfc_price,sin)
+
+
+        return success, return_df_line_product
 

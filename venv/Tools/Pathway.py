@@ -106,7 +106,13 @@ class Pathways():
         # split the data based on the values in the column
         for each_value in split_values:
             # break layer
-            file_name = each_value
+            file_name = each_value.replace(' ','_')
+            file_name = file_name.replace('.','_')
+            file_name = file_name.replace(',','_')
+            file_name = file_name.replace('\\','')
+            file_name = file_name.replace('/','')
+            file_name = file_name.replace('__','_')
+
             df_layer = self.df_product.loc[(self.df_product[split_on[0]] == each_value)]
             # get the size
             chunk_size = len(df_layer.index)

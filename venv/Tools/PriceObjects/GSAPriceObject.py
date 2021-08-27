@@ -145,7 +145,7 @@ class GSAPrice(BasicProcessObject):
             date_catalog_received = int(row['DateCatalogReceived'])
             date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
 
-            contract_number = 'GSA -Sch 66'
+            contract_number = 'GS-07F-0636W'
             contract_mod_number = row['GSAContractModificationNumber']
             is_pricing_approved = row['GSAPricingApproved']
             approved_price_date = int(row['GSAApprovedPriceDate'])

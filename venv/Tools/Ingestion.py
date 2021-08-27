@@ -414,6 +414,7 @@ class IngestionObject:
         success = self.obDal.get_product_price_id_by_vendor_part_number(vendor_part_number)
         return success
 
+
     def gsa_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
@@ -424,10 +425,19 @@ class IngestionObject:
             self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
 
 
-
-    def va_product_price_cap(self,newIsVisible, newDateCatalogReceived, NewVASellPrice, newVAAapprovedPriceDate, newVAPricingApproved, newVAContractNumber, newVAContractModificationNumber, newVA_IFFFeePercent, newVAProductGMPercent, newVAProductGMPrice, newVA_SIN):
-        return_id = self.obDal.va_product_price_cap(newIsVisible, newDateCatalogReceived, NewVASellPrice, newVAAapprovedPriceDate, newVAPricingApproved, newVAContractNumber, newVAContractModificationNumber, newVA_IFFFeePercent, newVAProductGMPercent, newVAProductGMPrice, newVA_SIN)
-        return return_id
+    def va_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN):
+        if (len(self.product_collector) >= self.load_limit) or (is_last):
+            self.product_collector.append(
+                [newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber,
+                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedListPrice,
+                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
+            self.obDal.gsa_product_price_cap(self.product_collector)
+            self.product_collector = []
+        else:
+            self.product_collector.append(
+                [newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber,
+                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedListPrice,
+                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
 
 
     def ecat_product_price_cap(self,newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newECATPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity):
