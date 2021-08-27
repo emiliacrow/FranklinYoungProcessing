@@ -118,14 +118,17 @@ class Pathways():
                     chunk_count = int(chunk_count/1)+1
 
                 file_number = 1
-                while chunk_count != 1:
+                chunk_layer = 0
+                while chunk_count != 0:
                     # get each layer
-                    df_layer_chunk = df_layer.loc[:self.split_chunk_size,:]
-                    df_layer = df_layer.loc[self.split_chunk_size:,:]
+                    df_layer_chunk = df_layer.loc[chunk_layer:chunk_layer+self.split_chunk_size,:]
+
+                    chunk_layer += self.split_chunk_size
 
                     layer_name = file_name+'_'+str(file_number)
+
                     self.full_file_count += 1
-                    self.obFileFinder.write_xlsx(df_layer, layer_name)
+                    self.obFileFinder.write_xlsx(df_layer_chunk, layer_name)
 
                     file_number += 1
                     chunk_count -= 1
