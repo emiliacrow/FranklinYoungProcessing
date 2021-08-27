@@ -61,7 +61,7 @@ class VAPrice(BasicProcessObject):
         self.df_va_price_lookup = self.obDal.get_va_price_lookup()
 
         match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'VAApprovedListPrice',
-                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate']
+                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
