@@ -431,7 +431,7 @@ class IngestionObject:
                 [newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber,
                  newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedListPrice,
                  newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
-            self.obDal.gsa_product_price_cap(self.product_collector)
+            self.obDal.va_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
             self.product_collector.append(

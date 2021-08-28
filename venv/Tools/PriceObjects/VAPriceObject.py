@@ -161,7 +161,7 @@ class VAPrice(BasicProcessObject):
             va_sell_price = row['VASellPrice']
 
             mfc_precent = row['MfcDiscountPercent']
-            mfc_price = row['MFCPrice']
+            mfc_price = row['MfcPrice']
 
             sin = row['VA_Sin']
 
