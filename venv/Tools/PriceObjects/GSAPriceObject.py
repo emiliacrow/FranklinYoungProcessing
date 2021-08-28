@@ -59,7 +59,7 @@ class GSAPrice(BasicProcessObject):
         self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
 
         match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'GSAApprovedListPrice',
-                         'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate']
+                         'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'

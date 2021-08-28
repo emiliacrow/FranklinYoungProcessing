@@ -14,7 +14,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 class VAPrice(BasicProcessObject):
     req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'VAApprovedListPrice',
-                  'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate']
+                  'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved']
 
     sup_fields = []
     att_fields = []
@@ -108,7 +108,7 @@ class VAPrice(BasicProcessObject):
             else:
                 return False, df_collect_product_base_data
 
-            success, df_collect_product_base_data = self.process_pricing(row)
+            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
                 df_collect_product_base_data['FinalReport'] = ['Failed in process contract']
                 return success, df_collect_product_base_data
