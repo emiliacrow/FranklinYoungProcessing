@@ -115,7 +115,7 @@ class VAPrice(BasicProcessObject):
 
         success, return_df_line_product = self.va_product_price(df_collect_product_base_data)
 
-        return False, return_df_line_product
+        return success, return_df_line_product
 
     def process_pricing(self, df_line_product):
         success = True
