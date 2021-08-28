@@ -70,7 +70,7 @@ class HeaderTranslator():
                             'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)','approved MFC per'],
                             'MfcPrice':['MfcPrice','Approved MFC Price','Mfc Price'],
 
-                            'DateCatalogRecieved':['DateCatalogRecieved','Date Catalog Recieved','date_catalog_received'],
+                            'DateCatalogReceived':['DateCatalogRecieved','DateCatalogReceived','Date Catalog Recieved','date_catalog_received'],
                             'VA_Sin':['VA_Sin','VA Sin','VA SIN','VASin'],
 
                             'AllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?'],

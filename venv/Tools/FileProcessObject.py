@@ -215,7 +215,7 @@ class FileProcessor(BasicProcessObject):
                 check_val = abs(fy_cost_test - fy_cost)
                 # we trust the cost provided over the discount given
                 if check_val > 0.01:
-                    fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
+                    fy_discount_percent = (1 - (fy_cost / vendor_list_price))
                     df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
         elif 'Discount' in row:
@@ -229,7 +229,7 @@ class FileProcessor(BasicProcessObject):
         elif 'Vendor List Price' in row:
             vendor_list_price = float(row['Vendor List Price'])
             if vendor_list_price != 0:
-                fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
+                fy_discount_percent = (1 - (fy_cost / vendor_list_price))
                 df_collect_product_base_data['Discount'] = fy_discount_percent
             else:
                 df_collect_product_base_data['Discount'] = [0]

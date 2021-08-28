@@ -19,8 +19,8 @@ class VAPrice(BasicProcessObject):
     sup_fields = []
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product):
-        super().__init__(df_product)
+    def __init__(self,df_product, is_testing):
+        super().__init__(df_product, is_testing)
         self.name = 'VA Price Ingestion'
 
     def batch_preprocessing(self):
