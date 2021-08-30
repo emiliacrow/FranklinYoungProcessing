@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['FyProductNumber', 'VendorName', 'Fy Cost']
+    req_fields = ['FyProductNumber', 'VendorName', 'FyCost']
     sup_fields = ['LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FYSell']
     att_fields = []
     gen_fields = []
@@ -56,7 +56,7 @@ class BasePrice(BasicProcessObject):
 
 
     def define_new(self):
-        match_headers = ['FyProductNumber','ProductPriceId', 'Fy Cost']
+        match_headers = ['FyProductNumber','ProductPriceId', 'FyCost']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -115,8 +115,8 @@ class BasePrice(BasicProcessObject):
 
 
     def process_pricing(self, df_collect_product_base_data, row):
-        fy_cost = round(float(row['Fy Cost']),2)
-        df_collect_product_base_data['Fy Cost'] = [fy_cost]
+        fy_cost = round(float(row['FyCost']),2)
+        df_collect_product_base_data['FyCost'] = [fy_cost]
 
         if 'Vendor List Price' in row and 'Discount' in row:
             vendor_list_price = float(row['Vendor List Price'])
@@ -254,7 +254,7 @@ class BasePrice(BasicProcessObject):
 
             vendor_list_price = row['Vendor List Price']
             fy_discount_percent = row['Discount']
-            fy_cost = row['Fy Cost']
+            fy_cost = row['FyCost']
             estimated_freight = row['Fixed Shipping Cost']
             fy_landed_cost = row['Landed Cost']
             markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']

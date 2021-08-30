@@ -19,7 +19,7 @@ class FileProcessor(BasicProcessObject):
 
     def header_viability(self):
         if self.proc_to_run == 'Extract Attributes':
-            self.req_fields = ['LongDescription', 'ShortDescription', 'ECommerceLongDescription']
+            self.req_fields = ['LongDescription', 'ShortDescription']
 
         if self.proc_to_run == 'Assign FyPartNumbers':
             self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber','UnitOfIssue']
@@ -27,11 +27,11 @@ class FileProcessor(BasicProcessObject):
         if self.proc_to_run == 'Unicode Correction':
             self.req_fields = ['ProductName']
 
-        if self.proc_to_run == 'Generate BC Upload File':
+        if self.proc_to_run == 'Generate Upload File':
             self.set_new_order = True
             self.out_column_headers = ['FinalReport','Report','FyCatalogNumber','FyProductNumber','FyPartNumber','Item Type', 'Product Name', 'Product Type',
                                        'Product Code/SKU', 'Brand Name', 'Option Set Align', 'Product Description',
-                                       'Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost',
+                                       'Vendor List Price', 'Discount', 'FyCost', 'Fixed Shipping Cost',
                                        'FyLandedCost', 'LandedCostMarkupPercent_FYSell','Sell Price',
                                        'LandedCostMarkupPercent_FYList', 'Retail Price', 'ECommerceDiscount',
                                        'Free Shipping', 'Product Weight', 'Product Width', 'Product Height',
@@ -46,7 +46,7 @@ class FileProcessor(BasicProcessObject):
                                        'ManufacturerPartNumber','SupplierName','Temp Control',
                                        'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName']
 
-            self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription', 'Fy Cost',
+            self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription', 'FyCost',
                                'Conv Factor/QTY UOM','Product URL','ManufacturerName','ManufacturerPartNumber',
                                'Image','Category']
 
@@ -78,7 +78,7 @@ class FileProcessor(BasicProcessObject):
         elif self.proc_to_run == 'Unicode Correction':
             self.success, df_line_product = self.correct_bad_unicode(df_line_product)
 
-        elif self.proc_to_run == 'Generate BC Upload File':
+        elif self.proc_to_run == 'Generate Upload File':
             self.success, df_line_product = self.generate_BC_upload(df_line_product)
 
         else:
@@ -203,8 +203,8 @@ class FileProcessor(BasicProcessObject):
         return self.success, df_collect_line
 
     def generate_pricing(self, df_collect_product_base_data, row):
-        fy_cost = round(float(row['Fy Cost']),2)
-        df_collect_product_base_data['Fy Cost'] = [fy_cost]
+        fy_cost = round(float(row['FyCost']),2)
+        df_collect_product_base_data['FyCost'] = [fy_cost]
 
         if 'Vendor List Price' in row and 'Discount' in row:
             vendor_list_price = float(row['Vendor List Price'])
@@ -335,10 +335,10 @@ class FileProcessor(BasicProcessObject):
                 self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['ShortDescription'])
                 long_desc = self.obExtractor.reinject_phrase(long_desc)
                 df_collect_attribute_data['ShortDescription'] = [long_desc]
-            if 'ECommerceLongDescription' in row:
-                self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['ECommerceLongDescription'])
+            if 'ProductDescription' in row:
+                self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['ProductDescription'])
                 long_desc = self.obExtractor.reinject_phrase(long_desc)
-                df_collect_attribute_data['ECommerceLongDescription'] = [long_desc]
+                df_collect_attribute_data['ProductDescription'] = [long_desc]
 
 
         return True, df_collect_attribute_data
