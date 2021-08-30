@@ -263,8 +263,8 @@ class BasePrice(BasicProcessObject):
             fy_list_price = row['Retail Price']
             ecommerce_discount = row['ECommerceDiscount']
 
-            if 'Date Catalog Received' in row:
-                date_catalog_received = int(row['Date Catalog Received'])
+            if 'DateCatalogReceived' in row:
+                date_catalog_received = int(row['DateCatalogReceived'])
                 date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
 
             product_price_id = row['ProductPriceId']
