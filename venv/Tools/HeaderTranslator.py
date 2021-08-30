@@ -32,7 +32,7 @@ class HeaderTranslator():
                             'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days'],
                             'LeadTimeDaysExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
 
-                            'Vendor List Price':['Price','Vendor List Price','VendorListPrice','List Price','primary_vendor_list_price','vendor_list_price'],
+                            'VendorListPrice':['Price','Vendor List Price','VendorListPrice','List Price','primary_vendor_list_price','vendor_list_price'],
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent','FyDiscByVendor'],
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
                             'Fixed Shipping Cost':['Fixed Shipping Cost','Shipping Cost','FixedShippingCost','Estimated Shipping','EstimatedShipping'],

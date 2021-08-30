@@ -118,8 +118,8 @@ class BasePrice(BasicProcessObject):
         fy_cost = round(float(row['FyCost']),2)
         df_collect_product_base_data['FyCost'] = [fy_cost]
 
-        if 'Vendor List Price' in row and 'Discount' in row:
-            vendor_list_price = float(row['Vendor List Price'])
+        if 'VendorListPrice' in row and 'Discount' in row:
+            vendor_list_price = float(row['VendorListPrice'])
             fy_discount_percent = float(row['Discount'])
             if fy_discount_percent != 0:
                 # discount and cost
@@ -134,12 +134,12 @@ class BasePrice(BasicProcessObject):
             fy_discount_percent = float(row['Discount'])
             if fy_discount_percent != 0:
                 vendor_list_price = round(fy_cost/(1-fy_discount_percent),2)
-                df_collect_product_base_data['Vendor List Price'] = [vendor_list_price]
+                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
             else:
-                df_collect_product_base_data['Vendor List Price'] = [0]
+                df_collect_product_base_data['VendorListPrice'] = [0]
 
-        elif 'Vendor List Price' in row:
-            vendor_list_price = float(row['Vendor List Price'])
+        elif 'VendorListPrice' in row:
+            vendor_list_price = float(row['VendorListPrice'])
             if vendor_list_price != 0:
                 fy_discount_percent = (1 - (fy_cost / vendor_list_price)) * 100
                 df_collect_product_base_data['Discount'] = fy_discount_percent
@@ -147,7 +147,7 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['Discount'] = [0]
         else:
             df_collect_product_base_data['Discount'] = [0]
-            df_collect_product_base_data['Vendor List Price'] = [0]
+            df_collect_product_base_data['VendorListPrice'] = [0]
 
         # at this point we should have collected
         # vendor list price, discount, fy cost
@@ -252,7 +252,7 @@ class BasePrice(BasicProcessObject):
             if 'FEDMALLProductPriceId' in row:
                 fedmall_product_price_id = row['FEDMALLProductPriceId']
 
-            vendor_list_price = row['Vendor List Price']
+            vendor_list_price = row['VendorListPrice']
             fy_discount_percent = row['Discount']
             fy_cost = row['FyCost']
             estimated_freight = row['Fixed Shipping Cost']
