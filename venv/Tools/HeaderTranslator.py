@@ -78,7 +78,7 @@ class HeaderTranslator():
                             'Category':['CategoryRecommendation','Category'],
 
                             'ImageUrl':['ImageUrl','ProductImageUrl','Image Url','Product Image Url','product_photo_url'],
-                            'Product URL':['URL','url','Product URL','product_url']}
+                            'ProductUrl':['URL','url','Product URL','Product Url','ProductUrl','product_url']}
         self.build_trans_dct()
 
     def build_trans_dct(self):

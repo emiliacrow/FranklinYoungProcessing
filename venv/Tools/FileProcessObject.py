@@ -39,7 +39,7 @@ class FileProcessor(BasicProcessObject):
                                        'Current Stock Level', 'Low Stock Level', 'Category', 'Product Image File - 1',
                                        'Product Image Description - 1', 'Product Image Sort - 1', 'Product Condition',
                                        'Show Product Condition?', 'Sort Order', 'Product Tax Class',
-                                       'Stop Processing Rules', 'Product URL', 'GPS Manufacturer Part Number',
+                                       'Stop Processing Rules', 'ProductUrl', 'GPS Manufacturer Part Number',
                                        'GPS Enabled', 'Tax Provider Tax Code', 'Product Custom Fields',
                                        'ShortDescription','LongDescription','Hazmat','Add to Website/GSA',
                                        'Conv Factor/QTY UOM','CountryOfOrigin','ManufacturerName',
@@ -47,8 +47,8 @@ class FileProcessor(BasicProcessObject):
                                        'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName']
 
             self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription', 'FyCost',
-                               'Conv Factor/QTY UOM','Product URL','ManufacturerName','ManufacturerPartNumber',
-                               'Image','Category']
+                               'Conv Factor/QTY UOM','ProductUrl','ManufacturerName','ManufacturerPartNumber',
+                               'ImageUrl','Category']
 
         # inital file viability check
         product_headers = set(self.lst_product_headers)
@@ -173,7 +173,7 @@ class FileProcessor(BasicProcessObject):
 
 
             # this deals with the image
-            if 'Image' not in row:
+            if 'ImageUrl' not in row:
                 df_collect_line['Product Image File - 1'] = ['']
                 df_collect_line['Product Image Sort - 1'] = ['']
                 df_collect_line['Report'] = ['Image was missing']
