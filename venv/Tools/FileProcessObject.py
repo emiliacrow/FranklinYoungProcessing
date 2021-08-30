@@ -322,6 +322,7 @@ class FileProcessor(BasicProcessObject):
 
         return True, df_collect_attribute_data
 
+
     def extract_attributes(self, df_line_product):
         self.success = True
         df_collect_attribute_data = df_line_product.copy()

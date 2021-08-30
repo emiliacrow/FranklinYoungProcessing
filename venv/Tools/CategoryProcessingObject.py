@@ -29,9 +29,6 @@ class CategoryProcessor(BasicProcessObject):
         if self.proc_to_run == 'Category Training':
             self.req_fields = ['Word1','Word2','Category','IsGood']
 
-        if self.proc_to_run == 'Category Reconstruction-BC':
-            self.req_fields = ['ProductName', 'Category-EC-LM']
-
         if self.proc_to_run == 'Category Assignment':
             self.req_fields = ['ProductName']
 
@@ -48,8 +45,6 @@ class CategoryProcessor(BasicProcessObject):
             self.success, self.message = self.run_management_process()
         if self.proc_to_run == 'Category Training':
             self.success, self.message = self.run_training_process()
-        if self.proc_to_run == 'Category Reconstruction-BC':
-            self.success, self.message = self.reconstruct_category_for_BC()
         if self.proc_to_run == 'Category Assignment':
             self.df_word_cat_associations = self.obDal.get_word_category_associations()
             self.success, self.message = self.run_category_assignment()
@@ -111,67 +106,6 @@ class CategoryProcessor(BasicProcessObject):
 
         return True, df_return_line_product
 
-
-    def reconstruct_category_for_BC(self):
-        self.set_progress_bar(len(self.df_product.index), self.name + '[reconstruction]')
-        p_bar = 0
-        self.collect_return_dfs = []
-        self.lst_long_cat = {}
-
-        for colName, row in self.df_product.iterrows():
-            df_line_product = row.to_frame().T
-            df_line_product = df_line_product.replace(r'^\s*$', self.np_nan, regex=True)
-            df_line_product = df_line_product.dropna(axis=1,how='all')
-            if self.line_viability(df_line_product):
-                df_line_product['FinalReport'] = ['Passed Line Viability']
-                self.success, return_df_line_product = self.reconstruct_for_BC(df_line_product)
-                return_df_line_product['FinalReport'] = 'Pass'
-
-            else:
-                df_line_product['FinalReport'] = ['Failed Line Viability']
-                self.success, return_df_line_product = self.report_missing_data(df_line_product)
-
-            self.collect_return_dfs.append(return_df_line_product)
-
-            p_bar+=1
-            self.obProgressBarWindow.update_bar(p_bar)
-
-        self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
-        self.df_product = self.return_df_product
-
-        self.set_progress_bar(len(self.df_product.index), self.name + '[reconstruction]')
-        p_bar = 0
-        self.df_product['FullCategory'] = ''
-        for each_product in self.lst_long_cat.keys():
-            full_category = self.lst_long_cat[each_product]
-            self.df_product.loc[self.df_product.ProductName == each_product,'FullCategory'] = full_category
-
-            p_bar+=1
-            self.obProgressBarWindow.update_bar(p_bar)
-
-        self.obProgressBarWindow.close()
-        self.message = 'Reconstruction Success'
-        return self.success, self.message
-
-    def reconstruct_for_BC(self, df_product_line):
-        # from whack separated to each level listed.
-        return_df_line_product = df_product_line.copy()
-        for colName, row in df_product_line.iterrows():
-            product_name = row['ProductName']
-            new_category = row['Category-EC-LM']
-            out_category = ''
-            if product_name not in self.lst_long_cat:
-                self.lst_long_cat[product_name] = ''
-            while '/' in new_category:
-                if (new_category + ';') not in self.lst_long_cat[product_name]:
-                    self.lst_long_cat[product_name] = new_category + ';' + self.lst_long_cat[product_name]
-
-                new_category = new_category.rpartition('/')[0]
-
-            if (new_category + ';') not in self.lst_long_cat[product_name]:
-                self.lst_long_cat[product_name] = new_category + ';' + self.lst_long_cat[product_name]
-
-        return self.success, return_df_line_product
 
     def category_assignment(self,df_product_line):
         return_df_line_product = df_product_line.copy()

@@ -145,7 +145,7 @@ class DuckworthWindow(QWidget):
     def file_process_buttons(self, column_pos):
         # all the stuffing for file processing actions
         self.file_action_options = ['Assign FyPartNumbers', 'File Merger Tool', 'Category Training',
-                                    'Category Reconstruction-BC', 'Category Assignment', 'Category Management',
+                                    'Category Assignment', 'Category Management',
                                     'Data Cleansing', 'Scrape Data', 'Scrape Images', 'Extract Attributes',
                                     'Unicode Correction', 'Generate BC Upload File', 'File Splitter Tool']
 
