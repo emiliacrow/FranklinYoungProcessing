@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyCatalogNumber','AllowPurchases','ProductTaxClass']
+    req_fields = ['VendorName','FyCatalogNumber','AllowPurchases']
     sup_fields = []
     gen_fields = ['FyProductNumber', 'ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
