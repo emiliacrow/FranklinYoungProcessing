@@ -60,7 +60,6 @@ class Pathways():
 
                     self.obFileFinder.write_xlsx(self.df_product, 'cat_'+file_action_selected.replace('Category ',''))
 
-
                 else:
 
                     self.df_product = self.obFileFinder.read_xlsx()
@@ -69,7 +68,6 @@ class Pathways():
                     self.df_product = self.obFileProcessor.get_df()
 
                     self.obFileFinder.write_xlsx(self.df_product,'file_process')
-
 
 
         return self.success, self.message

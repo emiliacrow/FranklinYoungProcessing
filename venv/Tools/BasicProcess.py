@@ -240,15 +240,14 @@ class BasicProcessObject:
 
             fy_product_number = fy_catalog_number
 
-            if 'UnitOfMeasure' in row:
-                unit_of_issue = row['UnitOfMeasure']
-                if unit_of_issue != 'EA':
-                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-
-            elif 'UnitOfIssue' in row:
+            if 'UnitOfIssue' in row:
                 unit_of_issue = row['UnitOfIssue']
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+
+            else:
+                fy_product_number = fy_catalog_number
+
 
             if 'FyPartNumber' not in row:
                 df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
@@ -267,16 +266,14 @@ class BasicProcessObject:
             fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
 
             fy_product_number = fy_catalog_number
+
             if 'UnitOfIssue' in row:
                 unit_of_issue = row['UnitOfIssue']
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
 
-            elif 'UnitOfMeasure' in row:
-                unit_of_issue = row['UnitOfMeasure']
-                if unit_of_issue != 'EA':
-                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-
+            else:
+                fy_product_number = fy_catalog_number
 
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
@@ -300,10 +297,8 @@ class BasicProcessObject:
                     if unit_of_issue != 'EA':
                         fy_product_number = fy_catalog_number + ' ' + unit_of_issue
 
-                elif 'UnitOfMeasure' in row:
-                    unit_of_issue = row['UnitOfMeasure']
-                    if unit_of_issue != 'EA':
-                        fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+                else:
+                    fy_product_number = fy_catalog_number
 
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
