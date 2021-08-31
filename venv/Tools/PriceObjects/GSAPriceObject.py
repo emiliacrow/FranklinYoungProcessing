@@ -124,6 +124,9 @@ class GSAPrice(BasicProcessObject):
                 approved_percent = float(row['GSAApprovedPercent'])
                 gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
                 return_df_line_product['GSABasePrice'] = gsa_base_price
+            else:
+                gsa_base_price = row['GSABasePrice']
+                return_df_line_product['GSABasePrice'] = gsa_base_price
 
             if 'GSASellPrice' not in row:
                 iff_fee_percent = 0.0075

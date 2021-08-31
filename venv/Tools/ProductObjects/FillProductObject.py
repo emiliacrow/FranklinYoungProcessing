@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProduct(BasicProcessObject):
-    req_fields = ['LongDescription','ShortDescription']
+    req_fields = ['FyProductNumber','LongDescription','ShortDescription']
     sup_fields = ['FyCatalogNumber','ManufacturerPartNumber']
     att_fields = ['Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = []
