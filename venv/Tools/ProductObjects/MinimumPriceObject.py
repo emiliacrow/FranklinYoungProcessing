@@ -9,9 +9,9 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyCatalogNumber','AllowPurchases']
+    req_fields = ['VendorName','VendorPartNumber','FyCatalogNumber','FyProductNumber', 'AllowPurchases']
     sup_fields = []
-    gen_fields = ['FyProductNumber', 'ProductId', 'VendorId', 'UnitOfIssueId']
+    gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
 
     def __init__(self,df_product,is_testing):
@@ -52,7 +52,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Update')]
 
-        if len(self.df_update_product.index) != 0 and 'FyProductNumber' in self.df_update_product.columns:
+        if len(self.df_update_product.index) != 0:
             self.df_product_price_lookup['Filter'] = 'Pass'
             # this section evaluates if these have product data loaded
             # drop some columns to ease processing
