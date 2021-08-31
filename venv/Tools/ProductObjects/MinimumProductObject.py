@@ -74,8 +74,12 @@ class MinimumProduct(BasicProcessObject):
         self.df_loaded_product['Filter'] = 'Update'
         self.df_loaded_product['ManufacturerPartNumber'].astype(str)
 
-        self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
-        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
+        if 'FyCatalogNumber' in self.df_product:
+            self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
+            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
+        else:
+            self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['ManufacturerPartNumber'])
+            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
 
         # at the end of this there must be two df's

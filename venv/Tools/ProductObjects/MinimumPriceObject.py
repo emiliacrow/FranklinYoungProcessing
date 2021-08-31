@@ -52,7 +52,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Update')]
 
-        if len(self.df_update_product.index) != 0:
+        if len(self.df_update_product.index) != 0 and 'FyProductNumber' in self.df_update_product.columns:
             self.df_product_price_lookup['Filter'] = 'Pass'
             # this section evaluates if these have product data loaded
             # drop some columns to ease processing
@@ -70,7 +70,8 @@ class MinimumProductPrice(BasicProcessObject):
                 self.df_update_product = self.df_update_product.drop(columns=['ProductId_x'])
                 self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
             # recombine with product
-            self.df_product = self.df_product.append(self.df_update_product)
+
+        self.df_product = self.df_product.append(self.df_update_product)
 
 
 
@@ -147,18 +148,22 @@ class MinimumProductPrice(BasicProcessObject):
 
     def identify_fy_product_number(self, df_collect_product_base_data, row):
         if ('UnitOfIssueId' not in row):
-            if ('UnitOfMeasure' not in row) or ('Conv Factor/QTY UOM' not in row):
-                df_collect_product_base_data['Report'] = ['Unit of measure missing']
-                return False, df_collect_product_base_data
+            if ('UnitOfMeasure' not in row):
+                unit_of_measure = 'EA'
+                df_collect_product_base_data['UnitOfMeasure'] = unit_of_measure
+            else:
+                unit_of_measure = row['UnitOfMeasure']
+
+
+            if ('Conv Factor/QTY UOM' not in row):
+                unit_count = 1
+                df_collect_product_base_data['Conv Factor/QTY UOM'] = [unit_count]
+            else:
+                unit_count = row['Conv Factor/QTY UOM']
 
             unit_of_issue = 'EA'
             if 'UnitOfIssue' in row:
                 unit_of_issue = row['UnitOfIssue']
-
-            unit_count = row['Conv Factor/QTY UOM']
-            unit_of_measure = row['UnitOfMeasure']
-            # this is where it will break if there is a new one.
-            # and that's stupid
 
             try:
                 unit_of_issue_id = self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueSymbol'] == unit_of_issue) &
