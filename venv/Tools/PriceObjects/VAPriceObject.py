@@ -124,12 +124,15 @@ class VAPrice(BasicProcessObject):
             if 'VABasePrice' not in row:
                 approved_list_price = float(row['VAApprovedListPrice'])
                 approved_percent = float(row['VAApprovedPercent'])
-                gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
-                return_df_line_product['VABasePrice'] = gsa_base_price
+                va_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
+                return_df_line_product['VABasePrice'] = va_base_price
+            else:
+                va_base_price = float(row['VABasePrice'])
+                return_df_line_product['VABasePrice'] = va_base_price
 
             if 'VASellPrice' not in row:
                 iff_fee_percent = 0.005
-                return_df_line_product['VASellPrice'] = round(gsa_base_price+(gsa_base_price*iff_fee_percent))
+                return_df_line_product['VASellPrice'] = round(va_base_price+(va_base_price*iff_fee_percent))
 
             if 'MfcPrice' not in row:
                 mfc_precent = float(row['MfcDiscountPercent'])

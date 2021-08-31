@@ -125,7 +125,7 @@ class GSAPrice(BasicProcessObject):
                 gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
                 return_df_line_product['GSABasePrice'] = gsa_base_price
             else:
-                gsa_base_price = row['GSABasePrice']
+                gsa_base_price = float(row['GSABasePrice'])
                 return_df_line_product['GSABasePrice'] = gsa_base_price
 
             if 'GSASellPrice' not in row:
@@ -162,7 +162,7 @@ class GSAPrice(BasicProcessObject):
             gsa_sell_price = row['GSASellPrice']
 
             mfc_precent = row['MfcDiscountPercent']
-            mfc_price = row['MFCPrice']
+            mfc_price = row['MfcPrice']
 
             sin = row['GSA_Sin']
 
