@@ -112,28 +112,26 @@ class FillProductPrice(BasicProcessObject):
                 if row['Filter'] == 'Pass':
                     return True, df_collect_product_base_data
                 elif row['Filter'] != 'Update':
+                    self.obReporter.update_report('Fail','This product must be ingested in product price')
                     return True, df_collect_product_base_data
             else:
+                self.obReporter.update_report('Fail','This product must be ingested in product price')
                 return False, df_collect_product_base_data
 
             if ('ProductPriceId' not in row):
-                df_collect_product_base_data['Report'] = ['ProductPriceId is missing']
+                self.obReporter.update_report('Fail','ProductPriceId is missing')
                 return False, df_collect_product_base_data
 
             if ('LongDescription' in row):
                 success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
                 if success == False:
-                    df_collect_product_base_data['Report'] = ['LongDescription failed in attribute extraction']
+                    self.obReporter.update_report('Fail','LongDescription failed in attribute extraction')
                     return success, df_collect_product_base_data
 
         df_line_product = self.process_attribute_data(df_collect_product_base_data)
 
-        success, df_line_product = self.fill_product_price_data(df_line_product)
-        if success:
-            return True, df_line_product
-        else:
-            df_line_product['Report'] = ['Failed in fill price']
-            return False, df_line_product
+        self.fill_product_price_data(df_line_product)
+        return True, df_collect_product_base_data
 
 
     def process_long_desc(self, df_collect_product_base_data, row):
@@ -239,7 +237,6 @@ class FillProductPrice(BasicProcessObject):
                                                      tolerance_id, accuracy_id, mass_id, aperture_size_id,
                                                      apparel_size_id, particle_size_id, pore_size_id)
 
-        return True, df_line_product
 
     def process_upc(self,row):
         upc = ''

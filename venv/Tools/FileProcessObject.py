@@ -29,7 +29,7 @@ class FileProcessor(BasicProcessObject):
 
         if self.proc_to_run == 'Generate Upload File':
             self.set_new_order = True
-            self.out_column_headers = ['FinalReport','Report','FyCatalogNumber','FyProductNumber','FyPartNumber','Item Type', 'Product Name', 'Product Type',
+            self.out_column_headers = ['Pass','Alert','Fail','FyCatalogNumber','FyProductNumber','FyPartNumber','Item Type', 'Product Name', 'Product Type',
                                        'Product Code/SKU', 'Brand Name', 'Option Set Align', 'Product Description',
                                        'Vendor List Price', 'Discount', 'FyCost', 'Fixed Shipping Cost',
                                        'FyLandedCost', 'LandedCostMarkupPercent_FYSell','Sell Price',
@@ -82,7 +82,7 @@ class FileProcessor(BasicProcessObject):
             self.success, df_line_product = self.generate_BC_upload(df_line_product)
 
         else:
-            df_line_product['Report'] = ['No process identified']
+            self.obReporter.report_no_process()
             self.success = False
 
 
@@ -101,7 +101,7 @@ class FileProcessor(BasicProcessObject):
                         df_collect_line[each_column_to_clean] = [product_name]
                         temp_prod_name = product_name.replace('º','')
                         if self.obValidator.isEnglish(product_name) == False:
-                            df_collect_line['Report'] = ['Review for unicode ' + each_column_to_clean]
+                            self.obReporter.update_report('Alert','Review for unicode ' + each_column_to_clean)
 
         return self.success, df_collect_line
 
@@ -176,7 +176,7 @@ class FileProcessor(BasicProcessObject):
             if 'ImageUrl' not in row:
                 df_collect_line['Product Image File - 1'] = ['']
                 df_collect_line['Product Image Sort - 1'] = ['']
-                df_collect_line['Report'] = ['Image was missing']
+                self.obReporter.update_report('Alert','Image was missing')
             else:
                 image = row['Image']
                 df_collect_line['Product Image File - 1'] = [image]
@@ -191,7 +191,7 @@ class FileProcessor(BasicProcessObject):
             else:
                 quantity = '1'
                 df_collect_line['Conv Factor/QTY UOM'] = [quantity]
-                df_collect_line['Report'] = ['Conv Factor was generated.']
+                self.obReporter.update_report('Alert','Conv Factor was generated.')
 
             custom_fields = '"ShortDescription=' + short_desc +'"'
             custom_fields = custom_fields + ';unit_of_issue=' + uom
@@ -273,7 +273,7 @@ class FileProcessor(BasicProcessObject):
             # this is the standard process
             # this is where you got and you need to finish it
             if 'LandedCostMarkupPercent_FYList' not in row:
-                df_collect_product_base_data['Report'] = ['Missing pricing list mark up value; couldn\'t calcuate.']
+                self.obReporter.update_report('Fail','Missing pricing data; couldn\'t calcuate.')
                 return False, df_collect_product_base_data
             else:
                 mark_up_list = float(row['LandedCostMarkupPercent_FYList'])
@@ -302,7 +302,7 @@ class FileProcessor(BasicProcessObject):
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
         else:
-            df_collect_product_base_data['Report'] = ['Missing pricing data; couldn\'t calcuate.']
+            self.obReporter.update_report('Fail','Missing pricing data; couldn\'t calcuate.')
             return False, df_collect_product_base_data
 
         return True, df_collect_product_base_data
@@ -317,7 +317,7 @@ class FileProcessor(BasicProcessObject):
             if ('ManufacturerId' not in row):
                 success, df_collect_attribute_data = self.process_manufacturer(df_collect_attribute_data, row)
                 if success == False:
-                    df_collect_attribute_data['FinalReport'] = ['Failed in process manufacturer']
+                    self.obReporter.update_report('Fail','Failed in process manufacturer')
                     return success, df_collect_attribute_data
 
         return True, df_collect_attribute_data

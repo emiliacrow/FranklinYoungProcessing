@@ -55,7 +55,6 @@ class FillProduct(BasicProcessObject):
                                                             how='left', on=['FyCatalogNumber'])
 
         # we assign a label to the products that are haven't been loaded through product yet
-        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Report'] = 'This product must be loaded.'
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
         # split the data for a moment
@@ -116,21 +115,23 @@ class FillProduct(BasicProcessObject):
                 if row['Filter'] == 'Pass':
                     return True, df_collect_product_base_data
                 elif row['Filter'] != 'Update':
+                    self.obReporter.update_report('Fail','This product must be imported')
                     return False, df_collect_product_base_data
             else:
+                self.obReporter.update_report('Fail','This product must be imported')
                 return False, df_collect_product_base_data
 
             if ('LongDescription' not in row):
-                df_collect_product_base_data['Report'] = ['LongDescription is missing']
+                self.obReporter.update_report('Fail','LongDescription is missing')
                 return False, df_collect_product_base_data
 
             if ('ShortDescription' not in row):
-                df_collect_product_base_data['Report'] = ['ShortDescription is missing']
+                self.obReporter.update_report('Fail','ShortDescription is missing')
                 return False, df_collect_product_base_data
 
             product_id = row['ProductId']
             if product_id == -1:
-                df_collect_product_base_data['Report'] = ['Couldn\'t identify product id']
+                self.obReporter.update_report('Fail','Couldn\'t identify product id')
                 return False, df_collect_product_base_data
             else:
                 df_collect_product_base_data['ProductId'] = [product_id]

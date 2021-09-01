@@ -101,13 +101,15 @@ class BasePrice(BasicProcessObject):
                 if row['Filter'] == 'Pass':
                     return True, df_collect_product_base_data
                 elif row['Filter'] != 'Update':
+                    self.obReporter.update_report('Fail','This product must be ingested in product price')
                     return True, df_collect_product_base_data
             else:
+                self.obReporter.update_report('Fail','This product must be ingested in product price')
                 return False, df_collect_product_base_data
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
-                df_collect_product_base_data['FinalReport'] = ['Failed to identify product price id']
+                self.obReporter.update_report('Fail','Failed to identify product price id')
                 return success, df_collect_product_base_data
 
         success, df_line_product = self.base_price(df_collect_product_base_data)
@@ -185,7 +187,7 @@ class BasePrice(BasicProcessObject):
             # this is the standard process
             # this is where you got and you need to finish it
             if 'LandedCostMarkupPercent_FYList' not in row:
-                df_collect_product_base_data['Report'] = ['Missing pricing data; couldn\'t calcuate.']
+                self.obReporter.update_report('Fail','Missing pricing data; couldn\'t calcuate.')
                 return False, df_collect_product_base_data
             else:
                 mark_up_list = float(row['LandedCostMarkupPercent_FYList'])
@@ -214,7 +216,7 @@ class BasePrice(BasicProcessObject):
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
         else:
-            df_collect_product_base_data['Report'] = ['Missing pricing data; couldn\'t calcuate.']
+            self.obReporter.update_report('Fail','Missing pricing data; couldn\'t calcuate.')
             return False, df_collect_product_base_data
 
         return True, df_collect_product_base_data

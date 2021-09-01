@@ -102,13 +102,15 @@ class GSAPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
                 if row['Filter'] == 'Pass':
+                    self.obReporter.update_report('Fail','This product needs to be ingested')
                     return True, df_collect_product_base_data
             else:
+                self.obReporter.update_report('Fail','This product needs to be ingested')
                 return False, df_collect_product_base_data
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
-                df_collect_product_base_data['FinalReport'] = ['Failed in process contract']
+                self.obReporter.update_report('Fail','Failed in process contract')
                 return success, df_collect_product_base_data
 
         success, return_df_line_product = self.gsa_product_price(df_collect_product_base_data)

@@ -91,10 +91,6 @@ class BasicProcessObject:
         self.df_category_names = self.obIngester.get_category_names()
         self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
         self.df_vendor_translator = self.obIngester.get_vendor_lookup()
-        if 'FinalReport' not in self.lst_product_headers:
-            self.df_product.insert(1, 'FinalReport','')
-        if 'Report' not in self.lst_product_headers:
-            self.df_product.insert(2, 'Report','')
 
     def set_progress_bar(self, count_of_steps, name):
         self.obProgressBarWindow = ProgressBarWindow(name)
@@ -123,12 +119,11 @@ class BasicProcessObject:
 
 
     def run_process(self):
-
+        self.obReporter = ReporterObject()
         self.set_progress_bar(10, 'Batch preprocessing')
         self.obProgressBarWindow.update_unknown()
         self.batch_preprocessing()
         self.obProgressBarWindow.close()
-
 
         count_of_items = len(self.df_product.index)
         self.return_df_product = pandas.DataFrame(columns=self.out_column_headers)
@@ -151,19 +146,22 @@ class BasicProcessObject:
                 self.is_last = True
 
             if self.line_viability(df_line_product):
-                df_line_product['FinalReport'] = ['Passed Line Viability']
+                self.ready_report()
+                self.obReporter.report_line_viability(True)
 
                 success, return_df_line_product = self.process_product_line(df_line_product)
-                if success:
-                    return_df_line_product['FinalReport'] = 'Pass'
-                else:
-                    return_df_line_product['FinalReport'] = 'Failed'
+                self.obReporter.final_report(success)
 
             else:
-                df_line_product['FinalReport'] = ['Failed Line Viability']
-                success, return_df_line_product = self.report_missing_data(df_line_product)
+                self.obReporter.report_line_viability(True)
+                success = self.report_missing_data(df_line_product)
 
             # appends all the product objects into a list
+            report_set = self.obReporter.get_report()
+            return_df_line_product.insert(1, 'Pass', report_set[0])
+            return_df_line_product.insert(2, 'Alert', report_set[1])
+            return_df_line_product.insert(3, 'Fail', report_set[2])
+
             self.collect_return_dfs.append(return_df_line_product)
 
             if success:
@@ -193,8 +191,24 @@ class BasicProcessObject:
 
         return self.success, self.message
 
+    def ready_report(self):
+        pass_report = ''
+        alert_report = ''
+        fail_report = ''
+        if 'Pass' in df_line_product.columns:
+            pass_report = str(df_line_product['Pass'])
+
+        if 'Alert' in df_line_product.columns:
+            alert_report = str(df_line_product['Alert'])
+
+        if 'Fail' in df_line_product.columns:
+            fail_report = str(df_line_product['Fail'])
+
+        self.obReporter.set_reports(pass_report,alert_report,fail_report)
+
+
     def process_product_line(self, df_line_product):
-        df_line_product['Report'] = ['Process not built']
+        self.obReporter.report_no_process()
         return False, df_line_product
 
     def process_boolean(self, df_collect_product_base_data, row, isCol):
@@ -202,8 +216,7 @@ class BasicProcessObject:
         if self.obValidator.validate_is_bool(row[isCol]):
             success = True
         else:
-            df_collect_product_base_data['Report'] = [isCol + ' value out of range']
-            self.bad_product_action(df_collect_product_base_data)
+            self.obReporter.update_report('Fail',isCol + ' value out of range')
 
         return success, df_collect_product_base_data
 
@@ -307,7 +320,7 @@ class BasicProcessObject:
                 return True, df_collect_product_base_data
 
         else:
-            df_collect_product_base_data['Report'] = ['New manufacturer']
+            self.obReporter.report_new_manufacturer()
             return False, df_collect_product_base_data
 
     def make_fy_catalog_number(self,prefix,manufacturer_part_number):
@@ -326,12 +339,76 @@ class BasicProcessObject:
         required_headers = set(self.req_fields)
         missing_headers = list(required_headers.difference(line_headers))
         report = 'Missing Data: ' + str(missing_headers)[1:-1]
-        df_line_product['Report'] = [report]
-        return False, df_line_product
+
+        self.obReporter.update_report('Fail',report)
+
 
     def get_df(self):
         return self.df_product
 
+
+
+class ReporterObject():
+    def __init__(self):
+        self.name = 'Lois Lane'
+        self.fail_report = ''
+        self.alert_report = ''
+        self.pass_report = ''
+
+    def update_report(self, report_type, report_text):
+        report_types_allowed = ['Fail','Alert','Pass']
+        if report_type == 'Fail':
+            if full_report_text not in self.fail_report:
+                self.fail_report = self.fail_report+'; '+report_text
+
+        if report_type == 'Alert':
+            if full_report_text not in self.fail_report:
+                self.alert_report = self.alert_report+'; '+report_text
+
+        if report_type == 'Pass':
+            if full_report_text not in self.fail_report:
+                self.pass_report = self.pass_report+'; '+report_text
+
+
+    def get_report(self):
+        return self.pass_report, self.alert_report, self.fail_report
+
+    def set_reports(self,pass_report,alert_report,fail_report):
+        self.fail_report = fail_report
+        self.alert_report = alert_report
+        self.pass_report = pass_report
+
+
+    def report_no_process(self):
+        self.update_report('Alert', 'No process built')
+
+    def report_line_viability(self,is_good):
+        if is_good:
+            self.update_report('Pass', 'Passed Line Viability')
+        if is_good:
+            self.update_report('Fail', 'Failed Line Viability')
+
+    def final_report(self,is_good):
+        if is_good:
+            self.update_report('Pass', 'Success at exit')
+        if is_good:
+            self.update_report('Fail', 'Failed at exit')
+
+    def report_new_manufacturer(self):
+        self.update_report('Fail', 'Manufacturer must be ingested')
+
+    def price_report(self,is_good):
+        if is_good:
+            self.update_report('Pass', 'Minumum product price success')
+        if is_good:
+            self.update_report('Fail', 'Minumum product price failure')
+
+
+    def fill_price_report(self,is_good):
+        if is_good:
+            self.update_report('Pass', 'Fill product price success')
+        if is_good:
+            self.update_report('Fail', 'Fill product price failure')
 
 
 

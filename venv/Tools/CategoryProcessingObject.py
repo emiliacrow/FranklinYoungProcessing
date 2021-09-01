@@ -66,12 +66,14 @@ class CategoryProcessor(BasicProcessObject):
             df_line_product = df_line_product.dropna(axis=1,how='all')
 
             if self.line_viability(df_line_product):
-                df_line_product['FinalReport'] = ['Passed Line Viability']
+                self.ready_report()
+                self.obReporter.report_line_viability(True)
+
                 self.success, return_df_line_product = self.category_evaluation(df_line_product)
-                return_df_line_product['FinalReport'] = 'Pass'
+                self.obReporter.final_report(success)
 
             else:
-                df_line_product['FinalReport'] = ['Failed Line Viability']
+                self.obReporter.report_line_viability(True)
                 self.success, return_df_line_product = self.report_missing_data(df_line_product)
 
             self.collect_return_dfs.append(return_df_line_product)
@@ -125,8 +127,7 @@ class CategoryProcessor(BasicProcessObject):
             if len(lst_match_set) >= 1:
                 self.success, return_df_line_product = self.identify_word_matches(lst_match_set, return_df_line_product)
             else:
-                return_df_line_product['Report'] = ['No category identified']
-                return_df_line_product['FinalReport'] = ['Failed']
+                self.obReporter.update_report('Fail','No category identified')
                 self.success = False
 
         return self.success, return_df_line_product
@@ -228,8 +229,8 @@ class CategoryProcessor(BasicProcessObject):
             return_df_line_product['AutoRecommendationScore'] = ['']
             # step two would be to check for single hits and
             # look for those word keys in the rest of the data
-            return_df_line_product['Report'] = ['No word match data found']
-            return_df_line_product['FinalReport'] = ['Failed']
+            self.obReporter.update_report('Fail','No word match data found')
+
             self.success = False
 
         return self.success, return_df_line_product
@@ -263,16 +264,19 @@ class CategoryProcessor(BasicProcessObject):
             df_line_product = df_line_product.dropna(axis=1,how='all')
 
             if self.line_viability(df_line_product):
-                df_line_product['FinalReport'] = ['Passed Line Viability']
+                self.ready_report()
+                self.obReporter.report_line_viability(True)
+
                 self.success, return_df_line_product = self.category_assignment(df_line_product)
+                self.obReporter.final_report(success)
+
                 if self.success:
                     good += 1
-                    return_df_line_product['FinalReport'] = ['Pass']
                 else:
                     bad += 1
 
             else:
-                df_line_product['FinalReport'] = ['Failed Line Viability']
+                self.obReporter.final_report(False)
                 self.success, return_df_line_product = self.report_missing_data(df_line_product)
 
             self.collect_return_dfs.append(return_df_line_product)
@@ -288,48 +292,6 @@ class CategoryProcessor(BasicProcessObject):
 
         return self.success, self.message
 
-
-    def run_hierarchy_display_process(self):
-        import plotly.express as px
-        display_out_path = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\SpecialWorkRequests\John-20210608\category_display.html'
-        self.collect_return_dfs = []
-        self.dct_to_display = {'Child':['All Products'],'Parent':[''],'Combo':[]}
-        return_df_collect_product = self.df_product.copy()
-        dct_collection = []
-        count_of_items = len(self.df_product.index)
-        self.set_progress_bar(count_of_items, 'Generating display data')
-        p_bar = 0
-        for colName, row in self.df_product.iterrows():
-            df_line_product = row.to_frame().T
-            df_line_product = df_line_product.replace(r'^\s*$', self.np_nan, regex=True)
-            df_line_product = df_line_product.dropna(axis=1,how='all')
-
-            if self.line_viability(df_line_product):
-                df_line_product['FinalReport'] = ['Passed Line Viability']
-                self.success, return_df_line_product = self.hierarchy_display_process(df_line_product)
-                if self.success:
-                    return_df_line_product['FinalReport'] = ['Pass']
-
-            else:
-                df_line_product['FinalReport'] = ['Failed Line Viability']
-                self.success, return_df_line_product = self.report_missing_data(df_line_product)
-
-            self.collect_return_dfs.append(return_df_line_product)
-
-            p_bar+=1
-            self.obProgressBarWindow.update_bar(p_bar)
-
-        self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
-        self.df_product = self.return_df_product
-        self.obProgressBarWindow.close()
-
-        for i in self.dct_to_display:
-            print(self.dct_to_display[i])
-
-        figure = px.treemap(names=self.dct_to_display['Child'],parents=self.dct_to_display['Parent'],)
-        figure.write_html(display_out_path)
-
-        return self.success, 'File created!'
 
     def hierarchy_display_process(self,df_product_line):
         df_collector_line = df_product_line.copy()
@@ -388,17 +350,19 @@ class CategoryProcessor(BasicProcessObject):
             # this removes all columns with all nan
             df_line_product = df_line_product.dropna(axis=1,how='all')
             if self.line_viability(df_line_product):
-                df_line_product['FinalReport'] = ['Passed Line Viability']
-                self.success, return_df_line_product = self.category_management(df_line_product)
-                return_df_line_product['FinalReport'] = 'Pass'
+                self.ready_report()
+                self.obReporter.report_line_viability(True)
+
+                success, return_df_line_product = self.category_management(df_line_product)
+                self.obReporter.final_report(success)
 
             else:
-                df_line_product['FinalReport'] = ['Failed Line Viability']
-                self.success, return_df_line_product = self.report_missing_data(df_line_product)
+                self.obReporter.final_report(False)
+                success, return_df_line_product = self.report_missing_data(df_line_product)
 
             self.collect_return_dfs.append(return_df_line_product)
 
-            if self.success:
+            if success:
                 good += 1
             else:
                 bad += 1

@@ -224,45 +224,48 @@ class MinimumProduct(BasicProcessObject):
         df_line_product = df_collect_product_base_data.copy()
         # this is also stupid, but it gets the point across for testing purposes
         for colName, row in df_line_product.iterrows():
-            if 'Filter' in row:
-                if row['Filter'] == 'Update':
-                    df_collect_product_base_data['FinalReport'] = ['This product was not new']
-                    return True, df_collect_product_base_data
+            if row['Filter'] == 'Update':
+                self.obReporter.update_report('Pass','This product can be updated')
+                return True, df_collect_product_base_data
+            else:
+                self.obReporter.update_report('Pass','This product is new')
+
 
             success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
             if success == False:
-                df_collect_product_base_data['FinalReport'] = ['Failed in process long description']
+                self.obReporter.update_report('Fail','Failed in process long description')
                 return success, df_collect_product_base_data
 
             if ('CountryOfOriginId' not in row):
-                df_collect_product_base_data['FinalReport'] = ['Failed in process country of origin']
+                self.obReporter.update_report('Fail','Failed in process country of origin')
                 return False, df_collect_product_base_data
 
             if ('ManufacturerId' not in row):
                 success, df_collect_product_base_data = self.process_manufacturer(df_collect_product_base_data, row)
                 if success == False:
-                    df_collect_product_base_data['FinalReport'] = ['Failed in process manufacturer']
+                    self.obReporter.update_report('Fail', 'Failed in process manufacturer')
                     return success, df_collect_product_base_data
 
             if ('ShippingInstructionsId' not in row):
                 success, df_collect_product_base_data = self.process_shipping(df_collect_product_base_data, row)
                 if success == False:
+                    self.obReporter.update_report('Fail',)
                     df_collect_product_base_data['FinalReport'] = ['Failed in process shipping instructions']
                     return success, df_collect_product_base_data
 
             if ('ExpectedLeadTimeId' not in row):
-                df_collect_product_base_data['FinalReport'] = ['Failed in process lead time']
+                self.obReporter.update_report('Fail','Failed in process lead time')
                 return success, df_collect_product_base_data
 
             if ('RecommendedStorageId' not in row):
-                df_collect_product_base_data['FinalReport'] = ['Failed in process recommended storage']
+                self.obReporter.update_report('Fail','Failed in process recommended storage')
                 return False, df_collect_product_base_data
 
             if 'IsControlled' in row:
                 success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
                                                                              'IsControlled')
                 if success == False:
-                    df_collect_product_base_data['FinalReport'] = ['IsControlled failed boolean evaluation']
+                    self.obReporter.update_report('Fail','IsControlled failed boolean evaluation')
                     return success, df_collect_product_base_data
             else:
                 df_collect_product_base_data['IsControlled'] = [is_controlled]
@@ -271,7 +274,7 @@ class MinimumProduct(BasicProcessObject):
                 success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
                                                                              'IsDisposable')
                 if success == False:
-                    df_collect_product_base_data['FinalReport'] = ['IsDisposable failed boolean evaluation']
+                    self.obReporter.update_report('Fail','IsDisposable failed boolean evaluation')
                     return success, df_collect_product_base_data
             else:
                 df_collect_product_base_data['IsDisposable'] = [is_disposible]
@@ -279,7 +282,7 @@ class MinimumProduct(BasicProcessObject):
             if 'IsGreen' in row:
                 success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsGreen')
                 if success == False:
-                    df_collect_product_base_data['FinalReport'] = ['IsGreen failed boolean evaluation']
+                    self.obReporter.update_report('Fail','IsGreen failed boolean evaluation')
                     return success, df_collect_product_base_data
             else:
                 df_collect_product_base_data['IsGreen'] = [is_green]
@@ -288,7 +291,7 @@ class MinimumProduct(BasicProcessObject):
                 success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
                                                                              'IsLatexFree')
                 if success == False:
-                    df_collect_product_base_data['FinalReport'] = ['IsLatexFree failed boolean evaluation']
+                    self.obReporter.update_report('Fail','IsLatexFree failed boolean evaluation')
                     return success, df_collect_product_base_data
             else:
                 df_collect_product_base_data['IsLatexFree'] = [is_latex_free]
@@ -296,7 +299,7 @@ class MinimumProduct(BasicProcessObject):
             if 'IsRX' in row:
                 success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsRX')
                 if success == False:
-                    df_collect_product_base_data['FinalReport'] = ['IsRX failed boolean evaluation']
+                    self.obReporter.update_report('Fail','IsRX failed boolean evaluation')
                     return success, df_collect_product_base_data
             else:
                 df_collect_product_base_data['IsRX'] = [is_rx]
