@@ -3,6 +3,7 @@
 # Updated: 20210813
 # CreateFor: Franklin Young International
 
+
 import time
 import pymysql
 import pandas
@@ -12,11 +13,13 @@ import subprocess
 from sqlalchemy import create_engine
 
 class DalObject:
-    def __init__(self,is_testing = True):
+    def __init__(self,user,password,is_testing = True):
         self.name = 'Dallen Grant'
         self.connection = None
         self.testing = is_testing
         self.set_testing()
+        self.user = user
+        self.password = password
 
     def set_testing(self):
         if self.testing:
@@ -28,8 +31,8 @@ class DalObject:
             self.driver = '{SQL server}'
         else:
             self.__host = 'sequoia-1.cfvzdoug1xvb.us-west-2.rds.amazonaws.com'
-            self.__uid = 'DBOpsFYI'
-            self.__pwd = 'DB#2021#FYI'
+            self.__uid = self.user
+            self.__pwd = self.password
             self.__port = 3306
             self.dbname = 'sequoia'
             self.driver = '{SQL server}'

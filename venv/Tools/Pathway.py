@@ -3,6 +3,8 @@
 # Updated: 20210813
 # CreateFor: Franklin Young International
 
+import os
+import shutil
 import pandas
 
 from Tools.FY_DAL import DalObject
@@ -35,9 +37,40 @@ from Tools.PriceObjects.FEDMALLPriceObject import FEDMALLPrice
 class Pathways():
     def __init__(self):
         self.name = 'The Way'
-        self.obDal = DalObject()
-        self.obIngester = IngestionObject(self.obDal)
         self.obFileFinder = FileFinder()
+
+        self.perm_file = os.getcwd() + '\\venv\Assets\SequoiaCredentials.txt'
+        user, password = self.test_perm_file()
+
+        self.obDal = DalObject(user,password)
+        self.obIngester = IngestionObject(self.obDal)
+
+    def test_perm_file(self):
+        try:
+            with open(self.perm_file) as f:
+                lines = f.readlines()
+
+        except FileNotFoundError:
+            file_ident_success, message_or_path = self.obFileFinder.ident_file('Please find your Sequoia permissions file.')
+            if file_ident_success:
+                shutil.copy(message_or_path, self.perm_file)
+
+            with open(self.perm_file) as f:
+                lines = f.readlines()
+
+        f.close()
+
+        for line in lines:
+            if 'Username:' in line:
+                user = line.replace('Username:','')
+                user = user.replace('\\n','')
+
+            if 'Password:' in line:
+                password = line.replace('Password:','')
+                password = password.replace('\\n','')
+
+        return user, password
+
 
     def file_processing_pathway(self, is_testing, file_action_selected):
         self.success = False

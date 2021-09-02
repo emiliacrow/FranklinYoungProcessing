@@ -20,16 +20,13 @@ from Tools.ProgressBar import ProgressBarWindow
 class FileFinder():
     def __init__(self,):
         # will have to make this a configuration
-        self.file_base_location = 'C:\\Users\ImGav\Documents\FranklinYoungFiles'
         self.selected_file = None
 
     def ident_file(self,window_title='Select a file',path=None):
-        if not path:
-            path = self.file_base_location
         root = tk.Tk()
         root.withdraw()
 
-        files = filedialog.askopenfilenames(initialdir=path, title=window_title,filetypes=(('excel files','*.xlsx*'),('text files','*.txt*')))
+        files = filedialog.askopenfilenames(initialdir=path, title=window_title,filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
         if len(files) > 0:
             self.selected_file = files[0]
             self.selected_file = self.selected_file.replace('/','\\\\')
