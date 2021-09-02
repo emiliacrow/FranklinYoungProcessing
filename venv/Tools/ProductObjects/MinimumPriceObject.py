@@ -14,8 +14,8 @@ class MinimumProductPrice(BasicProcessObject):
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
 
-    def __init__(self,df_product,is_testing):
-        super().__init__(df_product,is_testing)
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
         self.name = 'Minimum Product Price'
 
     def batch_preprocessing(self):

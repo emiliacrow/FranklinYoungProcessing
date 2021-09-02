@@ -13,8 +13,8 @@ class FillProduct(BasicProcessObject):
     sup_fields = ['FyCatalogNumber','ManufacturerPartNumber']
     att_fields = ['Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = []
-    def __init__(self,df_product,is_testing):
-        super().__init__(df_product,is_testing)
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
         self.name = 'Product Fill'
 
 

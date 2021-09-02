@@ -16,9 +16,9 @@ class CategoryProcessor(BasicProcessObject):
     req_fields = []
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product, is_testing, proc_to_set):
+    def __init__(self,df_product, user, password, is_testing, proc_to_set):
         self.proc_to_run = proc_to_set
-        super().__init__(df_product, is_testing)
+        super().__init__(df_product, user, password, is_testing)
         self.name = 'Category Processor'
 
 
@@ -66,7 +66,7 @@ class CategoryProcessor(BasicProcessObject):
             df_line_product = df_line_product.dropna(axis=1,how='all')
 
             if self.line_viability(df_line_product):
-                self.ready_report()
+                self.ready_report(df_line_product)
                 self.obReporter.report_line_viability(True)
 
                 self.success, return_df_line_product = self.category_evaluation(df_line_product)
@@ -264,7 +264,7 @@ class CategoryProcessor(BasicProcessObject):
             df_line_product = df_line_product.dropna(axis=1,how='all')
 
             if self.line_viability(df_line_product):
-                self.ready_report()
+                self.ready_report(df_line_product)
                 self.obReporter.report_line_viability(True)
 
                 self.success, return_df_line_product = self.category_assignment(df_line_product)
@@ -350,7 +350,7 @@ class CategoryProcessor(BasicProcessObject):
             # this removes all columns with all nan
             df_line_product = df_line_product.dropna(axis=1,how='all')
             if self.line_viability(df_line_product):
-                self.ready_report()
+                self.ready_report(df_line_product)
                 self.obReporter.report_line_viability(True)
 
                 success, return_df_line_product = self.category_management(df_line_product)

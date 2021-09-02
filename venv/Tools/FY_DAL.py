@@ -13,16 +13,14 @@ import subprocess
 from sqlalchemy import create_engine
 
 class DalObject:
-    def __init__(self,user,password,is_testing = True):
+    def __init__(self,user,password):
         self.name = 'Dallen Grant'
         self.connection = None
-        self.testing = is_testing
-        self.set_testing()
         self.user = user
         self.password = password
 
-    def set_testing(self):
-        if self.testing:
+    def set_testing(self, is_testing):
+        if is_testing:
             self.__host = 'localhost'
             self.__uid = 'root'
             self.__pwd = ''
@@ -37,7 +35,8 @@ class DalObject:
             self.dbname = 'sequoia'
             self.driver = '{SQL server}'
 
-    def ping_it(self):
+    def ping_it(self, is_testing = True):
+        self.set_testing(is_testing)
         if self.is_path_clear():
             try:
                 self.connection = pymysql.connect(host=self.__host, user=self.__uid, port=self.__port, passwd=self.__pwd,

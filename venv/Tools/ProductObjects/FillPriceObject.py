@@ -18,8 +18,8 @@ class FillProductPrice(BasicProcessObject):
     sup_fields = []
     gen_fields = []
 
-    def __init__(self,df_product, is_testing):
-        super().__init__(df_product, is_testing)
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
         self.name = 'Product Price Fill'
 
     def batch_preprocessing(self):

@@ -18,8 +18,8 @@ class GSAPrice(BasicProcessObject):
     sup_fields = []
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product, is_testing):
-        super().__init__(df_product, is_testing)
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
         self.name = 'GSA Price Ingestion'
 
     def batch_preprocessing(self):

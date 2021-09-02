@@ -15,11 +15,12 @@ from Tools.ProgressBar import YesNoDialog
 from Tools.ProgressBar import ProgressBarWindow
 from Tools.ProgressBar import JoinSelectionDialog
 
+# other processing objects
 from Tools.BaseDataLoaderObject import BaseDataLoader
 from Tools.FileProcessObject import FileProcessor
 from Tools.CategoryProcessingObject import CategoryProcessor
 
-#product objects
+# product objects
 from Tools.ProductObjects.MinimumProductObject import MinimumProduct
 from Tools.ProductObjects.FillProductObject import FillProduct
 from Tools.ProductObjects.MinimumPriceObject import MinimumProductPrice
@@ -40,10 +41,8 @@ class Pathways():
         self.obFileFinder = FileFinder()
 
         self.perm_file = os.getcwd() + '\\venv\Assets\SequoiaCredentials.txt'
-        user, password = self.test_perm_file()
+        self.user, self.password = self.test_perm_file()
 
-        self.obDal = DalObject(user,password)
-        self.obIngester = IngestionObject(self.obDal)
 
     def test_perm_file(self):
         try:
@@ -62,14 +61,14 @@ class Pathways():
 
         for line in lines:
             if 'Username:' in line:
-                user = line.replace('Username:','')
-                user = user.replace('\\n','')
+                self.user = line.replace('Username:','')
+                self.user = self.user.replace('\n','')
 
             if 'Password:' in line:
-                password = line.replace('Password:','')
-                password = password.replace('\\n','')
+                self.password = line.replace('Password:','')
+                self.password = self.password.replace('\n','')
 
-        return user, password
+        return self.user, self.password
 
 
     def file_processing_pathway(self, is_testing, file_action_selected):
@@ -87,7 +86,7 @@ class Pathways():
             else:
                 if 'Category' in file_action_selected:
                     self.df_product = self.obFileFinder.read_xlsx()
-                    self.obCategoryProcessor = CategoryProcessor(self.df_product, is_testing, file_action_selected)
+                    self.obCategoryProcessor = CategoryProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected)
                     self.success, self.message = self.obCategoryProcessor.begin_process()
                     self.df_product = self.obCategoryProcessor.get_df()
 
@@ -96,7 +95,7 @@ class Pathways():
                 else:
 
                     self.df_product = self.obFileFinder.read_xlsx()
-                    self.obFileProcessor = FileProcessor(self.df_product, is_testing, file_action_selected)
+                    self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected)
                     self.success, self.message = self.obFileProcessor.begin_process()
                     self.df_product = self.obFileProcessor.get_df()
 
@@ -291,7 +290,7 @@ class Pathways():
         if self.success:
             self.df_product = self.obFileFinder.read_xlsx(self.message)
 
-            self.obBaseDataLoader = BaseDataLoader(self.df_product, is_testing)
+            self.obBaseDataLoader = BaseDataLoader(self.df_product, self.user, self.password, is_testing)
             self.obBaseDataLoader.set_the_table(table_to_load)
             self.success, self.message = self.obBaseDataLoader.begin_process()
             self.df_product = self.obBaseDataLoader.get_df()
@@ -356,7 +355,7 @@ class Pathways():
         self.obYNBox.close()
 
         if ingestion_action_selected in ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)']:
-            self.obMinProduct = MinimumProduct(self.df_product, is_testing)
+            self.obMinProduct = MinimumProduct(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obMinProduct.begin_process()
             if b_inter_files:
                 self.df_product = self.obMinProduct.get_df()
@@ -365,7 +364,7 @@ class Pathways():
                 return self.success, self.message
 
         if ingestion_action_selected in ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)','4-Minimum Product Price(2 steps)']:
-            self.obMinPrice = MinimumProductPrice(self.df_product, is_testing)
+            self.obMinPrice = MinimumProductPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obMinPrice.begin_process()
             if b_inter_files or ingestion_action_selected == '2-Minimum Product Ingestion(2 steps)':
                 self.df_product = self.obMinPrice.get_df()
@@ -375,7 +374,7 @@ class Pathways():
                 return self.success, self.message
 
         if ingestion_action_selected in ['1-Full Product Ingestion(5 steps)','3-Fill Product(2 steps)']:
-            self.obFillProduct = FillProduct(self.df_product, is_testing)
+            self.obFillProduct = FillProduct(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obFillProduct.begin_process()
             if b_inter_files:
                 self.df_product = self.obFillProduct.get_df()
@@ -384,7 +383,7 @@ class Pathways():
                 return self.success, self.message
 
         if ingestion_action_selected in ['1-Full Product Ingestion(5 steps)','3-Fill Product(2 steps)']:
-            self.obFillPrice = FillProductPrice(self.df_product, is_testing)
+            self.obFillPrice = FillProductPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obFillPrice.begin_process()
             if b_inter_files or ingestion_action_selected == '3-Fill Product(2 steps)':
                 self.df_product = self.obFillPrice.get_df()
@@ -393,7 +392,7 @@ class Pathways():
                 return self.success, self.message
 
         if ingestion_action_selected in ['1-Full Product Ingestion(5 steps)','2-Minimum Product Ingestion(3 steps)','4-Minimum Product Price(2 steps)','5-Base Pricing(1 step)']:
-            self.obBasePrice = BasePrice(self.df_product, is_testing)
+            self.obBasePrice = BasePrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obBasePrice.begin_process()
             self.df_product = self.obBasePrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'BasePrice')
@@ -401,35 +400,35 @@ class Pathways():
                 return self.success, self.message
 
         if ingestion_action_selected == 'VA Pricing':
-            self.obVAPrice = VAPrice(self.df_product, is_testing)
+            self.obVAPrice = VAPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obVAPrice.begin_process()
             self.df_product = self.obVAPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'VAPrice')
             return self.success, self.message
 
         if ingestion_action_selected == 'GSA Pricing':
-            self.obGSAPrice = GSAPrice(self.df_product, is_testing)
+            self.obGSAPrice = GSAPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obGSAPrice.begin_process()
             self.df_product = self.obGSAPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'GSAPrice')
             return self.success, self.message
 
         if ingestion_action_selected == 'HTME Pricing':
-            self.obHTMEPrice = HTMEPrice(self.df_product, is_testing)
+            self.obHTMEPrice = HTMEPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obHTMEPrice.begin_process()
             self.df_product = self.obHTMEPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'HTMEPrice')
             return self.success, self.message
 
         if ingestion_action_selected == 'ECAT Pricing':
-            self.obECATPrice = ECATPrice(self.df_product, is_testing)
+            self.obECATPrice = ECATPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obECATPrice.begin_process()
             self.df_product = self.obECATPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'ECATPrice')
             return self.success, self.message
 
         if ingestion_action_selected == 'FEDMALL Pricing':
-            self.obFEDMALLPrice = FEDMALLPrice(self.df_product, is_testing)
+            self.obFEDMALLPrice = FEDMALLPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obFEDMALLPrice.begin_process()
             self.df_product = self.obFEDMALLPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'FEDMALLPrice')

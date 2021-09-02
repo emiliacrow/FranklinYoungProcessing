@@ -17,8 +17,8 @@ class MinimumProduct(BasicProcessObject):
                                 'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
                                 'ExpectedLeadTimeId']
 
-    def __init__(self,df_product,is_testing):
-        super().__init__(df_product,is_testing)
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
         self.name = 'Minimum Product'
         self.quick_country = {}
 

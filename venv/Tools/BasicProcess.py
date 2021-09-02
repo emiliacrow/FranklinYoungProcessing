@@ -26,7 +26,7 @@ class BasicProcessObject:
     # then any that might be useful
     # together this will generate the take-set from the original
     # this will be the run set required for line processing
-    def __init__(self,df_product, is_testing):
+    def __init__(self, df_product, user, password, is_testing):
         self.name = 'Bob'
         self.message = 'No message'
         self.success = False
@@ -48,8 +48,8 @@ class BasicProcessObject:
 
         self.header_viability()
         if self.is_viable:
-            self.obDal = DalObject(is_testing)
-            alive = self.obDal.ping_it()
+            self.obDal = DalObject(user, password)
+            alive = self.obDal.ping_it(is_testing)
             if alive == 'Ping':
                 self.object_setup(is_testing)
             else:
@@ -146,7 +146,7 @@ class BasicProcessObject:
                 self.is_last = True
 
             if self.line_viability(df_line_product):
-                self.ready_report()
+                self.ready_report(df_line_product)
                 self.obReporter.report_line_viability(True)
 
                 success, return_df_line_product = self.process_product_line(df_line_product)
@@ -158,6 +158,15 @@ class BasicProcessObject:
 
             # appends all the product objects into a list
             report_set = self.obReporter.get_report()
+            if 'Pass' in return_df_line_product.columns:
+                self.df_product = self.df_product.drop(columns='Pass')
+
+            if 'Alert' in return_df_line_product.columns:
+                self.df_product = self.df_product.drop(columns='Alert')
+
+            if 'Fail' in return_df_line_product.columns:
+                self.df_product = self.df_product.drop(columns='Fail')
+
             return_df_line_product.insert(1, 'Pass', report_set[0])
             return_df_line_product.insert(2, 'Alert', report_set[1])
             return_df_line_product.insert(3, 'Fail', report_set[2])
@@ -191,7 +200,7 @@ class BasicProcessObject:
 
         return self.success, self.message
 
-    def ready_report(self):
+    def ready_report(self, df_line_product):
         pass_report = ''
         alert_report = ''
         fail_report = ''
@@ -358,15 +367,15 @@ class ReporterObject():
     def update_report(self, report_type, report_text):
         report_types_allowed = ['Fail','Alert','Pass']
         if report_type == 'Fail':
-            if full_report_text not in self.fail_report:
+            if report_text not in self.fail_report:
                 self.fail_report = self.fail_report+'; '+report_text
 
         if report_type == 'Alert':
-            if full_report_text not in self.fail_report:
+            if report_text not in self.fail_report:
                 self.alert_report = self.alert_report+'; '+report_text
 
         if report_type == 'Pass':
-            if full_report_text not in self.fail_report:
+            if report_text not in self.fail_report:
                 self.pass_report = self.pass_report+'; '+report_text
 
 
