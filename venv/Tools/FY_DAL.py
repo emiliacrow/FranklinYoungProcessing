@@ -22,7 +22,7 @@ class DalObject:
         if self.testing:
             self.__host = 'localhost'
             self.__uid = 'root'
-            self.__pwd = 'Camembert20Brie'
+            self.__pwd = ''
             self.__port = 3306
             self.dbname = 'sequoia'
             self.driver = '{SQL server}'
