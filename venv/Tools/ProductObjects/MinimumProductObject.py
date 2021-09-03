@@ -157,7 +157,7 @@ class MinimumProduct(BasicProcessObject):
                     lst_ids.append(259)
 
             df_attribute['CountryOfOriginId'] = lst_ids
-            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+            self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=['CountryOfOrigin'])
 
 
@@ -187,7 +187,7 @@ class MinimumProduct(BasicProcessObject):
                 lst_ids.append(new_lead_time_id)
 
             df_attribute['ExpectedLeadTimeId'] = lst_ids
-            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+            self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=['ExpectedLeadTime'])
 
     def batch_process_attribute(self,attribute):
@@ -207,7 +207,7 @@ class MinimumProduct(BasicProcessObject):
 
             df_attribute[str_attribute_id] = lst_ids
 
-            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+            self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=[attribute])
 
     def process_product_line(self, df_line_product):

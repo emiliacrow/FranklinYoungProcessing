@@ -67,7 +67,7 @@ class DuckworthWindow(QWidget):
         self.layout = QGridLayout()
 
         self.is_testing_buttons()
-        self.is_testing = True
+        self.is_testing = False
 
         self.file_process_buttons(0)
         self.base_data_buttons(1)
