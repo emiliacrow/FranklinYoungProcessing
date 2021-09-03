@@ -138,10 +138,10 @@ class MinimumProductPrice(BasicProcessObject):
         df_line_product = df_collect_product_base_data
 
         if success:
-            self.obReporter.price_report()
+            self.obReporter.price_report(success)
             return True, df_line_product
         else:
-            self.obReporter.price_report()
+            self.obReporter.price_report(success)
             return False, df_line_product
 
         return True, df_line_product

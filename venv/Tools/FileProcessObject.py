@@ -273,7 +273,7 @@ class FileProcessor(BasicProcessObject):
             # this is the standard process
             # this is where you got and you need to finish it
             if 'LandedCostMarkupPercent_FYList' not in row:
-                self.obReporter.update_report('Fail','Missing pricing data; couldn\'t calcuate.')
+                self.obReporter.update_report('Fail','Missing list mark up; couldn\'t calcuate pricing.')
                 return False, df_collect_product_base_data
             else:
                 mark_up_list = float(row['LandedCostMarkupPercent_FYList'])
