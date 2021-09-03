@@ -66,7 +66,7 @@ class MinimumProduct(BasicProcessObject):
 
         df_attribute['VendorId'] = lst_ids
 
-        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+        self.df_product = self.df_product.merge(df_attribute,
                                                  how='left', on=['VendorName'])
 
     def define_new(self):
@@ -88,11 +88,12 @@ class MinimumProduct(BasicProcessObject):
 
 
     def batch_process_category(self):
+        # this needs to be handled better
         df_attribute = self.df_product[['Category']]
         df_attribute = df_attribute.drop_duplicates(subset=['Category'])
         lst_ids = []
         for colName, row in df_attribute.iterrows():
-            category = row['Category']
+            category = str(row['Category'])
             category_name = category.rpartition('/')[2]
             if category_name in self.df_category_names['CategoryName'].values:
                 new_category_id = self.df_category_names.loc[
@@ -110,7 +111,7 @@ class MinimumProduct(BasicProcessObject):
 
         df_attribute['CategoryId'] = lst_ids
 
-        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+        self.df_product = self.df_product.merge(df_attribute,
                                                  how='left', on=['Category'])
 
 
