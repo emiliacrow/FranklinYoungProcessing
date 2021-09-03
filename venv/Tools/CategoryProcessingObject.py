@@ -41,6 +41,7 @@ class CategoryProcessor(BasicProcessObject):
 
 
     def run_process(self):
+        self.obReporter = ReporterObject()
         if self.proc_to_run == 'Category Management':
             self.success, self.message = self.run_management_process()
         if self.proc_to_run == 'Category Training':

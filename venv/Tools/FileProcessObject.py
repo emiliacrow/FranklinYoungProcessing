@@ -10,9 +10,9 @@ class FileProcessor(BasicProcessObject):
     sup_fields = []
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product, is_testing, proc_to_set):
+    def __init__(self,df_product, user, password, is_testing, proc_to_set):
         self.proc_to_run = proc_to_set
-        super().__init__(df_product, is_testing)
+        super().__init__(df_product, user, password, is_testing)
         self.name = 'File Processor'
         self.lindas_increase = 0.25
 
