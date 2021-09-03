@@ -31,7 +31,7 @@ class FileProcessor(BasicProcessObject):
             self.set_new_order = True
             self.out_column_headers = ['Pass','Alert','Fail','FyCatalogNumber','FyProductNumber','FyPartNumber','Item Type', 'Product Name', 'Product Type',
                                        'Product Code/SKU', 'Brand Name', 'Option Set Align', 'Product Description',
-                                       'Vendor List Price', 'Discount', 'FyCost', 'Fixed Shipping Cost',
+                                       'VendorListPrice', 'Discount', 'FyCost', 'Fixed Shipping Cost',
                                        'FyLandedCost', 'LandedCostMarkupPercent_FYSell','Sell Price',
                                        'LandedCostMarkupPercent_FYList', 'Retail Price', 'ECommerceDiscount',
                                        'Free Shipping', 'Product Weight', 'Product Width', 'Product Height',
@@ -206,8 +206,8 @@ class FileProcessor(BasicProcessObject):
         fy_cost = round(float(row['FyCost']),2)
         df_collect_product_base_data['FyCost'] = [fy_cost]
 
-        if 'Vendor List Price' in row and 'Discount' in row:
-            vendor_list_price = float(row['Vendor List Price'])
+        if 'VendorListPrice' in row and 'Discount' in row:
+            vendor_list_price = float(row['VendorListPrice'])
             fy_discount_percent = float(row['Discount'])
             if fy_discount_percent != 0:
                 # discount and cost
@@ -222,12 +222,12 @@ class FileProcessor(BasicProcessObject):
             fy_discount_percent = float(row['Discount'])
             if fy_discount_percent != 0:
                 vendor_list_price = round(fy_cost/(1-fy_discount_percent),2)
-                df_collect_product_base_data['Vendor List Price'] = [vendor_list_price]
+                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
             else:
-                df_collect_product_base_data['Vendor List Price'] = [0]
+                df_collect_product_base_data['VendorListPrice'] = [0]
 
-        elif 'Vendor List Price' in row:
-            vendor_list_price = float(row['Vendor List Price'])
+        elif 'VendorListPrice' in row:
+            vendor_list_price = float(row['VendorListPrice'])
             if vendor_list_price != 0:
                 fy_discount_percent = (1 - (fy_cost / vendor_list_price))
                 df_collect_product_base_data['Discount'] = fy_discount_percent
@@ -235,7 +235,7 @@ class FileProcessor(BasicProcessObject):
                 df_collect_product_base_data['Discount'] = [0]
         else:
             df_collect_product_base_data['Discount'] = [0]
-            df_collect_product_base_data['Vendor List Price'] = [0]
+            df_collect_product_base_data['VendorListPrice'] = [0]
 
         # at this point we should have collected
         # vendor list price, discount, fy cost
