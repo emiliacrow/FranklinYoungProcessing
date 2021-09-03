@@ -157,7 +157,7 @@ class Pathways():
                 chunk_layer = 0
                 while chunk_count != 0:
                     # get each layer
-                    df_layer_chunk = df_layer.loc[chunk_layer:chunk_layer+self.split_chunk_size,:]
+                    df_layer_chunk = df_layer.iloc[chunk_layer:chunk_layer+self.split_chunk_size,:]
 
                     chunk_layer += self.split_chunk_size
 

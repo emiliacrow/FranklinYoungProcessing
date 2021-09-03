@@ -159,13 +159,13 @@ class BasicProcessObject:
             # appends all the product objects into a list
             report_set = self.obReporter.get_report()
             if 'Pass' in return_df_line_product.columns:
-                self.df_product = self.df_product.drop(columns='Pass')
+                return_df_line_product = return_df_line_product.drop(columns='Pass')
 
             if 'Alert' in return_df_line_product.columns:
-                self.df_product = self.df_product.drop(columns='Alert')
+                return_df_line_product = return_df_line_product.drop(columns='Alert')
 
             if 'Fail' in return_df_line_product.columns:
-                self.df_product = self.df_product.drop(columns='Fail')
+                return_df_line_product = return_df_line_product.drop(columns='Fail')
 
             return_df_line_product.insert(1, 'Pass', report_set[0])
             return_df_line_product.insert(2, 'Alert', report_set[1])
@@ -205,13 +205,13 @@ class BasicProcessObject:
         alert_report = ''
         fail_report = ''
         if 'Pass' in df_line_product.columns:
-            pass_report = str(df_line_product['Pass'])
+            pass_report = str(df_line_product['Pass'].values[0])
 
         if 'Alert' in df_line_product.columns:
-            alert_report = str(df_line_product['Alert'])
+            alert_report = str(df_line_product['Alert'].values[0])
 
         if 'Fail' in df_line_product.columns:
-            fail_report = str(df_line_product['Fail'])
+            fail_report = str(df_line_product['Fail'].values[0])
 
         self.obReporter.set_reports(pass_report,alert_report,fail_report)
 
@@ -394,13 +394,13 @@ class ReporterObject():
     def report_line_viability(self,is_good):
         if is_good:
             self.update_report('Pass', 'Passed Line Viability')
-        if is_good:
+        else:
             self.update_report('Fail', 'Failed Line Viability')
 
     def final_report(self,is_good):
         if is_good:
             self.update_report('Pass', 'Success at exit')
-        if is_good:
+        else:
             self.update_report('Fail', 'Failed at exit')
 
     def report_new_manufacturer(self):
@@ -409,14 +409,14 @@ class ReporterObject():
     def price_report(self,is_good):
         if is_good:
             self.update_report('Pass', 'Minumum product price success')
-        if is_good:
+        else:
             self.update_report('Fail', 'Minumum product price failure')
 
 
     def fill_price_report(self,is_good):
         if is_good:
             self.update_report('Pass', 'Fill product price success')
-        if is_good:
+        else:
             self.update_report('Fail', 'Fill product price failure')
 
 
