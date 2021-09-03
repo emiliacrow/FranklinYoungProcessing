@@ -148,14 +148,21 @@ class GSAPrice(BasicProcessObject):
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
             is_visible = row['IsVisible']
-            date_catalog_received = int(row['DateCatalogReceived'])
-            date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+            try:
+                date_catalog_received = int(row['DateCatalogReceived'])
+                date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+            except ValueError:
+                date_catalog_received = str(row['DateCatalogReceived'])
+
 
             contract_number = 'GS-07F-0636W'
             contract_mod_number = row['GSAContractModificationNumber']
             is_pricing_approved = row['GSAPricingApproved']
-            approved_price_date = int(row['GSAApprovedPriceDate'])
-            approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
+            try:
+                approved_price_date = int(row['VAPricingApproved'])
+                approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
+            except ValueError:
+                approved_price_date = str(row['VAPricingApproved'])
 
             approved_list_price = row['GSAApprovedListPrice']
             approved_percent = row['GSAApprovedPercent']
