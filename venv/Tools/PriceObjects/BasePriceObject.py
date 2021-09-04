@@ -102,7 +102,7 @@ class BasePrice(BasicProcessObject):
                     return True, df_collect_product_base_data
                 elif row['Filter'] != 'Update':
                     self.obReporter.update_report('Fail','This product must be ingested in product price')
-                    return True, df_collect_product_base_data
+                    return False, df_collect_product_base_data
             else:
                 self.obReporter.update_report('Fail','This product must be ingested in product price')
                 return False, df_collect_product_base_data

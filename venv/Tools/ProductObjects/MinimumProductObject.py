@@ -219,10 +219,9 @@ class MinimumProduct(BasicProcessObject):
 
         success = True
         df_collect_product_base_data = df_line_product.copy()
+        df_line_product = self.process_attribute_data(df_collect_product_base_data)
+        df_collect_product_base_data = df_line_product.copy()
 
-        df_collect_product_base_data = self.process_attribute_data(df_collect_product_base_data)
-
-        df_line_product = df_collect_product_base_data.copy()
         # this is also stupid, but it gets the point across for testing purposes
         for colName, row in df_line_product.iterrows():
             if row['Filter'] == 'Update':
@@ -239,6 +238,10 @@ class MinimumProduct(BasicProcessObject):
 
             if ('CountryOfOriginId' not in row):
                 self.obReporter.update_report('Fail','Failed in process country of origin')
+                return False, df_collect_product_base_data
+
+            if ('CategoryId' not in row):
+                self.obReporter.update_report('Fail','No category assigned.')
                 return False, df_collect_product_base_data
 
             if ('ManufacturerId' not in row):
@@ -307,6 +310,7 @@ class MinimumProduct(BasicProcessObject):
 
 
         return_df_line_product = self.minimum_product(df_collect_product_base_data)
+
         return True, return_df_line_product
 
 

@@ -153,8 +153,8 @@ class BasicProcessObject:
                 self.obReporter.final_report(success)
 
             else:
-                self.obReporter.report_line_viability(True)
-                success = self.report_missing_data(df_line_product)
+                self.obReporter.report_line_viability(False)
+                success, return_df_line_product = self.report_missing_data(df_line_product)
 
             # appends all the product objects into a list
             report_set = self.obReporter.get_report()
@@ -170,6 +170,8 @@ class BasicProcessObject:
             return_df_line_product.insert(1, 'Pass', report_set[0])
             return_df_line_product.insert(2, 'Alert', report_set[1])
             return_df_line_product.insert(3, 'Fail', report_set[2])
+
+            self.obReporter.clear_reports()
 
             self.collect_return_dfs.append(return_df_line_product)
 
@@ -350,6 +352,7 @@ class BasicProcessObject:
         report = 'Missing Data: ' + str(missing_headers)[1:-1]
 
         self.obReporter.update_report('Fail',report)
+        return False, df_line_product
 
 
     def get_df(self):
@@ -387,6 +390,10 @@ class ReporterObject():
         self.alert_report = alert_report
         self.pass_report = pass_report
 
+    def clear_reports(self):
+        self.fail_report = ''
+        self.alert_report = ''
+        self.pass_report = ''
 
     def report_no_process(self):
         self.update_report('Alert', 'No process built')
