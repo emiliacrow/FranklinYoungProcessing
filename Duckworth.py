@@ -13,10 +13,12 @@ from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QComboBox
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QRadioButton
 from PyQt5.QtWidgets import QApplication
+
 
 from Tools.Pathway import Pathways
 
@@ -34,8 +36,26 @@ def main():
 
 def excepthook(exc_type, exc_value, exc_tb):
     tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-    print("error catched!:")
-    print("error message:\n", tb)
+    crash_path = os.getcwd()+'\\venv\Assets\CrashReport.txt'
+    error_path = tb.split('\n')
+    error_call = error_path[-2]
+
+    with open(crash_path, 'w') as f:
+        f.write(':::CRASH REPORT:::\n')
+        f.write(tb)
+
+    alert = QMessageBox()
+    alert.setIcon(QMessageBox.Critical)
+    alert.setWindowTitle('A Crash Occurred!')
+
+    error_msg = 'Error Message:\n' + (error_call.partition('\"')[2]).partition('\"')[0]
+    alert.setText(error_msg)
+
+    full_alert_text = 'See crash report at:\n' + crash_path
+    alert.setDetailedText(full_alert_text)
+    x = alert.exec_()
+
+
     QApplication.quit()
 
 
