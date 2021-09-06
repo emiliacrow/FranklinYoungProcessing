@@ -158,13 +158,17 @@ class FileProcessor(BasicProcessObject):
             fy_part_number = row['FyPartNumber']
             df_collect_line['Product Code/SKU'] = [fy_part_number]
 
-            if len(short_desc) > 40:
-                product_name  = short_desc[:40] + ' {' + fy_part_number + '}'
+            if 'Product Name' not in row:
+                if len(short_desc) > 40:
+                    product_name  = short_desc[:40]
+                else:
+                    product_name  = short_desc
+                df_collect_line['Product Name'] = [product_name]
+
             else:
-                product_name  = short_desc + ' {' + fy_part_number + '}'
-
-            df_collect_line['Product Name'] = [product_name]
-
+                product_name = row['Product Name']
+                if len(product_name) > 40:
+                    product_name  = product_name[:40]
 
             # this section should generate pricing correctly
             pricing_success, df_collect_line = self.generate_pricing(df_collect_line, row)

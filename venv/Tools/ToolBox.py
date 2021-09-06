@@ -75,7 +75,7 @@ class FileFinder():
             self.out_file_path = self.out_file_path.replace('_prcd_', '_' + bumper + '_')
 
         with pandas.ExcelWriter(self.out_file_path, mode='w') as writer:
-            df_product.to_excel(writer)
+            df_product.to_excel(writer,index=False)
 
         self.obProgressBar.close()
 

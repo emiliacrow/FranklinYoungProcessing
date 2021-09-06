@@ -316,7 +316,19 @@ class MinimumProduct(BasicProcessObject):
 
     def process_long_desc(self, df_collect_product_base_data, row):
         long_desc = row['ShortDescription']
-        product_name = row['ProductName']
+
+        if 'Product Name' not in row:
+            if len(short_desc) > 40:
+                product_name  = short_desc[:40]
+            else:
+                product_name  = short_desc
+            df_collect_line['Product Name'] = [product_name]
+
+        else:
+            product_name = row['Product Name']
+            if len(product_name) > 40:
+                product_name  = product_name[:40]
+
         # processing/cleaning
         if 'LongDescription' in row:
             long_desc = row['LongDescription']
