@@ -355,3 +355,4 @@ class FillProduct(BasicProcessObject):
             success = self.obIngester.image_cap(image_url,image_caption,image_pref,is_video,product_id)
 
 
+

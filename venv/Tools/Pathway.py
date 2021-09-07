@@ -41,7 +41,7 @@ class Pathways():
         self.obFileFinder = FileFinder()
 
         self.perm_file = os.getcwd() + '\\venv\Assets\SequoiaCredentials.txt'
-        self.user, self.password = self.test_perm_file()
+        self.user, self.password, self.aws_access_key_id, self.aws_secret_access_key = self.test_perm_file()
 
 
     def test_perm_file(self):
@@ -68,7 +68,15 @@ class Pathways():
                 self.password = line.replace('Password:','')
                 self.password = self.password.replace('\n','')
 
-        return self.user, self.password
+            if 'aws_access_key_id:' in line:
+                self.aws_access_key_id = line.replace('aws_access_key_id:', '')
+                self.aws_access_key_id = self.aws_access_key_id.replace('\n', '')
+
+            if 'aws_secret_access_key:' in line:
+                self.aws_secret_access_key = line.replace('aws_secret_access_key:','')
+                self.aws_secret_access_key = self.aws_secret_access_key.replace('\n','')
+
+        return self.user, self.password,self.aws_access_key_id,self.aws_secret_access_key
 
 
     def file_processing_pathway(self, is_testing, file_action_selected):
@@ -79,6 +87,8 @@ class Pathways():
             self.success, self.message = self.file_merger_tool()
         elif file_action_selected == 'File Splitter Tool':
             self.success, self.message = self.file_splitter_tool()
+        elif file_action_selected == 'Load Image Files':
+            self.success, self.message = self.image_load_tool()
         else:
             file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected)
             if file_ident_success == False:
@@ -281,6 +291,24 @@ class Pathways():
             self.obYNBox.close()
 
         return self.success, self.message
+
+
+    def image_load_tool(self):
+        # set objects
+        # ident path
+        # get vendor name from path
+        # check it against db
+        # get list of image names
+        # check it against db
+        # select if update duplicates
+
+        # all to be processed
+        # get image size
+        # load image to s3
+        # write record in db
+        # count good/bad
+        # report
+        pass
 
 
     def base_data_pathway(self, is_testing, table_to_load):

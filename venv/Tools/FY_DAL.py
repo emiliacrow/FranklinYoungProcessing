@@ -5,12 +5,25 @@
 
 
 import time
-import pymysql
+import boto3
 import pandas
+import pymysql
 import threading
 import subprocess
 
 from sqlalchemy import create_engine
+
+class S3Object:
+    def __init__(self, aws_access_key_id, aws_secret_access_key):
+        self.name = 'Simple Stanley'
+        self.region_name = 'us-west-2'
+        self.aws_access_key_id = aws_access_key_id
+        self.aws_secret_access_key = aws_secret_access_key
+
+
+
+
+
 
 class DalObject:
     def __init__(self,user,password):
@@ -441,11 +454,12 @@ class DalObject:
         return return_id
 
 
-    def image_size_cap(self,newProductImageFilePath, newProductImageX, newProductImageY, newProductImageUrlId):
-        proc_name = 'sequoia.ProductImageSize_capture_wrap'
-        proc_args = (newProductImageFilePath, newProductImageX, newProductImageY, newProductImageUrlId)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
+    def image_size_cap(self,lst_product_image):
+        proc_name = 'sequoia.ProductImageSize_capture'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, lst_product_image)
+        runner.start()
+
 
 
     def image_cap(self,newProductImageUrl, newImagePreference, newIsVideo, newProductId, newProductImageCaption = '', newProductImageFilePath='', newProductImageX=None, newProductImageY=None):
@@ -654,6 +668,7 @@ class DataRunner(threading.Thread):
         self.connection.commit()
         self.connection.close()
         print('Runner report end: ' + self.proc_name)
+
 
 
 
