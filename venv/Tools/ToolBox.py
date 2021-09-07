@@ -5,15 +5,17 @@
 
 import os
 import sys
-import datetime
+import glob
 import pandas
+import datetime
 import threading
 import subprocess
-import numpy as np
 
+import numpy as np
 import tkinter as tk
-from tkinter import filedialog
+
 from random import randint
+from tkinter import filedialog
 
 from Tools.ProgressBar import ProgressBarWindow
 
@@ -22,7 +24,7 @@ class FileFinder():
         # will have to make this a configuration
         self.selected_file = None
 
-    def ident_file(self,window_title='Select a file',path=None):
+    def ident_file(self,window_title='Please select a file',path=None):
         root = tk.Tk()
         root.withdraw()
 
@@ -41,6 +43,27 @@ class FileFinder():
             return True, self.basic_out_file_path
         else:
             return False, 'No file selected'
+
+    def ident_directory(self, window_title = 'Please select directory', path = None):
+        root = tk.Tk()
+        root.withdraw()
+        # select directory
+        directory = filedialog.askdirectory(initialdir=path, title=window_title,mustexist=True)
+
+        directory = directory+'/*.*'
+        lst_images = glob.glob(directory)
+
+        clean_image_paths = []
+
+        for each_image_path in lst_images:
+            clean_image_path = each_image_path.replace('\\','\\\\')
+            clean_image_path = clean_image_path.replace('/','\\\\')
+
+            clean_image_name = clean_image_path.rpartition('\\')[2]
+
+            clean_image_paths.append([clean_image_path,clean_image_name])
+
+        return clean_image_paths
 
 
     def read_xlsx(self, base_data_file=''):

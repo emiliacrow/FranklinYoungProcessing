@@ -460,6 +460,12 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, lst_product_image)
         runner.start()
 
+    def get_image_names(self):
+        proc_name = 'sequoia.get_ProductImageSize'
+        column_names = ['ProductImageSizeId','ProductImageUrl','ProductImageName','ProductImageType']
+        df_image_name_lookup = self.get_lookup(proc_name,column_names)
+        return df_image_name_lookup
+
 
 
     def image_cap(self,newProductImageUrl, newImagePreference, newIsVideo, newProductId, newProductImageCaption = '', newProductImageFilePath='', newProductImageX=None, newProductImageY=None):

@@ -166,7 +166,8 @@ class DuckworthWindow(QWidget):
         # all the stuffing for file processing actions
         self.file_action_options = ['Assign FyPartNumbers', 'File Merger Tool', 'Category Training',
                                     'Category Assignment', 'Category Management', 'Extract Attributes',
-                                    'Unicode Correction', 'Generate Upload File', 'File Splitter Tool']
+                                    'Unicode Correction', 'Generate Upload File', 'File Splitter Tool',
+                                    'Load Image Files']
 
         self.file_action_options.sort()
 

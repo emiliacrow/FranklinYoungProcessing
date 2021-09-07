@@ -88,7 +88,7 @@ class Pathways():
         elif file_action_selected == 'File Splitter Tool':
             self.success, self.message = self.file_splitter_tool()
         elif file_action_selected == 'Load Image Files':
-            self.success, self.message = self.image_load_tool()
+            self.success, self.message = self.image_load_tool(is_testing)
         else:
             file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected)
             if file_ident_success == False:
@@ -293,7 +293,17 @@ class Pathways():
         return self.success, self.message
 
 
-    def image_load_tool(self):
+    def image_load_tool(self, is_testing):
+        self.obDal = DalObject(self.user, self.password)
+        self.obDal.set_testing(is_testing)
+
+        clean_image_paths = self.obFileFinder.ident_directory('Select image directory to process:')
+        vendor_name = (clean_image_paths[0][0].rpartition('\\')[0]).rpartition('\\')[2]
+
+        # this is a dataframe
+        current_image_names = self.obDal.get_image_names()
+
+
         # set objects
         # ident path
         # get vendor name from path
@@ -308,7 +318,7 @@ class Pathways():
         # write record in db
         # count good/bad
         # report
-        pass
+        return success, message
 
 
     def base_data_pathway(self, is_testing, table_to_load):
