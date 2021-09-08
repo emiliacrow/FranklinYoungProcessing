@@ -3,18 +3,13 @@
 # Updated: 20210608
 # CreateFor: Franklin Young International
 
-import os
-import sys
 import glob
 import pandas
 import datetime
 import threading
-import subprocess
 
-import numpy as np
 import tkinter as tk
 
-from random import randint
 from tkinter import filedialog
 
 from Tools.ProgressBar import ProgressBarWindow

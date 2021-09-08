@@ -14,7 +14,7 @@ from Tools.HeaderTranslator import HeaderTranslator
 from Tools.Ingestion import IngestionObject
 from Tools.ProgressBar import ProgressBarWindow
 from Tools.ProgressBar import YesNoDialog
-from Tools.ProgressBar import JoinSelectionDialog
+
 
 class BasicProcessObject:
     # this object requires a list called req_fields which is the set of headers that must be present in order to process the file/line
