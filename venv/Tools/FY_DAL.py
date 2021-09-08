@@ -29,18 +29,9 @@ class S3Object:
 
         response = s3_client.upload_file(file_name,bucket,object_name)
 
+        object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(self.region_name, bucket, object_name)
 
-    def get_url(self):
-
-        s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
-                                   aws_secret_access_key=self.aws_secret_access_key)
-
-        object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(
-            bucket_location['LocationConstraint'],
-            s3_bucket_name,
-            key_name)
-
-
+        return object_url
 
 
 class DalObject:

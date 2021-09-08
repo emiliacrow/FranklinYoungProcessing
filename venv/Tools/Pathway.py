@@ -327,9 +327,12 @@ class Pathways():
             current_image = Image.open(image_path)
             image_width, image_height = current_image.size
 
-            # load image to s3
-            # get image url
+            print(file_path, file_name, bucket)
+            x = input('this is the info for storing the image')
+            image_url = self.obS3.put_image(self, file_path, file_name, bucket)
 
+            print(image_url)
+            x = input('url')
             self.obIngester.image_cap(image_url, image_name, image_width, image_height)
 
         # count good/bad
