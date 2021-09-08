@@ -82,6 +82,9 @@ class FillProductPrice(BasicProcessObject):
 
         self.df_product = self.df_update_products
 
+        # place new at bottom, I don't know if this is needed yet, but it might be?
+        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
+
 
     def batch_process_attribute(self,attribute):
         str_attribute_id = attribute +'Id'

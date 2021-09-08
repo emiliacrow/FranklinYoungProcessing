@@ -62,7 +62,7 @@ class FillProduct(BasicProcessObject):
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Update')]
 
         if len(self.df_update_product.index) != 0:
-            self.df_product_full_lookup['Filter'] = 'Pass'
+            self.df_product_full_lookup['Filter'] = 'Update'
             # this section evaluates if these have product data loaded
             # drop some columns to ease processing
             if 'Filter' in self.df_update_product.columns:
@@ -72,7 +72,7 @@ class FillProduct(BasicProcessObject):
             self.df_update_product = pandas.DataFrame.merge(self.df_update_product, self.df_product_full_lookup,
                                                              how='left', on=['FyProductNumber','ShortDescription'])
 
-            self.df_update_product.loc[(self.df_update_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
+            self.df_update_product.loc[(self.df_update_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
             if 'ProductId_x' in self.df_update_product.columns:
                 self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
@@ -86,6 +86,9 @@ class FillProduct(BasicProcessObject):
 
             # recombine with product
             self.df_product = self.df_product.append(self.df_update_product)
+
+        # place new at bottom
+        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
 
 
     def batch_process_attribute(self,attribute):
@@ -112,13 +115,15 @@ class FillProduct(BasicProcessObject):
 
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
-                if row['Filter'] == 'Pass':
-                    return True, df_collect_product_base_data
-                elif row['Filter'] != 'Update':
-                    self.obReporter.update_report('Fail','This product must be imported')
+                if row['Filter'] == 'Update':
+                    self.obReporter.update_report('Pass','This product price is an update')
+                elif row['Filter'] == 'New':
+                    self.obReporter.update_report('Pass','This product price is new')
+                else:
+                    self.obReporter.update_report('Fail','This product price failed to match a DB product')
                     return False, df_collect_product_base_data
             else:
-                self.obReporter.update_report('Fail','This product must be imported')
+                self.obReporter.update_report('Fail','This product price failed filtering')
                 return False, df_collect_product_base_data
 
             if ('LongDescription' not in row):

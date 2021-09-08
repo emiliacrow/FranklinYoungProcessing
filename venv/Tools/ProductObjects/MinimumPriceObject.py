@@ -37,11 +37,11 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product_lookup['Filter'] = 'Update'
         # match all products on FyProdNum and Manufacturer part, clearly
         if 'ManufacturerPartNumber' in self.df_product.columns:
-            self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
+            self.df_product = self.df_product.merge(self.df_product_lookup,
                                                             how='left',
                                                             on=['FyCatalogNumber', 'ManufacturerPartNumber'])
         else:
-            self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
+            self.df_product = self.df_product.merge(self.df_product_lookup,
                                                             how='left', on=['FyCatalogNumber'])
 
         # we assign a label to the products that are haven't been loaded through product yet
@@ -52,17 +52,17 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Update')]
 
         if len(self.df_update_product.index) != 0:
-            self.df_product_price_lookup['Filter'] = 'Pass'
+            self.df_product_price_lookup['Filter'] = 'Update'
             # this section evaluates if these have product data loaded
             # drop some columns to ease processing
             if 'Filter' in self.df_update_product.columns:
                 self.df_update_product = self.df_update_product.drop(columns=['Filter'])
 
-            # this gets the productId
-            self.df_update_product = pandas.DataFrame.merge(self.df_update_product, self.df_product_price_lookup,
+            # this gets the productId again
+            self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
                                                              how='left', on=['FyProductNumber'])
 
-            self.df_update_product.loc[(self.df_update_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
+            self.df_update_product.loc[(self.df_update_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
             if 'ProductId_x' in self.df_update_product.columns:
                 self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
@@ -72,6 +72,8 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.df_product = self.df_product.append(self.df_update_product)
 
+        # place new at bottom
+        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
 
 
     def batch_process_something(self, df_row):
@@ -108,13 +110,15 @@ class MinimumProductPrice(BasicProcessObject):
         # step-wise product processing
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
-                if row['Filter'] == 'Pass':
-                    return True, df_collect_product_base_data
-                elif row['Filter'] == 'Fail':
-                    self.obReporter.update_report('Fail','This product must be ingested')
-                    return True, df_collect_product_base_data
+                if row['Filter'] == 'Update':
+                    self.obReporter.update_report('Pass','This product price is an update')
+                elif row['Filter'] == 'New':
+                    self.obReporter.update_report('Pass','This product price is new')
+                else:
+                    self.obReporter.update_report('Fail','This product price failed to match a DB product')
+                    return False, df_collect_product_base_data
             else:
-                self.obReporter.update_report('Fail','This product must be ingested')
+                self.obReporter.update_report('Fail','This product price failed filtering')
                 return False, df_collect_product_base_data
 
             # this is also stupid, but it gets the point across for testing purposes
@@ -228,9 +232,9 @@ class MinimumProductPrice(BasicProcessObject):
             self.obReporter.update_report('Fail','AllowPurchases was missing')
             return False, df_collect_product_base_data
         elif row['AllowPurchases'] == 'N':
-            df_collect_product_base_data['AllowPurchases'] = 0
+            df_collect_product_base_data['AllowPurchases'] = [0]
         elif row['AllowPurchases'] == 'Y':
-            df_collect_product_base_data['AllowPurchases'] = 1
+            df_collect_product_base_data['AllowPurchases'] = [1]
 
         if ('ProductTaxClass' not in row):
             df_collect_product_base_data['ProductTaxClass'] = 'Default Tax Class'

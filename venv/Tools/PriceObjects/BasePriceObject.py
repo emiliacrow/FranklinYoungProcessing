@@ -89,7 +89,8 @@ class BasePrice(BasicProcessObject):
 
             self.df_product = self.df_product.append(self.df_update_products)
 
-            # this shouldn't always be 0
+        # place new at bottom, I don't know if this is needed yet, but it might be?
+        self.df_product = self.df_product.sort_values(by=['Filter'], ascending=False)
 
 
     def process_product_line(self, df_line_product):

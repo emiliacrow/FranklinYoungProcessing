@@ -81,6 +81,9 @@ class MinimumProduct(BasicProcessObject):
             self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['ManufacturerPartNumber'])
             self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
+        # place new at bottom
+        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
+
 
     def batch_process_category(self):
         # this needs to be handled better
@@ -224,7 +227,6 @@ class MinimumProduct(BasicProcessObject):
                 return True, df_collect_product_base_data
             else:
                 self.obReporter.update_report('Pass','This product is new')
-
 
             success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
             if success == False:
@@ -388,8 +390,8 @@ class MinimumProduct(BasicProcessObject):
         # here all processing and checks have been done
         # we just get data from the DF and ship it (as planned)
         for colName, row in df_line_product.iterrows():
-            manufacturer_product_id = row['ManufacturerPartNumber']
             fy_catalog_number = row['FyCatalogNumber']
+            manufacturer_product_id = row['ManufacturerPartNumber']
             product_name = row['ProductName']
 
             bc_product_name = row['BigCommerceProductName']
