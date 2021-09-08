@@ -110,7 +110,7 @@ class MinimumProductPrice(BasicProcessObject):
             if 'Filter' in row:
                 if row['Filter'] == 'Pass':
                     return True, df_collect_product_base_data
-                elif row['Filter'] != 'Update':
+                elif row['Filter'] == 'Fail':
                     self.obReporter.update_report('Fail','This product must be ingested')
                     return True, df_collect_product_base_data
             else:

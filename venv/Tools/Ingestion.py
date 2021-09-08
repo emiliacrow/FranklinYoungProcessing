@@ -463,23 +463,17 @@ class IngestionObject:
             self.product_collector.append([newProductImageUrl, newProductImageName, newProductImageType, newProductImageX, newProductImageY])
 
 
-    def image_cap(self,newProductImageUrl,newProductImageCaption,newImagePreference,newIsVideo,newProductId):
+    def image_cap(self,newProductImageUrl,newProductImageName,newProductImageType,newProductImageX,newProductImageY):
 
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber,
-                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedListPrice,
-                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
-            self.obDal.va_product_price_cap(self.product_collector)
+                [newProductImageUrl,newProductImageName,newProductImageType,newProductImageX,newProductImageY])
+            self.obDal.image_size_cap(self.product_collector)
             self.product_collector = []
         else:
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newIsVisible, newDateCatalogReceived, newContractNumber,
-                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedListPrice,
-                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
+                [newProductImageUrl,newProductImageName,newProductImageType,newProductImageX,newProductImageY])
 
 
-        return_id = self.obDal.image_cap(newProductImageUrl, newImagePreference, newIsVideo, newProductId, newProductImageCaption)
-        return return_id
 
 ## end ##

@@ -7,10 +7,12 @@ import os
 import shutil
 import pandas
 
+from Tools.FY_DAL import S3Object
 from Tools.FY_DAL import DalObject
 from Tools.ToolBox import FileFinder
 from Tools.Ingestion import IngestionObject
 
+# gui objects
 from Tools.ProgressBar import YesNoDialog
 from Tools.ProgressBar import ProgressBarWindow
 from Tools.ProgressBar import JoinSelectionDialog
@@ -294,28 +296,42 @@ class Pathways():
 
 
     def image_load_tool(self, is_testing):
+        # set objects
         self.obDal = DalObject(self.user, self.password)
+        self.obS3 = S3Object(self.aws_access_key_id,self.aws_secret_access_key)
+        self.bucket = 'franklin-young-image-bank'
+        self.obIngester = IngestionObject(self.obDal)
         self.obDal.set_testing(is_testing)
 
+        # ident path
         clean_image_paths = self.obFileFinder.ident_directory('Select image directory to process:')
+
+        # get vendor name from path
         vendor_name = (clean_image_paths[0][0].rpartition('\\')[0]).rpartition('\\')[2]
 
-        # this is a dataframe
-        current_image_names = self.obDal.get_image_names()
-
-
-        # set objects
-        # ident path
-        # get vendor name from path
-        # check it against db
         # get list of image names
-        # check it against db
-        # select if update duplicates
+        current_image_names = self.obDal.get_image_names()
+        new_images = []
 
-        # all to be processed
-        # get image size
-        # load image to s3
-        # write record in db
+        for each_image in clean_image_paths:
+            image_name = each_image[1]
+
+            # check it against db
+            if image_name not in current_image_names['ProductImageName'].values:
+                new_images.append(image_name)
+
+        for each_image in new_images:
+            # get image size
+            image_path = each_image[0]
+            image_name = each_image[1]
+            current_image = Image.open(image_path)
+            image_width, image_height = current_image.size
+
+            # load image to s3
+            # get image url
+
+            self.obIngester.image_cap(image_url, image_name, image_width, image_height)
+
         # count good/bad
         # report
         return success, message

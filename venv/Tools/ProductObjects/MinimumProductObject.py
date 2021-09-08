@@ -82,11 +82,6 @@ class MinimumProduct(BasicProcessObject):
             self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
 
-        # at the end of this there must be two df's
-        # an update and a new
-        # the update will be split based on what needs to update
-
-
     def batch_process_category(self):
         # this needs to be handled better
         df_attribute = self.df_product[['Category']]
