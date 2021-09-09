@@ -464,7 +464,7 @@ class IngestionObject:
             self.product_collector.append([newProductImageUrl, newProductImageName, newProductImageX, newProductImageY])
 
 
-    def image_cap(self,is_last, product_id, image_id, image_preference = 0, image_caption = ''):
+    def image_cap(self, is_last, product_id, image_id, image_preference = 0, image_caption = ''):
         if (len(self.product_image_match_collector) >= self.load_limit) or (is_last):
             self.product_image_match_collector.append([product_id,image_id,image_preference,image_caption])
             self.obDal.image_size_cap(self.product_image_match_collector)

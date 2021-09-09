@@ -306,7 +306,7 @@ class FileProcessor(BasicProcessObject):
             # MU sell, sell price, MU list, list price(retail), and ecommerce discount
 
         else:
-            self.obReporter.update_report('Fail','Missing pricing data; couldn\'t calcuate.')
+            self.obReporter.update_report('Fail','Missing pricing data: couldn\'t calcuate.')
             return False, df_collect_product_base_data
 
         return True, df_collect_product_base_data

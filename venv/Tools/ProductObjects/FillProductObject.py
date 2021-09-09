@@ -21,6 +21,8 @@ class FillProduct(BasicProcessObject):
     def batch_preprocessing(self):
         self.define_new()
 
+        self.df_image_names = self.obDal.get_image_names()
+
         # this is here to consume values that may be more alike than different
         # for example, recommended storage might have a lot of 'keep this darn thing cold'
         if 'Sterility' in self.df_product.columns:
@@ -344,23 +346,28 @@ class FillProduct(BasicProcessObject):
 
         return species_id
 
+
     def process_image(self, row, product_id):
         if 'ImageName' in row:
             image_name = str(row['ImageName'])
-            # check image name against db names
-            # get image id if any
-            image_id = 1
 
-            image_caption = ''
-            if 'ImageCaption' in row:
-                image_caption = str(row['ImageCaption'])
+            image_id = self.df_image_names.loc[(self.df_image_names['ImageName']==image_name),['ProductImageSizeId']].values[0]
+            print(image_id)
+            x = input('x')
+            if image_id is not None:
+                # check image name against db names
+                # get image id if any
 
-            image_pref = 0
-            if 'ImagePrefence' in row:
-                image_caption = int(row['ImagePrefence'])
+                image_pref = 0
+                if 'ImagePrefence' in row:
+                    image_pref = int(row['ImagePrefence'])
+
+                image_caption = ''
+                if 'ImageCaption' in row:
+                    image_caption = str(row['ImageCaption'])
 
 
-            self.obIngester.image_cap(self.is_last, product_id,image_id,image_pref,image_caption)
+                self.obIngester.image_cap(self.is_last, product_id,image_id,image_pref,image_caption)
 
 
 
