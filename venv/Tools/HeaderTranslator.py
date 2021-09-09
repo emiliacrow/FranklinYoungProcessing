@@ -77,7 +77,9 @@ class HeaderTranslator():
                             'ProductTaxClass':['ProductTaxClass','Product Tax Class','Tax Class'],
                             'Category':['CategoryRecommendation','Category'],
 
-                            'ImageUrl':['ImageUrl','ProductImageUrl','Image Url','Product Image Url','product_photo_url'],
+                            'ImageUrl':['ImageUrl', 'ProductImageUrl', 'Image Url', 'Product Image Url',
+                                        'product_photo_url'],
+                            'ImageName':['ImageName','ProductImageName','Image Name','Product Image Name','product_photo_Name'],
                             'ProductUrl':['URL','url','Product URL','Product Url','ProductUrl','product_url']}
         self.build_trans_dct()
 

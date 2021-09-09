@@ -48,7 +48,7 @@ class FileProcessor(BasicProcessObject):
 
             self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription', 'FyCost',
                                'Conv Factor/QTY UOM','ProductUrl','ManufacturerName','ManufacturerPartNumber',
-                               'ImageUrl','Category']
+                               'ImageName','Category']
 
         # inital file viability check
         product_headers = set(self.lst_product_headers)
@@ -177,12 +177,12 @@ class FileProcessor(BasicProcessObject):
 
 
             # this deals with the image
-            if 'ImageUrl' not in row:
+            if 'ImageName' not in row:
                 df_collect_line['Product Image File - 1'] = ['']
                 df_collect_line['Product Image Sort - 1'] = ['']
                 self.obReporter.update_report('Alert','Image was missing')
             else:
-                image = row['Image']
+                image = row['ImageName']
                 df_collect_line['Product Image File - 1'] = [image]
                 df_collect_line['Product Image Sort - 1'] = ['0']
 
