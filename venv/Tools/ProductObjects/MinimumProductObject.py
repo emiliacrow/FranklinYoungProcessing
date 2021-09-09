@@ -320,7 +320,7 @@ class MinimumProduct(BasicProcessObject):
                 product_name  = short_desc[:40]
             else:
                 product_name  = short_desc
-            df_collect_line['Product Name'] = [product_name]
+            df_collect_product_base_data['Product Name'] = [product_name]
 
         else:
             product_name = row['Product Name']

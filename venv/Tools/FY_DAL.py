@@ -480,15 +480,11 @@ class DalObject:
         return df_image_name_lookup
 
 
-    def image_cap(self,newProductImageUrl, newImagePreference, newIsVideo, newProductId, newProductImageCaption = '', newProductImageFilePath='', newProductImageX=None, newProductImageY=None):
-        # image capture will make an image size entry for the first load of an image
-        #proc_name = 'sequoia.Client_capture_wrap'
-        #proc_args = (newCategoryDesc,newCategoryName)
-        #return_id = self.id_cap(proc_name, proc_args)
-        #if(newIsVideo != 1):
-            #self.image_size_cap(newProductImageFilePath, newProductImageX, newProductImageY, return_id)
-
-        return -1
+    def image_cap(self, lst_product_image):
+        proc_name = 'sequoia.ProductImage_capture'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, lst_product_image)
+        runner.start()
 
 
     def unit_of_issue_symbol_cap(self,newUnitOfIssueSymbol, newUnitOfIssueSymbolName, ECATUnitOfIssueSymbol):

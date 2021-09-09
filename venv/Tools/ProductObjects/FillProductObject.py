@@ -350,11 +350,16 @@ class FillProduct(BasicProcessObject):
     def process_image(self, row, product_id):
         if 'ImageName' in row:
             image_name = str(row['ImageName'])
+            image_id = -1
 
-            image_id = self.df_image_names.loc[(self.df_image_names['ImageName']==image_name),['ProductImageSizeId']].values[0]
-            print(image_id)
-            x = input('x')
-            if image_id is not None:
+            if (image_name in self.df_image_names['ProductImageName'].unique()):
+                try:
+                    image_id = int(self.df_image_names.loc[(self.df_image_names['ProductImageName']==image_name),['ProductImageSizeId']].values[0])
+                except IndexError:
+                    image_id = -1
+                    self.obReporter.update_report('Alert','This image must be imported first.')
+
+            if image_id != -1:
                 # check image name against db names
                 # get image id if any
 
@@ -366,8 +371,9 @@ class FillProduct(BasicProcessObject):
                 if 'ImageCaption' in row:
                     image_caption = str(row['ImageCaption'])
 
-
-                self.obIngester.image_cap(self.is_last, product_id,image_id,image_pref,image_caption)
+                # i need to figure out how to handle shipping this sort of thing in short run
+                # for now it just is true each time
+                self.obIngester.image_cap(True, product_id, image_id, image_pref, image_caption)
 
 
 
