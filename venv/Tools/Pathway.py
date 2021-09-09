@@ -322,6 +322,9 @@ class Pathways():
             if image_name not in current_image_names['ProductImageName'].values:
                 new_images.append(each_image)
 
+        # set progress bar
+        is_last = True
+
         for each_image in new_images:
             # get image size
             image_path = each_image[0]
@@ -334,10 +337,10 @@ class Pathways():
 
             self.obS3.put_image(image_path, s3_name, self.bucket)
 
-            object_url = "https://{0}.s3.{1}.amazonaws.com/{2}".format(self.bucket, self.region_name, s3_name)
-            object_url = object_url.replace(' ','+')
+            # this provides a link for downloading the image
+            # image_presigned_url = self.obS3.generate_url(self.bucket, s3_name)
 
-            self.obIngester.image_size_cap(object_url, image_name, image_width, image_height)
+            self.obIngester.image_size_cap(is_last, s3_name, image_name, image_width, image_height)
 
         # count good/bad
         # report

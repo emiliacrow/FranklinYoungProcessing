@@ -29,6 +29,14 @@ class S3Object:
 
         response = s3_client.upload_file(file_path,bucket,file_name)
 
+    def generate_url(self,bucket,object_name):
+        expiration = 3600
+        s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
+                                   aws_secret_access_key=self.aws_secret_access_key)
+
+        object_url = s3_client.generate_presigned_url('get_object',Params={'Bucket':bucket,'Key':object_name},ExpiresIn=expiration)
+        return object_url
+
 
 class DalObject:
     def __init__(self,user,password):

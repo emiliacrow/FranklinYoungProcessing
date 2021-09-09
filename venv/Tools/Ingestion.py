@@ -14,6 +14,7 @@ class IngestionObject:
         self.base_price_collector = []
         self.product_collector = []
         self.product_price_collector = []
+        self.product_image_match_collector = []
 
     def set_progress_bar(self, name, count_of_steps):
         self.obProgressBarWindow = ProgressBarWindow(name)
@@ -454,27 +455,22 @@ class IngestionObject:
         return_id = self.obDal.fedmall_product_price_cap(newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice)
         return return_id
 
-    def image_size_cap(self, newProductImageUrl, newProductImageName, newProductImageX, newProductImageY, newProductImageType = ''):
-        # or (is_last)
-        go_anyway = True
-        if (len(self.product_collector) >= self.load_limit) or (go_anyway):
-            self.product_collector.append([newProductImageUrl, newProductImageName, newProductImageType, newProductImageX, newProductImageY])
+    def image_size_cap(self, is_last, newProductImageUrl, newProductImageName, newProductImageX, newProductImageY):
+        if (len(self.product_collector) >= self.load_limit) or (is_last):
+            self.product_collector.append([newProductImageUrl, newProductImageName, newProductImageX, newProductImageY])
             self.obDal.image_size_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([newProductImageUrl, newProductImageName, newProductImageType, newProductImageX, newProductImageY])
+            self.product_collector.append([newProductImageUrl, newProductImageName, newProductImageX, newProductImageY])
 
 
-    def image_cap(self,newProductImageUrl,newProductImageName,newProductImageX,newProductImageY,newProductImageType = ''):
-        #  or (is_last)
-        if (len(self.product_collector) >= self.load_limit):
-            self.product_collector.append(
-                [newProductImageUrl,newProductImageName,newProductImageType,newProductImageX,newProductImageY])
-            self.obDal.image_size_cap(self.product_collector)
-            self.product_collector = []
+    def image_cap(self,is_last, product_id, image_id, image_preference = 0, image_caption = ''):
+        if (len(self.product_image_match_collector) >= self.load_limit) or (is_last):
+            self.product_image_match_collector.append([product_id,image_id,image_preference,image_caption])
+            self.obDal.image_size_cap(self.product_image_match_collector)
+            self.product_image_match_collector = []
         else:
-            self.product_collector.append(
-                [newProductImageUrl,newProductImageName,newProductImageType,newProductImageX,newProductImageY])
+            self.product_image_match_collector.append([product_id,image_id,image_preference,image_caption])
 
 
 

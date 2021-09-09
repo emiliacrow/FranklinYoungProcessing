@@ -345,19 +345,22 @@ class FillProduct(BasicProcessObject):
         return species_id
 
     def process_image(self, row, product_id):
-        if 'ImageUrl' in row:
-            image_caption = ''
-            is_video = 0
-            image_pref = 0
-            image_url = row['ImageUrl']
-            if 'ImageCaption' in row:
-                image_caption = row['ImageCaption']
-            if 'ImagePreference' in row:
-                image_pref = row['ImagePreference']
-            if 'IsVideo' in row:
-                is_video = row['IsVideo']
+        if 'ImageName' in row:
+            image_name = str(row['ImageName'])
+            # check image name against db names
+            # get image id if any
+            image_id = 1
 
-            success = self.obIngester.image_cap(image_url,image_caption,image_pref,is_video,product_id)
+            image_caption = ''
+            if 'ImageCaption' in row:
+                image_caption = str(row['ImageCaption'])
+
+            image_pref = 0
+            if 'ImagePrefence' in row:
+                image_caption = int(row['ImagePrefence'])
+
+
+            self.obIngester.image_cap(self.is_last, product_id,image_id,image_pref,image_caption)
 
 
 
