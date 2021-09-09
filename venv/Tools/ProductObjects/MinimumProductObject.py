@@ -93,6 +93,7 @@ class MinimumProduct(BasicProcessObject):
         for colName, row in df_attribute.iterrows():
             category = str(row['Category'])
             category_name = category.rpartition('/')[2]
+
             if category_name in self.df_category_names['CategoryName'].values:
                 new_category_id = self.df_category_names.loc[
                     (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
@@ -312,7 +313,7 @@ class MinimumProduct(BasicProcessObject):
 
 
     def process_long_desc(self, df_collect_product_base_data, row):
-        long_desc = row['ShortDescription']
+        short_desc = row['ShortDescription']
 
         if 'Product Name' not in row:
             if len(short_desc) > 40:
@@ -330,6 +331,7 @@ class MinimumProduct(BasicProcessObject):
         if 'LongDescription' in row:
             long_desc = row['LongDescription']
         else:
+            long_desc = short_desc
             df_collect_product_base_data['LongDescription'] = long_desc
 
         if 'BigCommerceProductName' in row:
