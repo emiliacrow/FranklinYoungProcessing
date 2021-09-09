@@ -350,13 +350,13 @@ class FillProduct(BasicProcessObject):
     def process_image(self, row, product_id):
         if 'ImageName' in row:
             image_name = str(row['ImageName'])
-            image_id = -1
+            image_id = 1
 
             if (image_name in self.df_image_names['ProductImageName'].unique()):
                 try:
                     image_id = int(self.df_image_names.loc[(self.df_image_names['ProductImageName']==image_name),['ProductImageSizeId']].values[0])
                 except IndexError:
-                    image_id = -1
+                    image_id = 1
                     self.obReporter.update_report('Alert','This image must be imported first.')
 
             if image_id != -1:
