@@ -27,11 +27,7 @@ class S3Object:
         s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
                                    aws_secret_access_key=self.aws_secret_access_key)
 
-        response = s3_client.upload_file(file_name,bucket,object_name)
-
-        object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(self.region_name, bucket, object_name)
-
-        return object_url
+        response = s3_client.upload_file(file_path,bucket,file_name)
 
 
 class DalObject:

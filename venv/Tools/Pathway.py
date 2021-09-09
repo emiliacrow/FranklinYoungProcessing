@@ -6,6 +6,7 @@
 import os
 import shutil
 import pandas
+from PIL import Image
 
 from Tools.FY_DAL import S3Object
 from Tools.FY_DAL import DalObject
@@ -302,12 +303,13 @@ class Pathways():
         self.bucket = 'franklin-young-image-bank'
         self.obIngester = IngestionObject(self.obDal)
         self.obDal.set_testing(is_testing)
+        self.region_name = 'us-west-2'
 
         # ident path
         clean_image_paths = self.obFileFinder.ident_directory('Select image directory to process:')
 
         # get vendor name from path
-        vendor_name = (clean_image_paths[0][0].rpartition('\\')[0]).rpartition('\\')[2]
+        vendor_name = (clean_image_paths[0][0].rpartition('\\\\')[0]).rpartition('\\\\')[2]
 
         # get list of image names
         current_image_names = self.obDal.get_image_names()
@@ -318,25 +320,30 @@ class Pathways():
 
             # check it against db
             if image_name not in current_image_names['ProductImageName'].values:
-                new_images.append(image_name)
+                new_images.append(each_image)
 
         for each_image in new_images:
             # get image size
             image_path = each_image[0]
             image_name = each_image[1]
             current_image = Image.open(image_path)
+
             image_width, image_height = current_image.size
 
-            print(file_path, file_name, bucket)
-            x = input('this is the info for storing the image')
-            image_url = self.obS3.put_image(self, file_path, file_name, bucket)
+            s3_name = vendor_name + '/' + image_name
 
-            print(image_url)
-            x = input('url')
-            self.obIngester.image_cap(image_url, image_name, image_width, image_height)
+            self.obS3.put_image(image_path, s3_name, self.bucket)
+
+            object_url = "https://{0}.s3.{1}.amazonaws.com/{2}".format(self.bucket, self.region_name, s3_name)
+            object_url = object_url.replace(' ','+')
+
+            self.obIngester.image_size_cap(object_url, image_name, image_width, image_height)
 
         # count good/bad
         # report
+        success = True
+        message = 'Forced to complete'
+
         return success, message
 
 
