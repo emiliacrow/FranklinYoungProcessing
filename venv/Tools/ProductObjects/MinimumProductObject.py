@@ -330,6 +330,8 @@ class MinimumProduct(BasicProcessObject):
         # processing/cleaning
         if 'LongDescription' in row:
             long_desc = row['LongDescription']
+            if long_desc == '':
+                long_desc = short_desc
         else:
             long_desc = short_desc
             df_collect_product_base_data['LongDescription'] = long_desc
