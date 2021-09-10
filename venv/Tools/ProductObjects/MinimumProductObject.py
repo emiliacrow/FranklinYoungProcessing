@@ -313,7 +313,7 @@ class MinimumProduct(BasicProcessObject):
 
 
     def process_long_desc(self, df_collect_product_base_data, row):
-        short_desc = row['ShortDescription']
+        short_desc = str(row['ShortDescription'])
 
         if 'Product Name' not in row:
             if len(short_desc) > 40:
@@ -323,13 +323,13 @@ class MinimumProduct(BasicProcessObject):
             df_collect_product_base_data['Product Name'] = [product_name]
 
         else:
-            product_name = row['Product Name']
+            product_name = str(row['Product Name'])
             if len(product_name) > 40:
                 product_name  = product_name[:40]
 
         # processing/cleaning
         if 'LongDescription' in row:
-            long_desc = row['LongDescription']
+            long_desc = str(row['LongDescription'])
             if long_desc == '':
                 long_desc = short_desc
         else:
@@ -337,12 +337,12 @@ class MinimumProduct(BasicProcessObject):
             df_collect_product_base_data['LongDescription'] = long_desc
 
         if 'BigCommerceProductName' in row:
-            bc_product_name = row['BigCommerceProductName']
+            bc_product_name = str(row['BigCommerceProductName'])
         else:
             bc_product_name = product_name
 
         if 'ECommerceLongDescription' in row:
-            ec_long_desc = row['ECommerceLongDescription']
+            ec_long_desc = str(row['ECommerceLongDescription'])
         else:
             ec_long_desc = long_desc
 
