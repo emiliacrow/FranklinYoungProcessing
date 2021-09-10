@@ -322,8 +322,13 @@ class Pathways():
             if image_name not in current_image_names['ProductImageName'].values:
                 new_images.append(each_image)
 
+        self.obProgressBarWindow = ProgressBarWindow('Loading Image Files')
+        self.obProgressBarWindow.show()
+        self.obProgressBarWindow.set_anew(len(new_images))
+        self.obProgressBarWindow.update_unknown()
         # set progress bar
-        is_last = True
+        is_last = False
+        p_bar = 0
 
         for each_image in new_images:
             # get image size
@@ -340,12 +345,17 @@ class Pathways():
             # this provides a link for downloading the image
             # image_presigned_url = self.obS3.generate_url(self.bucket, s3_name)
 
+            p_bar += 1
+            if p_bar == len(new_images):
+                is_last = True
             self.obIngester.image_size_cap(is_last, s3_name, image_name, image_width, image_height)
 
-        # count good/bad
-        # report
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.obProgressBarWindow.close()
+
         success = True
-        message = 'Forced to complete'
+        message = 'Loaded {} new images'.format(p_bar)
 
         return success, message
 
