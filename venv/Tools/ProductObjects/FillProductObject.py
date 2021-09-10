@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProduct(BasicProcessObject):
-    req_fields = ['FyProductNumber','LongDescription','ShortDescription']
+    req_fields = ['FyProductNumber','ShortDescription']
     sup_fields = ['FyCatalogNumber','ManufacturerPartNumber']
     att_fields = ['Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = []
@@ -128,10 +128,6 @@ class FillProduct(BasicProcessObject):
                 self.obReporter.update_report('Fail','This product price failed filtering')
                 return False, df_collect_product_base_data
 
-            if ('LongDescription' not in row):
-                self.obReporter.update_report('Fail','LongDescription is missing')
-                return False, df_collect_product_base_data
-
             if ('ShortDescription' not in row):
                 self.obReporter.update_report('Fail','ShortDescription is missing')
                 return False, df_collect_product_base_data
@@ -159,8 +155,12 @@ class FillProduct(BasicProcessObject):
 #
 #                category_insert = self.obIngester.ingest_product_category(product_id, category_id)
 
-            long_desc = row['LongDescription']
             short_desc = row['ShortDescription']
+            if 'LongDescription' not in row:
+                long_desc = short_desc
+            else:
+                long_desc = row['LongDescription']
+
 
             # we should separate the ones that require pre-processing steps from those that don't
 
