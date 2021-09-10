@@ -231,9 +231,9 @@ class MinimumProductPrice(BasicProcessObject):
         if ('AllowPurchases' not in row):
             self.obReporter.update_report('Fail','AllowPurchases was missing')
             return False, df_collect_product_base_data
-        elif row['AllowPurchases'] == 'N':
+        elif str(row['AllowPurchases']) == 'N':
             df_collect_product_base_data['AllowPurchases'] = [0]
-        elif row['AllowPurchases'] == 'Y':
+        elif str(row['AllowPurchases']) == 'Y':
             df_collect_product_base_data['AllowPurchases'] = [1]
 
         if ('ProductTaxClass' not in row):
