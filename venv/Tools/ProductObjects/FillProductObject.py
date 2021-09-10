@@ -116,6 +116,7 @@ class FillProduct(BasicProcessObject):
         df_collect_product_base_data = self.process_attribute_data(df_collect_product_base_data)
 
         for colName, row in df_line_product.iterrows():
+            # this filters out the fails
             if 'Filter' in row:
                 if row['Filter'] == 'Update':
                     self.obReporter.update_report('Pass','This product price is an update')
