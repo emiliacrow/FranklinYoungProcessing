@@ -349,7 +349,8 @@ class BasicProcessObject:
         line_headers = set(list(df_line_product.columns))
         required_headers = set(self.req_fields)
         missing_headers = list(required_headers.difference(line_headers))
-        report = 'Missing Data: ' + str(missing_headers)[1:-1]
+        report = 'Missing Data: ' + str(missing_headers)[1:-1]+'.'
+        report = report.replace('\"','')
 
         self.obReporter.update_report('Fail',report)
         return False, df_line_product

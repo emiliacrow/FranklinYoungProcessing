@@ -65,6 +65,8 @@ class FileProcessor(BasicProcessObject):
         overlap = list(required_headers.intersection(line_headers))
         if len(overlap) >= 1:
             return True
+        else:
+            return False
 
 
     def process_product_line(self, df_line_product):

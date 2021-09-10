@@ -347,7 +347,6 @@ class FillProduct(BasicProcessObject):
 
         return species_id
 
-
     def process_image(self, row, product_id):
         if 'ImageName' in row:
             image_name = str(row['ImageName'])
