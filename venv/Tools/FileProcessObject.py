@@ -275,8 +275,8 @@ class FileProcessor(BasicProcessObject):
                 df_collect_product_base_data['Retail Price'] = fy_list_price
 
                 if 'ECommerceDiscount' not in row:
-                    mfc_discount = float(row['MfcDiscountPercent'])
-                    df_collect_product_base_data['ECommerceDiscount'] = [mfc_discount]
+                    ecommerce_discount = float(row['MfcDiscountPercent'])
+                    df_collect_product_base_data['ECommerceDiscount'] = [ecommerce_discount]
                     self.obReporter.update_report('Alert', 'MfcDiscountPercent was used in place of ECommerceDiscount.')
                 else:
                     ecommerce_discount = float(row['ECommerceDiscount'])
