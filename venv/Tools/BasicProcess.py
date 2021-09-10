@@ -371,15 +371,24 @@ class ReporterObject():
         report_types_allowed = ['Fail','Alert','Pass']
         if report_type == 'Fail':
             if report_text not in self.fail_report:
-                self.fail_report = self.fail_report+'; '+report_text
+                if self.fail_report != '':
+                    self.fail_report = self.fail_report+'; '+report_text
+                else:
+                    self.fail_report = report_text
 
         if report_type == 'Alert':
-            if report_text not in self.fail_report:
-                self.alert_report = self.alert_report+'; '+report_text
+            if report_text not in self.alert_report:
+                if self.alert_report != '':
+                    self.alert_report = self.alert_report+'; '+report_text
+                else:
+                    self.alert_report = report_text
 
         if report_type == 'Pass':
-            if report_text not in self.fail_report:
-                self.pass_report = self.pass_report+'; '+report_text
+            if report_text not in self.pass_report:
+                if self.pass_report != '':
+                    self.pass_report = self.pass_report+'; '+report_text
+                else:
+                    self.pass_report = report_text
 
 
     def get_report(self):
