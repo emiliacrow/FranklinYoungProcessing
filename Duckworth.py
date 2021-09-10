@@ -9,6 +9,7 @@ import time
 import traceback
 
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QWidget
@@ -26,6 +27,9 @@ from Tools.Pathway import Pathways
 def main():
     feel = 'I feel the cosmos.'
     sys.excepthook = excepthook
+    custom_font = QFont("Avant Garde", 12)
+
+    QApplication.setFont(custom_font)
     app = QApplication(sys.argv)
     # make and display the gui
     obDuckworth = DuckworthWindow()
@@ -34,9 +38,10 @@ def main():
     ret = app.exec_()
     sys.exit(ret)
 
+
 def excepthook(exc_type, exc_value, exc_tb):
     tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-    crash_path = os.getcwd()+'\\venv\Assets\CrashReport.txt'
+    crash_path = os.getcwd() + '\\venv\Assets\CrashReport.txt'
     error_path = tb.split('\n')
     error_call = error_path[-2]
 
@@ -55,7 +60,6 @@ def excepthook(exc_type, exc_value, exc_tb):
     alert.setDetailedText(full_alert_text)
     x = alert.exec_()
 
-
     QApplication.quit()
 
 
@@ -64,7 +68,7 @@ class DuckworthWindow(QWidget):
         # super means it runs the base class __init__ first
         super(DuckworthWindow, self).__init__(parent)
 
-        self.setWindowIcon(QIcon(os.getcwd()+'\\venv\Assets\Duckworth2.png'))
+        self.setWindowIcon(QIcon(os.getcwd() + '\\venv\Assets\Duckworth2.png'))
         self.base_interval = 5000
 
         self.update_timer = QTimer()
