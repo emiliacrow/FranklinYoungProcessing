@@ -176,7 +176,7 @@ class BasePrice(BasicProcessObject):
 
             df_collect_product_base_data['ECommerceDiscount'] = [1-float(fy_sell_price/fy_list_price)]
 
-        elif ('ECommerceDiscount' in row or 'MfcDiscount' in row) and 'Retail Price' not in row:
+        elif ('ECommerceDiscount' in row or 'MfcDiscountPercent' in row) and 'Retail Price' not in row:
             if 'LandedCostMarkupPercent_FYList' not in row:
                 self.obReporter.update_report('Fail','Missing pricing data; couldn\'t calcuate.')
                 return False, df_collect_product_base_data
@@ -186,9 +186,9 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['Retail Price'] = fy_list_price
 
                 if 'ECommerceDiscount' not in row:
-                    mfc_discount = float(row['MfcDiscount'])
+                    mfc_discount = float(row['MfcDiscountPercent'])
                     df_collect_product_base_data['ECommerceDiscount'] = [mfc_discount]
-                    self.obReporter.update_report('Alert', 'MfcDiscount was used in place of ECommerceDiscount.')
+                    self.obReporter.update_report('Alert', 'MfcDiscountPercent was used in place of ECommerceDiscount.')
                 else:
                     ecommerce_discount = float(row['ECommerceDiscount'])
 
@@ -197,7 +197,7 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [float(fy_sell_price/fy_landed_cost)]
 
 
-        elif 'Retail Price' in row and ('ECommerceDiscount' in row or 'MfcDiscount' in row):
+        elif 'Retail Price' in row and ('ECommerceDiscount' in row or 'MfcDiscountPercent' in row):
             fy_list_price = float(row['Retail Price'])
             mark_up_list = float(fy_list_price/fy_landed_cost)
 
@@ -205,9 +205,9 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
 
             if 'ECommerceDiscount' not in row:
-                mfc_discount = float(row['MfcDiscount'])
+                mfc_discount = float(row['MfcDiscountPercent'])
                 df_collect_product_base_data['ECommerceDiscount'] = [mfc_discount]
-                self.obReporter.update_report('Alert', 'MfcDiscount was used in place of ECommerceDiscount.')
+                self.obReporter.update_report('Alert', 'MfcDiscountPercent was used in place of ECommerceDiscount.')
             else:
                 ecommerce_discount = float(row['ECommerceDiscount'])
 
