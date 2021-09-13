@@ -153,10 +153,10 @@ class GSAPrice(BasicProcessObject):
             contract_mod_number = row['GSAContractModificationNumber']
             is_pricing_approved = row['GSAPricingApproved']
             try:
-                approved_price_date = int(row['VAPricingApproved'])
+                approved_price_date = int(row['GSAApprovedPriceDate'])
                 approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
             except ValueError:
-                approved_price_date = str(row['VAPricingApproved'])
+                approved_price_date = str(row['GSAApprovedPriceDate'])
 
             approved_list_price = row['GSAApprovedListPrice']
             approved_percent = row['GSAApprovedPercent']
