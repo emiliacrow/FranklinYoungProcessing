@@ -391,7 +391,7 @@ class DalObject:
 
     def get_va_price_lookup(self):
         proc_name = 'sequoia.get_VAPrice_lookup'
-        column_names = ['FyProductNumber','FyPartNumber','IsVisible', 'DateCatalogReceived', 'VAApprovedListPrice',
+        column_names = ['FyProductNumber','FyPartNumber','IsVisible', 'VAApprovedListPrice',
                          'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
