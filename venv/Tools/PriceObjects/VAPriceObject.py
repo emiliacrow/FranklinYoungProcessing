@@ -12,7 +12,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class VAPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'VAApprovedListPrice',
+    req_fields = ['VendorName','FyProductNumber','FyPartNumber','OnContract', 'VAApprovedListPrice',
                   'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved']
 
     sup_fields = []
@@ -59,7 +59,7 @@ class VAPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_va_price_lookup = self.obDal.get_va_price_lookup()
 
-        match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'VAApprovedListPrice',
+        match_headers = ['FyProductNumber','FyPartNumber','OnContract', 'VAApprovedListPrice',
                          'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
 
         # simple first
@@ -148,7 +148,7 @@ class VAPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            is_visible = row['IsVisible']
+            on_contract = row['OnContract']
 
             contract_number = 'VA797H-16-D-0024/SPE2D1-16-D-0019'
             contract_mod_number = row['VAContractModificationNumber']
@@ -172,7 +172,7 @@ class VAPrice(BasicProcessObject):
             sin = row['VA_Sin']
 
 
-        self.obIngester.va_product_price_cap(self.is_last, base_product_price_id, fy_product_number, is_visible, contract_number, contract_mod_number,
+        self.obIngester.va_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, contract_number, contract_mod_number,
                                                              is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
                                                              va_base_price, va_sell_price, mfc_precent, mfc_price,sin)
 

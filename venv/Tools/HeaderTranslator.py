@@ -42,6 +42,8 @@ class HeaderTranslator():
                             'LandedCostMarkupPercent_FYList':['LandedCostMarkupPercent_FYList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
+                            'OnContract':['OnContract','GSAOnContract','VAOnContract','ECATOnContract','HTMEOnContract','FEDMALLOnContract','On Contract','GSA On Contract','VA On Contract','ECAT On Contract','HTME On Contract','FEDMALL On Contract'],
+
                             'GSAApprovedListPrice':['ChannelApprovedFYListPrice__value', 'ChannelApprovedFYListPrice',
                                                     'ApprovedFYListPrice'],
                             'GSAApprovedPercent':['GSAChannelDiscount', 'GSADiscount', 'GSA Channel Discount',

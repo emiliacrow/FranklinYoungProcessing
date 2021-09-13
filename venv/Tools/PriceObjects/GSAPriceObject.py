@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyProductNumber','FyPartNumber','IsVisible', 'GSAApprovedListPrice',
+    req_fields = ['VendorName','FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
                   'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
 
     sup_fields = []
@@ -57,7 +57,7 @@ class GSAPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
 
-        match_headers = ['FyProductNumber','FyPartNumber','IsVisible', 'GSAApprovedListPrice',
+        match_headers = ['FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
                          'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
 
         # simple first
@@ -146,7 +146,7 @@ class GSAPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            is_visible = row['IsVisible']
+            on_contract = row['OnContract']
 
 
             contract_number = 'GS-07F-0636W'
@@ -170,7 +170,7 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_Sin']
 
 
-        self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, is_visible, contract_number, contract_mod_number,
+        self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, contract_number, contract_mod_number,
                                                              is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
                                                              gsa_base_price, gsa_sell_price, mfc_precent, mfc_price,sin)
 
