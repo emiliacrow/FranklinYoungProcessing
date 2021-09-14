@@ -78,14 +78,14 @@ class BasePrice(BasicProcessObject):
 
         if len(self.df_update_products.index) != 0:
             # this could end up empty
-            self.df_base_price_lookup['Filter'] = 'Pass'
+            self.df_base_price_lookup['Filter'] = 'Update'
             self.df_update_products = self.df_update_products.drop(columns='Filter')
             self.df_update_products = pandas.DataFrame.merge(self.df_update_products, self.df_base_price_lookup,
                                                      how='left', on=match_headers)
 
             # this does not seem to be matching correctly in the above
             # I suspect this has to do with the numbers being strings?
-            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'Update'
+            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'New'
 
             self.df_product = self.df_product.append(self.df_update_products)
 
@@ -99,9 +99,7 @@ class BasePrice(BasicProcessObject):
 
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
-                if row['Filter'] == 'Pass':
-                    return True, df_collect_product_base_data
-                elif row['Filter'] != 'Update':
+                if row['Filter'] == 'Fail':
                     self.obReporter.update_report('Fail','This product must be ingested in product price')
                     return False, df_collect_product_base_data
             else:
@@ -130,7 +128,7 @@ class BasePrice(BasicProcessObject):
                 check_val = abs(fy_cost_test - fy_cost)
                 # we trust the cost provided over the discount given
                 if check_val > 0.01:
-                    fy_discount_percent = round((1 - (fy_cost / vendor_list_price)) * 100, 2)
+                    fy_discount_percent = round((1 - (fy_cost / vendor_list_price)), 2)
                     df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
         elif 'Discount' in row:
@@ -144,7 +142,7 @@ class BasePrice(BasicProcessObject):
         elif 'VendorListPrice' in row:
             vendor_list_price = round(float(row['VendorListPrice']), 2)
             if vendor_list_price != 0:
-                fy_discount_percent = round((1 - (fy_cost / vendor_list_price)) * 100, 2)
+                fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
                 df_collect_product_base_data['Discount'] = fy_discount_percent
             else:
                 df_collect_product_base_data['Discount'] = [0]
@@ -178,6 +176,7 @@ class BasePrice(BasicProcessObject):
 
         elif ('ECommerceDiscount' in row or 'MfcDiscountPercent' in row) and 'Retail Price' not in row:
             if 'LandedCostMarkupPercent_FYList' not in row:
+                # potentially default to 1.4 here
                 self.obReporter.update_report('Fail','Missing landed cost markup; couldn\'t calcuate.')
                 return False, df_collect_product_base_data
             else:
@@ -281,7 +280,6 @@ class BasePrice(BasicProcessObject):
                     date_catalog_received = str(row['DateCatalogReceived'])
 
             product_price_id = row['ProductPriceId']
-
 
         self.obIngester.ingest_base_price(self.is_last, vendor_list_price, fy_discount_percent, fy_cost,
                                                           estimated_freight, fy_landed_cost,
