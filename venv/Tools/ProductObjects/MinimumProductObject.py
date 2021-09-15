@@ -4,8 +4,9 @@
 # CreateFor: Franklin Young International
 
 import pandas
-from Tools.BasicProcess import BasicProcessObject
 
+from Tools.ProgressBar import YesNoDialog
+from Tools.BasicProcess import BasicProcessObject
 
 # keep this
 class MinimumProduct(BasicProcessObject):
@@ -21,7 +22,7 @@ class MinimumProduct(BasicProcessObject):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Minimum Product'
         self.quick_country = {}
-
+        self.process_updates = False
 
     def batch_preprocessing(self):
         # TODO add something here to allow the user to just select the vendor name.
@@ -42,6 +43,11 @@ class MinimumProduct(BasicProcessObject):
 
         self.batch_process_country()
         self.batch_process_lead_time()
+
+        self.obYNBox = YesNoDialog('Process updates?')
+        self.obYNBox.initUI('Process updates dialog.', 'Do you want to process updates?')
+        if self.obYNBox.yes_selected == True:
+            self.process_updates = True
 
         return self.df_product
 
@@ -225,7 +231,8 @@ class MinimumProduct(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             if row['Filter'] == 'Update':
                 self.obReporter.update_report('Pass','This product can be updated')
-                return True, df_collect_product_base_data
+                if self.process_updates == False:
+                    return True, df_collect_product_base_data
             else:
                 self.obReporter.update_report('Pass','This product is new')
 
@@ -326,6 +333,7 @@ class MinimumProduct(BasicProcessObject):
             product_name = str(row['ProductName'])
             if len(product_name) > 40:
                 product_name  = product_name[:40]
+            df_collect_product_base_data['ProductName'] = [product_name]
 
         # processing/cleaning
         if 'LongDescription' in row:
