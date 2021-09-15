@@ -29,7 +29,7 @@ class FileProcessor(BasicProcessObject):
 
         if self.proc_to_run == 'Generate Upload File':
             self.set_new_order = True
-            self.out_column_headers = ['Pass','Alert','Fail','FyCatalogNumber','FyProductNumber','FyPartNumber','Item Type', 'Product Name', 'Product Type',
+            self.out_column_headers = ['Pass','Alert','Fail','FyCatalogNumber','FyProductNumber','FyPartNumber','Item Type', 'ProductName', 'Product Type',
                                        'Product Code/SKU', 'Brand Name', 'Option Set Align', 'Product Description',
                                        'VendorListPrice', 'Discount', 'FyCost', 'Fixed Shipping Cost',
                                        'FyLandedCost', 'LandedCostMarkupPercent_FYSell','Sell Price',
@@ -160,15 +160,15 @@ class FileProcessor(BasicProcessObject):
             fy_part_number = row['FyPartNumber']
             df_collect_line['Product Code/SKU'] = [fy_part_number]
 
-            if 'Product Name' not in row:
+            if 'ProductName' not in row:
                 if len(short_desc) > 40:
                     product_name  = short_desc[:40]
                 else:
                     product_name  = short_desc
-                df_collect_line['Product Name'] = [product_name]
+                df_collect_line['ProductName'] = [product_name]
 
             else:
-                product_name = row['Product Name']
+                product_name = row['ProductName']
                 if len(product_name) > 40:
                     product_name  = product_name[:40]
 
