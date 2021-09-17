@@ -264,7 +264,7 @@ class DuckworthWindow(QWidget):
 
 
     def update_data_buttons(self,column_pos):
-        self.update_data_options = ['Update Product Data','Update Product Sizing/Pricing', 'Update Base Pricing', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
+        self.update_data_options = ['1-Update Full Product Data(5 steps)','2-Update Minimum Product(2 steps)', '3-Update Product Attributes(1 step)', '4-Update Base Pricing(1 step)', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
         self.update_data_options.sort()
 
         self.update_data_button = QPushButton('Update Data')

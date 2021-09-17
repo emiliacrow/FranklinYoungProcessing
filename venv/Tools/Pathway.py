@@ -515,6 +515,7 @@ class Pathways():
 
 
     def update_data_pathway(self, update_action_selected):
+        action_set = ['1-Update Full Product Data(5 steps)', '2-Update Minimum Product(2 steps)', '3-Update Product Attributes(1 step)', '4-Update Base Pricing(1 step)', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
         return False, 'Process not built.'
 
     def contract_pathway(self, contract_selected):

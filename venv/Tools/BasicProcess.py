@@ -269,10 +269,6 @@ class BasicProcessObject:
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
 
-            else:
-                fy_product_number = fy_catalog_number
-
-
             if 'FyPartNumber' not in row:
                 df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
             df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
@@ -296,13 +292,13 @@ class BasicProcessObject:
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
 
-            else:
-                fy_product_number = fy_catalog_number
 
+            if 'FyPartNumber' not in row:
+                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
+            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
             df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-
             return True, df_collect_product_base_data
 
         elif 'SupplierName' in row:
@@ -324,10 +320,12 @@ class BasicProcessObject:
                 else:
                     fy_product_number = fy_catalog_number
 
+                if 'FyPartNumber' not in row:
+                    df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
+                df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
                 df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-
                 return True, df_collect_product_base_data
 
         else:
