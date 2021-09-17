@@ -44,6 +44,11 @@ class MinimumProductPrice(BasicProcessObject):
             self.df_product = self.df_product.merge(self.df_product_lookup,
                                                             how='left', on=['FyCatalogNumber'])
 
+        if 'ProductId_y' in self.df_product.columns:
+            self.df_product['ProductId'] = self.df_product[['ProductId_y']]
+            self.df_product = self.df_product.drop(columns=['ProductId_x'])
+            self.df_product = self.df_product.drop(columns=['ProductId_y'])
+
         # we assign a label to the products that are haven't been loaded through product yet
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
