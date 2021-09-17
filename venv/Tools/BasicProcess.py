@@ -258,7 +258,7 @@ class BasicProcessObject:
         if 'ManufacturerId'  in row:
             new_manufacturer_id = row['ManufacturerId']
             new_prefix = self.df_manufacturer_translator.loc[
-                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0]
+                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
 
             fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
 
