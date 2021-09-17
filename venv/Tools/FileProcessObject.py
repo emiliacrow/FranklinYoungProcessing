@@ -326,12 +326,7 @@ class FileProcessor(BasicProcessObject):
         self.success = True
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-
-            if ('ManufacturerId' not in row):
-                success, df_collect_attribute_data = self.process_manufacturer(df_collect_attribute_data, row)
-                if success == False:
-                    self.obReporter.update_report('Fail','Failed in process manufacturer')
-                    return success, df_collect_attribute_data
+            success, df_collect_attribute_data = self.process_manufacturer(df_collect_attribute_data, row)
 
         return True, df_collect_attribute_data
 

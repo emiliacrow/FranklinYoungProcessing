@@ -255,6 +255,28 @@ class BasicProcessObject:
 
         manufacturer_product_id = str(row['ManufacturerPartNumber'])
 
+        if 'ManufacturerId'  in row:
+            new_manufacturer_id = row['ManufacturerId']
+            new_prefix = self.df_manufacturer_translator.loc[
+                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0]
+
+            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
+
+            fy_product_number = fy_catalog_number
+
+            if 'UnitOfIssue' in row:
+                unit_of_issue = row['UnitOfIssue']
+                if unit_of_issue != 'EA':
+                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+
+            if 'FyPartNumber' not in row:
+                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
+            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
+            df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+            df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
+            return True, df_collect_product_base_data
+
         if (manufacturer.lower() in self.df_manufacturer_translator['SupplierName'].values):
             new_manufacturer_id, new_prefix = self.df_manufacturer_translator.loc[
                 (self.df_manufacturer_translator['SupplierName'] == manufacturer.lower()), ['ManufacturerId',
