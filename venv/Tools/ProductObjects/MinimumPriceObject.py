@@ -259,10 +259,13 @@ class MinimumProductPrice(BasicProcessObject):
             product_id = row['ProductId']
             vendor_id = row['VendorId']
             unit_of_issue_id = row['UnitOfIssueId']
+            unit_of_issue_symbol_id = 0
+            unit_of_measure_symbol_id = 0
+            unit_of_issue_quantity = 0
 
         self.obIngester.ingest_product_price(self.is_last, fy_product_number,allow_purchases,
                                                              fy_part_number, peoduct_tax_class, vendor_part_number,
-                                                             product_id, vendor_id, unit_of_issue_id)
+                                                             product_id, vendor_id, unit_of_issue_id, unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
 
         return True, df_line_product
 

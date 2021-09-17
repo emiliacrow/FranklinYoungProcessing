@@ -362,9 +362,9 @@ class IngestionObject:
         return return_id
 
 
-    def ingest_product_price(self, is_last, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueId):
+    def ingest_product_price(self, is_last, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append([newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueId])
+            self.product_collector.append([newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity])
 
             self.obDal.min_product_price_cap(self.product_collector)
             self.product_collector = []
@@ -372,7 +372,7 @@ class IngestionObject:
         else:
             self.product_collector.append([newFyProductNumber, newAllowPurchases, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
-                                                newUnitOfIssueId])
+                                                newUnitOfIssueId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity])
 
 
     def fill_product_price(self, is_last, newProductPriceId,newUPC='',newVolume=-1,newWeight=-1,newSize='',newLength=-1,newVariantDesc='',newMinumumFlowTime='',newProfile='',newAmountPriceBreakLevel1=-1,newAmountPriceBreakLevel2=-1,newAmountPriceBreakLevel3=-1,newQuantityPriceBreakLevel1=-1,newQuantityPriceBreakLevel2=-1,newQuantityPriceBreakLevel3=-1,newThicknessId=-1,newHeightId=-1,newDepthId=-1,newWidthId=-1,newCapacityId=-1,newTankCapacityId=-1,newVolumeUnitId=-1,newWeightUnitId=-1,newLengthUnitId=-1,newDimensionsId=-1,newInteriorDimensionsId=-1,newExteriorDimensionsId=-1,newMaterialId=-1,newColorId=-1,newSpeedId=-1,newTubeId=-1,newWeightRangeId=-1,newTemperatureRangeId=-1,newWavelengthId=-1,newWattageId=-1,newVoltageId=-1,newAmperageId=-1,newOuterDiameterId=-1,newInnerDiameterId=-1,newDiameterId=-1,newToleranceId=-1,newAccuracyId=-1,newMassId=-1,newApertureSizeId=-1,newApparelSizeId=-1,newParticleSizeId=-1,newPoreSizeId=-1):
