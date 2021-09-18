@@ -19,7 +19,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.name = 'Minimum Product Price'
 
     def batch_preprocessing(self):
-        self.df_uoi_lookup = self.obDal.get_unit_of_issue_lookup()
+        self.df_uois_lookup = self.obDal.get_unit_of_issue_symbol_lookup()
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
         self.define_new()
@@ -157,38 +157,29 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def identify_fy_product_number(self, df_collect_product_base_data, row):
-        if ('UnitOfIssueId' not in row):
-            if ('UnitOfMeasure' not in row):
-                unit_of_measure = 'EA'
-                df_collect_product_base_data['UnitOfMeasure'] = unit_of_measure
-            else:
-                unit_of_measure = row['UnitOfMeasure']
-
-
-            if ('Conv Factor/QTY UOM' not in row):
-                unit_count = 1
-                df_collect_product_base_data['Conv Factor/QTY UOM'] = [unit_count]
-            else:
-                unit_count = row['Conv Factor/QTY UOM']
-
-            unit_of_issue = 'EA'
-            if 'UnitOfIssue' in row:
-                unit_of_issue = row['UnitOfIssue']
-
-            try:
-                unit_of_issue_id = self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueSymbol'] == unit_of_issue) &
-                                                      (self.df_uoi_lookup['Count'] == unit_count) &
-                                                      (self.df_uoi_lookup['UnitOfMeasureSymbol'] == unit_of_measure),'UnitOfIssueId'].values[0]
-            except:
-                unit_of_issue_id = self.obIngester.ingest_uoi_by_symbol(unit_of_issue, unit_count, unit_of_measure)
-
-            df_collect_product_base_data['UnitOfIssueId'] = [unit_of_issue_id]
-
-        elif ('UnitOfIssue' not in row):
-            unit_of_issue_id = row['UnitOfIssueId']
-            unit_of_issue = self.df_uoi_lookup[(self.df_uoi_lookup['UnitOfIssueId'] == unit_of_issue_id),'UnitOfIssueSymbol'].values[0]
+        if ('UnitOfMeasure' not in row):
+            unit_of_measure = 'EA'
+            df_collect_product_base_data['UnitOfMeasure'] = unit_of_measure
         else:
+            unit_of_measure = row['UnitOfMeasure']
+
+        unit_of_issue = 'EA'
+        if 'UnitOfIssue' in row:
             unit_of_issue = row['UnitOfIssue']
+
+        try:
+            unit_of_issue_symbol_id = self.df_uois_lookup.loc[(self.df_uois_lookup['UnitOfIssueSymbol'] == unit_of_issue),'UnitOfIssueSymbolId'].values[0]
+        except IndexError:
+            unit_of_issue_symbol_id = self.obIngester.ingest_uoi_symbol(unit_of_issue)
+
+        df_collect_product_base_data['UnitOfIssueSymbolId'] = [unit_of_issue_symbol_id]
+
+        try:
+            unit_of_measure_symbol_id = self.df_uois_lookup.loc[(self.df_uois_lookup['UnitOfIssueSymbol'] == unit_of_measure),'UnitOfIssueSymbolId'].values[0]
+        except IndexError:
+            unit_of_measure_symbol_id = self.obIngester.ingest_uoi_symbol(unit_of_measure)
+
+        df_collect_product_base_data['UnitOfMeasureSymbolId'] = [unit_of_measure_symbol_id]
 
 
         if 'FyCatalogNumber' in row:
@@ -258,14 +249,13 @@ class MinimumProductPrice(BasicProcessObject):
 
             product_id = row['ProductId']
             vendor_id = row['VendorId']
-            unit_of_issue_id = row['UnitOfIssueId']
-            unit_of_issue_symbol_id = 0
-            unit_of_measure_symbol_id = 0
-            unit_of_issue_quantity = 0
+            unit_of_issue_symbol_id = row['UnitOfIssueSymbolId']
+            unit_of_measure_symbol_id = row['UnitOfMeasureSymbolId']
+            unit_of_issue_quantity = row['Conv Factor/QTY UOM']
 
         self.obIngester.ingest_product_price(self.is_last, fy_product_number,allow_purchases,
                                                              fy_part_number, peoduct_tax_class, vendor_part_number,
-                                                             product_id, vendor_id, unit_of_issue_id, unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
+                                                             product_id, vendor_id, unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
 
         return True, df_line_product
 

@@ -500,15 +500,10 @@ class DalObject:
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
-    def get_unit_of_issue(self,unit_of_issue_id):
-        proc_name = 'sequoia.get_UnitOfIssue'
-        proc_args = (unit_of_issue_id,)
-        return_uoi = self.id_cap(proc_name, proc_args)
-        return return_uoi
 
-    def get_unit_of_issue_lookup(self):
-        proc_name = 'sequoia.get_UnitOfIssue_lookup'
-        column_names = ['UnitOfIssueId','UnitOfIssueSymbol','Count','UnitOfMeasureSymbol']
+    def get_unit_of_issue_symbol_lookup(self):
+        proc_name = 'sequoia.get_UnitOfIssueSymbol_lookup'
+        column_names = ['UnitOfIssueSymbolId','UnitOfIssueSymbol']
         df_uoi_lookup = self.get_lookup(proc_name,column_names)
         return df_uoi_lookup
 
