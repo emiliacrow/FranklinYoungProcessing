@@ -128,6 +128,9 @@ class Validator:
         out_phrase = out_phrase.replace('„¢','(r)')
         out_phrase = out_phrase.replace('Â®','(r)')
 
+        out_phrase = out_phrase.replace('â€','-')
+        out_phrase = out_phrase.replace('â€','-')
+
         out_phrase = out_phrase.replace('Ã¤','a')
         out_phrase = out_phrase.replace('Ã¡','a')
         out_phrase = out_phrase.replace('Ã…','a')
@@ -147,6 +150,8 @@ class Validator:
         out_phrase = out_phrase.replace('Å¡','s')
         out_phrase = out_phrase.replace('Å‚','l')
         out_phrase = out_phrase.replace('Ã‚Â', '')
+
+        out_phrase = out_phrase.replace('â','-')
 
         # and many more
 
