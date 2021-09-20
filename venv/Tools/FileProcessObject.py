@@ -20,12 +20,15 @@ class FileProcessor(BasicProcessObject):
     def header_viability(self):
         if self.proc_to_run == 'Extract Attributes':
             self.req_fields = ['LongDescription', 'ShortDescription']
+            self.sup_fields = []
 
         if self.proc_to_run == 'Assign FyPartNumbers':
             self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber','UnitOfIssue']
+            self.sup_fields = []
 
         if self.proc_to_run == 'Unicode Correction':
             self.req_fields = ['ProductName']
+            self.sup_fields = []
 
         if self.proc_to_run == 'Generate Upload File':
             self.set_new_order = True
@@ -46,9 +49,9 @@ class FileProcessor(BasicProcessObject):
                                        'ManufacturerPartNumber','SupplierName','Temp Control',
                                        'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName']
 
-            self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription','LongDescription', 'FyCost',
-                               'Conv Factor/QTY UOM','ProductUrl','ManufacturerName','ManufacturerPartNumber',
-                               'ImageName','Category']
+            self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription', 'FyCost',
+                               'Conv Factor/QTY UOM','ManufacturerName','ManufacturerPartNumber', 'Category']
+            self.sup_fields = []
 
         # inital file viability check
         product_headers = set(self.lst_product_headers)
@@ -56,17 +59,6 @@ class FileProcessor(BasicProcessObject):
         overlap = list(required_headers.intersection(product_headers))
         if len(overlap) >= 1:
             self.is_viable = True
-
-
-    def line_viability(self,df_product_line):
-        # line viability checks
-        line_headers = set(list(df_product_line.columns))
-        required_headers = set(self.req_fields)
-        overlap = list(required_headers.intersection(line_headers))
-        if len(overlap) >= 1:
-            return True
-        else:
-            return False
 
 
     def process_product_line(self, df_line_product):
