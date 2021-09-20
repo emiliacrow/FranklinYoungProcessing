@@ -23,7 +23,7 @@ class FileProcessor(BasicProcessObject):
             self.sup_fields = []
 
         if self.proc_to_run == 'Assign FyPartNumbers':
-            self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber','UnitOfIssue']
+            self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber']
             self.sup_fields = []
 
         if self.proc_to_run == 'Unicode Correction':
@@ -49,8 +49,8 @@ class FileProcessor(BasicProcessObject):
                                        'ManufacturerPartNumber','SupplierName','Temp Control',
                                        'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName']
 
-            self.req_fields = ['FyPartNumber','UnitOfMeasure','ShortDescription', 'FyCost',
-                               'Conv Factor/QTY UOM','ManufacturerName','ManufacturerPartNumber', 'Category']
+            self.req_fields = ['FyPartNumber','ShortDescription', 'FyCost',
+                               'ManufacturerName','ManufacturerPartNumber', 'Category']
             self.sup_fields = []
 
         # inital file viability check
@@ -183,7 +183,7 @@ class FileProcessor(BasicProcessObject):
             df_collect_line['Product Image Description - 1'] = [product_name]
 
             # this deals with the custom fields
-            uom = row['UnitOfMeasure']
+            uoi = row['UnitOfIssue']
             if 'Conv Factor/QTY UOM' in row:
                 quantity = row['Conv Factor/QTY UOM']
             else:
@@ -192,7 +192,7 @@ class FileProcessor(BasicProcessObject):
                 self.obReporter.update_report('Alert','Conv Factor was generated.')
 
             custom_fields = '"ShortDescription=' + short_desc +'"'
-            custom_fields = custom_fields + ';unit_of_issue=' + uom
+            custom_fields = custom_fields + ';unit_of_issue=' + uoi
             custom_fields = custom_fields + ';unit_of_issue_qty=' + str(quantity) + ';uom_std=EA;green_product=1;'
             custom_fields = custom_fields + '"primary_vendor_product_name=' + product_name.partition(' {')[0] +'"'
 

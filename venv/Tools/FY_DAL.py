@@ -47,9 +47,9 @@ class DalObject:
 
     def set_testing(self, is_testing):
         if is_testing:
-            self.__host = 'localhost'
-            self.__uid = 'root'
-            self.__pwd = ''
+            self.__host = 'sequoia-staging.cfvzdoug1xvb.us-west-2.rds.amazonaws.com'
+            self.__uid = self.user
+            self.__pwd = self.password
             self.__port = 3306
             self.dbname = 'sequoia'
             self.driver = '{SQL server}'

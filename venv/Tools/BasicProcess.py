@@ -268,6 +268,8 @@ class BasicProcessObject:
                 unit_of_issue = row['UnitOfIssue']
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+            else:
+                df_collect_product_base_data['UnitOfIssue'] = ['EA']
 
             if 'FyPartNumber' not in row:
                 df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
@@ -290,6 +292,8 @@ class BasicProcessObject:
                 unit_of_issue = row['UnitOfIssue']
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+            else:
+                df_collect_product_base_data['UnitOfIssue'] = ['EA']
 
             if 'FyPartNumber' not in row:
                 df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
@@ -313,6 +317,8 @@ class BasicProcessObject:
                 unit_of_issue = row['UnitOfIssue']
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+            else:
+                df_collect_product_base_data['UnitOfIssue'] = ['EA']
 
 
             if 'FyPartNumber' not in row:
@@ -340,7 +346,7 @@ class BasicProcessObject:
                         fy_product_number = fy_catalog_number + ' ' + unit_of_issue
 
                 else:
-                    fy_product_number = fy_catalog_number
+                    df_collect_product_base_data['UnitOfIssue'] = ['EA']
 
                 if 'FyPartNumber' not in row:
                     df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
