@@ -295,7 +295,7 @@ class DuckworthWindow(QWidget):
         self.contract_options = ['GSA Contract file','ECAT contract file', 'Sensoft Contract file']
         self.contract_options.sort()
 
-        self.contract_button = QPushButton('Update Data')
+        self.contract_button = QPushButton('Generate Contract Files')
         self.contract_button.setStyleSheet('background-color: lightgreen')
         self.contract_button.clicked.connect(self.contract_kickoff)
         self.layout.addWidget(self.contract_button, 1, column_pos)
