@@ -157,8 +157,8 @@ class DuckworthWindow(QWidget):
 
     def testing_button_action(self, button):
         if button.isChecked():
-            self.testing_button.setText('Testing')
-            self.testing_button.setStyleSheet('border: 1px solid black; background-color: lightgreen')
+            self.testing_button.setText('Staging')
+            self.testing_button.setStyleSheet('border: 1px solid black; background-color: lightblue')
             self.is_testing = True
         else:
             self.testing_button.setText('Live')
