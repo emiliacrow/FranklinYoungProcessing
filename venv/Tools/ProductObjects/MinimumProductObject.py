@@ -215,6 +215,15 @@ class MinimumProduct(BasicProcessObject):
             self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=[attribute])
 
+    def filter_check_in(self, row):
+        if row['Filter'] == 'Update':
+            self.obReporter.update_report('Pass', 'This product can be updated')
+            return True
+        else:
+            self.obReporter.update_report('Pass', 'This product is new')
+            return False
+
+
     def process_product_line(self, df_line_product):
         is_controlled = 0
         is_disposible = 0
@@ -229,12 +238,8 @@ class MinimumProduct(BasicProcessObject):
 
         # this is also stupid, but it gets the point across for testing purposes
         for colName, row in df_line_product.iterrows():
-            if row['Filter'] == 'Update':
-                self.obReporter.update_report('Pass','This product can be updated')
-                if self.process_updates == False:
-                    return True, df_collect_product_base_data
-            else:
-                self.obReporter.update_report('Pass','This product is new')
+            if self.filter_check_in(row) == False:
+                return False, df_collect_product_base_data
 
             success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
             if success == False:
@@ -436,8 +441,24 @@ class MinimumProduct(BasicProcessObject):
 
 
 
-# class UpdateMinimumProduct(MinimumProduct):
+class UpdateMinimumProduct(MinimumProduct):
+    req_fields = ['ProductName', 'ShortDescription', 'ManufacturerPartNumber',
+                                'CountryOfOrigin', 'ManufacturerName','VendorName','Category']
+    sup_fields = []
+    att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
+    gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
+                                'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
+                                'ExpectedLeadTimeId']
 
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
 
+    def filter_check_in(self, row):
+        if row['Filter'] == 'Update':
+            self.obReporter.update_report('Pass', 'This product can be updated')
+            return True
+        else:
+            self.obReporter.update_report('Pass', 'This must be loaded')
+            return False
 
 ## end ##

@@ -25,6 +25,7 @@ from Tools.CategoryProcessingObject import CategoryProcessor
 
 # product objects
 from Tools.ProductObjects.MinimumProductObject import MinimumProduct
+from Tools.ProductObjects.MinimumProductObject import UpdateMinimumProduct
 from Tools.ProductObjects.FillProductObject import FillProduct
 from Tools.ProductObjects.MinimumPriceObject import MinimumProductPrice
 from Tools.ProductObjects.FillPriceObject import FillProductPrice
@@ -515,9 +516,43 @@ class Pathways():
 
 
     def update_data_pathway(self, update_action_selected):
-        action_set = ['1-Update Minimum Product Data(3 steps)','2-Update Full Product(5 steps)', '3-Update Product Attributes(2 steps)', '4-Update Base Pricing(1 step)', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
+        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+update_action_selected)
+        if self.success == False:
+            return self.success, self.message
 
-        return False, 'Process not built.'
+        self.success = False
+        b_inter_files = False
+        self.message = 'Ingest data pathway'
+
+        self.obYNBox = YesNoDialog('Write intermediate files?')
+        self.obYNBox.initUI('Intermediate file dialog.', 'Would you like to write intermediate files?')
+        if self.obYNBox.yes_selected == True:
+            b_inter_files = True
+
+        self.df_product = self.obFileFinder.read_xlsx()
+        all_steps = ['1-Update Minimum Product Data(3 steps)','2-Update Full Product(5 steps)', '3-Update Product Attributes(2 steps)', '4-Update Base Pricing(1 step)', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
+
+        self.obYNBox.close()
+
+        if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '2-Update Full Product(5 steps)']:
+            self.obUpdateMinProduct = UpdateMinimumProduct(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obUpdateMinProduct.begin_process()
+            if b_inter_files:
+                self.df_product = self.obUpdateMinProduct.get_df()
+                self.obFileFinder.write_xlsx(self.df_product, 'MinProd')
+            if self.success == False:
+                return self.success, self.message
+
+        if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '2-Update Full Product(5 steps)']:
+            self.obUpdateMinPrice = UpdateMinimumPrice(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obUpdateMinPrice.begin_process()
+            if b_inter_files:
+                self.df_product = self.obUpdateMinPrice.get_df()
+                self.obFileFinder.write_xlsx(self.df_product, 'MinProd')
+            if self.success == False:
+                return self.success, self.message
+
+        return self.success, self.message
 
     def contract_pathway(self, contract_selected):
         return False, 'Process not built.'
