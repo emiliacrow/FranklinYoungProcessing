@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 # keep this
 class MinimumProduct(BasicProcessObject):
-    req_fields = ['ProductName', 'ShortDescription', 'ManufacturerPartNumber',
+    req_fields = ['ShortDescription', 'ManufacturerPartNumber',
                                 'CountryOfOrigin', 'ManufacturerName','VendorName','Category']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
@@ -399,8 +399,6 @@ class MinimumProduct(BasicProcessObject):
         # we just get data from the DF and ship it (as planned)
         for colName, row in df_line_product.iterrows():
 
-            # check on this
-
             fy_catalog_number = row['FyCatalogNumber']
             manufacturer_product_id = row['ManufacturerPartNumber']
             product_name = row['ProductName']
@@ -436,7 +434,7 @@ class MinimumProduct(BasicProcessObject):
 
 
 class UpdateMinimumProduct(MinimumProduct):
-    req_fields = ['ProductName', 'ShortDescription', 'ManufacturerPartNumber',
+    req_fields = ['ShortDescription', 'ManufacturerPartNumber',
                                 'CountryOfOrigin', 'ManufacturerName','VendorName','Category']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
@@ -446,6 +444,8 @@ class UpdateMinimumProduct(MinimumProduct):
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
+        self.name = 'Fill Minimum Product'
+        self.quick_country = {}
 
     def filter_check_in(self, row):
         if row['Filter'] == 'Update':

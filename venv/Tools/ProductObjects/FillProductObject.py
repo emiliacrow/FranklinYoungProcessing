@@ -111,22 +111,28 @@ class FillProduct(BasicProcessObject):
             self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                               how='left', on=[attribute])
 
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Update':
+                self.obReporter.update_report('Pass', 'This product price is an update')
+                return False
+            elif row['Filter'] == 'New':
+                self.obReporter.update_report('Pass', 'This product price is new')
+                return True
+            else:
+                self.obReporter.update_report('Fail', 'This product must be ingested in product')
+                return False
+        else:
+            self.obReporter.update_report('Fail', 'This product price failed filtering')
+            return False
+
     def process_product_line(self, df_line_product):
         df_collect_product_base_data = df_line_product.copy()
         df_collect_product_base_data = self.process_attribute_data(df_collect_product_base_data)
 
         for colName, row in df_line_product.iterrows():
             # this filters out the fails
-            if 'Filter' in row:
-                if row['Filter'] == 'Update':
-                    self.obReporter.update_report('Pass','This product price is an update')
-                elif row['Filter'] == 'New':
-                    self.obReporter.update_report('Pass','This product price is new')
-                else:
-                    self.obReporter.update_report('Fail','This product price failed to match a DB product')
-                    return False, df_collect_product_base_data
-            else:
-                self.obReporter.update_report('Fail','This product price failed filtering')
+            if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
             product_id = row['ProductId']
@@ -366,4 +372,27 @@ class FillProduct(BasicProcessObject):
                 self.obIngester.image_cap(True, product_id, image_id, image_pref, image_caption)
 
 
+class UpdateFillProduct(FillProduct):
+    req_fields = ['FyProductNumber']
+    sup_fields = ['FyCatalogNumber','ManufacturerPartNumber']
+    att_fields = ['Sterility', 'SurfaceTreatment', 'Precision']
+    gen_fields = []
 
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
+        self.name = 'Update Product Fill'
+
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Update':
+                self.obReporter.update_report('Pass', 'This product price is an update')
+                return True
+            elif row['Filter'] == 'New':
+                self.obReporter.update_report('Pass', 'This product price is new')
+                return False
+            else:
+                self.obReporter.update_report('Fail', 'This product must be ingested in product')
+                return False
+        else:
+            self.obReporter.update_report('Fail', 'This product price failed filtering')
+            return False

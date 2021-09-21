@@ -107,6 +107,21 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])
 
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Update':
+                self.obReporter.update_report('Pass','This product price is an update')
+                return False
+            elif row['Filter'] == 'New':
+                self.obReporter.update_report('Pass','This product price is new')
+                return True
+            else:
+                self.obReporter.update_report('Fail','This product must be ingested in product')
+                return False
+        else:
+            self.obReporter.update_report('Fail','This product price failed filtering')
+            return False
+
 
     def process_product_line(self, df_line_product):
         success = True
@@ -114,16 +129,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         # step-wise product processing
         for colName, row in df_line_product.iterrows():
-            if 'Filter' in row:
-                if row['Filter'] == 'Update':
-                    self.obReporter.update_report('Pass','This product price is an update')
-                elif row['Filter'] == 'New':
-                    self.obReporter.update_report('Pass','This product price is new')
-                else:
-                    self.obReporter.update_report('Fail','This product price failed to match a DB product')
-                    return False, df_collect_product_base_data
-            else:
-                self.obReporter.update_report('Fail','This product price failed filtering')
+            if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
             # this is also stupid, but it gets the point across for testing purposes
@@ -260,6 +266,29 @@ class MinimumProductPrice(BasicProcessObject):
         return True, df_line_product
 
 
+class UpdateMinimumProductPrice(MinimumProductPrice):
+    req_fields = ['VendorName','VendorPartNumber','FyCatalogNumber','FyProductNumber', 'AllowPurchases']
+    sup_fields = []
+    gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
+    att_fields = []
 
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
+        self.name = 'Update Minimum Product Price'
+
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Update':
+                self.obReporter.update_report('Pass','This product price is an update')
+                return True
+            elif row['Filter'] == 'New':
+                self.obReporter.update_report('Pass','This product price is new')
+                return False
+            else:
+                self.obReporter.update_report('Fail','This product must be ingested in product')
+                return False
+        else:
+            self.obReporter.update_report('Fail','This product price failed filtering')
+            return False
 
 ## end ##

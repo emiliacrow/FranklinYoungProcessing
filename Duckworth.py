@@ -281,7 +281,7 @@ class DuckworthWindow(QWidget):
         # this will cause the above code to present top the user. I know. it's dumb
         QApplication.processEvents()
 
-        success, message = self.obPathway.update_data_pathway(update_action_selected)
+        success, message = self.obPathway.update_data_pathway(self.is_testing, update_action_selected)
 
         if success:
             self.message_scroll_text.append([update_action_selected,message,self.success_string_style1])

@@ -106,19 +106,25 @@ class FillProductPrice(BasicProcessObject):
                                                               how='left', on=[attribute])
 
 
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Update':
+                self.obReporter.update_report('Pass','This product price is an update')
+                return True
+            else:
+                self.obReporter.update_report('Fail','This product must be ingested in product')
+                return False
+        else:
+            self.obReporter.update_report('Fail','This product price failed filtering')
+            return False
+
+
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         # step-wise product processing
         for colName, row in df_line_product.iterrows():
-            if 'Filter' in row:
-                if row['Filter'] == 'Pass':
-                    return True, df_collect_product_base_data
-                elif row['Filter'] != 'Update':
-                    self.obReporter.update_report('Fail','This product must be ingested in product price')
-                    return True, df_collect_product_base_data
-            else:
-                self.obReporter.update_report('Fail','This product must be ingested in product price')
+            if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
             if ('ProductPriceId' not in row):
@@ -471,3 +477,28 @@ class FillProductPrice(BasicProcessObject):
 
 
 
+class UpdateFillProductPrice(FillProductPrice):
+    req_fields = ['FyProductNumber','VendorName']
+    att_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
+                          'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
+                          'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
+                          'Speed', 'TankCapacity', 'TemperatureRange', 'Thickness', 'Tolerance', 'Voltage', 'Wattage',
+                          'Wavelength', 'WeightRange', 'Width']
+    sup_fields = []
+    gen_fields = []
+
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
+        self.name = 'Update Product Price Fill'
+
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Update':
+                self.obReporter.update_report('Pass','This product price is an update')
+                return True
+            else:
+                self.obReporter.update_report('Fail','This product must be ingested in product')
+                return False
+        else:
+            self.obReporter.update_report('Fail','This product price failed filtering')
+            return False
