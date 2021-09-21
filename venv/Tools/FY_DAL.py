@@ -536,17 +536,6 @@ class DalObject:
         runner.start()
 
 
-    def max_product_cap(self,newIsControlled, newIsDisposable, newIsGreen, newIsLatexFree, newIsRX, newProductName, newBigCommerceProductName, newECommerceLongDescription, newManufacturerPartNumber, newFYCatalogNumber, newCountryOfOrigin, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newLongDesc='', newFYProductNotes='', newShortDesc='', newNatoStockNumber='', newModelNumber='', newRequiredSampleSize='', newNumberOfChannels='', newGTIN='', newSterilityId=-1, newSurfaceTreatmentId=-1, newPrecisionId=-1, newProductSEOId=-1, newComponentSetId=-1, newFSCCodeId=-1, newHazardousCodeId=-1, newUNSPSCId=-1, newNAICSCodeId=-1, newNationalDrugCodeId=-1, newProductWarrantyId=-1, newSpeciesId=-1):
-        # this will be a full spectrum filler that uses both product fill and min product
-        proc_name = 'sequoia.MinimumProduct_capture_wrap'
-        proc_args = (newIsControlled, newIsDisposable, newIsGreen, newIsLatexFree, newIsRX, newProductName, newBigCommerceProductName, newECommerceLongDescription, newManufacturerPartNumber, newFYCatalogNumber, newCountryOfOrigin, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId)
-        return_product_id = self.id_cap(proc_name, proc_args)
-
-        proc_name = 'sequoia.Product_fill_wrap'
-        proc_args = (return_product_id, newLongDesc, newFYProductNotes, newShortDesc, newNatoStockNumber, newModelNumber, newRequiredSampleSize, newNumberOfChannels, newGTIN, newSterilityId, newSurfaceTreatmentId, newPrecisionId, newProductSEOId, newComponentSetId, newFSCCodeId, newHazardousCodeId, newUNSPSCId, newNAICSCodeId, newNationalDrugCodeId, newProductWarrantyId, newSpeciesId)
-        success = self.id_cap(proc_name, proc_args)
-        return success
-
     def get_product_id_by_fy_catalog_number(self,newFYCatalogNumber):
         proc_name = 'sequoia.get_Product_id_by_fy_catalog_number'
         proc_args = (newFYCatalogNumber,)
@@ -567,7 +556,7 @@ class DalObject:
 
     def get_product_fill_lookup(self):
         proc_name = 'sequoia.get_ProductFill_lookup'
-        column_names = ['ProductId','ProductPriceId','FyProductNumber','ShortDescription']
+        column_names = ['ProductId','ProductPriceId','FyProductNumber']
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 

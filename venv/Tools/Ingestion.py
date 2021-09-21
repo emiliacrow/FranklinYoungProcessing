@@ -295,10 +295,10 @@ class IngestionObject:
         return ingested_set
 
 
-    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newProductName, newBigCommerceProductName, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0):
+    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription, newBigCommerceProductName, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append([newFYCatalogNumber, newManufacturerPartNumber, newProductName,
-                                               newBigCommerceProductName, newECommerceLongDescription,
+            self.product_collector.append([newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
+                                               newBigCommerceProductName, newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
                                                newIsDisposable, newIsGreen, newIsLatexFree, newIsRX])
@@ -307,8 +307,8 @@ class IngestionObject:
             self.product_collector = []
 
         else:
-            self.product_collector.append([newFYCatalogNumber, newManufacturerPartNumber, newProductName,
-                                               newBigCommerceProductName, newECommerceLongDescription,
+            self.product_collector.append([newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
+                                               newBigCommerceProductName, newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
                                                newIsDisposable, newIsGreen, newIsLatexFree, newIsRX])
@@ -325,14 +325,14 @@ class IngestionObject:
         return return_id
 
 
-    def fill_product(self, is_last, ProductId, LongDesc='', FYProductNotes='', ShortDesc='', NatoStockNumber='', ModelNumber='', RequiredSampleSize='', NumberOfChannels='', GTIN='', SterilityId=-1, SurfaceTreatmentId=-1, PrecisionId=-1, ProductSEOId=-1, ComponentSetId=-1, FSCCodeId=-1, HazardousCodeId=-1, UNSPSCId=-1, NAICSCodeId=-1, NationalDrugCodeId=-1, ProductWarrantyId=-1, SpeciesId=-1):
+    def fill_product(self, is_last, ProductId, FYProductNotes='', NatoStockNumber='', ModelNumber='', RequiredSampleSize='', NumberOfChannels='', GTIN='', SterilityId=-1, SurfaceTreatmentId=-1, PrecisionId=-1, ProductSEOId=-1, ComponentSetId=-1, FSCCodeId=-1, HazardousCodeId=-1, UNSPSCId=-1, NAICSCodeId=-1, NationalDrugCodeId=-1, ProductWarrantyId=-1, SpeciesId=-1):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append([ProductId, LongDesc, FYProductNotes, ShortDesc, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId])
+            self.product_collector.append([ProductId, FYProductNotes, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId])
             self.obDal.product_fill(self.product_collector)
             self.product_collector = []
 
         else:
-            self.product_collector.append([ProductId, LongDesc, FYProductNotes, ShortDesc, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId])
+            self.product_collector.append([ProductId, FYProductNotes, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId])
 
 
     def ingest_shipping_instructions(self, newPackagingDesc, newshippingcode='', newIsFreeShipping=0, newIsColdChain=0):

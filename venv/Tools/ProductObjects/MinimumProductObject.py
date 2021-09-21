@@ -82,10 +82,10 @@ class MinimumProduct(BasicProcessObject):
 
         if 'FyCatalogNumber' in self.df_product:
             self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
-            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
+
         else:
             self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['ManufacturerPartNumber'])
-            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
+        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
         # place new at bottom
         self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
@@ -399,11 +399,16 @@ class MinimumProduct(BasicProcessObject):
         # here all processing and checks have been done
         # we just get data from the DF and ship it (as planned)
         for colName, row in df_line_product.iterrows():
+
+            # check on this
+
             fy_catalog_number = row['FyCatalogNumber']
             manufacturer_product_id = row['ManufacturerPartNumber']
             product_name = row['ProductName']
+            short_desc = row['ShortDescription']
 
             bc_product_name = row['BigCommerceProductName']
+            long_desc = row['LongDescription']
             ec_long_desc = row['ECommerceLongDescription']
 
             country_of_origin_id = row['CountryOfOriginId']
@@ -421,13 +426,18 @@ class MinimumProduct(BasicProcessObject):
             is_latex_free = row['IsLatexFree']
             is_rx = row['IsRX']
 
-        self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_product_id, product_name,
-                                                 bc_product_name, ec_long_desc, country_of_origin_id, manufacturer_id,
+        self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_product_id, product_name, short_desc,
+                                                 bc_product_name, long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id, is_controlled, is_disposible,
                                                  is_green, is_latex_free, is_rx)
 
         return df_line_product
+
+
+
+# class UpdateMinimumProduct(MinimumProduct):
+
 
 
 ## end ##

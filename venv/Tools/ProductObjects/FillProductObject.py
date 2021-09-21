@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProduct(BasicProcessObject):
-    req_fields = ['FyProductNumber','ShortDescription']
+    req_fields = ['FyProductNumber']
     sup_fields = ['FyCatalogNumber','ManufacturerPartNumber']
     att_fields = ['Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = []
@@ -72,7 +72,7 @@ class FillProduct(BasicProcessObject):
 
             # this gets the productId
             self.df_update_product = pandas.DataFrame.merge(self.df_update_product, self.df_product_full_lookup,
-                                                             how='left', on=['FyProductNumber','ShortDescription'])
+                                                             how='left', on=['FyProductNumber'])
 
             self.df_update_product.loc[(self.df_update_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
@@ -129,10 +129,6 @@ class FillProduct(BasicProcessObject):
                 self.obReporter.update_report('Fail','This product price failed filtering')
                 return False, df_collect_product_base_data
 
-            if ('ShortDescription' not in row):
-                self.obReporter.update_report('Fail','ShortDescription is missing')
-                return False, df_collect_product_base_data
-
             product_id = row['ProductId']
             if product_id == -1:
                 self.obReporter.update_report('Fail','Couldn\'t identify product id')
@@ -155,12 +151,6 @@ class FillProduct(BasicProcessObject):
 #                    self.df_category_names.append([category_id,category_name,category])
 #
 #                category_insert = self.obIngester.ingest_product_category(product_id, category_id)
-
-            short_desc = row['ShortDescription']
-            if 'LongDescription' not in row:
-                long_desc = short_desc
-            else:
-                long_desc = row['LongDescription']
 
 
             # we should separate the ones that require pre-processing steps from those that don't
@@ -189,7 +179,7 @@ class FillProduct(BasicProcessObject):
             product_warranty_id = self.process_product_warranty(row)
             species_id = self.process_species(row)
 
-        self.obIngester.fill_product(self.is_last, product_id, long_desc, fy_product_Notes, short_desc, nato_stock_number, model_number,
+        self.obIngester.fill_product(self.is_last, product_id, fy_product_Notes, nato_stock_number, model_number,
                                                required_sample_size, number_of_channels, GTIN, sterility_id,
                                                surface_treatment_id, precision_id, product_seo_id, component_set_id,
                                                FSC_code_id, hazardous_code_id, UNSPSC_id, NAICS_code_id,
