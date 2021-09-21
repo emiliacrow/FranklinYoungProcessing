@@ -211,11 +211,11 @@ class MinimumProduct(BasicProcessObject):
 
     def filter_check_in(self, row):
         if row['Filter'] == 'Update':
-            self.obReporter.update_report('Pass', 'This product can be updated')
-            return True
+            self.obReporter.update_report('Alert', 'This is a product update')
+            return False
         else:
             self.obReporter.update_report('Pass', 'This product is new')
-            return False
+            return True
 
 
     def process_product_line(self, df_line_product):
@@ -452,7 +452,7 @@ class UpdateMinimumProduct(MinimumProduct):
             self.obReporter.update_report('Pass', 'This product can be updated')
             return True
         else:
-            self.obReporter.update_report('Pass', 'This must be loaded')
+            self.obReporter.update_report('Alert', 'This product must be loaded')
             return False
 
 ## end ##
