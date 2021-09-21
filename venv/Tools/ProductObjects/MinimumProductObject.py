@@ -22,7 +22,6 @@ class MinimumProduct(BasicProcessObject):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Minimum Product'
         self.quick_country = {}
-        self.process_updates = False
 
     def batch_preprocessing(self):
         # TODO add something here to allow the user to just select the vendor name.
@@ -43,11 +42,6 @@ class MinimumProduct(BasicProcessObject):
 
         self.batch_process_country()
         self.batch_process_lead_time()
-
-        self.obYNBox = YesNoDialog('Process updates?')
-        self.obYNBox.initUI('Process updates dialog.', 'Do you want to process updates?')
-        if self.obYNBox.yes_selected == True:
-            self.process_updates = True
 
         return self.df_product
 
