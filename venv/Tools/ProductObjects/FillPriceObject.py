@@ -112,7 +112,7 @@ class FillProductPrice(BasicProcessObject):
                 self.obReporter.update_report('Pass','This product price is an update')
                 return True
             else:
-                self.obReporter.update_report('Fail','This product must be ingested in product')
+                self.obReporter.update_report('Alert','This product must be ingested in product')
                 return False
         else:
             self.obReporter.update_report('Fail','This product price failed filtering')
@@ -497,7 +497,7 @@ class UpdateFillProductPrice(FillProductPrice):
                 self.obReporter.update_report('Pass','This product price is an update')
                 return True
             else:
-                self.obReporter.update_report('Fail','This product must be ingested in product')
+                self.obReporter.update_report('Alert','This product must be ingested in product')
                 return False
         else:
             self.obReporter.update_report('Fail','This product price failed filtering')
