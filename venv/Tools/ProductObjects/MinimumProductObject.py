@@ -340,11 +340,6 @@ class MinimumProduct(BasicProcessObject):
             long_desc = short_desc
             df_collect_product_base_data['LongDescription'] = long_desc
 
-        if 'BigCommerceProductName' in row:
-            bc_product_name = str(row['BigCommerceProductName'])
-        else:
-            bc_product_name = product_name
-
         if 'ECommerceLongDescription' in row:
             ec_long_desc = str(row['ECommerceLongDescription'])
         else:
@@ -354,7 +349,6 @@ class MinimumProduct(BasicProcessObject):
             ec_long_desc = ec_long_desc[:700]
 
 
-        df_collect_product_base_data['BigCommerceProductName'] = [bc_product_name]
         df_collect_product_base_data['ECommerceLongDescription'] = [ec_long_desc]
         df_collect_product_base_data['LongDescription'] = [long_desc]
 
@@ -404,7 +398,6 @@ class MinimumProduct(BasicProcessObject):
             product_name = row['ProductName']
             short_desc = row['ShortDescription']
 
-            bc_product_name = row['BigCommerceProductName']
             long_desc = row['LongDescription']
             ec_long_desc = row['ECommerceLongDescription']
 
@@ -424,7 +417,7 @@ class MinimumProduct(BasicProcessObject):
             is_rx = row['IsRX']
 
         self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_product_id, product_name, short_desc,
-                                                 bc_product_name, long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
+                                                 long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id, is_controlled, is_disposible,
                                                  is_green, is_latex_free, is_rx)

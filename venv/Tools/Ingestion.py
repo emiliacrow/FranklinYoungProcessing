@@ -295,10 +295,10 @@ class IngestionObject:
         return ingested_set
 
 
-    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription, newBigCommerceProductName, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0):
+    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append([newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
-                                               newBigCommerceProductName, newLongDescription, newECommerceLongDescription,
+                                               newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
                                                newIsDisposable, newIsGreen, newIsLatexFree, newIsRX])
@@ -308,7 +308,7 @@ class IngestionObject:
 
         else:
             self.product_collector.append([newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
-                                               newBigCommerceProductName, newLongDescription, newECommerceLongDescription,
+                                               newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
                                                newIsDisposable, newIsGreen, newIsLatexFree, newIsRX])
