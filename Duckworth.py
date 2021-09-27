@@ -292,10 +292,10 @@ class DuckworthWindow(QWidget):
 
 
     def contract_buttons(self,column_pos):
-        self.contract_options = ['GSA Contract file','ECAT contract file', 'Sensoft Contract file']
+        self.contract_options = ['Ready to load-BC','Ready to load-GSA']
         self.contract_options.sort()
 
-        self.contract_button = QPushButton('Generate Contract Files')
+        self.contract_button = QPushButton('Post Processing Action')
         self.contract_button.setStyleSheet('background-color: lightgreen')
         self.contract_button.clicked.connect(self.contract_kickoff)
         self.layout.addWidget(self.contract_button, 1, column_pos)
@@ -304,14 +304,14 @@ class DuckworthWindow(QWidget):
         self.contract_dropdown.addItems(self.contract_options)
         self.layout.addWidget(self.contract_dropdown, 2, column_pos)
 
-    def contract_kickoff(self):
+    def contract_kickoff(self,contract_selected):
         contract_selected = str(self.contract_dropdown.currentText())
-        self.action_label.setText('Contract: {}.'.format(contract_selected))
+        self.action_label.setText('Post Processing: {}.'.format(contract_selected))
         self.action_label.setStyleSheet(self.active_string_style)
         # this will cause the above code to present top the user. I know. it's dumb
         QApplication.processEvents()
 
-        success, message = self.obPathway.contract_pathway(contract_selected)
+        success, message = self.obPathway.contract_pathway(self.is_testing, contract_selected)
 
         if success:
             self.message_scroll_text.append([contract_selected,message,self.success_string_style1])

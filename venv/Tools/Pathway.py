@@ -630,6 +630,9 @@ class Pathways():
         return False, 'Process not built.'
 
     def contract_pathway(self, contract_selected):
+        all_pathways = ['Ready to load-BC', 'Ready to load-GSA']
+
+
         return False, 'Process not built.'
 
 

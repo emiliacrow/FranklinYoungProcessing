@@ -469,5 +469,14 @@ class IngestionObject:
             self.product_image_match_collector.append([product_id,image_id,image_preference,image_caption])
 
 
+    def set_bigcommerce_rtl(self, is_last, ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger):
+        if (len(self.product_collector) >= self.load_limit) or (is_last):
+            self.product_collector.append([ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger])
+            self.obDal.set_bc_rtl(self.product_collector)
+            self.product_collector = []
+
+        else:
+            self.product_collector.append([ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger])
+
 
 ## end ##
