@@ -649,6 +649,12 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, lst_bc_rtl)
         runner.start()
 
+    def get_bc_rtl_state(self):
+        proc_name = 'sequoia.get_BigCommerceUpdateToggle'
+        column_names = ['ProductPriceId','FyProductNumber','BCPriceUpdateToggle','BCDataUpdateToggle']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
+
     def naked_cap(self,thisdoesnothing,noreally):
         proc_name = 'sequoia.Unknown_capture_wrap'
         proc_args = (thisdoesnothing,noreally)

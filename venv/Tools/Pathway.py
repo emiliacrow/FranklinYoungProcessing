@@ -22,6 +22,7 @@ from Tools.ProgressBar import JoinSelectionDialog
 from Tools.BaseDataLoaderObject import BaseDataLoader
 from Tools.FileProcessObject import FileProcessor
 from Tools.CategoryProcessingObject import CategoryProcessor
+from Tools.PostProcessObjects.BigCommerceRTLObject import BigCommerceRTLObject as BC_RTL_Object
 
 # product objects
 from Tools.ProductObjects.MinimumProductObject import MinimumProduct
@@ -629,9 +630,24 @@ class Pathways():
 
         return False, 'Process not built.'
 
-    def contract_pathway(self, contract_selected):
+    def contract_pathway(self, is_testing, contract_selected):
         all_pathways = ['Ready to load-BC', 'Ready to load-GSA']
 
+        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+contract_selected)
+        if self.success == False:
+            return self.success, self.message
+
+        self.success = False
+        self.message = 'Post Processing Pathway'
+
+        self.df_product = self.obFileFinder.read_xlsx()
+
+        if contract_selected == 'Ready to load-BC':
+            self.obBCRTL = BC_RTL_Object(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obBCRTL.begin_process()
+            self.df_product = self.obBCRTL.get_df()
+            self.obFileFinder.write_xlsx(self.df_product, 'BC_RTL')
+            return self.success, self.message
 
         return False, 'Process not built.'
 
