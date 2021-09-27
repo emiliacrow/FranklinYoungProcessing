@@ -253,7 +253,6 @@ class BasePrice(BasicProcessObject):
         htme_product_price_id = -1
         ecat_product_price_id = -1
         fedmall_product_price_id = -1
-        is_visible = 0
 
         success = True
         df_collect_product_base_data = df_line_product.copy()
