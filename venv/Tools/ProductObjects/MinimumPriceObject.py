@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['VendorName','VendorPartNumber','FyCatalogNumber','FyProductNumber', 'AllowPurchases']
+    req_fields = ['VendorName','VendorPartNumber','FyCatalogNumber','FyProductNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -231,8 +231,8 @@ class MinimumProductPrice(BasicProcessObject):
 
     def process_pricing(self, df_collect_product_base_data, row):
         if ('AllowPurchases' not in row):
-            self.obReporter.update_report('Fail','AllowPurchases was missing')
-            return False, df_collect_product_base_data
+            df_collect_product_base_data['AllowPurchases'] = [0]
+            self.obReporter.update_report('Alert','AllowPurchases was assigned')
         elif str(row['AllowPurchases']) == 'N':
             df_collect_product_base_data['AllowPurchases'] = [0]
         elif str(row['AllowPurchases']) == 'Y':

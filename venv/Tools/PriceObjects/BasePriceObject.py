@@ -106,6 +106,8 @@ class BasePrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','This product must be ingested in product price')
                 return False, df_collect_product_base_data
 
+            df_collect_product_base_data = self.process_visibility(df_collect_product_base_data, row)
+
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
                 self.obReporter.update_report('Fail','Failed to identify product price id')
@@ -234,21 +236,30 @@ class BasePrice(BasicProcessObject):
         return True, df_collect_product_base_data
 
 
+    def process_visibility(self, df_collect_product_base_data, row):
+        if ('IsVisible' not in row):
+            df_collect_product_base_data['IsVisible'] = [0]
+            self.obReporter.update_report('Alert','IsVisible was assigned')
+        elif str(row['IsVisible']) == 'N':
+            df_collect_product_base_data['IsVisible'] = [0]
+        elif str(row['IsVisible']) == 'Y':
+            df_collect_product_base_data['IsVisible'] = [1]
+
+        return df_collect_product_base_data
+
     def base_price(self, df_line_product):
         va_product_price_id = -1
         gsa_product_price_id = -1
         htme_product_price_id = -1
         ecat_product_price_id = -1
         fedmall_product_price_id = -1
-        is_visible = 1
+        is_visible = 0
 
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             date_catalog_received = datetime.datetime.now()
-
-            if 'IsVisible' in row:
-                is_visible = row['IsVisible']
+            is_visible = row['IsVisible']
 
             if 'VAProductPriceId' in row:
                 va_product_price_id = row['VAProductPriceId']

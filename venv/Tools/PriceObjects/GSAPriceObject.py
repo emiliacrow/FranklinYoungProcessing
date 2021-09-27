@@ -107,6 +107,7 @@ class GSAPrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','This product needs to be ingested')
                 return False, df_collect_product_base_data
 
+            df_collect_product_base_data = self.process_oncontract(df_collect_product_base_data, row)
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
                 self.obReporter.update_report('Fail','Failed in process contract')
@@ -115,6 +116,17 @@ class GSAPrice(BasicProcessObject):
         success, return_df_line_product = self.gsa_product_price(df_collect_product_base_data)
 
         return success, return_df_line_product
+
+    def process_oncontract(self, df_collect_product_base_data, row):
+        if ('OnContract' not in row):
+            df_collect_product_base_data['OnContract'] = [1]
+            self.obReporter.update_report('Alert', 'OnContract was assigned')
+        elif str(row['OnContract']) == 'N':
+            df_collect_product_base_data['OnContract'] = [0]
+        elif str(row['OnContract']) == 'Y':
+            df_collect_product_base_data['OnContract'] = [1]
+
+        return df_collect_product_base_data
 
     def process_pricing(self, df_line_product):
         success = True
