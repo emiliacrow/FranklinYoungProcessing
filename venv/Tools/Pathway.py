@@ -591,7 +591,7 @@ class Pathways():
             self.success, self.message = self.obBasePrice.begin_process()
             self.df_product = self.obBasePrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'BasePrice')
-            if self.success == False or update_action_selected == '1-Update Minimum Product Data(3 steps)' or update_action_selected == '2-Update Full Product(5 steps)' or update_action_selected == '4-Update Base Pricing(1 step)':
+            if self.success == False or update_action_selected in ['1-Update Minimum Product Data(3 steps)','1.5-Update Minimum Product Price Data(2 steps)', '2-Update Full Product(5 steps)','4-Update Base Pricing(1 step)']:
                 return self.success, self.message
 
         if update_action_selected == 'Update VA Pricing':
