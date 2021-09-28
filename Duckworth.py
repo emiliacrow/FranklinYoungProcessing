@@ -56,7 +56,7 @@ def excepthook(exc_type, exc_value, exc_tb):
     error_msg = 'Error Message:\n' + (error_call.partition('\"')[2]).partition('\"')[0]
     alert.setText(error_msg)
 
-    full_alert_text = 'See crash report at:\n' + crash_path
+    full_alert_text = 'Full message:\n' + error_call
     alert.setDetailedText(full_alert_text)
     x = alert.exec_()
 

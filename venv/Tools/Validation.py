@@ -47,7 +47,6 @@ class Validator:
         pattern = '(\-|\.|\\|/|(|)|\+|\&|\_|\s|\"|\'|#|=|$)'
         str_to_clean = re.sub(pattern, '', str_to_clean)
         str_to_clean = str_to_clean.strip()
-        str_to_clean = str_to_clean.replace(ord(255),'')
         return str_to_clean
 
     def clean_description(self,description):
