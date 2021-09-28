@@ -250,7 +250,7 @@ class MinimumProductPrice(BasicProcessObject):
             fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']
             fy_part_number = row['FyPartNumber']
-            peoduct_tax_class = row['ProductTaxClass']
+            product_tax_class = row['ProductTaxClass']
             vendor_part_number = row['VendorPartNumber']
 
             product_id = row['ProductId']
@@ -259,9 +259,9 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_measure_symbol_id = row['UnitOfMeasureSymbolId']
             unit_of_issue_quantity = row['Conv Factor/QTY UOM']
 
-        self.obIngester.ingest_product_price(self.is_last, fy_product_number,allow_purchases,
-                                                             fy_part_number, peoduct_tax_class, vendor_part_number,
-                                                             product_id, vendor_id, unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
+        self.obIngester.ingest_product_price(self.is_last, fy_product_number,allow_purchases,fy_part_number,
+                                             product_tax_class, vendor_part_number,product_id, vendor_id,
+                                             unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
 
         return True, df_line_product
 

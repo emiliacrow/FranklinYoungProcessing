@@ -538,6 +538,7 @@ class Pathways():
 
         self.df_product = self.obFileFinder.read_xlsx()
         all_steps = ['1-Update Minimum Product Data(3 steps)',
+                     '1.5-Update Minimum Product Price Data(2 steps)',
                      '2-Update Full Product(5 steps)',
                      '3-Update Product Attributes(2 steps)',
                      '4-Update Base Pricing(1 step)',
@@ -558,7 +559,7 @@ class Pathways():
             if self.success == False:
                 return self.success, self.message
 
-        if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '2-Update Full Product(5 steps)']:
+        if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '1.5-Update Minimum Product Price Data(2 steps)',  '2-Update Full Product(5 steps)']:
             self.obUpdateMinPrice = UpdateMinimumProductPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obUpdateMinPrice.begin_process()
             if b_inter_files:
@@ -585,7 +586,7 @@ class Pathways():
             if self.success == False or update_action_selected == '3-Update Product Attributes(2 steps)':
                 return self.success, self.message
 
-        if update_action_selected in ['1-Update Minimum Product Data(3 steps)','2-Update Full Product(5 steps)','4-Update Base Pricing(1 step)']:
+        if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '1.5-Update Minimum Product Price Data(2 steps)', '2-Update Full Product(5 steps)','4-Update Base Pricing(1 step)']:
             self.obBasePrice = BasePrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obBasePrice.begin_process()
             self.df_product = self.obBasePrice.get_df()
