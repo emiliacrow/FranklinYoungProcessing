@@ -163,6 +163,9 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def identify_fy_product_number(self, df_collect_product_base_data, row):
+        if ('Conv Factor/QTY UOM' not in row):
+            df_collect_product_base_data['Conv Factor/QTY UOM'] = 1
+
         if ('UnitOfMeasure' not in row):
             unit_of_measure = 'EA'
             df_collect_product_base_data['UnitOfMeasure'] = unit_of_measure

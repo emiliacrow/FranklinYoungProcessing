@@ -309,5 +309,4 @@ class BasePrice(BasicProcessObject):
 
 
 
-
 ## end ##
