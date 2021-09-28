@@ -267,7 +267,7 @@ class MinimumProductPrice(BasicProcessObject):
 
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
-    req_fields = ['VendorName','VendorPartNumber','FyCatalogNumber','FyProductNumber', 'AllowPurchases']
+    req_fields = ['VendorName','VendorPartNumber','FyCatalogNumber','FyProductNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
