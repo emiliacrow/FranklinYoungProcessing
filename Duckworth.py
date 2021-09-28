@@ -199,6 +199,8 @@ class DuckworthWindow(QWidget):
             self.message_scroll_text.append([file_action_selected,message,self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
 
+        self.completion_alert(file_action_selected, message)
+
 
     def base_data_buttons(self,column_pos):
         self.base_data_tables = ['Category', 'Manufacturer', 'Vendor', 'Country', 'UNSPSC Codes', 'FSC Codes', 'Hazardous Code', 'NAICS Code', 'Unit of Issue-Symbol', 'Unit of Issue']
@@ -229,6 +231,7 @@ class DuckworthWindow(QWidget):
             self.message_scroll_text.append(['Ingest '+table_selected+' data', message, self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
 
+        self.completion_alert('Ingest '+table_selected+' data', message)
 
     def ingestion_buttons(self,column_pos):
         self.ingestion_options = ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing', 'HTME Pricing',
@@ -260,6 +263,8 @@ class DuckworthWindow(QWidget):
             self.message_scroll_text.append([ingestion_action_selected,message,self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
 
+        self.completion_alert(ingestion_action_selected, message)
+
 
     def update_data_buttons(self,column_pos):
         self.update_data_options = ['1-Update Minimum Product Data(3 steps)','2-Update Full Product(5 steps)', '3-Update Product Attributes(2 steps)', '4-Update Base Pricing(1 step)', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
@@ -290,6 +295,8 @@ class DuckworthWindow(QWidget):
             self.message_scroll_text.append([update_action_selected,message,self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
 
+        self.completion_alert(update_action_selected, message)
+
 
     def contract_buttons(self,column_pos):
         self.contract_options = ['Ready to load-BC','Ready to load-GSA']
@@ -304,7 +311,7 @@ class DuckworthWindow(QWidget):
         self.contract_dropdown.addItems(self.contract_options)
         self.layout.addWidget(self.contract_dropdown, 2, column_pos)
 
-    def contract_kickoff(self,contract_selected):
+    def contract_kickoff(self):
         contract_selected = str(self.contract_dropdown.currentText())
         self.action_label.setText('Post Processing: {}.'.format(contract_selected))
         self.action_label.setStyleSheet(self.active_string_style)
@@ -320,6 +327,19 @@ class DuckworthWindow(QWidget):
             self.message_scroll_text.append([contract_selected,message,self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
 
+        self.completion_alert(contract_selected, message)
+
+
+    def completion_alert(self, action_selected, message):
+        alert = QMessageBox()
+        alert.setIcon(QMessageBox.Information)
+        window_title = 'Task: ' + action_selected
+        alert.setWindowTitle(window_title)
+
+        error_msg = 'Completion Message:\n' + message
+        alert.setText(error_msg)
+
+        x = alert.exec_()
 
 
 
