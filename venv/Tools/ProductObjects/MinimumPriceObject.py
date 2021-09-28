@@ -78,7 +78,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product = self.df_product.append(self.df_update_product)
 
         # place new at bottom
-        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
+        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=True)
 
 
     def batch_process_something(self, df_row):
@@ -122,7 +122,6 @@ class MinimumProductPrice(BasicProcessObject):
             self.obReporter.update_report('Fail','This product price failed filtering')
             return False
 
-
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
@@ -160,7 +159,6 @@ class MinimumProductPrice(BasicProcessObject):
             return False, df_line_product
 
         return True, df_line_product
-
 
     def identify_fy_product_number(self, df_collect_product_base_data, row):
         if ('Conv Factor/QTY UOM' not in row):
@@ -221,7 +219,6 @@ class MinimumProductPrice(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
-
     def process_vendor(self, df_collect_product_base_data, row):
         if 'VendorId' not in row:
             self.obReporter.update_report('Fail','Missing VendorName and Code')
@@ -245,7 +242,6 @@ class MinimumProductPrice(BasicProcessObject):
             df_collect_product_base_data['ProductTaxClass'] = 'Default Tax Class'
 
         return True, df_collect_product_base_data
-
 
     def minimum_product_price(self,df_line_product):
         # ship it!

@@ -56,7 +56,7 @@ class BasePrice(BasicProcessObject):
 
 
     def define_new(self):
-        match_headers = ['FyProductNumber','ProductPriceId', 'FyCost']
+        match_headers = ['FyProductNumber','ProductPriceId','FyCost']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -68,7 +68,7 @@ class BasePrice(BasicProcessObject):
             self.df_product = self.df_product.drop(columns = 'ProductPriceId')
 
         # match all products on FyProdNum
-        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_check_in,
+        self.df_update_products = self.df_product.merge(self.df_base_price_check_in,
                                                  how='left', on='FyProductNumber')
         # all products that matched on FyProdNum
         self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
@@ -85,12 +85,23 @@ class BasePrice(BasicProcessObject):
 
             # this does not seem to be matching correctly in the above
             # I suspect this has to do with the numbers being strings?
-            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'New'
+            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'New'
 
             self.df_product = self.df_product.append(self.df_update_products)
 
         # place new at bottom, I don't know if this is needed yet, but it might be?
-        self.df_product = self.df_product.sort_values(by=['Filter'], ascending=False)
+        self.df_product = self.df_product.sort_values(by=['Filter'], ascending=True)
+
+
+
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Fail':
+                self.obReporter.update_report('Fail', 'This product must be ingested in product price')
+                return False, df_collect_product_base_data
+        else:
+            self.obReporter.update_report('Fail', 'This product must be ingested in product price')
+            return False, df_collect_product_base_data
 
 
     def process_product_line(self, df_line_product):
@@ -98,12 +109,7 @@ class BasePrice(BasicProcessObject):
         df_collect_product_base_data = df_line_product.copy()
 
         for colName, row in df_line_product.iterrows():
-            if 'Filter' in row:
-                if row['Filter'] == 'Fail':
-                    self.obReporter.update_report('Fail','This product must be ingested in product price')
-                    return False, df_collect_product_base_data
-            else:
-                self.obReporter.update_report('Fail','This product must be ingested in product price')
+            if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
             df_collect_product_base_data = self.process_visibility(df_collect_product_base_data, row)
@@ -304,6 +310,23 @@ class BasePrice(BasicProcessObject):
                                                           htme_product_price_id, ecat_product_price_id, fedmall_product_price_id)
 
         return success, df_line_product
+
+
+
+
+class UpdateBasePrice(BasePrice):
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
+
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Fail':
+                self.obReporter.update_report('Fail', 'This product must be ingested in product price')
+                return False
+        else:
+            self.obReporter.update_report('Fail', 'This product must be ingested in product price')
+            return False
+        return True
 
 
 

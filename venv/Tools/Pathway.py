@@ -39,6 +39,8 @@ from Tools.ProductObjects.FillPriceObject import UpdateFillProductPrice
 
 # pricing objects
 from Tools.PriceObjects.BasePriceObject import BasePrice
+from Tools.PriceObjects.BasePriceObject import UpdateBasePrice
+
 from Tools.PriceObjects.VAPriceObject import VAPrice
 from Tools.PriceObjects.GSAPriceObject import GSAPrice
 from Tools.PriceObjects.ECATPriceObject import ECATPrice
@@ -587,10 +589,10 @@ class Pathways():
                 return self.success, self.message
 
         if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '1.5-Update Minimum Product Price Data(2 steps)', '2-Update Full Product(5 steps)','4-Update Base Pricing(1 step)']:
-            self.obBasePrice = BasePrice(self.df_product, self.user, self.password, is_testing)
-            self.success, self.message = self.obBasePrice.begin_process()
-            self.df_product = self.obBasePrice.get_df()
-            self.obFileFinder.write_xlsx(self.df_product,'BasePrice')
+            self.obUpdateBasePrice = UpdateBasePrice(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obUpdateBasePrice.begin_process()
+            self.df_product = self.obUpdateBasePrice.get_df()
+            self.obFileFinder.write_xlsx(self.df_product,'UpdateBasePrice')
             if self.success == False or update_action_selected in ['1-Update Minimum Product Data(3 steps)','1.5-Update Minimum Product Price Data(2 steps)', '2-Update Full Product(5 steps)','4-Update Base Pricing(1 step)']:
                 return self.success, self.message
 

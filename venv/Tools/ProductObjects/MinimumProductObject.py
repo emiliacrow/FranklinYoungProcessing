@@ -82,7 +82,7 @@ class MinimumProduct(BasicProcessObject):
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
         # place new at bottom
-        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
+        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=True)
 
 
     def batch_process_category(self):
