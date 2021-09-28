@@ -98,10 +98,10 @@ class BasePrice(BasicProcessObject):
         if 'Filter' in row:
             if row['Filter'] == 'Fail':
                 self.obReporter.update_report('Fail', 'This product must be ingested in product price')
-                return False, df_collect_product_base_data
+                return False
         else:
             self.obReporter.update_report('Fail', 'This product must be ingested in product price')
-            return False, df_collect_product_base_data
+            return False
 
 
     def process_product_line(self, df_line_product):
