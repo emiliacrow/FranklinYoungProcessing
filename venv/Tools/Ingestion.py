@@ -437,9 +437,14 @@ class IngestionObject:
                  newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
 
 
-    def ecat_product_price_cap(self,newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newECATPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity):
-        return_id = self.obDal.ecat_product_price_cap(newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newECATPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity)
-        return return_id
+    def ecat_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice):
+        if (len(self.product_collector) >= self.load_limit) or (is_last):
+            self.product_collector.append(
+                [newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
+            self.obDal.ecat_product_price_cap(self.product_collector)
+            self.product_collector = []
+        else:
+            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
 
 
     def htme_product_price_cap(self,newIsVisible, newDateCatalogReceived, newHTMESellPrice, newHTMEApprovedPriceDate, newHTMEPricingApproved, newHTMEContractNumber, newHTMEContractModificationNumber, newHTMEProductGMPercent, newHTMEProductGMPrice):

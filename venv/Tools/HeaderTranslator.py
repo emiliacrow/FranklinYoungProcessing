@@ -43,9 +43,9 @@ class HeaderTranslator():
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
                             'OnContract':['OnContract','GSAOnContract','VAOnContract','ECATOnContract','HTMEOnContract','FEDMALLOnContract','On Contract','GSA On Contract','VA On Contract','ECAT On Contract','HTME On Contract','FEDMALL On Contract'],
-
-                            'GSAApprovedListPrice':['ChannelApprovedFYListPrice__value', 'ChannelApprovedFYListPrice',
-                                                    'ApprovedFYListPrice'],
+# GSA
+                            'GSAApprovedListPrice':['GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
+                                                    'GSAApprovedFYListPrice'],
                             'GSAApprovedPercent':['GSAChannelDiscount', 'GSADiscount', 'GSA Channel Discount',
                                                   'GSA Discount', 'gsa_channel_discount', 'GSA Approved Channel%'],
                             'GSABasePrice':['GSABasePrice', 'GSA Base Price'],
@@ -56,7 +56,7 @@ class HeaderTranslator():
                             'GSAApprovedPriceDate':['GSAApprovedPriceDate', 'GSA Approved Price Date',
                                                     'GSA Approved Date'],
                             'GSA_Sin':['GSA_Sin', 'GSA Sin', 'GSA SIN', 'GSASin'],
-
+# VA
                             'VAApprovedListPrice':['ChannelApprovedFYListPrice__value', 'ChannelApprovedFYListPrice',
                                                     'ApprovedFYListPrice'],
                             'VAApprovedPercent':['VAChannelDiscount', 'VADiscount', 'VA Channel Discount',
@@ -69,11 +69,27 @@ class HeaderTranslator():
                             'VAApprovedPriceDate':['VAApprovedPriceDate', 'VA Approved Price Date',
                                                     'VA Approved Date'],
 
-                            'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)','approved MFC per'],
-                            'MfcPrice':['MfcPrice','Approved MFC Price','Mfc Price'],
-
-                            'DateCatalogReceived':['DateCatalogRecieved','DateCatalogReceived','Date Catalog Recieved','date_catalog_received'],
                             'VA_Sin':['VA_Sin','VA Sin','VA SIN','VASin'],
+# ECAT
+                            'ECATApprovedListPrice':['ECATApprovedFYListPrice__value', 'ECATApprovedFYListPrice',
+                                                   'ECATApprovedFYListPrice'],
+                            'ECATApprovedPercent':['ECATChannelDiscount', 'ECATDiscount', 'ECAT Channel Discount',
+                                                 'ECAT Discount', 'ecat_channel_discount', 'ECAT Approved Channel%'],
+                            'ECATBasePrice':['ECATBasePrice', 'ECAT Base Price'],
+                            'ECATSellPrice':['ECATSellPrice', 'ECAT Sell Price'],
+                            'ECATContractModificationNumber':['ECATContractModificationNumber',
+                                                            'ECAT Contract Modification Number',
+                                                            'ECATContractModification', 'ECAT Contract Modification'],
+                            'ECATApprovedPriceDate':['ECATApprovedPriceDate', 'ECAT Approved Price Date',
+                                                   'ECAT Approved Date'],
+
+
+                            'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)',
+                                                  'approved MFC per'],
+                            'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
+
+                            'DateCatalogReceived':['DateCatalogRecieved', 'DateCatalogReceived',
+                                                   'Date Catalog Recieved', 'date_catalog_received'],
 
                             'AllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?'],
                             'ProductTaxClass':['ProductTaxClass','Product Tax Class','Tax Class'],

@@ -414,16 +414,23 @@ class DalObject:
         proc_name = 'sequoia.get_GSAPrice_lookup'
         column_names = ['FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
                          'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
-        df_base_price_lookup = self.get_lookup(proc_name,column_names)
-        return df_base_price_lookup
+        df_gsa_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_gsa_price_lookup
 
 
-    def ecat_product_price_cap(self,newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity):
-        proc_name = 'sequoia.ECATProductPrice_capture_wrap'
-        proc_args = (newIsVisible, newDateCatalogReceived, newECATSellPrice, newECATApprovedPriceDate, newPricingApproved, newECATContractNumber, newECATContractModificationNumber, newECATProductGMPercent, newECATProductGMPrice, newECATMinumumQuantity)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
+    def ecat_product_price_cap(self,lst_ecat_product_price):
+        proc_name = 'sequoia.ECATProductPrice_capture'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, lst_ecat_product_price)
+        runner.start()
 
+    def get_ecat_price_lookup(self):
+        proc_name = 'sequoia.get_ECATPrice_lookup'
+        column_names = ['FyProductNumber', 'FyPartNumber', 'OnContract', 'ECATApprovedListPrice',
+                        'ECATApprovedPercent', 'MfcDiscountPercent', 'ECATContractModificationNumber',
+                        'ECATApprovedPriceDate', 'ECATPricingApproved']
+        df_ecat_price_lookup = self.get_lookup(proc_name, column_names)
+        return df_ecat_price_lookup
 
     def fedmall_product_price_cap(self,newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice):
         proc_name = 'sequoia.FEDMALLProductPrice_capture_wrap'
