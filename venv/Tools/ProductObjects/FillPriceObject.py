@@ -75,12 +75,13 @@ class FillProductPrice(BasicProcessObject):
             self.df_product = self.df_product.drop(columns = 'ProductPriceId')
 
         # match all products on FyProdNum
-        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_check_in,
+        self.df_product = self.df_product.merge(self.df_base_price_check_in,
                                                  how='left', on='FyProductNumber')
         # all products that matched on FyProdNum
-        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
-
-        self.df_product = self.df_update_products
+        if 'Filter' not in self.df_product.columns:
+            self.df_product['Filter'] = 'Fail'
+        else:
+            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
 
     def batch_process_attribute(self,attribute):

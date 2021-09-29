@@ -49,8 +49,11 @@ class MinimumProductPrice(BasicProcessObject):
             self.df_product = self.df_product.drop(columns=['ProductId_x'])
             self.df_product = self.df_product.drop(columns=['ProductId_y'])
 
-        # we assign a label to the products that are haven't been loaded through product yet
-        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+        # we assign a label to the products that haven't been loaded through product yet
+        if 'Filter' not in self.df_product.columns:
+            self.df_product['Filter'] = 'Fail'
+        else:
+            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
         # split the data for a moment
         self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
@@ -77,10 +80,6 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.df_product = self.df_product.append(self.df_update_product)
 
-
-    def batch_process_something(self, df_row):
-        some_val = 1
-        return some_val
 
     def batch_process_vendor(self):
         df_attribute = self.df_product[['VendorName']]

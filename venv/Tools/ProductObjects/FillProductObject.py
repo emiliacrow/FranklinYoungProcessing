@@ -57,7 +57,10 @@ class FillProduct(BasicProcessObject):
                                                             how='left', on=['FyCatalogNumber'])
 
         # we assign a label to the products that are haven't been loaded through product yet
-        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+        if 'Filter' not in self.df_product.columns:
+            self.df_product['Filter'] = 'Fail'
+        else:
+            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
         # split the data for a moment
         self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]

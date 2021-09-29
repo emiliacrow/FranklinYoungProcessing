@@ -3,6 +3,9 @@
 # Updated: 20210609
 # CreateFor: Franklin Young International
 
+import pandas
+import xlrd
+
 from Tools.BasicProcess import BasicProcessObject
 
 
@@ -109,7 +112,7 @@ class ECATPrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','Failed in process contract')
                 return success, df_collect_product_base_data
 
-        success, return_df_line_product = self.gsa_product_price(df_collect_product_base_data)
+        success, return_df_line_product = self.ecat_product_price(df_collect_product_base_data)
 
         return success, return_df_line_product
 
@@ -136,6 +139,9 @@ class ECATPrice(BasicProcessObject):
             else:
                 ecat_base_price = float(row['ECATBasePrice'])
                 return_df_line_product['ECATBasePrice'] = ecat_base_price
+
+            if 'ECATSellPrice' not in row:
+                return_df_line_product['ECATSellPrice'] = ecat_base_price
 
             if 'MfcPrice' not in row:
                 mfc_precent = float(row['MfcDiscountPercent'])

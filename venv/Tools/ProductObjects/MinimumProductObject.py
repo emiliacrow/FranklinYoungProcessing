@@ -79,7 +79,11 @@ class MinimumProduct(BasicProcessObject):
 
         else:
             self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['ManufacturerPartNumber'])
-        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
+
+        if 'Filter' not in self.df_product.columns:
+            self.df_product['Filter'] = 'New'
+        else:
+            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
 
     def batch_process_category(self):
