@@ -60,7 +60,7 @@ class VAPrice(BasicProcessObject):
         self.df_va_price_lookup = self.obDal.get_va_price_lookup()
 
         match_headers = ['FyProductNumber','FyPartNumber','OnContract', 'VAApprovedListPrice',
-                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
+                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -73,20 +73,22 @@ class VAPrice(BasicProcessObject):
             self.df_product = self.df_product.drop(columns='BaseProductPriceId')
 
         # match all products on FyProdNum
-        self.df_update_products = pandas.DataFrame.merge(self.df_product, self.df_base_price_lookup,
+        self.df_update_products = self.df_product.merge(self.df_base_price_lookup,
                                                          how='left', on=['FyProductNumber','FyPartNumber'])
-        # all products that matched on FyProdNum
-        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
+        if 'Filter' not in self.df_update_products.columns:
+            self.df_update_products['Filter'] = 'Fail'
+        else:
+            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
-        self.df_product = self.df_update_products[(self.df_update_products['Filter'] != 'Update')]
-        self.df_update_products = self.df_update_products[(self.df_update_products['Filter'] == 'Update')]
+        self.df_product = self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update')]
+        self.df_update_products = self.df_update_products.loc[(self.df_update_products['Filter'] == 'Update')]
 
         if len(self.df_update_products.index) != 0:
             # this step is going to require a test against the pricing in the contract price table
             # this could end up empty
             self.df_va_price_lookup['Filter'] = 'Pass'
             self.df_update_products = self.df_update_products.drop(columns='Filter')
-            self.df_update_products = pandas.DataFrame.merge(self.df_update_products, self.df_va_price_lookup,
+            self.df_update_products = self.df_update_products.merge(self.df_va_price_lookup,
                                                              how='left', on=match_headers)
 
             # this does not seem to be matching correctly in the above
@@ -95,17 +97,26 @@ class VAPrice(BasicProcessObject):
 
             self.df_product = self.df_product.append(self.df_update_products)
 
+
+    def filter_check_in(self, row):
+        if 'Filter' in row:
+            if row['Filter'] == 'Update':
+                self.obReporter.update_report('Pass','This product price is an update')
+                return True
+            else:
+                self.obReporter.update_report('Alert','This product must be ingested in product')
+                return False
+        else:
+            self.obReporter.update_report('Fail','This product price failed filtering')
+            return False
+
+
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
 
         for colName, row in df_line_product.iterrows():
-            if 'Filter' in row:
-                if row['Filter'] == 'Pass':
-                    return True, df_collect_product_base_data
-
-            else:
-                self.obReporter.update_report('Fail','This product needs to be ingested')
+            if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
             df_collect_product_base_data = self.process_oncontract(df_collect_product_base_data, row)
