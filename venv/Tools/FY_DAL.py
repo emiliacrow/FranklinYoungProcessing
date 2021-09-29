@@ -614,12 +614,6 @@ class DalObject:
         runner.start()
 
 
-    def update_fks_base_price(self,newBaseProductPriceId,newVAProductPriceId,newGSAProductPriceId,newHTMEProductPriceId,newECATProductPriceId,newFEDMALLProductPriceId):
-        proc_name = 'sequoia.update_fks_BaseProductPrice'
-        proc_args = (newBaseProductPriceId,newVAProductPriceId,newGSAProductPriceId,newHTMEProductPriceId,newECATProductPriceId,newFEDMALLProductPriceId)
-        success = self.id_cap(proc_name, proc_args)
-        return success
-
     def get_product_price_id_by_fy_product_number(self,fy_product_number):
         proc_name = 'sequoia.get_ProductPrice_id_by_FYProductNumber'
         proc_args = (fy_product_number,)

@@ -89,10 +89,6 @@ class BasePrice(BasicProcessObject):
 
             self.df_product = self.df_product.append(self.df_update_products)
 
-        # place new at bottom, I don't know if this is needed yet, but it might be?
-        self.df_product = self.df_product.sort_values(by=['Filter'], ascending=True)
-
-
 
     def filter_check_in(self, row):
         if 'Filter' in row:
@@ -311,6 +307,8 @@ class BasePrice(BasicProcessObject):
 
         return success, df_line_product
 
+    def trigger_ingest_cleanup(self):
+        self.obIngester.ingest_base_price_cleanup()
 
 
 

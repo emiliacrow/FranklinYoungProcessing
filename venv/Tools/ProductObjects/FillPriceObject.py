@@ -82,9 +82,6 @@ class FillProductPrice(BasicProcessObject):
 
         self.df_product = self.df_update_products
 
-        # place new at bottom, I don't know if this is needed yet, but it might be?
-        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
-
 
     def batch_process_attribute(self,attribute):
         str_attribute_id = attribute +'Id'
@@ -245,6 +242,9 @@ class FillProductPrice(BasicProcessObject):
                                                      outer_diameter_id, inner_diameter_id, diameter_id,
                                                      tolerance_id, accuracy_id, mass_id, aperture_size_id,
                                                      apparel_size_id, particle_size_id, pore_size_id)
+
+    def trigger_ingest_cleanup(self):
+        self.obIngester.fill_product_price_cleanup()
 
 
     def process_upc(self,row):

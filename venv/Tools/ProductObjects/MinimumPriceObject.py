@@ -77,9 +77,6 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.df_product = self.df_product.append(self.df_update_product)
 
-        # place new at bottom
-        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=True)
-
 
     def batch_process_something(self, df_row):
         some_val = 1
@@ -264,6 +261,8 @@ class MinimumProductPrice(BasicProcessObject):
 
         return True, df_line_product
 
+    def trigger_ingest_cleanup(self):
+        self.obIngester.ingest_product_price_cleanup()
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
     req_fields = ['VendorName','VendorPartNumber','FyCatalogNumber','FyProductNumber']

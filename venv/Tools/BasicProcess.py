@@ -117,6 +117,8 @@ class BasicProcessObject:
     def batch_preprocessing(self):
         pass
 
+    def trigger_ingest_cleanup(self):
+        pass
 
     def run_process(self):
         self.obReporter = ReporterObject()
@@ -155,6 +157,9 @@ class BasicProcessObject:
             else:
                 self.obReporter.report_line_viability(False)
                 success, return_df_line_product = self.report_missing_data(df_line_product)
+
+            if self.is_last:
+                self.trigger_ingest_cleanup()
 
             # appends all the product objects into a list
             report_set = self.obReporter.get_report()

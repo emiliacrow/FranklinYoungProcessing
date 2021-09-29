@@ -313,6 +313,10 @@ class IngestionObject:
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
                                                newIsDisposable, newIsGreen, newIsLatexFree, newIsRX])
 
+    def ingest_product_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.min_product_cap(self.product_collector)
+
 
     def get_product_id_by_fy_catalog_number(self, fy_catalog_number):
         return_id = -1
@@ -333,6 +337,10 @@ class IngestionObject:
 
         else:
             self.product_collector.append([ProductId, FYProductNotes, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId])
+
+    def fill_product_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.product_fill(self.product_collector)
 
 
     def ingest_shipping_instructions(self, newPackagingDesc, newshippingcode='', newIsFreeShipping=0, newIsColdChain=0):
@@ -370,6 +378,9 @@ class IngestionObject:
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
                                                 newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity])
 
+    def ingest_product_price_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.min_product_price_cap(self.product_collector)
 
     def fill_product_price(self, is_last, newProductPriceId,newUPC='',newVolume=-1,newWeight=-1,newSize='',newLength=-1,newVariantDesc='',newMinumumFlowTime='',newProfile='',newAmountPriceBreakLevel1=-1,newAmountPriceBreakLevel2=-1,newAmountPriceBreakLevel3=-1,newQuantityPriceBreakLevel1=-1,newQuantityPriceBreakLevel2=-1,newQuantityPriceBreakLevel3=-1,newThicknessId=-1,newHeightId=-1,newDepthId=-1,newWidthId=-1,newCapacityId=-1,newTankCapacityId=-1,newVolumeUnitId=-1,newWeightUnitId=-1,newLengthUnitId=-1,newDimensionsId=-1,newInteriorDimensionsId=-1,newExteriorDimensionsId=-1,newMaterialId=-1,newColorId=-1,newSpeedId=-1,newTubeId=-1,newWeightRangeId=-1,newTemperatureRangeId=-1,newWavelengthId=-1,newWattageId=-1,newVoltageId=-1,newAmperageId=-1,newOuterDiameterId=-1,newInnerDiameterId=-1,newDiameterId=-1,newToleranceId=-1,newAccuracyId=-1,newMassId=-1,newApertureSizeId=-1,newApparelSizeId=-1,newParticleSizeId=-1,newPoreSizeId=-1):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
@@ -380,6 +391,9 @@ class IngestionObject:
         else:
             self.product_collector.append([newProductPriceId,newUPC,newVolume,newWeight,newSize,newLength,newVariantDesc,newMinumumFlowTime,newProfile,newAmountPriceBreakLevel1,newAmountPriceBreakLevel2,newAmountPriceBreakLevel3,newQuantityPriceBreakLevel1,newQuantityPriceBreakLevel2,newQuantityPriceBreakLevel3,newThicknessId,newHeightId,newDepthId,newWidthId,newCapacityId,newTankCapacityId,newVolumeUnitId,newWeightUnitId,newLengthUnitId,newDimensionsId,newInteriorDimensionsId,newExteriorDimensionsId,newMaterialId,newColorId,newSpeedId,newTubeId,newWeightRangeId,newTemperatureRangeId,newWavelengthId,newWattageId,newVoltageId,newAmperageId,newOuterDiameterId,newInnerDiameterId,newDiameterId,newToleranceId,newAccuracyId,newMassId,newApertureSizeId,newApparelSizeId,newParticleSizeId,newPoreSizeId])
 
+    def fill_product_price_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.product_price_fill(self.product_collector)
 
     def ingest_base_price(self, is_last, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, product_price_id, newVAProductPriceId=-1, newGSAProductPriceId=-1, newHTMEProductPriceId=-1, newECATProductPriceId=-1, newFEDMALLProductPriceId=-1):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
@@ -394,10 +408,10 @@ class IngestionObject:
         else:
             self.product_collector.append([vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, product_price_id, newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId, newFEDMALLProductPriceId])
 
+    def ingest_base_price_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.base_price_cap(self.product_collector)
 
-    def update_fks_base_price(self,newBaseProductPriceId, newVAProductPriceId = -1, newGSAProductPriceId = -1, newHTMEProductPriceId = -1, newECATProductPriceId = -1, newFEDMALLProductPriceId = -1):
-        success = self.obDal.update_fks_base_price(newBaseProductPriceId, newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId, newFEDMALLProductPriceId)
-        return success
 
     def get_product_price_id_by_fy_product_number(self,fy_product_number):
         success = self.obDal.get_product_price_id_by_fy_product_number(fy_product_number)

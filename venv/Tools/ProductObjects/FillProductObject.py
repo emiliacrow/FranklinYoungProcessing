@@ -89,9 +89,6 @@ class FillProduct(BasicProcessObject):
             # recombine with product
             self.df_product = self.df_product.append(self.df_update_product)
 
-        # place new at bottom
-        self.df_product = self.df_product.sort_values(by=['Filter'],ascending=False)
-
 
     def batch_process_attribute(self,attribute):
         str_attribute_id = attribute +'Id'
@@ -193,6 +190,8 @@ class FillProduct(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
+    def trigger_ingest_cleanup(self):
+        self.obIngester.fill_product_cleanup()
 
     def process_fy_notes(self, row):
         fy_product_Notes = ''
