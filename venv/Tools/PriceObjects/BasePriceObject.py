@@ -295,13 +295,18 @@ class BasePrice(BasicProcessObject):
                 except ValueError:
                     date_catalog_received = str(row['DateCatalogReceived'])
 
+            if 'CatalogProvidedBy' not in row:
+                catalog_provided_by = str(row['CatalogProvidedBy'])
+            else:
+                catalog_provided_by = ''
+
             product_price_id = row['ProductPriceId']
 
         self.obIngester.ingest_base_price(self.is_last, vendor_list_price, fy_discount_percent, fy_cost,
                                                           estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price,
                                                           markup_percent_fy_list, fy_list_price, ecommerce_discount,
-                                                          is_visible, date_catalog_received,
+                                                          is_visible, date_catalog_received, catalog_provided_by,
                                                           product_price_id, va_product_price_id, gsa_product_price_id,
                                                           htme_product_price_id, ecat_product_price_id, fedmall_product_price_id)
 
