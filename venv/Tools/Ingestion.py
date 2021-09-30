@@ -426,32 +426,32 @@ class IngestionObject:
         return success
 
 
-    def gsa_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
+    def gsa_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
+                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
             self.obDal.gsa_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
+            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
 
     def ingest_gsa_product_price_cleanup(self):
         if self.product_collector != []:
             self.obDal.gsa_product_price_cap(self.product_collector)
 
 
-    def va_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN):
+    def va_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber,
-                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedListPrice,
+                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber,
+                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,
                  newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
             self.obDal.va_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber,
-                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedListPrice,
+                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber,
+                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,
                  newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
 
     def ingest_va_product_price_cleanup(self):
