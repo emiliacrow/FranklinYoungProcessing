@@ -110,6 +110,8 @@ class VAPrice(BasicProcessObject):
             self.obReporter.update_report('Fail','This product price failed filtering')
             return False
 
+    def trigger_ingest_cleanup(self):
+        self.obIngester.ingest_va_product_price_cleanup()
 
     def process_product_line(self, df_line_product):
         success = True

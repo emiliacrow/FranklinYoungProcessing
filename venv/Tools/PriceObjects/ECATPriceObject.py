@@ -107,6 +107,8 @@ class ECATPrice(BasicProcessObject):
             self.obReporter.update_report('Fail','This product price failed filtering')
             return False
 
+    def trigger_ingest_cleanup(self):
+        self.obIngester.ingest_ecat_product_price_cleanup()
 
     def process_product_line(self, df_line_product):
         success = True
@@ -194,8 +196,8 @@ class ECATPrice(BasicProcessObject):
             mfc_price = row['MfcPrice']
 
 
-        self.obIngester.ecat_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, contract_number, contract_mod_number,
-                                                             is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
+        self.obIngester.ecat_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, approved_list_price, contract_number, contract_mod_number,
+                                                             is_pricing_approved, approved_price_date, approved_percent,
                                                              ecat_base_price, ecat_sell_price, mfc_precent, mfc_price)
         return success, return_df_line_product
 

@@ -435,6 +435,10 @@ class IngestionObject:
         else:
             self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
 
+    def ingest_gsa_product_price_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.gsa_product_price_cap(self.product_collector)
+
 
     def va_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
@@ -450,16 +454,22 @@ class IngestionObject:
                  newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedListPrice,
                  newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
 
+    def ingest_va_product_price_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.va_product_price_cap(self.product_collector)
 
-    def ecat_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice):
+    def ecat_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
+                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
             self.obDal.ecat_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate,newApprovedListPrice, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
+            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
 
+    def ingest_ecat_product_price_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.ecat_product_price_cap(self.product_collector)
 
     def htme_product_price_cap(self,newIsVisible, newDateCatalogReceived, newHTMESellPrice, newHTMEApprovedPriceDate, newHTMEPricingApproved, newHTMEContractNumber, newHTMEContractModificationNumber, newHTMEProductGMPercent, newHTMEProductGMPrice):
         return_id = self.obDal.htme_product_price_cap(newIsVisible, newDateCatalogReceived, newHTMESellPrice, newHTMEApprovedPriceDate, newHTMEPricingApproved, newHTMEContractNumber, newHTMEContractModificationNumber, newHTMEProductGMPercent, newHTMEProductGMPrice)
