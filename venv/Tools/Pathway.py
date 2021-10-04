@@ -137,7 +137,6 @@ class Pathways():
                     self.message = self.perform_file_split(['Filter'])
 
                 else:
-
                     self.df_product = self.obFileFinder.read_xlsx()
                     self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected)
                     self.success, self.message = self.obFileProcessor.begin_process()
