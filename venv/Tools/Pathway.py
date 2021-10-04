@@ -19,8 +19,9 @@ from Tools.ProgressBar import ProgressBarWindow
 from Tools.ProgressBar import JoinSelectionDialog
 
 # other processing objects
-from Tools.BaseDataLoaderObject import BaseDataLoader
 from Tools.FileProcessObject import FileProcessor
+from Tools.BaseDataLoaderObject import BaseDataLoader
+from Tools.ProductAgniKaiObject import ProductAgniKaiObject
 from Tools.CategoryProcessingObject import CategoryProcessor
 from Tools.PostProcessObjects.BigCommerceRTLObject import BigCommerceRTLObject as BC_RTL_Object
 
@@ -109,11 +110,21 @@ class Pathways():
             else:
                 if 'Category' in file_action_selected:
                     self.df_product = self.obFileFinder.read_xlsx()
-                    self.obCategoryProcessor = CategoryProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected)
+                    self.obCategoryProcessor = CategoryProcessor(self.df_product, self.user, self.password, is_testing,
+                                                                 file_action_selected)
                     self.success, self.message = self.obCategoryProcessor.begin_process()
                     self.df_product = self.obCategoryProcessor.get_df()
 
-                    self.obFileFinder.write_xlsx(self.df_product, 'cat_'+file_action_selected.replace('Category ',''))
+                    self.obFileFinder.write_xlsx(self.df_product,
+                                                 'cat_' + file_action_selected.replace('Category ', ''))
+
+                elif file_action_selected == 'Product Agni Kai':
+                    self.df_product = self.obFileFinder.read_xlsx()
+                    self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected)
+                    self.success, self.message = self.obAgniKai.begin_process()
+                    self.df_product = self.obAgniKai.get_df()
+
+                    self.obFileFinder.write_xlsx(self.df_product, '_agni_kai_')
 
                 else:
 
