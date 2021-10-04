@@ -52,6 +52,8 @@ from Tools.PriceObjects.FEDMALLPriceObject import FEDMALLPrice
 class Pathways():
     def __init__(self):
         self.name = 'The Way'
+        self.split_chunk_size = 10000
+        self.full_file_count = 0
         self.obFileFinder = FileFinder()
 
         self.perm_file = os.getcwd() + '\\venv\Assets\SequoiaCredentials.txt'
@@ -120,11 +122,19 @@ class Pathways():
 
                 elif file_action_selected == 'Product Agni Kai':
                     self.df_product = self.obFileFinder.read_xlsx()
-                    self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected)
+
+                    self.obYNBox = YesNoDialog('Include discon?')
+                    self.obYNBox.initUI('Include discontinues dialog.', 'Create outputs for discontinues?')
+                    if self.obYNBox.yes_selected == True:
+                        self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected, True)
+                    else:
+                        self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected)
+
+                    self.obYNBox.close()
                     self.success, self.message = self.obAgniKai.begin_process()
                     self.df_product = self.obAgniKai.get_df()
-
-                    self.obFileFinder.write_xlsx(self.df_product, '_agni_kai_')
+                    # perform split and create files
+                    self.message = self.perform_file_split(['Filter'])
 
                 else:
 
@@ -142,8 +152,6 @@ class Pathways():
     def file_splitter_tool(self):
         self.success = True
         self.message = 'It\'s finished'
-        self.split_chunk_size = 10000
-        self.full_file_count = 0
 
         # which file you wanna split
         file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to split.')
@@ -159,6 +167,12 @@ class Pathways():
         # split on column or column
         split_on = self.onMergeDialog.get_selected_items()
 
+        self.message = self.perform_file_split(split_on)
+
+        return True, self.message
+
+    def perform_file_split(self,split_on):
+
         df_column_alone = self.df_product[split_on]
 
         df_column_alone = df_column_alone.drop_duplicates(subset=split_on)
@@ -170,12 +184,12 @@ class Pathways():
         # split the data based on the values in the column
         for each_value in split_values:
             # break layer
-            file_name = each_value.replace(' ','_')
-            file_name = file_name.replace('.','_')
-            file_name = file_name.replace(',','_')
-            file_name = file_name.replace('\\','')
-            file_name = file_name.replace('/','')
-            file_name = file_name.replace('__','_')
+            file_name = each_value.replace(' ', '_')
+            file_name = file_name.replace('.', '_')
+            file_name = file_name.replace(',', '_')
+            file_name = file_name.replace('\\', '')
+            file_name = file_name.replace('/', '')
+            file_name = file_name.replace('__', '_')
 
             df_layer = self.df_product.loc[(self.df_product[split_on[0]] == each_value)]
             # get the size
@@ -184,18 +198,18 @@ class Pathways():
             if chunk_size > self.split_chunk_size:
                 chunk_count = chunk_size / self.split_chunk_size
                 # we determine the number of chunks to make
-                if chunk_count%1 > 0:
-                    chunk_count = int(chunk_count/1)+1
+                if chunk_count % 1 > 0:
+                    chunk_count = int(chunk_count / 1) + 1
 
                 file_number = 1
                 chunk_layer = 0
                 while chunk_count != 0:
                     # get each layer
-                    df_layer_chunk = df_layer.iloc[chunk_layer:chunk_layer+self.split_chunk_size,:]
+                    df_layer_chunk = df_layer.iloc[chunk_layer:chunk_layer + self.split_chunk_size, :]
 
                     chunk_layer += self.split_chunk_size
 
-                    layer_name = file_name+'_'+str(file_number)
+                    layer_name = file_name + '_' + str(file_number)
 
                     self.full_file_count += 1
                     self.obFileFinder.write_xlsx(df_layer_chunk, layer_name, False)
@@ -207,7 +221,7 @@ class Pathways():
                 self.full_file_count += 1
 
         self.message = 'Created {} files.'.format(self.full_file_count)
-        return True, self.message
+        return self.message
 
 
     def file_merger_tool(self):

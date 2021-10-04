@@ -10,8 +10,9 @@ class ProductAgniKaiObject(BasicProcessObject):
     sup_fields = []
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product, user, password, is_testing, proc_to_set):
+    def __init__(self,df_product, user, password, is_testing, proc_to_set, include_discontinues = False):
         self.proc_to_run = proc_to_set
+        self.include_discontinues = include_discontinues
         super().__init__(df_product, user, password, is_testing)
         self.name = 'File Processor'
         self.product_collector = {}
@@ -35,14 +36,10 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['ProductId','ProductPriceId'])
 
         # match all products on FyProdNum
-        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on='FyProductNumber')
-
-        self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Filter'] = 'Update'
-        self.df_product.loc[(self.df_product['Filter X'] != 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Filter'] = 'Discon'
-        self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] != 'Update'), 'Filter'] = 'New'
+        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='outer',on=['FyProductNumber','ManufacturerPartNumber'])
 
         # counts FyProductNumber occurance as series
-        self.srs_matched_product = self.df_product.loc[(self.df_product['Filter'] == 'Update'),'FyProductNumber'].value_counts()
+        self.srs_matched_product = self.df_product.loc[:,'FyProductNumber'].value_counts()
 
         self.srs_matched_product.rename_axis()
         # sets series to dataframe
@@ -55,9 +52,31 @@ class ProductAgniKaiObject(BasicProcessObject):
 
         self.df_product = self.df_product.merge(self.df_matched_product, how='left', on='FyProductNumber')
 
+        self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Filter'] = 'Product Update'
+        self.df_product.loc[(self.df_product['Filter X'] != 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Filter'] = 'Possible discontinue'
+        self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] != 'Update'), 'Filter'] = 'New Product'
 
-    def process_product_line(self, df_line_product):
-        return True, df_line_product
+        self.df_product.loc[(self.df_product['is_duplicated'] == 'Y'), 'Filter'] = 'Possible Duplicate'
+
+        if self.include_discontinues == False:
+            self.df_product = self.df_product.loc[self.df_product['Filter'] != 'Possible discontinue']
+
+        self.df_product = self.df_product.drop(columns = ['Filter X','Filter Y','is_duplicated'])
+
+
+    def run_process(self):
+        self.set_progress_bar(10, 'Batch preprocessing')
+        self.obProgressBarWindow.update_unknown()
+        self.batch_preprocessing()
+        self.obProgressBarWindow.close()
+
+        count_of_items = len(self.df_product.index)
+        self.return_df_product = self.df_product.copy()
+
+        self.df_product = self.return_df_product
+        self.message = '{1}: {0} evaluated.'.format(count_of_items,self.name)
+
+        return True, self.message
 
 
 ## end ##
