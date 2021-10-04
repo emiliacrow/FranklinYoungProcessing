@@ -53,8 +53,11 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.df_product = self.df_product.merge(self.df_matched_product, how='left', on='FyProductNumber')
 
         self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Filter'] = 'Product Update'
+        self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Alert'] = 'Product Update'
         self.df_product.loc[(self.df_product['Filter X'] != 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Filter'] = 'Possible discontinue'
+        self.df_product.loc[(self.df_product['Filter X'] != 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Alert'] = 'Possible discontinue'
         self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] != 'Update'), 'Filter'] = 'New Product'
+        self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] != 'Update'), 'Alert'] = 'New Product'
 
         self.df_product.loc[(self.df_product['is_duplicated'] == 'Y'), 'Filter'] = 'Possible Duplicate'
 
