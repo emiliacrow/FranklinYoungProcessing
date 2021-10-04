@@ -171,7 +171,7 @@ class DuckworthWindow(QWidget):
         self.file_action_options = ['Assign FyPartNumbers', 'File Merger Tool', 'Category Training',
                                     'Category Assignment', 'Category Management', 'Extract Attributes',
                                     'Unicode Correction', 'Generate Upload File', 'File Splitter Tool',
-                                    'Load Image Files', 'Product Participation']
+                                    'Load Image Files', 'Product Action Review']
 
         self.file_action_options.sort()
 

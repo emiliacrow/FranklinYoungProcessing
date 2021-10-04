@@ -120,7 +120,7 @@ class Pathways():
                     self.obFileFinder.write_xlsx(self.df_product,
                                                  'cat_' + file_action_selected.replace('Category ', ''))
 
-                elif file_action_selected == 'Product Participation':
+                elif file_action_selected == 'Product Action Review':
                     self.df_product = self.obFileFinder.read_xlsx()
 
                     self.obYNBox = YesNoDialog('Include discon?')

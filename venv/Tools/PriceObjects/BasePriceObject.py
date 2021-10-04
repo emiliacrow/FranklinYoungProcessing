@@ -295,7 +295,7 @@ class BasePrice(BasicProcessObject):
                 except ValueError:
                     date_catalog_received = str(row['DateCatalogReceived'])
 
-            if 'CatalogProvidedBy' not in row:
+            if 'CatalogProvidedBy' in row:
                 catalog_provided_by = str(row['CatalogProvidedBy'])
             else:
                 catalog_provided_by = ''
