@@ -3,6 +3,7 @@
 # Updated: 20210608
 # CreateFor: Franklin Young International
 
+import os
 import glob
 import pandas
 import datetime
@@ -19,7 +20,7 @@ class FileFinder():
         # will have to make this a configuration
         self.selected_file = None
 
-    def ident_file(self,window_title='Please select a file',path=None):
+    def ident_file(self,window_title='Please select a file',path = None):
         root = tk.Tk()
         root.withdraw()
 
@@ -79,9 +80,9 @@ class FileFinder():
 
         return excel_dataframe
 
-    def write_xlsx(self,df_product,bumper,include_date = True):
+    def write_xlsx(self,df_product,bumper,include_date = True, pb_desc = 'Creating file...'):
 
-        self.obProgressBar = ProgressBarWindow('Creating file...')
+        self.obProgressBar = ProgressBarWindow(pb_desc)
         self.obProgressBar.set_anew(10)
         self.obProgressBar.show()
         self.obProgressBar.update_unknown()

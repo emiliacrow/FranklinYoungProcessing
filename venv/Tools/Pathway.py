@@ -211,12 +211,14 @@ class Pathways():
                     layer_name = file_name + '_' + str(file_number)
 
                     self.full_file_count += 1
-                    self.obFileFinder.write_xlsx(df_layer_chunk, layer_name, False)
+                    pb_name = 'Writing file #{0}: {1}'.format(str(self.full_file_count),layer_name)
+                    self.obFileFinder.write_xlsx(df_layer_chunk, layer_name, False, pb_name)
 
                     file_number += 1
                     chunk_count -= 1
             else:
-                self.obFileFinder.write_xlsx(df_layer, file_name, False)
+                pb_name = 'Writing file #{0}: {1}'.format(str(self.full_file_count),file_name)
+                self.obFileFinder.write_xlsx(df_layer, file_name, False, pb_name)
                 self.full_file_count += 1
 
         self.message = 'Created {} files.'.format(self.full_file_count)

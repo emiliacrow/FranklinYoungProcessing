@@ -18,7 +18,7 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.product_collector = {}
 
     def batch_preprocessing(self):
-        self.df_product_price_lookup = self.obDal.get_product_price_lookup()
+        self.df_product_price_lookup = self.obDal.get_product_action_review_lookup()
         self.define_new()
         return self.df_product
 
@@ -30,10 +30,19 @@ class ProductAgniKaiObject(BasicProcessObject):
         if 'Filter Y' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns = 'Filter Y')
 
+        if 'ProductId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'ProductId')
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = 'ProductPriceId')
+
+        if 'BaseProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns='BaseProductPriceId')
+
+
+
         # simple first
         self.df_product['Filter X'] = 'Update'
         self.df_product_price_lookup['Filter Y'] = 'Update'
-        self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['ProductId','ProductPriceId'])
 
         # match all products on FyProdNum
         self.df_product = self.df_product.merge(self.df_product_price_lookup, how='outer',on=['FyProductNumber','ManufacturerPartNumber'])
@@ -60,6 +69,12 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] != 'Update'), 'Alert'] = 'New Product'
 
         self.df_product.loc[(self.df_product['is_duplicated'] == 'Y'), 'Filter'] = 'Possible Duplicate'
+
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Process in ProductPrice'
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Alert'] = 'Process in ProductPrice'
+
+        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Process in Base Price'
+        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Alert'] = 'Process in Base Price'
 
         if self.include_discontinues == False:
             self.df_product = self.df_product.loc[self.df_product['Filter'] != 'Possible discontinue']

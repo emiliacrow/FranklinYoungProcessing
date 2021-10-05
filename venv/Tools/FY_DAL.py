@@ -561,6 +561,12 @@ class DalObject:
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 
+    def get_product_action_review_lookup(self):
+        proc_name = 'sequoia.get_ProductActionReview_lookup'
+        column_names = ['ProductId','ProductPriceId','FyProductNumber','ManufacturerPartNumber','BaseProductPriceId']
+        df_product_lookup = self.get_lookup(proc_name,column_names)
+        return df_product_lookup
+
     def get_product_fill_lookup(self):
         proc_name = 'sequoia.get_ProductFill_lookup'
         column_names = ['ProductId','ProductPriceId','FyProductNumber']
