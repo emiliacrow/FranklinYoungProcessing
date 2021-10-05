@@ -23,21 +23,22 @@ class FileFinder():
         root = tk.Tk()
         root.withdraw()
 
-        files = filedialog.askopenfilenames(initialdir=path, title=window_title,filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
-        if len(files) > 0:
-            self.selected_file = files[0]
-            self.selected_file = self.selected_file.replace('/','\\\\')
-            self.process_time = str(datetime.datetime.now())
-            self.process_time = self.process_time.replace(' ','_')
-            self.process_time = self.process_time.partition('.')[0]
-            self.process_time = self.process_time.replace(':','-')
-            self.basic_out_file_path = self.selected_file.replace('.xlsx','_prcd_'+self.process_time+'.xlsx')
+        try:
+            filename = filedialog.askopenfilename(initialdir=path, title=window_title,filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
+        except:
+            return False, 'Ask open filenames failed'
 
-            self.file_base_location = self.selected_file.rpartition('/')[0]
+        self.selected_file = filename
+        self.selected_file = self.selected_file.replace('/','\\\\')
+        self.process_time = str(datetime.datetime.now())
+        self.process_time = self.process_time.replace(' ','_')
+        self.process_time = self.process_time.partition('.')[0]
+        self.process_time = self.process_time.replace(':','-')
+        self.basic_out_file_path = self.selected_file.replace('.xlsx','_prcd_'+self.process_time+'.xlsx')
 
-            return True, self.basic_out_file_path
-        else:
-            return False, 'No file selected'
+        self.file_base_location = self.selected_file.rpartition('/')[0]
+
+        return True, self.basic_out_file_path
 
     def ident_directory(self, window_title = 'Please select directory', path = None):
         root = tk.Tk()
