@@ -400,67 +400,78 @@ class Pathways():
     def base_data_pathway(self, is_testing, table_to_load):
         self.success = False
         self.message = 'Base data pathway'
-        self.success, self.message = self.base_data_files(table_to_load)
-        if self.success:
-            self.df_product = self.obFileFinder.read_xlsx(self.message)
-
-            self.obBaseDataLoader = BaseDataLoader(self.df_product, self.user, self.password, is_testing)
-            self.obBaseDataLoader.set_the_table(table_to_load)
-            self.success, self.message = self.obBaseDataLoader.begin_process()
-            self.df_product = self.obBaseDataLoader.get_df()
-
+        self.success, self.message = self.base_data_manual_load(is_testing, table_to_load)
         return self.success, self.message
 
-    def base_data_manual_load(self):
-        if table_to_load == 'Country':
-            lst_req_fields = [['CountryName', 45, 'This is a common name<br>like "The Congo"'],
-                              ['LongCountryName', 128, 'This is a full name<br>like "Democratic Republic of the Congo"'],
-                              ['CountryCode', 2, 'This is the 2 letter code, "CG"'],
-                              ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"']]
+    def base_data_manual_load(self, is_testing, table_to_load):
+        # set the dal
+        self.obDal = DalObject(self.user, self.password)
+        self.obDal.set_testing(is_testing)
+        self.obIngester = IngestionObject(self.obDal)
 
-            return True, country_base_data_file
-        elif table_to_load == 'Category':
-            lst_req_fields = [['Category Name', 128, 'This is most likely the bottom level value<br>like "Lab Supplies"'],
-                              ['Category Hierarchy', 128, 'This is the full hierarchy<br>like "All Products/Life Science/Lab Supplies"']]
+        if table_to_load == 'Category':
+            cat_id = self.obIngester.manual_ingest_category()
+            if (cat_id != -1):
+                return True, 'Loaded a new category with id: {0}'.format(cat_id)
+            else:
+                return False, 'You failed to fill a required field'
 
-            return True, category_base_data_file
+        elif table_to_load == 'Country':
+            coo_id = self.obIngester.manual_ingest_country()
+            if (coo_id != -1):
+                return True, 'Loaded a new country with id: {0}'.format(coo_id)
+            else:
+                return False, 'You failed to fill a required field'
+
         elif table_to_load == 'FSC Codes':
-            lst_req_fields = [['FSCCode',15,'This is a sample code<br>like "AF11"'],
-                              ['FSCCodeName',128,'This is the title<br>like "EDUCATION (BASIC)"'],
-                              ['FSCCodeDesc',128,'Any additional info<br>like "EDUCATION - BASIC RESEARCH"']]
+            fsc_id = self.obIngester.manual_ingest_fsc_code()
+            if (fsc_id != -1):
+                return True, 'Loaded a new fsc code with id: {0}'.format(fsc_id)
+            else:
+                return False, 'You failed to fill a required field'
 
-            return True, fsc_base_data_file
         elif table_to_load == 'Hazardous Code':
-            lst_req_fields = [['HazardCode',45,'This is the code<br>like "NA1270"'],
-                              ['HazardDesc',256,'This is the description<br>like "Petroleum oil"']]
+            haz_id = self.obIngester.manual_ingest_hazard_code()
+            if (haz_id != -1):
+                return True, 'Loaded a new hazard code with id: {0}'.format(haz_id)
+            else:
+                return False, 'You failed to fill a required field'
 
-            return True, hazard_base_data_file
         elif table_to_load == 'Manufacturer':
-            lst_req_fields = [['ManufacturerName',45,'This is the ugly version of the name<br>like "thermo electron (karlsruhe) gmbh"'],
-                              ['SupplierName',45,'This is the standardized name<br>like "THERMO ELECTRON"']]
+            man_id = self.obIngester.manual_ingest_manufacturer()
+            if (man_id != -1):
+                return True, 'Loaded a new manufacturer with id: {0}'.format(man_id)
+            else:
+                return False, 'You failed to fill a required field'
 
-            return True, manufacturer_base_data_file
         elif table_to_load == 'NAICS Code':
-            lst_req_fields = [['NAICSCode',128,'This is a numeric value<br>like "32532"'],
-                              ['NAICSName',45,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"']]
+            naics_id = self.obIngester.manual_ingest_naics_code()
+            if (naics_id != -1):
+                return True, 'Loaded a new NAICS code with id: {0}'.format(naics_id)
+            else:
+                return False, 'You failed to fill a required field'
 
-            return True, naics_base_data_file
         elif table_to_load == 'Unit of Issue-Symbol':
-            lst_req_fields = [['UnitSymbol',2,'This is the 2 character value<br>like "OZ"'],
-                              ['UnitName',45,'This is name<br>like "OUNCE"']]
+            uois_id = self.obIngester.manual_ingest_uois_code()
+            if (uois_id != -1):
+                return True, 'Loaded a new unit of issue symbol code with id: {0}'.format(uois_id)
+            else:
+                return False, 'You failed to fill a required field'
 
-            return True, uoi_base_data_file
         elif table_to_load == 'UNSPSC Codes':
-            lst_req_fields = [['UNSPSC',45,'This is the code<br>like "11101705"'],
-                              ['UNSPSCTitle',45,'This is name<br>like "Aluminum"'],
-                              ['UNSPSCDescription',128,'This is any other info<br>like "This is aluminum metal"']]
+            unspsc_id = self.obIngester.manual_ingest_unspsc_code()
+            if (unspsc_id != -1):
+                return True, 'Loaded a new UNSPSC code with id: {0}'.format(unspsc_id)
+            else:
+                return False, 'You failed to fill a required field'
 
-            return True, unspsc_base_data_file
         elif table_to_load == 'Vendor':
-            lst_req_fields = [['VendorName',1,'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"'],
-                              ['VendorCode',1,'This is the not so pretty name<br>like "Consolidated Ster"']]
+            ven_id = self.obIngester.manual_ingest_vendor()
+            if (ven_id != -1):
+                return True, 'Loaded a new UNSPSC code with id: {0}'.format(ven_id)
+            else:
+                return False, 'You failed to fill a required field'
 
-            return True, vendor_base_data_file
         else:
             return False, 'No file available.'
 

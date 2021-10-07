@@ -188,10 +188,10 @@ class JoinSelectionDialog(QDialog):
 
 
 class TextBoxObject(QDialog):
-    def __init__(self,lst_input_reqs,parent=None):
+    def __init__(self,lst_input_reqs, parent=None):
         super().__init__(parent)
         self.return_textbox = []
-        self.lst_output_req = []
+        self.lst_output_req = {}
 
         self.setWindowTitle("Please enter text.")
         self.setWindowIcon(QIcon(os.getcwd() + '\\venv\Assets\Duckworth2.png'))
@@ -229,14 +229,14 @@ class TextBoxObject(QDialog):
             text_test.setMaxLength(each_input_req[1])
             self.layout.addWidget(text_test, pos, 1, 1, 2)
 
-            self.return_textbox.append([each_input_req, text_test])
+            self.return_textbox.append([each_input_req[0], text_test])
 
             pos += 1
 
 
     def on_click(self):
         for each_text_entry in self.return_textbox:
-            self.lst_output_req.append([each_text_entry[0], each_text_entry[1].text()])
+            self.lst_output_req[each_text_entry[0]] = each_text_entry[1].text()
 
         self.accept()
 
@@ -332,11 +332,15 @@ class MainWindow(QMainWindow):
 
     def button_clicked(self):
         # the button is just a proxy for some other trigger
-        lst_req_fields = [['NAICSCode',128,'This is a numeric value<br>like "32532"'],
-                          ['NAICSName',45,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"']]
+        lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"'],
+                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"']]
         dlg = TextBoxObject(lst_req_fields)
         dlg.exec()
-        print(dlg.getReturnSet())
+        dct_return = dlg.getReturnSet()
+        naics = dct_return['NAICSCode']
+        naics_names = dct_return['NAICSName']
+        print(naics)
+        print(naics_names)
 
         print('this happened')
 

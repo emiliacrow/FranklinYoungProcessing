@@ -3,6 +3,7 @@
 # Updated: 20210813
 # CreateFor: Franklin Young International
 
+from Tools.ProgressBar import TextBoxObject
 from Tools.ProgressBar import ProgressBarWindow
 
 
@@ -26,6 +27,7 @@ class IngestionObject:
         return_id = self.obDal.attribute_cap(attribute_desc,table_name)
         return return_id
 
+    # cetegory functions
     def ingest_categories(self, df_categories):
         ingested_set = []
         self.set_progress_bar('Ingesting Categories',len(df_categories.index))
@@ -46,7 +48,6 @@ class IngestionObject:
 
         return ingested_set
 
-
     def ingest_product_category(self, product_id, category_id):
         # this takes a parent child and get the id of the category
         product_category_id = self.obDal.product_category_cap(product_id,category_id)
@@ -56,6 +57,23 @@ class IngestionObject:
         df_category_lookup = self.obDal.get_category_names()
         return df_category_lookup
 
+    def manual_ingest_category(self):
+        lst_req_fields = [['CategoryName', 128, 'This is most likely the bottom level value<br>like "Lab Supplies"'],
+                          ['CategoryHierarchy', 128, 'This is the full hierarchy<br>like "All Products/Life Science/Lab Supplies"']]
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
+
+        cat_name = entered_values['CategoryName']
+        cat_hierarchy = entered_values['CategoryHierarchy']
+
+        if (cat_name != '') and (cat_hierarchy != ''):
+            cat_id = self.obDal.category_cap(cat_name, cat_hierarchy)
+            return cat_id
+        else:
+            return -1
+
+    # country of origin functions
     def ingest_country(self,country,country_long_name,country_code,ecatcode):
         # this should do more than just pass through
         return_id = self.obDal.country_cap(country,country_long_name,country_code,ecatcode)
@@ -85,34 +103,111 @@ class IngestionObject:
         df_country_lookup = self.obDal.get_country_lookup()
         return df_country_lookup
 
-    def ingest_vendor(self, vendor_name, vendor_code):
-        return_id = self.obDal.vendor_cap(vendor_name, vendor_code)
+    def manual_ingest_country(self):
+        lst_req_fields = [['CountryName', 45, 'This is a common name<br>like "The Congo"'],
+                          ['LongCountryName', 128, 'This is a full name<br>like "Democratic Republic of the Congo"'],
+                          ['CountryCode', 2, 'This is the 2 letter code, "CG"'],
+                          ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"']]
+
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
+
+        country_name = entered_values['CountryName'].upper()
+        full_country_name = entered_values['LongCountryName']
+        country_code = entered_values['CountryCode'].upper()
+        country_code_ecat = entered_values['CountryCodeEcat'].upper()
+
+        if (country_name != '') and (full_country_name != '') and (country_code != '') and (country_code_ecat != ''):
+            coo_id = self.obDal.country_cap(country_name, full_country_name, country_code, country_code_ecat)
+            return coo_id
+        else:
+            return -1
+
+    # fsc code functions
+    def ingest_fsc(self,fsc_code,fsc_name,fsc_desc=''):
+        return_id = self.obDal.fsc_code_cap(fsc_code,fsc_name,fsc_desc)
         return return_id
 
-    def ingest_vendors(self, df_vendors):
+    def ingest_fscs(self,df_fscs):
         ingested_set = []
-
-        self.set_progress_bar('Ingesting Vendors',len(df_vendors.index))
+        self.set_progress_bar('Ingesting FSCs',len(df_fscs.index))
         p_bar = 0
-        for column, row in df_vendors.iterrows():
+        for column, row in df_fscs.iterrows():
+            fsc_code = str(row['FSCCode'])
+            fsc_name = str(row['FSCName'])
+            fsc_desc = str(row['FSCDesc'])
 
-            vendor_name = str(row['VendorName'])
-            vendor_name = vendor_name.strip().lower()
-            vendor_code = str(row['VendorCode'])
-
-            return_id = self.ingest_vendor(vendor_name,vendor_code)
-            ingested_set.append([return_id,vendor_name,vendor_code])
+            return_id = self.ingest_fsc(fsc_code,fsc_name,fsc_desc)
+            ingested_set.append([return_id,fsc_code,fsc_name,fsc_desc])
 
             p_bar += 1
             self.obProgressBarWindow.update_bar(p_bar)
 
         self.obProgressBarWindow.close()
+
         return ingested_set
 
-    def get_vendor_lookup(self):
-        df_vendor_lookup = self.obDal.get_vendor_lookup()
-        return df_vendor_lookup
+    def manual_ingest_fsc_code(self):
+        lst_req_fields = [['FSCCode',15,'This is a sample code<br>like "AF11"'],
+                          ['FSCCodeName',128,'This is the title<br>like "EDUCATION (BASIC)"'],
+                          ['FSCCodeDesc',128,'Any additional info<br>like "EDUCATION - BASIC RESEARCH"']]
 
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
+
+        fsc_code = entered_values['FSCCode']
+        fsc_code_name = entered_values['FSCCodeName']
+        fsc_code_desc = entered_values['FSCCodeDesc']
+
+        if (fsc_code != '') and (fsc_code_name != '') and (fsc_code_desc != ''):
+            fsc_id = self.obDal.fsc_code_cap(fsc_code, fsc_code_name, fsc_code_desc)
+            return fsc_id
+        else:
+            return -1
+
+    # hazard code functions
+    def ingest_hazard_code(self, hazard_code, hazard_desc, hazard_cat=''):
+        return_id = self.obDal.hazardous_code_cap(hazard_code, hazard_desc, hazard_cat)
+        return return_id
+
+    def ingest_hazard_codes(self, df_hazard_codes):
+        ingested_set = []
+        self.set_progress_bar('Ingesting Hazard Codes',len(df_hazard_codes.index))
+        p_bar = 0
+        for column, row in df_hazard_codes.iterrows():
+            hazard_code = str(row['HazardousCode'])
+            hazard_desc = str(row['HazDesc'])
+
+            return_id = self.ingest_hazard_code(hazard_code, hazard_desc)
+            ingested_set.append([return_id, hazard_code, hazard_desc])
+
+            p_bar += 1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.obProgressBarWindow.close()
+
+        return ingested_set
+
+    def manual_ingest_hazard_code(self):
+        lst_req_fields = [['HazardCode',45,'This is the code<br>like "NA1270"'],
+                          ['HazardDesc',256,'This is the description<br>like "Petroleum oil"']]
+
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
+
+        hazard_code = entered_values['HazardCode']
+        hazard_desc = entered_values['HazardDesc']
+
+        if (hazard_code != '') and (hazard_desc != ''):
+            haz_id = self.obDal.hazardous_code_cap(hazard_code, hazard_desc)
+            return haz_id
+        else:
+            return -1
+
+    # manufacturer functions
     def ingest_manufacturer(self, manufacturer_name, supplier_name, manufacturer_prefix = -1):
         return_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, manufacturer_prefix)
         return return_id
@@ -145,6 +240,105 @@ class IngestionObject:
         df_manufacturer_lookup = self.obDal.get_manufacturer_lookup()
         return df_manufacturer_lookup
 
+    def manual_ingest_manufacturer(self):
+        lst_req_fields = [['SupplierName',45,'This is the ugly version of the name<br>like "thermo electron (karlsruhe) gmbh"'],
+                          ['ManufacturerName',45,'This is the standardized name<br>like "THERMO ELECTRON"']]
+
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
+
+        manufacturer_name = entered_values['ManufacturerName']
+        supplier_name = entered_values['SupplierName']
+
+        if (manufacturer_name != '') and (supplier_name != ''):
+            man_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name)
+            return man_id
+        else:
+            return -1
+
+    # NAICS functions
+    def ingest_naics_code(self, naics_code, naics_name=''):
+        return_id = self.obDal.naics_code_cap(naics_code, naics_name)
+        return return_id
+
+    def ingest_naics_codes(self, df_naics_codes):
+        ingested_set = []
+        self.set_progress_bar('Ingesting NAICS Codes',len(df_naics_codes.index))
+        p_bar = 0
+        for column, row in df_naics_codes.iterrows():
+            naics_code = str(row['NAICSCode'])
+            naics_name = str(row['NAICSName'])
+
+            return_id = self.ingest_naics_code(naics_code, naics_name)
+            ingested_set.append([return_id, naics_code, naics_name])
+
+            p_bar += 1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.obProgressBarWindow.close()
+
+        return ingested_set
+
+    def manual_ingest_naics_code(self):
+        lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"'],
+                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"']]
+
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
+
+        naics_code = entered_values['NAICSCode']
+        naics_name = entered_values['NAICSName']
+
+        if (naics_code != '') and (naics_name != ''):
+            naics_id = self.obDal.naics_code_cap(naics_code, naics_name)
+            return naics_id
+        else:
+            return -1
+
+    # unit of issue symbol functions
+    def ingest_uoi_symbol(self, uoi_2_char, ecat_uoi = '', uoi_name = ''):
+        return_id = self.obDal.unit_of_issue_symbol_cap(uoi_2_char, uoi_name, ecat_uoi)
+        return return_id
+
+    def ingest_uoi_symbols(self, df_uois):
+        ingested_set = []
+        self.set_progress_bar('Ingesting UOIs Codes',len(df_uois.index))
+        p_bar = 0
+        for column, row in df_uois.iterrows():
+            ecat_uoi = str(row['ECAT UOI'])
+            uoi_2_char = str(row['2-Char UOI'])
+            uoi_name = str(row['UOI Name'])
+
+            return_id = self.ingest_uoi_symbol(uoi_2_char, ecat_uoi, uoi_name)
+            ingested_set.append([return_id, uoi_2_char, ecat_uoi, uoi_name])
+
+            p_bar += 1
+            self.obProgressBarWindow.update_bar(p_bar)
+
+        self.obProgressBarWindow.close()
+
+        return ingested_set
+
+    def manual_ingest_uois_code(self):
+        lst_req_fields = [['UnitSymbol',2,'This is the 2 character value<br>like "OZ"'],
+                          ['UnitName',45,'This is name<br>like "OUNCE"']]
+
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
+
+        uoi_symbol = entered_values['UnitSymbol']
+        uoi_name = entered_values['UnitName']
+
+        if (uoi_symbol != '') and (uoi_name != ''):
+            uois_id = self.obDal.unit_of_issue_symbol_cap(uoi_symbol, uoi_name)
+            return uois_id
+        else:
+            return -1
+
+    # UNSPSC functions
     def ingest_unspsc(self,unspsc_code,unspsc_title,unspsc_desc=''):
         return_id = self.obDal.unspsc_code_cap(unspsc_code,unspsc_title,unspsc_desc)
         return return_id
@@ -168,99 +362,71 @@ class IngestionObject:
 
         return ingested_set
 
+    def manual_ingest_unspsc_code(self):
+        lst_req_fields = [['UNSPSC', 45, 'This is the code<br>like "11101705"'],
+                          ['UNSPSCTitle', 45, 'This is name<br>like "Aluminum"'],
+                          ['UNSPSCDescription', 128, 'This is any other info<br>like "This is aluminum metal"']]
 
-    def ingest_fsc(self,fsc_code,fsc_name,fsc_desc=''):
-        return_id = self.obDal.fsc_code_cap(fsc_code,fsc_name,fsc_desc)
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
+
+        unspsc = entered_values['UNSPSC']
+        unspsc_title = entered_values['UNSPSCTitle']
+        unspsc_desc = entered_values['UNSPSCDescription']
+
+        if (unspsc != '') and (unspsc_title != '') and (unspsc_desc != ''):
+            unspsc_id = self.obDal.unspsc_code_cap(unspsc, unspsc_title, unspsc_desc)
+            return unspsc_id
+        else:
+            return -1
+
+    # vendor funtions
+    def ingest_vendor(self, vendor_name, vendor_code):
+        return_id = self.obDal.vendor_cap(vendor_name, vendor_code)
         return return_id
 
-    def ingest_fscs(self,df_fscs):
+    def ingest_vendors(self, df_vendors):
         ingested_set = []
-        self.set_progress_bar('Ingesting FSCs',len(df_fscs.index))
-        p_bar = 0
-        for column, row in df_fscs.iterrows():
-            fsc_code = str(row['FSCCode'])
-            fsc_name = str(row['FSCName'])
-            fsc_desc = str(row['FSCDesc'])
 
-            return_id = self.ingest_fsc(fsc_code,fsc_name,fsc_desc)
-            ingested_set.append([return_id,fsc_code,fsc_name,fsc_desc])
+        self.set_progress_bar('Ingesting Vendors',len(df_vendors.index))
+        p_bar = 0
+        for column, row in df_vendors.iterrows():
+
+            vendor_name = str(row['VendorName'])
+            vendor_name = vendor_name.strip().lower()
+            vendor_code = str(row['VendorCode'])
+
+            return_id = self.ingest_vendor(vendor_name,vendor_code)
+            ingested_set.append([return_id,vendor_name,vendor_code])
 
             p_bar += 1
             self.obProgressBarWindow.update_bar(p_bar)
 
         self.obProgressBarWindow.close()
-
         return ingested_set
 
+    def get_vendor_lookup(self):
+        df_vendor_lookup = self.obDal.get_vendor_lookup()
+        return df_vendor_lookup
 
-    def ingest_hazard_code(self, hazard_code, hazard_desc, hazard_cat=''):
-        return_id = self.obDal.hazardous_code_cap(hazard_code, hazard_desc, hazard_cat)
-        return return_id
+    def manual_ingest_vendor(self):
+        lst_req_fields = [['VendorName', 45, 'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"'],
+                          ['VendorCode', 45, 'This is the not so pretty name<br>like "Consolidated Ster"']]
 
-    def ingest_hazard_codes(self, df_hazard_codes):
-        ingested_set = []
-        self.set_progress_bar('Ingesting Hazard Codes',len(df_hazard_codes.index))
-        p_bar = 0
-        for column, row in df_hazard_codes.iterrows():
-            hazard_code = str(row['HazardousCode'])
-            hazard_desc = str(row['HazDesc'])
+        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox.exec()
+        entered_values = obTextBox.getReturnSet()
 
-            return_id = self.ingest_hazard_code(hazard_code, hazard_desc)
-            ingested_set.append([return_id, hazard_code, hazard_desc])
+        vendor_name = entered_values['VendorName']
+        vendor_code = entered_values['VendorCode']
 
-            p_bar += 1
-            self.obProgressBarWindow.update_bar(p_bar)
+        if (vendor_name != '') and (vendor_code != ''):
+            ven_id = self.obDal.vendor_cap(vendor_name, vendor_code)
+            return ven_id
+        else:
+            return -1
 
-        self.obProgressBarWindow.close()
-
-        return ingested_set
-
-
-    def ingest_naics_code(self, naics_code, naics_name=''):
-        return_id = self.obDal.naics_code_cap(naics_code, naics_name)
-        return return_id
-
-    def ingest_naics_codes(self, df_naics_codes):
-        ingested_set = []
-        self.set_progress_bar('Ingesting NAICS Codes',len(df_naics_codes.index))
-        p_bar = 0
-        for column, row in df_naics_codes.iterrows():
-            naics_code = str(row['NAICSCode'])
-            naics_name = str(row['NAICSName'])
-
-            return_id = self.ingest_naics_code(naics_code, naics_name)
-            ingested_set.append([return_id, naics_code, naics_name])
-
-            p_bar += 1
-            self.obProgressBarWindow.update_bar(p_bar)
-
-        self.obProgressBarWindow.close()
-
-        return ingested_set
-
-
-    def ingest_uoi_symbol(self, uoi_2_char, ecat_uoi = '', uoi_name = ''):
-        return_id = self.obDal.unit_of_issue_symbol_cap(uoi_2_char, uoi_name, ecat_uoi)
-        return return_id
-
-    def ingest_uoi_symbols(self, df_uois):
-        ingested_set = []
-        self.set_progress_bar('Ingesting UOIs Codes',len(df_uois.index))
-        p_bar = 0
-        for column, row in df_uois.iterrows():
-            ecat_uoi = str(row['ECAT UOI'])
-            uoi_2_char = str(row['2-Char UOI'])
-            uoi_name = str(row['UOI Name'])
-
-            return_id = self.ingest_uoi_symbol(uoi_2_char, ecat_uoi, uoi_name)
-            ingested_set.append([return_id, uoi_2_char, ecat_uoi, uoi_name])
-
-            p_bar += 1
-            self.obProgressBarWindow.update_bar(p_bar)
-
-        self.obProgressBarWindow.close()
-
-        return ingested_set
 
     def ingest_uoi(self, unit_of_issue_id, count, unit_of_measure_id):
         return_id = self.obDal.unit_of_issue_cap(unit_of_issue_id, count, unit_of_measure_id)
