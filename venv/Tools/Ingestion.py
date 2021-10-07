@@ -57,9 +57,9 @@ class IngestionObject:
         df_category_lookup = self.obDal.get_category_names()
         return df_category_lookup
 
-    def manual_ingest_category(self):
-        lst_req_fields = [['CategoryName', 128, 'This is most likely the bottom level value<br>like "Lab Supplies"'],
-                          ['CategoryHierarchy', 128, 'This is the full hierarchy<br>like "All Products/Life Science/Lab Supplies"']]
+    def manual_ingest_category(self, name = '', hierarchy = ''):
+        lst_req_fields = [['CategoryName', 128, 'This is most likely the bottom level value<br>like "Lab Supplies"',name],
+                          ['CategoryHierarchy', 128, 'This is the full hierarchy<br>like "All Products/Life Science/Lab Supplies"',hierarchy]]
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
@@ -103,11 +103,11 @@ class IngestionObject:
         df_country_lookup = self.obDal.get_country_lookup()
         return df_country_lookup
 
-    def manual_ingest_country(self,name = '',long_name = '', code = '', ecat_code = ''):
-        lst_req_fields = [['CountryName', 45, 'This is a common name<br>like "The Congo"',name],
-                          ['LongCountryName', 128, 'This is a full name<br>like "Democratic Republic of the Congo"',long_name],
-                          ['CountryCode', 2, 'This is the 2 letter code, "CG"',code],
-                          ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"',ecat_code]]
+    def manual_ingest_country(self,atmp_name = '',atmp_long_name = '', atmp_code = '', atmp_ecat_code = ''):
+        lst_req_fields = [['CountryName', 45, 'This is a common name<br>like "The Congo"',atmp_name],
+                          ['LongCountryName', 128, 'This is a full name<br>like "Democratic Republic of the Congo"',atmp_long_name],
+                          ['CountryCode', 2, 'This is the 2 letter code, "CG"',atmp_code],
+                          ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"',atmp_ecat_code]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -148,10 +148,10 @@ class IngestionObject:
 
         return ingested_set
 
-    def manual_ingest_fsc_code(self):
-        lst_req_fields = [['FSCCode',15,'This is a sample code<br>like "AF11"'],
-                          ['FSCCodeName',128,'This is the title<br>like "EDUCATION (BASIC)"'],
-                          ['FSCCodeDesc',128,'Any additional info<br>like "EDUCATION - BASIC RESEARCH"']]
+    def manual_ingest_fsc_code(self,atmp_code = '', atmp_name = '', atmp_desc = ''):
+        lst_req_fields = [['FSCCode',15,'This is a sample code<br>like "AF11"',atmp_code],
+                          ['FSCCodeName',128,'This is the title<br>like "EDUCATION (BASIC)"',atmp_name],
+                          ['FSCCodeDesc',128,'Any additional info<br>like "EDUCATION - BASIC RESEARCH"',atmp_desc]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -190,9 +190,9 @@ class IngestionObject:
 
         return ingested_set
 
-    def manual_ingest_hazard_code(self):
-        lst_req_fields = [['HazardCode',45,'This is the code<br>like "NA1270"'],
-                          ['HazardDesc',256,'This is the description<br>like "Petroleum oil"']]
+    def manual_ingest_hazard_code(self,atmp_code = '', atmp_desc = ''):
+        lst_req_fields = [['HazardCode',45,'This is the code<br>like "NA1270"',atmp_code],
+                          ['HazardDesc',256,'This is the description<br>like "Petroleum oil"',atmp_desc]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -240,9 +240,9 @@ class IngestionObject:
         df_manufacturer_lookup = self.obDal.get_manufacturer_lookup()
         return df_manufacturer_lookup
 
-    def manual_ingest_manufacturer(self):
-        lst_req_fields = [['SupplierName',45,'This is the ugly version of the name<br>like "thermo electron (karlsruhe) gmbh"'],
-                          ['ManufacturerName',45,'This is the standardized name<br>like "THERMO ELECTRON"']]
+    def manual_ingest_manufacturer(self, atmp_sup = '', atmp_man = ''):
+        lst_req_fields = [['SupplierName',45,'This is the ugly version of the name<br>like "thermo electron (karlsruhe) gmbh"', atmp_sup],
+                          ['ManufacturerName',45,'This is the standardized name<br>like "THERMO ELECTRON"', atmp_man]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -280,9 +280,9 @@ class IngestionObject:
 
         return ingested_set
 
-    def manual_ingest_naics_code(self):
-        lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"'],
-                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"']]
+    def manual_ingest_naics_code(self, atmp_code = '', atmp_name = ''):
+        lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"',atmp_code],
+                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"',atmp_name]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -321,9 +321,9 @@ class IngestionObject:
 
         return ingested_set
 
-    def manual_ingest_uois_code(self):
-        lst_req_fields = [['UnitSymbol',2,'This is the 2 character value<br>like "OZ"'],
-                          ['UnitName',45,'This is name<br>like "OUNCE"']]
+    def manual_ingest_uois_code(self, atmp_symbol = '', atmp_name = ''):
+        lst_req_fields = [['UnitSymbol',2,'This is the 2 character value<br>like "OZ"',atmp_symbol],
+                          ['UnitName',45,'This is name<br>like "OUNCE"',atmp_name]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -362,10 +362,10 @@ class IngestionObject:
 
         return ingested_set
 
-    def manual_ingest_unspsc_code(self):
-        lst_req_fields = [['UNSPSC', 45, 'This is the code<br>like "11101705"'],
-                          ['UNSPSCTitle', 45, 'This is name<br>like "Aluminum"'],
-                          ['UNSPSCDescription', 128, 'This is any other info<br>like "This is aluminum metal"']]
+    def manual_ingest_unspsc_code(self, atmp_unspsc = '', atmp_title = '', atmp_desc = ''):
+        lst_req_fields = [['UNSPSC', 45, 'This is the code<br>like "11101705"',atmp_unspsc],
+                          ['UNSPSCTitle', 45, 'This is name<br>like "Aluminum"',atmp_title],
+                          ['UNSPSCDescription', 128, 'This is any other info<br>like "This is aluminum metal"',atmp_desc]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -410,9 +410,9 @@ class IngestionObject:
         df_vendor_lookup = self.obDal.get_vendor_lookup()
         return df_vendor_lookup
 
-    def manual_ingest_vendor(self):
-        lst_req_fields = [['VendorName', 45, 'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"'],
-                          ['VendorCode', 45, 'This is the not so pretty name<br>like "Consolidated Ster"']]
+    def manual_ingest_vendor(self, atmp_name = '', atmp_code = ''):
+        lst_req_fields = [['VendorName', 45, 'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"', atmp_name],
+                          ['VendorCode', 45, 'This is the not so pretty name<br>like "Consolidated Ster"', atmp_code]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
