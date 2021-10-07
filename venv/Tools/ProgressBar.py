@@ -13,6 +13,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QCheckBox
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QGridLayout
@@ -186,7 +187,95 @@ class JoinSelectionDialog(QDialog):
         return self.return_list
 
 
+class TextBoxObject(QDialog):
+    def __init__(self,lst_input_reqs,parent=None):
+        super().__init__(parent)
+        self.return_textbox = []
+        self.lst_output_req = []
+
+        self.setWindowTitle("Please enter text.")
+        self.setWindowIcon(QIcon(os.getcwd() + '\\venv\Assets\Duckworth2.png'))
+        self.setGeometry(100, 400, 0, 0)
+        self.layout = QGridLayout()
+
+        # button to show the above entered text
+        self.accept_button = QPushButton('Send data', self)
+        # connect button to function on_click
+        self.accept_button.clicked.connect(self.on_click)
+        self.layout.addWidget(self.accept_button, 0, 1)
+
+        # button to show the above entered text
+        self.best_guess_button = QPushButton('See best matches', self)
+        # connect button to function on_click
+        self.best_guess_button.clicked.connect(self.best_guesses)
+        self.layout.addWidget(self.best_guess_button, 0, 2)
+
+        # self.layout.addWidget(self.action_label, 0, 1, 1, 3)
+        self.addInit(lst_input_reqs)
+
+        self.setLayout(self.layout)
+        self.show()
+
+    def addInit(self,lst_input_reqs):
+        pos = 1
+        for each_input_req in lst_input_reqs:
+            #self.layout.addWidget(self.base_data_button, 1, column_pos)
+            req_label = QLabel(each_input_req[0])
+            req_label.setToolTip(each_input_req[2])
+            self.layout.addWidget(req_label, pos, 0)
+
+            # edit text box
+            text_test = QLineEdit(self)
+            text_test.setMaxLength(each_input_req[1])
+            self.layout.addWidget(text_test, pos, 1, 1, 2)
+
+            self.return_textbox.append([each_input_req, text_test])
+
+            pos += 1
+
+
+    def on_click(self):
+        for each_text_entry in self.return_textbox:
+            self.lst_output_req.append([each_text_entry[0], each_text_entry[1].text()])
+
+        self.accept()
+
+    def best_guesses(self):
+        print('This does nothing right now')
+
+    def getReturnSet(self):
+        return self.lst_output_req
+
+
+
 ## testing ##
+
+class TextBoxStandupSample(QDialog):
+    def __init__(self,parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Please enter text.")
+
+        # edit text box
+        self.text_test = QLineEdit(self)
+        # button to show the above entered text
+        self.button = QPushButton('Accept answer', self)
+        # connect button to function on_click
+        self.button.clicked.connect(self.on_click)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.text_test)
+        self.layout.addWidget(self.button)
+
+        self.setLayout(self.layout)
+        self.show()
+
+    def on_click(self):
+        self.textboxValue = self.text_test.text()
+        self.accept()
+
+    def getReturnSet(self):
+        return self.textboxValue
+
 
 class CustomDialog(QDialog):
     def __init__(self,parent=None):
@@ -203,24 +292,31 @@ class CustomDialog(QDialog):
 
         self.option_test = QCheckBox('A checkbox')
         self.option_test2 = QCheckBox('A checkbox2')
+        # edit text box
+        self.text_test = QLineEdit(self)
+        # button to show the above entered text
+        self.button = QPushButton('Show text', self)
+        # connect button to function on_click
+        self.button.clicked.connect(self.on_click)
 
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.option_test)
         self.layout.addWidget(self.option_test2)
+        self.layout.addWidget(self.text_test)
 
         message = QLabel("Something happened, is that OK?")
         self.layout.addWidget(message)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
+        self.show()
+
+    def on_click(self):
+        self.textboxValue = self.text_test.text()
+        QMessageBox.question(self, 'Message', "You typed: " + textboxValue, QMessageBox.Ok, QMessageBox.Ok)
+        self.textbox.setText("")
 
     def getReturnSet(self):
-        response = ''
-        if self.option_test.isChecked():
-            response = response+'Option 1'
-        if self.option_test2.isChecked():
-            response = response+'Option 2'
-        return response
-
+        return self.textboxValue
 
 
 class MainWindow(QMainWindow):
@@ -235,7 +331,10 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(button)
 
     def button_clicked(self):
-        dlg = CustomDialog()
+        # the button is just a proxy for some other trigger
+        lst_req_fields = [['NAICSCode',128,'This is a numeric value<br>like "32532"'],
+                          ['NAICSName',45,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"']]
+        dlg = TextBoxObject(lst_req_fields)
         dlg.exec()
         print(dlg.getReturnSet())
 
