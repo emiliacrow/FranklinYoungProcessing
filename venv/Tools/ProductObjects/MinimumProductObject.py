@@ -60,7 +60,7 @@ class MinimumProduct(BasicProcessObject):
                 new_vendor_id = self.df_vendor_translator.loc[
                     (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
             else:
-                new_vendor_id = -1
+                new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name)
 
             lst_ids.append(new_vendor_id)
 
@@ -68,6 +68,7 @@ class MinimumProduct(BasicProcessObject):
 
         self.df_product = self.df_product.merge(df_attribute,
                                                  how='left', on=['VendorName'])
+
 
     def define_new(self):
         self.df_loaded_product = self.obDal.get_product_lookup()

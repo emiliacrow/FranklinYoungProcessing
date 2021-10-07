@@ -94,7 +94,7 @@ class MinimumProductPrice(BasicProcessObject):
                 new_vendor_id = self.df_vendor_translator.loc[
                     (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
             else:
-                new_vendor_id = -1
+                new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name)
 
             lst_ids.append(new_vendor_id)
 

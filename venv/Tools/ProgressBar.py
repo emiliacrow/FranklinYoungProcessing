@@ -210,7 +210,6 @@ class TextBoxObject(QDialog):
         self.best_guess_button.clicked.connect(self.best_guesses)
         self.layout.addWidget(self.best_guess_button, 0, 2)
 
-        # self.layout.addWidget(self.action_label, 0, 1, 1, 3)
         self.addInit(lst_input_reqs)
 
         self.setLayout(self.layout)
