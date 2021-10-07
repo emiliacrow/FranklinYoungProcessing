@@ -131,10 +131,8 @@ class MinimumProduct(BasicProcessObject):
                             (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
                         lst_ids.append(new_country_of_origin_id)
                     else:
-                        print(self.df_country_translator['CountryCode'])
-                        print('-'+country+'-')
-                        x = input('1 Bad country')
-
+                        coo_id = self.obIngester.manual_ingest_country(code = country)
+                        lst_ids.append(coo_id)
 
                 elif (len(country) == 3):
                     if country in self.df_country_translator['ECATCountryCode'].tolist():
@@ -142,8 +140,8 @@ class MinimumProduct(BasicProcessObject):
                             (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
                         lst_ids.append(new_country_of_origin_id)
                     else:
-                        print('-'+country+'-')
-                        x = input('2 Bad country')
+                        coo_id = self.obIngester.manual_ingest_country(ecat_code = country)
+                        lst_ids.append(coo_id)
 
                 elif (len(country) > 3):
                     if country in self.df_country_translator['CountryName'].tolist():
@@ -151,8 +149,8 @@ class MinimumProduct(BasicProcessObject):
                             (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
                         lst_ids.append(new_country_of_origin_id)
                     else:
-                        print('-'+country+'-')
-                        x = input('3 Bad country')
+                        coo_id = self.obIngester.manual_ingest_country(name = country)
+                        lst_ids.append(coo_id)
                 else:
                     lst_ids.append(259)
 

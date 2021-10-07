@@ -227,6 +227,7 @@ class TextBoxObject(QDialog):
             # edit text box
             text_test = QLineEdit(self)
             text_test.setMaxLength(each_input_req[1])
+            text_test.setText(each_input_req[3])
             self.layout.addWidget(text_test, pos, 1, 1, 2)
 
             self.return_textbox.append([each_input_req[0], text_test])

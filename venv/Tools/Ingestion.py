@@ -103,11 +103,11 @@ class IngestionObject:
         df_country_lookup = self.obDal.get_country_lookup()
         return df_country_lookup
 
-    def manual_ingest_country(self):
-        lst_req_fields = [['CountryName', 45, 'This is a common name<br>like "The Congo"'],
-                          ['LongCountryName', 128, 'This is a full name<br>like "Democratic Republic of the Congo"'],
-                          ['CountryCode', 2, 'This is the 2 letter code, "CG"'],
-                          ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"']]
+    def manual_ingest_country(self,name = '',long_name = '', code = '', ecat_code = ''):
+        lst_req_fields = [['CountryName', 45, 'This is a common name<br>like "The Congo"',name],
+                          ['LongCountryName', 128, 'This is a full name<br>like "Democratic Republic of the Congo"',long_name],
+                          ['CountryCode', 2, 'This is the 2 letter code, "CG"',code],
+                          ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"',ecat_code]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
