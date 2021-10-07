@@ -362,8 +362,32 @@ class BasicProcessObject:
                 return True, df_collect_product_base_data
 
         else:
-            self.obReporter.report_new_manufacturer()
-            return False, df_collect_product_base_data
+            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_man=manufacturer_name)
+            self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
+            # this needs to return the prefix so it can be used
+
+            new_prefix = self.df_manufacturer_translator.loc[
+                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
+
+            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
+
+            fy_product_number = fy_catalog_number
+
+            if 'UnitOfIssue' in row:
+                unit_of_issue = row['UnitOfIssue']
+                if unit_of_issue != 'EA':
+                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+            else:
+                df_collect_product_base_data['UnitOfIssue'] = ['EA']
+
+            if 'FyPartNumber' not in row:
+                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
+            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
+            df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+            df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
+            return True, df_collect_product_base_data
+
 
     def make_fy_catalog_number(self,prefix,manufacturer_part_number):
         clean_part_number = self.obValidator.clean_part_number(manufacturer_part_number)
