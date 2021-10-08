@@ -227,6 +227,8 @@ class TextBoxObject(QDialog):
             text_test = QLineEdit(self)
             text_test.setMaxLength(each_input_req[1])
             text_test.setText(each_input_req[3])
+            if len(each_input_req) == 5:
+                text_test.setPlaceholderText(each_input_req[4])
             self.layout.addWidget(text_test, pos, 1, 1, 2)
 
             self.return_textbox.append([each_input_req[0], text_test])
@@ -332,7 +334,7 @@ class MainWindow(QMainWindow):
 
     def button_clicked(self):
         # the button is just a proxy for some other trigger
-        lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"',''],
+        lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"','','required'],
                           ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"','Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)']]
         dlg = TextBoxObject(lst_req_fields)
         dlg.exec()
