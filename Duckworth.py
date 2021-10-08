@@ -203,7 +203,7 @@ class DuckworthWindow(QWidget):
 
 
     def base_data_buttons(self,column_pos):
-        self.base_data_tables = ['Category', 'Manufacturer', 'Vendor', 'Country', 'UNSPSC Codes', 'FSC Codes', 'Hazardous Code', 'NAICS Code', 'Unit of Issue-Symbol', 'Unit of Issue']
+        self.base_data_tables = ['Category', 'Manufacturer', 'Vendor', 'Country', 'UNSPSC Codes', 'FSC Codes', 'Hazardous Code', 'NAICS Code', 'Unit of Issue-Symbol']
         self.base_data_tables.sort()
 
         self.base_data_button = QPushButton('Load Base Data')
