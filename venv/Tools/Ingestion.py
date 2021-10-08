@@ -64,7 +64,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (cat_name != '') and (cat_hierarchy != ''):
+        if len(entered_values) < 2:
             cat_name = entered_values['CategoryName']
             cat_hierarchy = entered_values['CategoryHierarchy']
 
@@ -113,7 +113,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (country_name != '') and (full_country_name != '') and (country_code != '') and (country_code_ecat != ''):
+        if len(entered_values) < 4:
             country_name = entered_values['CountryName'].upper()
             full_country_name = entered_values['LongCountryName']
             country_code = entered_values['CountryCode'].upper()
@@ -157,7 +157,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (fsc_code != '') and (fsc_code_name != '') and (fsc_code_desc != ''):
+        if len(entered_values) < 3:
             fsc_code = entered_values['FSCCode']
             fsc_code_name = entered_values['FSCCodeName']
             fsc_code_desc = entered_values['FSCCodeDesc']
@@ -198,7 +198,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (hazard_code != '') and (hazard_desc != ''):
+        if len(entered_values) < 2:
             hazard_code = entered_values['HazardCode']
             hazard_desc = entered_values['HazardDesc']
 
@@ -248,7 +248,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (manufacturer_name != '') and (supplier_name != ''):
+        if len(entered_values) < 2:
             manufacturer_name = entered_values['ManufacturerName']
             supplier_name = entered_values['SupplierName']
 
@@ -289,7 +289,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (naics_code != '') and (naics_name != ''):
+        if len(entered_values) < 2:
             naics_code = entered_values['NAICSCode']
             naics_name = entered_values['NAICSName']
 
@@ -330,7 +330,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (uoi_symbol != '') and (uoi_name != ''):
+        if len(entered_values) < 2:
             uoi_symbol = entered_values['UnitSymbol']
             uoi_name = entered_values['UnitName']
 
@@ -372,7 +372,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (unspsc != '') and (unspsc_title != '') and (unspsc_desc != ''):
+        if len(entered_values) < 3:
             unspsc = entered_values['UNSPSC']
             unspsc_title = entered_values['UNSPSCTitle']
             unspsc_desc = entered_values['UNSPSCDescription']
@@ -419,7 +419,7 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if (vendor_name != '') and (vendor_code != ''):
+        if len(entered_values) < 2:
             vendor_name = entered_values['VendorName']
             vendor_code = entered_values['VendorCode']
 
