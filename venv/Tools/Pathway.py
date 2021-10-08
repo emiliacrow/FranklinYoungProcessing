@@ -468,7 +468,7 @@ class Pathways():
         elif table_to_load == 'Vendor':
             ven_id = self.obIngester.manual_ingest_vendor()
             if (ven_id != -1):
-                return True, 'Loaded a new UNSPSC code with id: {0}'.format(ven_id)
+                return True, 'Loaded a new Vendor with id: {0}'.format(ven_id)
             else:
                 return False, 'You failed to fill a required field'
 
