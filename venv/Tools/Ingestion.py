@@ -342,7 +342,7 @@ class IngestionObject:
     def manual_ingest_uois_code(self, atmp_symbol = '', atmp_name = '', atmp_ecat = ''):
         lst_req_fields = [['UnitSymbol',2,'This is the 2 character value<br>like "GA"',atmp_symbol],
                           ['UnitName',45,'This is name<br>like "GALLON"',atmp_name],
-                          ['ECATUnitSymbol',45,'This is different symbol for ecat<br>like "GL"',atmp_ecat]]
+                          ['ECATUnitSymbol',45,'This is different symbol for ecat<br>like "GL"<br>not required',atmp_ecat]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
