@@ -67,7 +67,10 @@ class IngestionObject:
         if ('CategoryName' in entered_values.keys()) and ('CategoryHierarchy' in entered_values.keys()):
             cat_name = entered_values['CategoryName']
             cat_hierarchy = entered_values['CategoryHierarchy']
+        else:
+            return 0
 
+        if (cat_name != '') and (cat_hierarchy != ''):
             cat_id = self.obDal.category_cap(cat_name, cat_hierarchy)
             return cat_id
         else:
@@ -161,7 +164,10 @@ class IngestionObject:
             fsc_code = entered_values['FSCCode']
             fsc_code_name = entered_values['FSCCodeName']
             fsc_code_desc = entered_values['FSCCodeDesc']
+        else:
+            return 0
 
+        if (fsc_code != '') and (fsc_code_name != '') and (fsc_code_desc != ''):
             fsc_id = self.obDal.fsc_code_cap(fsc_code, fsc_code_name, fsc_code_desc)
             return fsc_id
         else:
@@ -201,7 +207,10 @@ class IngestionObject:
         if ('HazardCode' in entered_values.keys()) and ('HazardDesc' in entered_values.keys()):
             hazard_code = entered_values['HazardCode']
             hazard_desc = entered_values['HazardDesc']
+        else:
+            return 0
 
+        if (hazard_code != '') and (hazard_desc != ''):
             haz_id = self.obDal.hazardous_code_cap(hazard_code, hazard_desc)
             return haz_id
         else:
@@ -251,7 +260,10 @@ class IngestionObject:
         if ('ManufacturerName' in entered_values.keys()) and ('SupplierName' in entered_values.keys()):
             manufacturer_name = entered_values['ManufacturerName']
             supplier_name = entered_values['SupplierName']
+        else:
+            return 0
 
+        if (manufacturer_name != '') and (supplier_name != ''):
             man_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name)
             return man_id
         else:
@@ -291,7 +303,10 @@ class IngestionObject:
         if ('NAICSCode' in entered_values.keys()) and ('NAICSName' in entered_values.keys()):
             naics_code = entered_values['NAICSCode']
             naics_name = entered_values['NAICSName']
+        else:
+            return 0
 
+        if (naics_code != '') and (naics_name != ''):
             naics_id = self.obDal.naics_code_cap(naics_code, naics_name)
             return naics_id
         else:
@@ -332,7 +347,10 @@ class IngestionObject:
         if ('UnitSymbol' in entered_values.keys()) and ('UnitName' in entered_values.keys()):
             uoi_symbol = entered_values['UnitSymbol']
             uoi_name = entered_values['UnitName']
+        else:
+            return 0
 
+        if (uoi_symbol != '') and (uoi_name != ''):
             uois_id = self.obDal.unit_of_issue_symbol_cap(uoi_symbol, uoi_name)
             return uois_id
         else:
@@ -375,7 +393,10 @@ class IngestionObject:
             unspsc = entered_values['UNSPSC']
             unspsc_title = entered_values['UNSPSCTitle']
             unspsc_desc = entered_values['UNSPSCDescription']
+        else:
+            return 0
 
+        if (unspsc != '') and (unspsc_title != '') and (unspsc_desc != ''):
             unspsc_id = self.obDal.unspsc_code_cap(unspsc, unspsc_title, unspsc_desc)
             return unspsc_id
         else:
@@ -421,7 +442,10 @@ class IngestionObject:
         if ('VendorName' in entered_values.keys()) and ('VendorCode' in entered_values.keys()):
             vendor_name = entered_values['VendorName']
             vendor_code = entered_values['VendorCode']
+        else:
+            return 0
 
+        if (vendor_name != '') and (vendor_code != ''):
             ven_id = self.obDal.vendor_cap(vendor_name, vendor_code)
             return ven_id
         else:
