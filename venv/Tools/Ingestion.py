@@ -121,7 +121,10 @@ class IngestionObject:
             full_country_name = entered_values['LongCountryName']
             country_code = entered_values['CountryCode'].upper()
             country_code_ecat = entered_values['CountryCodeEcat'].upper()
+        else:
+            return 0
 
+        if (country_name != '') and (full_country_name != '') and (country_code != '') and (country_code_ecat != ''):
             coo_id = self.obDal.country_cap(country_name, full_country_name, country_code, country_code_ecat)
             return coo_id
         else:

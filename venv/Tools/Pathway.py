@@ -411,66 +411,84 @@ class Pathways():
 
         if table_to_load == 'Category':
             cat_id = self.obIngester.manual_ingest_category()
-            if (cat_id != -1):
-                return True, 'Loaded a new category with id: {0}'.format(cat_id)
-            else:
+            if (cat_id == 0):
+                return True, 'Canceled by user action'
+            elif (cat_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new Category with id: {0}'.format(cat_id)
 
         elif table_to_load == 'Country':
             coo_id = self.obIngester.manual_ingest_country()
-            if (coo_id != -1):
-                return True, 'Loaded a new country with id: {0}'.format(coo_id)
-            else:
+            if (coo_id == 0):
+                return True, 'Canceled by user action'
+            elif (coo_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new Country of Origin with id: {0}'.format(coo_id)
 
         elif table_to_load == 'FSC Codes':
             fsc_id = self.obIngester.manual_ingest_fsc_code()
-            if (fsc_id != -1):
-                return True, 'Loaded a new fsc code with id: {0}'.format(fsc_id)
-            else:
+            if (fsc_id == 0):
+                return True, 'Canceled by user action'
+            elif (fsc_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new FSC Code with id: {0}'.format(fsc_id)
 
         elif table_to_load == 'Hazardous Code':
             haz_id = self.obIngester.manual_ingest_hazard_code()
-            if (haz_id != -1):
-                return True, 'Loaded a new hazard code with id: {0}'.format(haz_id)
-            else:
+            if (haz_id == 0):
+                return True, 'Canceled by user action'
+            elif (haz_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new Hazard Code with id: {0}'.format(haz_id)
 
         elif table_to_load == 'Manufacturer':
             man_id = self.obIngester.manual_ingest_manufacturer()
-            if (man_id != -1):
-                return True, 'Loaded a new manufacturer with id: {0}'.format(man_id)
-            else:
+            if (man_id == 0):
+                return True, 'Canceled by user action'
+            elif (man_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new Manufacturer with id: {0}'.format(man_id)
 
         elif table_to_load == 'NAICS Code':
             naics_id = self.obIngester.manual_ingest_naics_code()
-            if (naics_id != -1):
-                return True, 'Loaded a new NAICS code with id: {0}'.format(naics_id)
-            else:
+            if (naics_id == 0):
+                return True, 'Canceled by user action'
+            elif (naics_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new NAICS Code with id: {0}'.format(naics_id)
 
         elif table_to_load == 'Unit of Issue-Symbol':
             uois_id = self.obIngester.manual_ingest_uois_code()
-            if (uois_id != -1):
-                return True, 'Loaded a new unit of issue symbol code with id: {0}'.format(uois_id)
-            else:
+            if (uois_id == 0):
+                return True, 'Canceled by user action'
+            elif (uois_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new Unit of Issue Symbol with id: {0}'.format(uois_id)
 
         elif table_to_load == 'UNSPSC Codes':
             unspsc_id = self.obIngester.manual_ingest_unspsc_code()
-            if (unspsc_id != -1):
-                return True, 'Loaded a new UNSPSC code with id: {0}'.format(unspsc_id)
-            else:
+            if (unspsc_id == 0):
+                return True, 'Canceled by user action'
+            elif (unspsc_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new UNSPSC with id: {0}'.format(unspsc_id)
 
         elif table_to_load == 'Vendor':
             ven_id = self.obIngester.manual_ingest_vendor()
-            if (ven_id != -1):
-                return True, 'Loaded a new Vendor with id: {0}'.format(ven_id)
-            else:
+            if (ven_id == 0):
+                return True, 'Canceled by user action'
+            elif (ven_id == -1):
                 return False, 'You failed to fill a required field'
+            else:
+                return True, 'Loaded a new Vendor with id: {0}'.format(ven_id)
 
         else:
             return False, 'No file available.'
