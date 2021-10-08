@@ -339,10 +339,10 @@ class IngestionObject:
 
         return ingested_set
 
-    def manual_ingest_uois_code(self, atmp_symbol = '', atmp_name = '', atmp_ecat = ''):
+    def manual_ingest_uois_code(self, atmp_symbol = '', atmp_name = ''):
         lst_req_fields = [['UnitSymbol',2,'This is the 2 character value<br>like "GA"',atmp_symbol],
                           ['UnitName',45,'This is name<br>like "GALLON"',atmp_name],
-                          ['ECATUnitSymbol',45,'This is different symbol for ecat<br>like "GL"<br>not required',atmp_ecat]]
+                          ['ECATUnitSymbol',45,'This is different symbol for ecat<br>like "GL"<br>not required', 'not required']]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -351,10 +351,11 @@ class IngestionObject:
         if ('UnitSymbol' in entered_values.keys()) and ('UnitName' in entered_values.keys()) and ('ECATUnitSymbol' in entered_values.keys()):
             uoi_symbol = entered_values['UnitSymbol']
             uoi_name = entered_values['UnitName']
+            ecat_symbol = entered_values['ECATUnitSymbol']
         else:
             return 0
 
-        if (uoi_symbol != '') and (uoi_name != ''):
+        if (uoi_symbol != '') and (uoi_name != '') and (uoi_name != ''):
             uois_id = self.obDal.unit_of_issue_symbol_cap(uoi_symbol, uoi_name)
             return uois_id
         else:
