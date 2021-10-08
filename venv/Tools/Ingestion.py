@@ -64,10 +64,10 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        cat_name = entered_values['CategoryName']
-        cat_hierarchy = entered_values['CategoryHierarchy']
-
         if (cat_name != '') and (cat_hierarchy != ''):
+            cat_name = entered_values['CategoryName']
+            cat_hierarchy = entered_values['CategoryHierarchy']
+
             cat_id = self.obDal.category_cap(cat_name, cat_hierarchy)
             return cat_id
         else:
@@ -113,12 +113,12 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        country_name = entered_values['CountryName'].upper()
-        full_country_name = entered_values['LongCountryName']
-        country_code = entered_values['CountryCode'].upper()
-        country_code_ecat = entered_values['CountryCodeEcat'].upper()
-
         if (country_name != '') and (full_country_name != '') and (country_code != '') and (country_code_ecat != ''):
+            country_name = entered_values['CountryName'].upper()
+            full_country_name = entered_values['LongCountryName']
+            country_code = entered_values['CountryCode'].upper()
+            country_code_ecat = entered_values['CountryCodeEcat'].upper()
+
             coo_id = self.obDal.country_cap(country_name, full_country_name, country_code, country_code_ecat)
             return coo_id
         else:
@@ -157,11 +157,11 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        fsc_code = entered_values['FSCCode']
-        fsc_code_name = entered_values['FSCCodeName']
-        fsc_code_desc = entered_values['FSCCodeDesc']
-
         if (fsc_code != '') and (fsc_code_name != '') and (fsc_code_desc != ''):
+            fsc_code = entered_values['FSCCode']
+            fsc_code_name = entered_values['FSCCodeName']
+            fsc_code_desc = entered_values['FSCCodeDesc']
+
             fsc_id = self.obDal.fsc_code_cap(fsc_code, fsc_code_name, fsc_code_desc)
             return fsc_id
         else:
@@ -198,10 +198,10 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        hazard_code = entered_values['HazardCode']
-        hazard_desc = entered_values['HazardDesc']
-
         if (hazard_code != '') and (hazard_desc != ''):
+            hazard_code = entered_values['HazardCode']
+            hazard_desc = entered_values['HazardDesc']
+
             haz_id = self.obDal.hazardous_code_cap(hazard_code, hazard_desc)
             return haz_id
         else:
@@ -248,8 +248,9 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        manufacturer_name = entered_values['ManufacturerName']
-        supplier_name = entered_values['SupplierName']
+        if (manufacturer_name != '') and (supplier_name != ''):
+            manufacturer_name = entered_values['ManufacturerName']
+            supplier_name = entered_values['SupplierName']
 
         if (manufacturer_name != '') and (supplier_name != ''):
             man_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name)
@@ -288,10 +289,10 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        naics_code = entered_values['NAICSCode']
-        naics_name = entered_values['NAICSName']
-
         if (naics_code != '') and (naics_name != ''):
+            naics_code = entered_values['NAICSCode']
+            naics_name = entered_values['NAICSName']
+
             naics_id = self.obDal.naics_code_cap(naics_code, naics_name)
             return naics_id
         else:
@@ -329,10 +330,10 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        uoi_symbol = entered_values['UnitSymbol']
-        uoi_name = entered_values['UnitName']
-
         if (uoi_symbol != '') and (uoi_name != ''):
+            uoi_symbol = entered_values['UnitSymbol']
+            uoi_name = entered_values['UnitName']
+
             uois_id = self.obDal.unit_of_issue_symbol_cap(uoi_symbol, uoi_name)
             return uois_id
         else:
@@ -371,11 +372,11 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        unspsc = entered_values['UNSPSC']
-        unspsc_title = entered_values['UNSPSCTitle']
-        unspsc_desc = entered_values['UNSPSCDescription']
-
         if (unspsc != '') and (unspsc_title != '') and (unspsc_desc != ''):
+            unspsc = entered_values['UNSPSC']
+            unspsc_title = entered_values['UNSPSCTitle']
+            unspsc_desc = entered_values['UNSPSCDescription']
+
             unspsc_id = self.obDal.unspsc_code_cap(unspsc, unspsc_title, unspsc_desc)
             return unspsc_id
         else:
@@ -418,10 +419,10 @@ class IngestionObject:
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        vendor_name = entered_values['VendorName']
-        vendor_code = entered_values['VendorCode']
-
         if (vendor_name != '') and (vendor_code != ''):
+            vendor_name = entered_values['VendorName']
+            vendor_code = entered_values['VendorCode']
+
             ven_id = self.obDal.vendor_cap(vendor_name, vendor_code)
             return ven_id
         else:
