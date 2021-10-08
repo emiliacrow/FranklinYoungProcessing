@@ -355,7 +355,7 @@ class IngestionObject:
         else:
             return 0
 
-        if (uoi_symbol != '') and (uoi_name != '') and (uoi_name != ''):
+        if (uoi_symbol != '') and (uoi_name != '') and (uoi_name != 'not required'):
             uois_id = self.obDal.unit_of_issue_symbol_cap(uoi_symbol, uoi_name)
             return uois_id
         else:
