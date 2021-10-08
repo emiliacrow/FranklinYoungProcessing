@@ -518,7 +518,7 @@ class DalObject:
         runner.start()
 
 
-    def unit_of_issue_symbol_cap(self,newUnitOfIssueSymbol, newUnitOfIssueSymbolName, ECATUnitOfIssueSymbol):
+    def unit_of_issue_symbol_cap(self,newUnitOfIssueSymbol, newUnitOfIssueSymbolName, ECATUnitOfIssueSymbol = ''):
         proc_name = 'sequoia.UnitOfIssueSymbol_capture_wrap'
         proc_args = (newUnitOfIssueSymbol, newUnitOfIssueSymbolName, ECATUnitOfIssueSymbol)
         return_id = self.id_cap(proc_name, proc_args)

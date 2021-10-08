@@ -339,15 +339,16 @@ class IngestionObject:
 
         return ingested_set
 
-    def manual_ingest_uois_code(self, atmp_symbol = '', atmp_name = ''):
-        lst_req_fields = [['UnitSymbol',2,'This is the 2 character value<br>like "OZ"',atmp_symbol],
-                          ['UnitName',45,'This is name<br>like "OUNCE"',atmp_name]]
+    def manual_ingest_uois_code(self, atmp_symbol = '', atmp_name = '', atmp_ecat = ''):
+        lst_req_fields = [['UnitSymbol',2,'This is the 2 character value<br>like "GA"',atmp_symbol],
+                          ['UnitName',45,'This is name<br>like "GALLON"',atmp_name],
+                          ['ECATUnitSymbol',45,'This is different symbol for ecat<br>like "GL"',atmp_ecat]]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
-        if ('UnitSymbol' in entered_values.keys()) and ('UnitName' in entered_values.keys()):
+        if ('UnitSymbol' in entered_values.keys()) and ('UnitName' in entered_values.keys()) and ('ECATUnitSymbol' in entered_values.keys()):
             uoi_symbol = entered_values['UnitSymbol']
             uoi_name = entered_values['UnitName']
         else:
