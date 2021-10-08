@@ -383,23 +383,24 @@ class DalObject:
         return return_id
 
 
-    def va_product_price_cap(self, lst_va_product_price):
-        proc_name = 'sequoia.VAProductPrice_capture'
+    def ecat_product_price_cap(self,lst_ecat_product_price):
+        proc_name = 'sequoia.ECATProductPrice_capture'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_va_product_price)
+        runner = DataRunner(self.connection, proc_name, lst_ecat_product_price)
         runner.start()
 
-    def get_va_price_lookup(self):
-        proc_name = 'sequoia.get_VAPrice_lookup'
-        column_names = ['FyProductNumber','FyPartNumber','OnContract', 'VAApprovedListPrice',
-                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate']
-        df_base_price_lookup = self.get_lookup(proc_name,column_names)
-        return df_base_price_lookup
+    def get_ecat_price_lookup(self):
+        proc_name = 'sequoia.get_ECATPrice_lookup'
+        column_names = ['FyProductNumber', 'FyPartNumber', 'OnContract', 'ECATApprovedListPrice',
+                        'ECATApprovedPercent', 'MfcDiscountPercent', 'ECATContractModificationNumber',
+                        'ECATApprovedPriceDate', 'ECATPricingApproved']
+        df_ecat_price_lookup = self.get_lookup(proc_name, column_names)
+        return df_ecat_price_lookup
 
 
-    def htme_product_price_cap(self,newIsVisible, newDateCatalogReceived, newHTMESellPrice, newHTMEApprovedPriceDate, newHTMEPricingApproved, newHTMEContractNumber, newHTMEContractModificationNumber, newHTMEProductGMPercent, newHTMEProductGMPrice):
-        proc_name = 'sequoia.HTMEProductPrice_capture_wrap'
-        proc_args = (newIsVisible, newDateCatalogReceived, newHTMESellPrice, newHTMEApprovedPriceDate, newHTMEPricingApproved, newHTMEContractNumber, newHTMEContractModificationNumber, newHTMEProductGMPercent, newHTMEProductGMPrice)
+    def fedmall_product_price_cap(self,newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice):
+        proc_name = 'sequoia.FEDMALLProductPrice_capture_wrap'
+        proc_args = (newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice)
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
@@ -418,25 +419,48 @@ class DalObject:
         return df_gsa_price_lookup
 
 
-    def ecat_product_price_cap(self,lst_ecat_product_price):
-        proc_name = 'sequoia.ECATProductPrice_capture'
+    def htme_product_price_cap(self,lst_htme_product_price):
+        proc_name = 'sequoia.HTMEProductPrice_capture'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_ecat_product_price)
+        runner = DataRunner(self.connection, proc_name, lst_htme_product_price)
         runner.start()
 
-    def get_ecat_price_lookup(self):
-        proc_name = 'sequoia.get_ECATPrice_lookup'
-        column_names = ['FyProductNumber', 'FyPartNumber', 'OnContract', 'ECATApprovedListPrice',
-                        'ECATApprovedPercent', 'MfcDiscountPercent', 'ECATContractModificationNumber',
-                        'ECATApprovedPriceDate', 'ECATPricingApproved']
-        df_ecat_price_lookup = self.get_lookup(proc_name, column_names)
-        return df_ecat_price_lookup
+    def get_htme_price_lookup(self):
+        proc_name = 'sequoia.get_HTMEPrice_lookup'
+        column_names = ['FyProductNumber', 'FyPartNumber', 'OnContract', 'HTMEApprovedListPrice',
+                        'HTMEApprovedPercent', 'MfcDiscountPercent', 'HTMEContractModificationNumber',
+                        'HTMEApprovedPriceDate', 'HTMEPricingApproved']
+        df_htme_price_lookup = self.get_lookup(proc_name, column_names)
+        return df_htme_price_lookup
 
-    def fedmall_product_price_cap(self,newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice):
-        proc_name = 'sequoia.FEDMALLProductPrice_capture_wrap'
-        proc_args = (newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
+
+    def gsa_product_price_cap(self,lst_gsa_product_price):
+        proc_name = 'sequoia.GSAProductPrice_capture'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, lst_gsa_product_price)
+        runner.start()
+
+    def get_gsa_price_lookup(self):
+        proc_name = 'sequoia.get_GSAPrice_lookup'
+        column_names = ['FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
+                         'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
+        df_gsa_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_gsa_price_lookup
+
+
+
+    def va_product_price_cap(self, lst_va_product_price):
+        proc_name = 'sequoia.VAProductPrice_capture'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, lst_va_product_price)
+        runner.start()
+
+    def get_va_price_lookup(self):
+        proc_name = 'sequoia.get_VAPrice_lookup'
+        column_names = ['FyProductNumber','FyPartNumber','OnContract', 'VAApprovedListPrice',
+                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
 
 
     def oconus_product_cap(self,newShippingCostOconusECAT, newShippingCostDesc, newClientId, newProductPriceId):

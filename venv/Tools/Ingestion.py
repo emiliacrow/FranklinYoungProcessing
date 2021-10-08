@@ -592,6 +592,26 @@ class IngestionObject:
         return success
 
 
+
+    def ecat_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice):
+        if (len(self.product_collector) >= self.load_limit) or (is_last):
+            self.product_collector.append(
+                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
+            self.obDal.ecat_product_price_cap(self.product_collector)
+            self.product_collector = []
+        else:
+            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
+
+    def ingest_ecat_product_price_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.ecat_product_price_cap(self.product_collector)
+
+
+    def fedmall_product_price_cap(self,newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate , newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice):
+        return_id = self.obDal.fedmall_product_price_cap(newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice)
+        return return_id
+
+
     def gsa_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
@@ -604,6 +624,20 @@ class IngestionObject:
     def ingest_gsa_product_price_cleanup(self):
         if self.product_collector != []:
             self.obDal.gsa_product_price_cap(self.product_collector)
+
+
+    def htme_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice):
+        if (len(self.product_collector) >= self.load_limit) or (is_last):
+            self.product_collector.append(
+                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice])
+            self.obDal.htme_product_price_cap(self.product_collector)
+            self.product_collector = []
+        else:
+            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice])
+
+    def ingest_htme_product_price_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.htme_product_price_cap(self.product_collector)
 
 
     def va_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN):
@@ -624,27 +658,6 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.va_product_price_cap(self.product_collector)
 
-    def ecat_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice):
-        if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
-            self.obDal.ecat_product_price_cap(self.product_collector)
-            self.product_collector = []
-        else:
-            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
-
-    def ingest_ecat_product_price_cleanup(self):
-        if self.product_collector != []:
-            self.obDal.ecat_product_price_cap(self.product_collector)
-
-    def htme_product_price_cap(self,newIsVisible, newDateCatalogReceived, newHTMESellPrice, newHTMEApprovedPriceDate, newHTMEPricingApproved, newHTMEContractNumber, newHTMEContractModificationNumber, newHTMEProductGMPercent, newHTMEProductGMPrice):
-        return_id = self.obDal.htme_product_price_cap(newIsVisible, newDateCatalogReceived, newHTMESellPrice, newHTMEApprovedPriceDate, newHTMEPricingApproved, newHTMEContractNumber, newHTMEContractModificationNumber, newHTMEProductGMPercent, newHTMEProductGMPrice)
-        return return_id
-
-
-    def fedmall_product_price_cap(self,newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate , newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice):
-        return_id = self.obDal.fedmall_product_price_cap(newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice)
-        return return_id
 
     def image_size_cap(self, is_last, newProductImageUrl, newProductImageName, newProductImageX, newProductImageY):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
