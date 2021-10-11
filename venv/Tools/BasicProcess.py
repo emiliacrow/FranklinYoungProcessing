@@ -260,7 +260,7 @@ class BasicProcessObject:
 
         manufacturer_product_id = str(row['ManufacturerPartNumber'])
 
-        if 'ManufacturerId'  in row:
+        if 'ManufacturerId' in row:
             new_manufacturer_id = row['ManufacturerId']
             new_prefix = self.df_manufacturer_translator.loc[
                 (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
@@ -362,7 +362,7 @@ class BasicProcessObject:
                 return True, df_collect_product_base_data
 
         else:
-            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_man=manufacturer_name)
+            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_man=manufacturer)
             self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
             # this needs to return the prefix so it can be used
 

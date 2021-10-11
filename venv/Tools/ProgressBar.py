@@ -335,7 +335,7 @@ class MainWindow(QMainWindow):
     def button_clicked(self):
         # the button is just a proxy for some other trigger
         lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"','','required'],
-                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"','Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)']]
+                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"','Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)','required']]
         dlg = TextBoxObject(lst_req_fields)
         dlg.exec()
         dct_return = dlg.getReturnSet()
