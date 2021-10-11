@@ -362,12 +362,12 @@ class BasicProcessObject:
                 return True, df_collect_product_base_data
 
         else:
-            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_man=manufacturer)
+            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer)
             self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
             # this needs to return the prefix so it can be used
 
             new_prefix = self.df_manufacturer_translator.loc[
-                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
+                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
 
             fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
 

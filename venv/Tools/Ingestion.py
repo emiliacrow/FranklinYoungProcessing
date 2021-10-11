@@ -261,8 +261,8 @@ class IngestionObject:
         entered_values = obTextBox.getReturnSet()
 
         if ('ManufacturerName' in entered_values.keys()) and ('SupplierName' in entered_values.keys()):
-            manufacturer_name = entered_values['ManufacturerName']
-            supplier_name = entered_values['SupplierName']
+            manufacturer_name = (str(entered_values['ManufacturerName'])).upper()
+            supplier_name = (str(entered_values['SupplierName'])).lower()
         else:
             return 0
 
