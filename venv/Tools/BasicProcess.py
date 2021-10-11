@@ -275,6 +275,7 @@ class BasicProcessObject:
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
+                self.obReporter.default_uoi_report()
 
             if 'FyPartNumber' not in row:
                 df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
@@ -299,6 +300,7 @@ class BasicProcessObject:
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
+                self.obReporter.default_uoi_report()
 
             if 'FyPartNumber' not in row:
                 df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
@@ -324,6 +326,7 @@ class BasicProcessObject:
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
+                self.obReporter.default_uoi_report()
 
 
             if 'FyPartNumber' not in row:
@@ -352,6 +355,7 @@ class BasicProcessObject:
 
                 else:
                     df_collect_product_base_data['UnitOfIssue'] = ['EA']
+                    self.obReporter.default_uoi_report()
 
                 if 'FyPartNumber' not in row:
                     df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
@@ -379,6 +383,7 @@ class BasicProcessObject:
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
+                self.obReporter.default_uoi_report()
 
             if 'FyPartNumber' not in row:
                 df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
@@ -490,6 +495,10 @@ class ReporterObject():
             self.update_report('Pass', 'Fill product price success')
         else:
             self.update_report('Fail', 'Fill product price failure')
+
+
+    def default_uoi_report(self):
+        self.update_report('Alert', 'Default UOI')
 
 
 
