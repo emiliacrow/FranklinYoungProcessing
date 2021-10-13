@@ -259,13 +259,37 @@ class BasicProcessObject:
         manufacturer = manufacturer.strip().replace('  ',' ')
 
         manufacturer_product_id = str(row['ManufacturerPartNumber'])
+        b_override = False
 
-        if 'ManufacturerId' in row:
+        if 'FyProductNumberOverride' in row:
+            b_override = row['FyProductNumberOverride']
+
+        if 'FyManufacturerPrefix' in row:
+            new_prefix = str(row['FyManufacturerPrefix'])
+            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
+            fy_product_number = fy_catalog_number
+
+            if 'UnitOfIssue' in row:
+                unit_of_issue = row['UnitOfIssue']
+                if unit_of_issue != 'EA':
+                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+            else:
+                df_collect_product_base_data['UnitOfIssue'] = ['EA']
+                self.obReporter.default_uoi_report()
+
+            if 'FyPartNumber' not in row:
+                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
+            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
+            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+            df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
+            return True, df_collect_product_base_data
+
+        elif 'ManufacturerId' in row:
             new_manufacturer_id = row['ManufacturerId']
             new_prefix = self.df_manufacturer_translator.loc[
                 (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
+            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
 
             fy_product_number = fy_catalog_number
 
@@ -290,7 +314,7 @@ class BasicProcessObject:
                 (self.df_manufacturer_translator['SupplierName'] == manufacturer.lower()), ['ManufacturerId',
                                                                                     'FyManufacturerPrefix']].values[0]
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
+            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
 
             fy_product_number = fy_catalog_number
 
@@ -316,7 +340,7 @@ class BasicProcessObject:
                                                                                         'FyManufacturerPrefix']].values[
                 0]
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
+            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
 
             fy_product_number = fy_catalog_number
 
@@ -345,7 +369,7 @@ class BasicProcessObject:
                                                                                         'FyManufacturerPrefix']].values[
                     0]
 
-                fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
+                fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
 
                 fy_product_number = fy_catalog_number
                 if 'UnitOfIssue' in row:
@@ -373,7 +397,7 @@ class BasicProcessObject:
             new_prefix = self.df_manufacturer_translator.loc[
                 (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id)
+            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
 
             fy_product_number = fy_catalog_number
 
@@ -394,9 +418,13 @@ class BasicProcessObject:
             return True, df_collect_product_base_data
 
 
-    def make_fy_catalog_number(self,prefix,manufacturer_part_number):
-        clean_part_number = self.obValidator.clean_part_number(manufacturer_part_number)
-        FY_catalog_number = str(prefix)+'-'+clean_part_number
+    def make_fy_catalog_number(self,prefix,manufacturer_part_number,b_override = False):
+        if b_override:
+            FY_catalog_number = str(prefix) + '-' + manufacturer_part_number
+        else:
+            clean_part_number = self.obValidator.clean_part_number(manufacturer_part_number)
+            FY_catalog_number = str(prefix)+'-'+clean_part_number
+
         return FY_catalog_number
 
     def line_viability(self,df_product_line):
