@@ -420,6 +420,9 @@ class BasicProcessObject:
 
     def make_fy_catalog_number(self,prefix,manufacturer_part_number,b_override = False):
         if b_override:
+            if len(manufacturer_part_number) >= 22:
+                self.obReporter.update_report('Alert','Long Manufacturer Part Number')
+
             FY_catalog_number = str(prefix) + '-' + manufacturer_part_number
         else:
             clean_part_number = self.obValidator.clean_part_number(manufacturer_part_number)
