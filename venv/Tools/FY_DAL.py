@@ -3,7 +3,8 @@
 # Updated: 20210813
 # CreateFor: Franklin Young International
 
-
+import os
+import sys
 import time
 import boto3
 import pandas
@@ -713,19 +714,49 @@ class DataRunner(threading.Thread):
 
 
 def test_local_connect():
-    host = 'localhost'
-    uid = 'root'
-    pwd = 'Camembert20Brie'
+    end_point = 'sequoia-staging.cfvzdoug1xvb.us-west-2.rds.amazonaws.com'
     port = 3306
-    dbname = 'sequoia'
-    driver = '{SQL server}'
+    user = 'EmiliaCrow'
+    password = 'Camembert20Brie'
+    region = 'us-west-2'
 
-    connection = pymysql.connect(host=host, user=uid, port=port, passwd=pwd, db=dbname)
+    # enables cleartext because you have to, I guess.
+    os.environ['LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN'] = '1'
 
-    print('connected')
+    session_kwargs = {}
+    session_kwargs["aws_access_key_id"] = 'AKIA54NDLGO6PK2LMLDZ'
+    session_kwargs["aws_secret_access_key"] = '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'
+    session_kwargs["region_name"] = 'us-west-2'
 
-    connection.close()
+    # the creds from .aws/credentials
+    rds = boto3.setup_default_session(**session_kwargs)
+    rds = boto3.client('rds')
 
+    token = rds.generate_db_auth_token(DBHostname=end_point, Port=port, DBUsername=user, Region=region)
+
+    # some kind of miracle occurs...
+    # actually there are no miracles. and this doesn't work.
+    # and I'm mad about it.
+    
+    print(token)
+    try:
+        connection = pymysql.connect(host=end_point, user=user, port=port, passwd=token, db='sequoia')
+
+        cur = connection.cursor()
+        cur.execute("""SELECT now()""")
+        query_results = cur.fetchall()
+        print(query_results)
+
+        connection.close()
+    except Exception as e:
+        print("Database connection failed due to {}".format(e))
+
+
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    test_local_connect()
 
 
 ## end ##

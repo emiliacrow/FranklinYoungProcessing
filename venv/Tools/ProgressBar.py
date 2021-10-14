@@ -195,7 +195,7 @@ class TextBoxObject(QDialog):
 
         self.setWindowTitle("Please enter text.")
         self.setWindowIcon(QIcon(os.getcwd() + '\\venv\Assets\Duckworth2.png'))
-        self.setGeometry(100, 400, 0, 0)
+        self.setGeometry(100, 300, 0, 0)
         self.layout = QGridLayout()
 
         # button to show the above entered text
