@@ -25,7 +25,7 @@ class FileFinder():
         root.withdraw()
 
         try:
-            filename = filedialog.askopenfilename(initialdir=path, title=window_title,filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
+            filename = filedialog.askopenfilename(parent= root, initialdir=path, title=window_title,filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
         except:
             return False, 'Ask open filenames failed'
 
