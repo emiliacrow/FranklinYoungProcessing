@@ -8,6 +8,9 @@ import glob
 import pandas
 import datetime
 import threading
+import warnings
+
+from tkinter import filedialog
 
 import tkinter as tk
 
@@ -23,7 +26,7 @@ class FileFinder():
         root = tk.Tk()
         root.withdraw()
 
-        filename = tk.filedialog.askopenfilename(parent= root, initialdir=path, title=window_title, filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
+        filename = filedialog.askopenfilename(parent= root, initialdir=path, title=window_title, filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
 
 
         self.selected_file = filename
