@@ -8,6 +8,7 @@ import glob
 import pandas
 import datetime
 import threading
+import warnings
 
 import tkinter as tk
 
@@ -21,19 +22,13 @@ class FileFinder():
         self.selected_file = None
 
     def ident_file(self,window_title='Please select a file',path = None):
-
-        print('pre withdraw')
         root = tk.Tk()
-
-        print('pre withdraw')
         root.withdraw()
 
-        print('post withdraw')
-        try:
-            print('in try')
-            filename = filedialog.askopenfilename(parent= root, initialdir=path, title=window_title,filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
-        except:
-            return False, 'Ask open filenames failed'
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            filename = filedialog.askopenfilename(parent= root, initialdir=path, title=window_title, filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
+
 
         self.selected_file = filename
         self.selected_file = self.selected_file.replace('/','\\\\')
