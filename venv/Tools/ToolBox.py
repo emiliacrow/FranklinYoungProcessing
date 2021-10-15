@@ -8,11 +8,9 @@ import glob
 import pandas
 import datetime
 import threading
-import warnings
 
 import tkinter as tk
 
-from tkinter import filedialog
 
 from Tools.ProgressBar import ProgressBarWindow
 
@@ -25,9 +23,7 @@ class FileFinder():
         root = tk.Tk()
         root.withdraw()
 
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
-            filename = filedialog.askopenfilename(parent= root, initialdir=path, title=window_title, filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
+        filename = tk.filedialog.askopenfilename(parent= root, initialdir=path, title=window_title, filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
 
 
         self.selected_file = filename

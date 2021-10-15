@@ -711,10 +711,8 @@ class DataRunner(threading.Thread):
         print('Runner report end: ' + self.proc_name)
 
 
-
-
 def test_local_connect():
-
+    # stupid, don't be it
 
     # the creds from .aws/credentials
     rds = boto3.setup_default_session(**session_kwargs)
