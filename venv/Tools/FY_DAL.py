@@ -714,19 +714,7 @@ class DataRunner(threading.Thread):
 
 
 def test_local_connect():
-    end_point = 'sequoia-staging.cfvzdoug1xvb.us-west-2.rds.amazonaws.com'
-    port = 3306
-    user = 'EmiliaCrow'
-    password = 'Camembert20Brie'
-    region = 'us-west-2'
 
-    # enables cleartext because you have to, I guess.
-    os.environ['LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN'] = '1'
-
-    session_kwargs = {}
-    session_kwargs["aws_access_key_id"] = 'AKIA54NDLGO6PK2LMLDZ'
-    session_kwargs["aws_secret_access_key"] = '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'
-    session_kwargs["region_name"] = 'us-west-2'
 
     # the creds from .aws/credentials
     rds = boto3.setup_default_session(**session_kwargs)
