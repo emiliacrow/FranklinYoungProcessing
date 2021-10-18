@@ -10,11 +10,11 @@ import numpy as np
 from Tools.FY_DAL import DalObject
 from Tools.Validation import Validator
 from Tools.Extraction import Extractor
-from Tools.HeaderTranslator import HeaderTranslator
 from Tools.Ingestion import IngestionObject
-from Tools.ProgressBar import ProgressBarWindow
-from Tools.ProgressBar import YesNoDialog
+from Tools.HeaderTranslator import HeaderTranslator
 
+from Tools.ProgressBar import YesNoDialog
+from Tools.ProgressBar import ProgressBarWindow
 
 class BasicProcessObject:
     # this object requires a list called req_fields which is the set of headers that must be present in order to process the file/line
@@ -80,6 +80,14 @@ class BasicProcessObject:
         product_headers = set(self.lst_product_headers)
         required_headers = set(self.req_fields)
         return list(required_headers.difference(product_headers))
+
+    def vendor_name_selection(self):
+        lst_vendor_names = self.df_vendor_translator['VendorName'].tolist()
+        self.obVendorTickBox = JoinSelectionDialog(lst_vendor_names, 'Please select 1 Vendor.')
+        self.obVendorTickBox.exec()
+        # split on column or column
+        vendor_name = self.obVendorTickBox.get_selected_items()
+        return vendor_name
 
     def object_setup(self,is_testing):
         self.obValidator = Validator()

@@ -20,11 +20,7 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.product_collector = {}
 
     def batch_preprocessing(self):
-        lst_vendor_names = self.df_vendor_translator['VendorName'].tolist()
-        self.obVendorTickBox = JoinSelectionDialog(lst_vendor_names, 'Please select 1 Vendor.')
-        self.obVendorTickBox.exec()
-        # split on column or column
-        vendor_filter = self.obVendorTickBox.get_selected_items()
+        vendor_filter = self.vendor_name_selection()
 
         self.df_product_price_lookup = self.obDal.get_product_action_review_lookup(vendor_filter)
         self.define_new()

@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['FyProductNumber', 'VendorName', 'FyCost']
+    req_fields = ['FyProductNumber', 'FyCost']
     sup_fields = []
     att_fields = []
     gen_fields = []
@@ -23,6 +23,11 @@ class BasePrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         # define new, update, non-update
+
+        if 'VendorName' not in row:
+            vendor_name = self.vendor_name_selection()
+            self.df_product['VendorName'] = vendor_name
+
         self.batch_process_vendor()
         self.define_new()
 
