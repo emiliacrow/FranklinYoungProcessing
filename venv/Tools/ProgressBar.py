@@ -11,15 +11,16 @@ import datetime
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QLabel
-from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QDialog
-from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QCheckBox
-from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QProgressBar
 from PyQt5.QtWidgets import QDialogButtonBox
@@ -252,73 +253,50 @@ class TextBoxObject(QDialog):
 
 ## testing ##
 
-class TextBoxStandupSample(QDialog):
-    def __init__(self,parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Please enter text.")
+class FileDialogObject(QWidget):
 
-        # edit text box
-        self.text_test = QLineEdit(self)
-        # button to show the above entered text
-        self.button = QPushButton('Accept answer', self)
-        # connect button to function on_click
-        self.button.clicked.connect(self.on_click)
+    def __init__(self, dialog_type='file_dialog', name = 'Please select a file'):
+        super().__init__()
+        self.left = 10
+        self.top = 10
+        self.width = 640
+        self.height = 480
+        self.out_file_name = ''
+        self.name = name
+        self.initUI(dialog_type)
 
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.text_test)
-        self.layout.addWidget(self.button)
+    def initUI(self, dialog_type):
+        self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.setLayout(self.layout)
+        if dialog_type == 'file_dialog':
+            self.openFileNameDialog()
+
+        elif dialog_type == 'save_dialog':
+            self.saveFileDialog()
+
         self.show()
 
-    def on_click(self):
-        self.textboxValue = self.text_test.text()
-        self.accept()
+    # this is what we use to find a file
+    def openFileNameDialog(self):
+        files_to_get = 'Excel Files (*.xlsx);;Text files (*.txt)'
 
-    def getReturnSet(self):
-        return self.textboxValue
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        self.out_file_name, _ = QFileDialog.getOpenFileName(self, self.name, '',
+                                                   files_to_get, options=options)
 
+    # this probably won't be used
+    # however, user might want to name their outputs in some cases
+    def saveFileDialog(self):
+        files_to_get = 'Excel Files (*.xlsx);;Text files (*.txt)'
 
-class CustomDialog(QDialog):
-    def __init__(self,parent=None):
-        super().__init__(parent)
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        self.out_file_name, _ = QFileDialog.getSaveFileName(self, self.name, '',
+                                                   files_to_get, options=options)
 
-        self.setWindowTitle("HELLO!")
-        self.a = 1
-
-        QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-
-        self.buttonBox = QDialogButtonBox(QBtn)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-
-        self.option_test = QCheckBox('A checkbox')
-        self.option_test2 = QCheckBox('A checkbox2')
-        # edit text box
-        self.text_test = QLineEdit(self)
-        # button to show the above entered text
-        self.button = QPushButton('Show text', self)
-        # connect button to function on_click
-        self.button.clicked.connect(self.on_click)
-
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.option_test)
-        self.layout.addWidget(self.option_test2)
-        self.layout.addWidget(self.text_test)
-
-        message = QLabel("Something happened, is that OK?")
-        self.layout.addWidget(message)
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
-        self.show()
-
-    def on_click(self):
-        self.textboxValue = self.text_test.text()
-        QMessageBox.question(self, 'Message', "You typed: " + textboxValue, QMessageBox.Ok, QMessageBox.Ok)
-        self.textbox.setText("")
-
-    def getReturnSet(self):
-        return self.textboxValue
+    def get_file_name(self):
+        return self.out_file_name
 
 
 class MainWindow(QMainWindow):
@@ -334,15 +312,14 @@ class MainWindow(QMainWindow):
 
     def button_clicked(self):
         # the button is just a proxy for some other trigger
-        lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"','','required'],
-                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"','Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)','required']]
-        dlg = TextBoxObject(lst_req_fields)
-        dlg.exec()
-        dct_return = dlg.getReturnSet()
-        naics = dct_return['NAICSCode']
-        naics_names = dct_return['NAICSName']
-        print(naics)
-        print(naics_names)
+
+        print('b')
+        dlg = FileDialogObject('some words')
+        print('d')
+        file_name = dlg.get_file_name()
+        print('e')
+
+        print(file_name)
 
         print('this happened')
 
@@ -351,7 +328,9 @@ def test_frame():
     app = QApplication(sys.argv)
     ex = MainWindow()
     ex.show()
+    print('a')
     app.exec_()
+    print('z')
 
 if __name__ == '__main__':
     test_frame()

@@ -10,11 +10,7 @@ import datetime
 import threading
 import warnings
 
-from tkinter import filedialog
-
-import tkinter as tk
-
-
+from Tools.ProgressBar import FileDialogObject
 from Tools.ProgressBar import ProgressBarWindow
 
 class FileFinder():
@@ -22,25 +18,28 @@ class FileFinder():
         # will have to make this a configuration
         self.selected_file = None
 
-    def ident_file(self,window_title='Please select a file',path = None):
-        root = tk.Tk()
-        root.withdraw()
+    # akin to openFileNameDialog
+    def ident_file(self,window_title='Please select a file',path = ''):
 
-        filename = filedialog.askopenfilename(parent= root, initialdir=path, title=window_title, filetypes=[('excel files','*.xlsx*'),('text files','*.txt*')])
+        obFileDialog = FileDialogObject('file_dialog', window_title)
+        file_name = obFileDialog.get_file_name()
 
+        self.selected_file = file_name
+        self.file_base_location = self.selected_file.rpartition('/')[0]
 
-        self.selected_file = filename
         self.selected_file = self.selected_file.replace('/','\\\\')
+
         self.process_time = str(datetime.datetime.now())
         self.process_time = self.process_time.replace(' ','_')
         self.process_time = self.process_time.partition('.')[0]
         self.process_time = self.process_time.replace(':','-')
-        self.basic_out_file_path = self.selected_file.replace('.xlsx','_prcd_'+self.process_time+'.xlsx')
 
-        self.file_base_location = self.selected_file.rpartition('/')[0]
+        self.basic_out_file_path = self.selected_file.replace('.xlsx','_prcd_'+self.process_time+'.xlsx')
 
         return True, self.basic_out_file_path
 
+    # this will be depricated
+    # it's only used for images, and that's a stupid way to do it
     def ident_directory(self, window_title = 'Please select directory', path = None):
         root = tk.Tk()
         root.withdraw()
@@ -80,6 +79,8 @@ class FileFinder():
 
         return excel_dataframe
 
+
+    # save dialog? no
     def write_xlsx(self,df_product,bumper,include_date = True, pb_desc = 'Creating file...'):
 
         self.obProgressBar = ProgressBarWindow(pb_desc)

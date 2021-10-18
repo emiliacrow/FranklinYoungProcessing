@@ -11,6 +11,7 @@ import traceback
 from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QTimer
+
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QComboBox
@@ -340,8 +341,6 @@ class DuckworthWindow(QWidget):
         alert.setText(error_msg)
 
         x = alert.exec_()
-
-
 
 
 # Press the green button in the gutter to run the script.
