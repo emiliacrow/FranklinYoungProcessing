@@ -15,6 +15,8 @@ from Tools.HeaderTranslator import HeaderTranslator
 
 from Tools.ProgressBar import YesNoDialog
 from Tools.ProgressBar import ProgressBarWindow
+from Tools.ProgressBar import JoinSelectionDialog
+
 
 class BasicProcessObject:
     # this object requires a list called req_fields which is the set of headers that must be present in order to process the file/line
@@ -86,7 +88,8 @@ class BasicProcessObject:
         self.obVendorTickBox = JoinSelectionDialog(lst_vendor_names, 'Please select 1 Vendor.')
         self.obVendorTickBox.exec()
         # split on column or column
-        vendor_name = self.obVendorTickBox.get_selected_items()
+        vendor_name_list = self.obVendorTickBox.get_selected_items()
+        vendor_name = vendor_name_list[0]
         return vendor_name
 
     def object_setup(self,is_testing):

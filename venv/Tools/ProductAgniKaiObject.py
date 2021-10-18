@@ -3,8 +3,6 @@
 # Updated: 20211001
 # CreateFor: Franklin Young International
 
-from Tools.ProgressBar import JoinSelectionDialog
-
 from Tools.BasicProcess import BasicProcessObject
 
 class ProductAgniKaiObject(BasicProcessObject):

@@ -24,7 +24,7 @@ class BasePrice(BasicProcessObject):
     def batch_preprocessing(self):
         # define new, update, non-update
 
-        if 'VendorName' not in row:
+        if 'VendorName' not in self.df_product.columns:
             vendor_name = self.vendor_name_selection()
             self.df_product['VendorName'] = vendor_name
 
