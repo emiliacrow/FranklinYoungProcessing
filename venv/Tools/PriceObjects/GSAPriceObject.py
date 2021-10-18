@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
+    req_fields = ['FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
                   'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
 
     sup_fields = []
@@ -29,11 +29,16 @@ class GSAPrice(BasicProcessObject):
 
     def batch_process_vendor(self):
         # there should only be one vendor, really.
+        if 'VendorName' not in self.df_product.columns:
+            vendor_name = self.vendor_name_selection()
+            self.df_product['VendorName'] = vendor_name
+
         df_attribute = self.df_product[['VendorName']]
         df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
         lst_ids = []
-        if 'VendorId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'VendorId')
+        if 'VendorName' not in self.df_product.columns:
+            vendor_name = self.vendor_name_selection()
+            self.df_product['VendorName'] = vendor_name
 
         for colName, row in df_attribute.iterrows():
             vendor_name = row['VendorName'].upper()

@@ -23,17 +23,16 @@ class BasePrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         # define new, update, non-update
-
-        if 'VendorName' not in self.df_product.columns:
-            vendor_name = self.vendor_name_selection()
-            self.df_product['VendorName'] = vendor_name
-
         self.batch_process_vendor()
         self.define_new()
 
 
     def batch_process_vendor(self):
         # there should only be one vendor, really.
+        if 'VendorName' not in self.df_product.columns:
+            vendor_name = self.vendor_name_selection()
+            self.df_product['VendorName'] = vendor_name
+
         df_attribute = self.df_product[['VendorName']]
         df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
         lst_ids = []

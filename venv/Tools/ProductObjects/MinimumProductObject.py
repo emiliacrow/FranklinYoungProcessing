@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 # keep this
 class MinimumProduct(BasicProcessObject):
     req_fields = ['ShortDescription', 'ManufacturerPartNumber',
-                                'CountryOfOrigin', 'ManufacturerName','VendorName','Category']
+                                'CountryOfOrigin', 'ManufacturerName','Category']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
@@ -48,6 +48,10 @@ class MinimumProduct(BasicProcessObject):
 
     def batch_process_vendor(self):
         # there should only be one vendor, really.
+        if 'VendorName' not in self.df_product.columns:
+            vendor_name = self.vendor_name_selection()
+            self.df_product['VendorName'] = vendor_name
+
         df_attribute = self.df_product[['VendorName']]
         df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
         lst_ids = []

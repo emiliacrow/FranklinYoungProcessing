@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['VendorName','VendorPartNumber','FyCatalogNumber','FyProductNumber']
+    req_fields = ['VendorPartNumber','FyCatalogNumber','FyProductNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -82,6 +82,10 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def batch_process_vendor(self):
+        if 'VendorName' not in self.df_product.columns:
+            vendor_name = self.vendor_name_selection()
+            self.df_product['VendorName'] = vendor_name
+
         df_attribute = self.df_product[['VendorName']]
         df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
         lst_ids = []

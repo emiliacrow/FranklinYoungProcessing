@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProductPrice(BasicProcessObject):
-    req_fields = ['FyProductNumber','VendorName']
+    req_fields = ['FyProductNumber']
     att_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
                           'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
                           'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
@@ -36,6 +36,10 @@ class FillProductPrice(BasicProcessObject):
 
     def batch_process_vendor(self):
         # there should only be one vendor, really.
+        if 'VendorName' not in self.df_product.columns:
+            vendor_name = self.vendor_name_selection()
+            self.df_product['VendorName'] = vendor_name
+
         df_attribute = self.df_product[['VendorName']]
         df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
         lst_ids = []
