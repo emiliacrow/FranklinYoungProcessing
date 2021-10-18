@@ -93,10 +93,37 @@ class FileFinder():
         else:
             split_name = self.basic_out_file_path.partition('_prcd_')
             self.out_file_path = split_name[0]+'_prcd_.xlsx'
-            self.out_file_path = self.out_file_path.replace('_prcd_', '_' + bumper + '_')
+            self.out_file_path = self.out_file_path.replace('_prcd_', '_' + bumper)
 
         with pandas.ExcelWriter(self.out_file_path, mode='w') as writer:
             df_product.to_excel(writer,index=False)
+
+        self.obProgressBar.close()
+
+    def write_xlsx_sub_folder(self,df_product,bumper,include_date = False, pb_desc = 'Creating file...'):
+        self.obProgressBar = ProgressBarWindow(pb_desc)
+        self.obProgressBar.set_anew(10)
+        self.obProgressBar.show()
+        self.obProgressBar.update_unknown()
+
+        if include_date:
+            self.out_file_path = self.basic_out_file_path.replace('_prcd_', '_' + bumper + '_prcd_')
+        else:
+            split_name = self.basic_out_file_path.partition('_prcd_')
+            self.out_file_path = split_name[0] + '_prcd_.xlsx'
+            self.out_file_path = self.out_file_path.replace('_prcd_', '_' + bumper)
+
+            file_directory, whack, filename = self.out_file_path.rpartition('\\\\')
+
+            bumper = bumper.rpartition('_')[0]
+
+            self.out_file_path = file_directory+'\\\\'+bumper
+            if not os.path.exists(self.out_file_path):
+                os.makedirs(self.out_file_path)
+            self.out_file_path = self.out_file_path +'\\\\' + filename
+
+        with pandas.ExcelWriter(self.out_file_path, mode='w') as writer:
+            df_product.to_excel(writer, index=False)
 
         self.obProgressBar.close()
 

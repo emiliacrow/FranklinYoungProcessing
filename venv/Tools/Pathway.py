@@ -213,7 +213,7 @@ class Pathways():
 
                     self.full_file_count += 1
                     pb_name = 'Writing file #{0}: {1}'.format(str(self.full_file_count),layer_name)
-                    self.obFileFinder.write_xlsx(df_layer_chunk, layer_name, False, pb_name)
+                    self.obFileFinder.write_xlsx_sub_folder(df_layer_chunk, layer_name, False, pb_name)
 
                     file_number += 1
                     chunk_count -= 1
