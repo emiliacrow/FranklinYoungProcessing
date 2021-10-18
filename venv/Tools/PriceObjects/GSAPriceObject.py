@@ -138,7 +138,7 @@ class GSAPrice(BasicProcessObject):
 
     def process_oncontract(self, df_collect_product_base_data, row):
         if ('OnContract' not in row):
-            df_collect_product_base_data['OnContract'] = [1]
+            df_collect_product_base_data['OnContract'] = [0]
             self.obReporter.update_report('Alert', 'OnContract was assigned')
         elif str(row['OnContract']) == 'N':
             df_collect_product_base_data['OnContract'] = [0]
