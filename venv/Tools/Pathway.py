@@ -192,6 +192,11 @@ class Pathways():
             file_name = file_name.replace('__', '_')
 
             df_layer = self.df_product.loc[(self.df_product[split_on[0]] == each_value)]
+
+            df_layer = df_layer.replace(r'^\s*$', self.np_nan, regex=True)
+            # this removes all columns with all nan
+            df_layer = df_layer.dropna(axis=1, how='all')
+
             # get the size
             chunk_size = len(df_layer.index)
             # if the size is bigger than the limit
@@ -206,9 +211,7 @@ class Pathways():
                 while chunk_count != 0:
                     # get each layer
                     df_layer_chunk = df_layer.iloc[chunk_layer:chunk_layer + self.split_chunk_size, :]
-
                     chunk_layer += self.split_chunk_size
-
                     layer_name = file_name + '_' + str(file_number)
 
                     self.full_file_count += 1

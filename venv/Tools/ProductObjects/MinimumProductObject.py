@@ -41,6 +41,7 @@ class MinimumProduct(BasicProcessObject):
             self.df_product['CountryOfOrigin'].replace(to_replace = '',value='UNKNOWN',inplace=True)
 
         self.batch_process_country()
+
         self.batch_process_lead_time()
 
         return self.df_product
@@ -136,7 +137,7 @@ class MinimumProduct(BasicProcessObject):
                             (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
                         lst_ids.append(new_country_of_origin_id)
                     else:
-                        coo_id = self.obIngester.manual_ingest_country(code = country)
+                        coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
                         lst_ids.append(coo_id)
 
                 elif (len(country) == 3):
@@ -154,7 +155,7 @@ class MinimumProduct(BasicProcessObject):
                             (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
                         lst_ids.append(new_country_of_origin_id)
                     else:
-                        coo_id = self.obIngester.manual_ingest_country(name = country)
+                        coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
                         lst_ids.append(coo_id)
                 else:
                     lst_ids.append(259)
