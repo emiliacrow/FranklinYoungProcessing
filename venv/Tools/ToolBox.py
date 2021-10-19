@@ -101,7 +101,7 @@ class FileFinder():
         self.obProgressBar.close()
 
     def write_xlsx_sub_folder(self,df_product,bumper,include_date = False, pb_desc = 'Creating file...'):
-        self.obProgressBar = ProgressBarWindow(pb_desc)
+        self.obProgressBar = ProgressBarWindow(pb_desc,icon='split')
         self.obProgressBar.set_anew(10)
         self.obProgressBar.show()
         self.obProgressBar.update_unknown()

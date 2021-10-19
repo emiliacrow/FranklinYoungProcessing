@@ -26,19 +26,32 @@ from PyQt5.QtWidgets import QProgressBar
 from PyQt5.QtWidgets import QDialogButtonBox
 
 
+def set_icon(icon):
+    if icon == 'duck':
+        return '\\venv\Assets\Duckworth2.png'
+    elif icon == 'progress':
+        return '\\venv\Assets\Processing.png'
+    elif icon == 'append-a':
+        return '\\venv\Assets\LeftAppendFile.png'
+    elif icon == 'append-b':
+        return '\\venv\Assets\RightAppendFile.png'
+    elif icon == 'merge':
+        return '\\venv\Assets\MergeFiles.png'
+    elif icon == 'split':
+        return '\\venv\Assets\SplitterIcon.png'
 
 
 class ProgressBarWindow(QWidget):
-    def __init__(self,process_name='a process'):
+    def __init__(self,process_name='a process',icon='progress'):
         super().__init__()
         self.__size__ = 100
         # creating progress bar
         self.layout = QGridLayout()
         self.pbar = QProgressBar(self)
         self.layout.addWidget(self.pbar,1,0,1,3)
-        self.fy_icon = '\\venv\Assets\Processing.png'
 
-        self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
+        self.set_icon = set_icon
+        self.update_icon(icon)
 
         self.duration_label = QLabel('')
         self.duration_label.setText('Duration unknown.')
@@ -61,6 +74,9 @@ class ProgressBarWindow(QWidget):
         self.setWindowTitle(process_name)
         self.setLayout(self.layout)
 
+    def update_icon(self, icon):
+        self.fy_icon = self.set_icon(icon)
+        self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
 
     def set_anew(self,total):
         self.start_time = datetime.datetime.now()
@@ -104,27 +120,19 @@ class ProgressBarWindow(QWidget):
 
 
 class YesNoDialog(QWidget):
-    def __init__(self, title = 'Yes or no?', icon='duck'):
+    def __init__(self, title = 'Yes or no?'):
         super().__init__()
         self.title = title
-
-        if icon == 'duck':
-            self.fy_icon = '\\venv\Assets\Duckworth2.png'
-        elif icon == 'append-a':
-            self.fy_icon = '\\venv\Assets\Duckworth2.png'
-        elif icon == 'append-b':
-            self.fy_icon = '\\venv\Assets\Duckworth2.png'
-        elif icon == 'merge':
-            self.fy_icon = '\\venv\Assets\Duckworth2.png'
-
-        self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
+        self.set_icon = set_icon
 
         self.left = 100
         self.top = 300
         self.width = 400
         self.height = 200
 
-    def initUI(self, message_txt = 'Yes/no text', message_q = 'A question?'):
+    def initUI(self, message_txt = 'Yes/no text', message_q = 'A question?', icon='progress'):
+        self.fy_icon = self.set_icon(icon)
+        self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
         self.yes_selected = False
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -140,11 +148,12 @@ class JoinSelectionDialog(QDialog):
     # this will assign the join type and the join headers
     # nothing fancy
 
-    def __init__(self,list_items,instruction='Select at least 1 from the following:'):
+    def __init__(self,list_items,instruction='Select at least 1 from the following:', icon = 'duck'):
         super().__init__()
         self.title = '...'
 
-        self.fy_icon = '\\venv\Assets\Duckworth2.png'
+        self.set_icon = set_icon
+        self.fy_icon = self.set_icon(icon)
         self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
 
         self.list_items = list_items
@@ -207,12 +216,13 @@ class JoinSelectionDialog(QDialog):
 
 
 class TextBoxObject(QDialog):
-    def __init__(self,lst_input_reqs, parent=None):
+    def __init__(self,lst_input_reqs, parent=None, icon = 'duck'):
         super().__init__(parent)
         self.return_textbox = []
         self.lst_output_req = {}
 
-        self.fy_icon = '\\venv\Assets\Duckworth2.png'
+        self.set_icon = set_icon
+        self.fy_icon = self.set_icon(icon)
         self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
 
         self.setWindowTitle("Please enter text.")
@@ -272,15 +282,16 @@ class TextBoxObject(QDialog):
 
 class FileDialogObject(QWidget):
 
-    def __init__(self, dialog_type='file_dialog', name = 'Please select a file'):
+    def __init__(self, dialog_type='file_dialog', name = 'Please select a file', icon='duck'):
         super().__init__()
-        self.fy_icon = '\\venv\Assets\Duckworth2.png'
-        self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
-
         self.left = 10
         self.top = 10
         self.width = 640
         self.height = 480
+
+        self.set_icon = set_icon
+        self.fy_icon = self.set_icon(icon)
+        self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
 
         self.out_file_name = ''
         self.name = name

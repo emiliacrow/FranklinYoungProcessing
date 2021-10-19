@@ -6,6 +6,8 @@
 import os
 import shutil
 import pandas
+import numpy as np
+
 from PIL import Image
 
 from Tools.FY_DAL import S3Object
@@ -55,6 +57,7 @@ class Pathways():
         self.name = 'The Way'
         self.split_chunk_size = 10000
         self.full_file_count = 0
+        self.np_nan = np.nan
         self.obFileFinder = FileFinder()
 
         self.perm_file = os.getcwd() + '\\venv\Assets\SequoiaCredentials.txt'
@@ -162,7 +165,7 @@ class Pathways():
 
         # get the column on which to split
         column_headers = list(self.df_product.columns)
-        self.onMergeDialog = JoinSelectionDialog(column_headers, 'Please select one column:')
+        self.onMergeDialog = JoinSelectionDialog(column_headers, 'Please select one column:',icon='split')
         self.onMergeDialog.exec()
         # split on column or column
         split_on = self.onMergeDialog.get_selected_items()
@@ -239,14 +242,15 @@ class Pathways():
         else:
             self.df_first_product = self.obFileFinder.read_xlsx()
 
-            self.obYNBox = YesNoDialog('Append a file?',icon='append-a')
-            self.obYNBox.initUI('Append file dialog.','Add more data to the first dataframe?')
+            self.obYNBox = YesNoDialog('Append a file?')
+
+            self.obYNBox.initUI('Append file dialog.','Add more data to the first dataframe?',icon='append-a')
             while self.obYNBox.yes_selected == True:
                 file_ident_success, message_or_path = self.obFileFinder.ident_file('Select intermediate File: This one is appended to the first file.')
                 if file_ident_success:
                     self.df_intermediate_product = self.obFileFinder.read_xlsx()
 
-                    self.obProgressBar = ProgressBarWindow('Appending data...')
+                    self.obProgressBar = ProgressBarWindow('Appending data...',icon='append-a')
                     self.obProgressBar.set_anew(10)
                     self.obProgressBar.show()
                     self.obProgressBar.update_unknown()
@@ -256,22 +260,21 @@ class Pathways():
                     self.obProgressBar.close()
                 else:
                     break
-                self.obYNBox.initUI('Append file dialog.','Add more data to the first dataframe?')
+                self.obYNBox.initUI('Append file dialog.','Add more data to the first dataframe?',icon='append-a')
 
-
-            self.obYNBox.initUI('Merge dialog.', 'Merge with another file?')
+            self.obYNBox.initUI('Merge dialog.', 'Merge with another file?', icon='merge')
 
             if self.obYNBox.yes_selected:
                 file_ident_success, message_or_path = self.obFileFinder.ident_file('Select second File: This file recieves the first file.')
                 if file_ident_success:
                     self.df_second_product = self.obFileFinder.read_xlsx()
-                    self.obYNBox.initUI('Append file dialog.','Add more data to the second dataframe?')
+                    self.obYNBox.initUI('Append file dialog.','Add more data to the second dataframe?',icon='append-b')
                     while self.obYNBox.yes_selected == True:
                         file_ident_success, message_or_path = self.obFileFinder.ident_file('Select intermediate File: This one is appended to the second file.')
                         if file_ident_success:
                             self.df_intermediate_product = self.obFileFinder.read_xlsx()
 
-                            self.obProgressBar = ProgressBarWindow('Appending data...')
+                            self.obProgressBar = ProgressBarWindow('Appending data...', icon='append-b')
                             self.obProgressBar.set_anew(10)
                             self.obProgressBar.show()
                             self.obProgressBar.update_unknown()
@@ -281,7 +284,8 @@ class Pathways():
                             self.obProgressBar.close()
                         else:
                             break
-                        self.obYNBox.initUI('Append file dialog.','Add more data to the second dataframe?')
+
+                        self.obYNBox.initUI('Append file dialog.','Add more data to the second dataframe?',icon='append-b')
 
 
                     first_headers = set(self.df_first_product.columns)
@@ -289,7 +293,8 @@ class Pathways():
 
                     header_overlap = list(first_headers.intersection(second_headers))
                     if header_overlap:
-                        self.onMergeDialog = JoinSelectionDialog(header_overlap, 'Please select the join columns:')
+
+                        self.onMergeDialog = JoinSelectionDialog(header_overlap, instruction='Please select the merge columns:',icon='merge')
                         self.onMergeDialog.exec()
 
                         join_list = self.onMergeDialog.get_selected_items()
@@ -303,7 +308,7 @@ class Pathways():
                         self.obYNBox.initUI(join_phrase,'Confirm?')
 
                         if self.obYNBox.yes_selected:
-                            self.obProgressBar = ProgressBarWindow('Merging data...')
+                            self.obProgressBar = ProgressBarWindow('Merging data...',icon='merge')
                             self.obProgressBar.set_anew(10)
                             self.obProgressBar.show()
                             self.obProgressBar.update_unknown()
@@ -323,7 +328,7 @@ class Pathways():
                     return file_ident_success, message_or_path
 
             else:
-                self.obYNBox.initUI('Output dialog.', 'Output the first file without merge?')
+                self.obYNBox.initUI('Output dialog.', 'Output the first file without merge?', icon='append-a')
                 if self.obYNBox.yes_selected:
                     self.obFileFinder.write_xlsx(self.df_first_product, '(appended-results)')
 
@@ -362,7 +367,7 @@ class Pathways():
             if image_name not in current_image_names['ProductImageName'].values:
                 new_images.append(each_image)
 
-        self.obProgressBarWindow = ProgressBarWindow('Loading Image Files')
+        self.obProgressBarWindow = ProgressBarWindow('Loading Image Files',icon='progress')
         self.obProgressBarWindow.show()
         self.obProgressBarWindow.set_anew(len(new_images))
         self.obProgressBarWindow.update_unknown()
