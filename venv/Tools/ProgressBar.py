@@ -104,11 +104,19 @@ class ProgressBarWindow(QWidget):
 
 
 class YesNoDialog(QWidget):
-    def __init__(self, title = 'Yes or no?'):
+    def __init__(self, title = 'Yes or no?', icon='duck'):
         super().__init__()
         self.title = title
 
-        self.fy_icon = '\\venv\Assets\Duckworth2.png'
+        if icon == 'duck':
+            self.fy_icon = '\\venv\Assets\Duckworth2.png'
+        elif icon == 'append-a':
+            self.fy_icon = '\\venv\Assets\Duckworth2.png'
+        elif icon == 'append-b':
+            self.fy_icon = '\\venv\Assets\Duckworth2.png'
+        elif icon == 'merge':
+            self.fy_icon = '\\venv\Assets\Duckworth2.png'
+
         self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
 
         self.left = 100

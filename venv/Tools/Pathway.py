@@ -239,7 +239,7 @@ class Pathways():
         else:
             self.df_first_product = self.obFileFinder.read_xlsx()
 
-            self.obYNBox = YesNoDialog('Append a file?')
+            self.obYNBox = YesNoDialog('Append a file?',icon='append-a')
             self.obYNBox.initUI('Append file dialog.','Add more data to the first dataframe?')
             while self.obYNBox.yes_selected == True:
                 file_ident_success, message_or_path = self.obFileFinder.ident_file('Select intermediate File: This one is appended to the first file.')
