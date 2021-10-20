@@ -107,7 +107,6 @@ class CategoryProcessor(BasicProcessObject):
             vote_count = 0
             return_id = self.obDal.set_word_category_associations(word1, word2, category, is_good, vote_count)
 
-
         return True, df_return_line_product
 
 

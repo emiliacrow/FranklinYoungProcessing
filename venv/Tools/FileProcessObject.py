@@ -19,8 +19,8 @@ class FileProcessor(BasicProcessObject):
 
     def header_viability(self):
         if self.proc_to_run == 'Extract Attributes':
-            self.req_fields = ['LongDescription', 'ShortDescription']
-            self.sup_fields = []
+            self.req_fields = []
+            self.sup_fields = ['LongDescription', 'ShortDescription','ProductDescription']
 
         if self.proc_to_run == 'Assign FyPartNumbers':
             self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber']
