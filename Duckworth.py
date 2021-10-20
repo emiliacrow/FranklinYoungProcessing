@@ -142,9 +142,12 @@ class DuckworthWindow(QWidget):
     def is_testing_buttons(self):
         # all the stuffing for the is testing value
         self.testing_button = QRadioButton('Live')
-        self.testing_button.setStyleSheet('border: 1px solid black; background-color: pink')
+        self.testing_button.setStyleSheet('QRadioButton{border: 1px solid black; background-color: pink}')
         self.testing_button.setChecked(False)
         self.testing_button.toggled.connect(lambda: self.testing_button_action(self.testing_button))
+
+        self.testing_button.setToolTip('Defines which environment to use.')
+
         self.layout.addWidget(self.testing_button, 0, 0)
 
         self.action_label = QLabel('')
@@ -152,18 +155,20 @@ class DuckworthWindow(QWidget):
         self.layout.addWidget(self.action_label, 0, 1, 1, 3)
 
         self.hard_exit_button = QPushButton('Quit')
-        self.hard_exit_button.setStyleSheet('background-color: pink')
+        self.hard_exit_button.setStyleSheet('QPushButton{background-color: pink}')
+        self.hard_exit_button.setToolTip('Attempts to quit the process')
+
         self.hard_exit_button.clicked.connect(exit)
         self.layout.addWidget(self.hard_exit_button, 0, 4)
 
     def testing_button_action(self, button):
         if button.isChecked():
             self.testing_button.setText('Staging')
-            self.testing_button.setStyleSheet('border: 1px solid black; background-color: lightblue')
+            self.testing_button.setStyleSheet('QRadioButton{border: 1px solid black; background-color: lightblue}')
             self.is_testing = True
         else:
             self.testing_button.setText('Live')
-            self.testing_button.setStyleSheet('border: 1px solid black; background-color: pink')
+            self.testing_button.setStyleSheet('QRadioButton{border: 1px solid black; background-color: pink}')
             self.is_testing = False
 
 
@@ -182,7 +187,10 @@ class DuckworthWindow(QWidget):
         self.file_action_options.sort()
 
         self.process_file_button = QPushButton('Process a file')
-        self.process_file_button.setStyleSheet('background-color: lightgreen')
+        self.process_file_button.setStyleSheet('QPushButton{background-color: lightgreen}')
+
+        self.process_file_button.setToolTip('For processing files.')
+
         self.process_file_button.clicked.connect(self.file_process_kickoff)
         self.layout.addWidget(self.process_file_button, 1, column_pos)
 
@@ -213,7 +221,10 @@ class DuckworthWindow(QWidget):
         self.base_data_tables.sort()
 
         self.base_data_button = QPushButton('Load Base Data')
-        self.base_data_button.setStyleSheet('background-color: lightgreen')
+        self.base_data_button.setStyleSheet('QPushButton{background-color: lightgreen}')
+
+        self.base_data_button.setToolTip('Provides manual entry of data into the database.')
+
         self.base_data_button.clicked.connect(self.base_data_kickoff)
         self.layout.addWidget(self.base_data_button, 1, column_pos)
 
@@ -245,7 +256,10 @@ class DuckworthWindow(QWidget):
         self.ingestion_options.sort()
 
         self.ingest_data_button = QPushButton('Ingest New Data')
-        self.ingest_data_button.setStyleSheet('background-color: lightgreen')
+        self.ingest_data_button.setStyleSheet('QPushButton{background-color: lightgreen}')
+
+        self.ingest_data_button.setToolTip('For bulk ingestion of product data files.')
+
         self.ingest_data_button.clicked.connect(self.ingest_data_kickoff)
         self.layout.addWidget(self.ingest_data_button, 1, column_pos)
 
@@ -277,7 +291,10 @@ class DuckworthWindow(QWidget):
         self.update_data_options.sort()
 
         self.update_data_button = QPushButton('Update Data')
-        self.update_data_button.setStyleSheet('background-color: lightgreen')
+        self.update_data_button.setStyleSheet('QPushButton{background-color: lightgreen}')
+
+        self.update_data_button.setToolTip('For bulk updates of product data.')
+
         self.update_data_button.clicked.connect(self.update_data_kickoff)
         self.layout.addWidget(self.update_data_button, 1, column_pos)
 
@@ -309,7 +326,10 @@ class DuckworthWindow(QWidget):
         self.contract_options.sort()
 
         self.contract_button = QPushButton('Post Processing Action')
-        self.contract_button.setStyleSheet('background-color: lightgreen')
+        self.contract_button.setStyleSheet('QPushButton{background-color: lightgreen}')
+
+        self.contract_button.setToolTip('For setting product visibilty.')
+
         self.contract_button.clicked.connect(self.contract_kickoff)
         self.layout.addWidget(self.contract_button, 1, column_pos)
 

@@ -55,18 +55,21 @@ class ProgressBarWindow(QWidget):
 
         self.duration_label = QLabel('')
         self.duration_label.setText('Duration unknown.')
+
         self.layout.addWidget(self.duration_label,0,0)
         # add a label here for elapsed time and estimated completion
 
         self.remaining_label = QLabel('')
         self.remaining_label.setAlignment(QtCore.Qt.AlignRight)
         self.remaining_label.setText('This might take a while.')
+
         self.layout.addWidget(self.remaining_label,0,2)
         # add a label here for elapsed time and estimated completion
 
         self.count_label = QLabel('')
         self.count_label.setAlignment(QtCore.Qt.AlignCenter)
         self.count_label.setText('Please wait')
+
         self.layout.addWidget(self.count_label,0,1)
         # add a label here for elapsed time and estimated completion
 
@@ -231,12 +234,14 @@ class TextBoxObject(QDialog):
 
         # button to show the above entered text
         self.accept_button = QPushButton('Send data', self)
+        self.accept_button.setToolTip('This will send the data to the database.')
         # connect button to function on_click
         self.accept_button.clicked.connect(self.on_click)
         self.layout.addWidget(self.accept_button, 0, 1)
 
         # button to show the above entered text
         self.best_guess_button = QPushButton('See best matches', self)
+        self.best_guess_button.setToolTip('This doesn\'t do anything yet.')
         # connect button to function on_click
         self.best_guess_button.clicked.connect(self.best_guesses)
         self.layout.addWidget(self.best_guess_button, 0, 2)
