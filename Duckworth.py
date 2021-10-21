@@ -138,6 +138,18 @@ class DuckworthWindow(QWidget):
             else:
                 self.message_number += 1
 
+    def set_new_tooltip(self):
+        lst_tip_message = []
+        for each_message in self.message_scroll_text:
+            lst_tip_message.append(each_message[1])
+
+        tip_message_set = str(lst_tip_message)
+        tip_message_set = tip_message_set.replace("', '","<br>")
+        tip_message_set = tip_message_set.replace("['","")
+        tip_message_set = tip_message_set.replace("']","")
+
+        self.action_label.setToolTip(tip_message_set)
+
 
     def is_testing_buttons(self):
         # all the stuffing for the is testing value
@@ -212,6 +224,7 @@ class DuckworthWindow(QWidget):
         else:
             self.message_scroll_text.append([file_action_selected,message,self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+        self.set_new_tooltip()
 
         self.completion_alert(file_action_selected, message)
 
@@ -247,6 +260,7 @@ class DuckworthWindow(QWidget):
         else:
             self.message_scroll_text.append(['Ingest '+table_selected+' data', message, self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+        self.set_new_tooltip()
 
         self.completion_alert('Ingest '+table_selected+' data', message)
 
@@ -282,6 +296,7 @@ class DuckworthWindow(QWidget):
         else:
             self.message_scroll_text.append([ingestion_action_selected,message,self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+        self.set_new_tooltip()
 
         self.completion_alert(ingestion_action_selected, message)
 
@@ -317,6 +332,7 @@ class DuckworthWindow(QWidget):
         else:
             self.message_scroll_text.append([update_action_selected,message,self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+        self.set_new_tooltip()
 
         self.completion_alert(update_action_selected, message)
 
@@ -352,6 +368,7 @@ class DuckworthWindow(QWidget):
         else:
             self.message_scroll_text.append([contract_selected,message,self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
+        self.set_new_tooltip()
 
         self.completion_alert(contract_selected, message)
 
