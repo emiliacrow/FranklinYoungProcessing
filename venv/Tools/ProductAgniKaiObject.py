@@ -72,11 +72,13 @@ class ProductAgniKaiObject(BasicProcessObject):
 
         self.df_product.loc[(self.df_product['is_duplicated'] == 'Y'), 'Filter'] = 'Possible Duplicate'
 
-        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Process in ProductPrice'
-        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Alert'] = 'Process in ProductPrice'
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Process in Product Price'
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Alert'] = 'Process in Product Price'
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
 
         self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Process in Base Price'
         self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Alert'] = 'Process in Base Price'
+        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
 
         if self.include_discontinues == False:
             self.df_product = self.df_product.loc[self.df_product['Filter'] != 'Possible discontinue']
