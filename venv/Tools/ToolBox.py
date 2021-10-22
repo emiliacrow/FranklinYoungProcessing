@@ -23,7 +23,7 @@ class FileFinder():
 
         obFileDialog = FileDialogObject('file_dialog', window_title)
         file_name = obFileDialog.get_file_name()
-        if len(file_name) < 0:
+        if len(file_name) > 0:
 
             self.selected_file = file_name
             self.file_base_location = self.selected_file.rpartition('/')[0]
