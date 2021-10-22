@@ -78,10 +78,10 @@ class DuckworthWindow(QWidget):
         self.update_timer.timeout.connect(self.message_scroll)
         self.update_timer.start(self.base_interval)
 
-        self.success_string_style1 = 'border: 2px solid black; color: black; background-color: white'
-        self.success_string_style2 = 'border: 2px solid black; color: black; background-color: lightgrey'
-        self.active_string_style = 'border: 2px solid black; color: yellow; background-color: darkgrey'
-        self.failure_string_style = 'border: 2px solid darkred; color: darkred; background-color: darkgrey'
+        self.success_string_style1 = 'QLabel{border: 2px solid black; color: black; background-color: white}'
+        self.success_string_style2 = 'QLabel{border: 2px solid black; color: black; background-color: lightgrey}'
+        self.active_string_style = 'QLabel{border: 2px solid black; color: yellow; background-color: darkgrey}'
+        self.failure_string_style = 'QLabel{border: 2px solid darkred; color: darkred; background-color: darkgrey}'
 
         self.message_style = self.success_string_style1
         self.message_scroll_text = [['','Please make a selection',self.success_string_style1]]
@@ -109,7 +109,7 @@ class DuckworthWindow(QWidget):
                 display_text = ':: ' + self.message_scroll_text[self.message_number][1] + ' ::'
                 self.update_timer.setInterval(4000)
             else:
-                display_text = '(run:'+str(self.message_number) + ') '+self.message_scroll_text[self.message_number][0] + ' : ' + self.message_scroll_text[self.message_number][1]
+                display_text = '[run:'+str(self.message_number) + ']'+self.message_scroll_text[self.message_number][0] + ' : ' + self.message_scroll_text[self.message_number][1]
                 self.update_timer.setInterval(self.base_interval)
 
             result_style = self.message_scroll_text[self.message_number][2]
@@ -140,8 +140,11 @@ class DuckworthWindow(QWidget):
 
     def set_new_tooltip(self):
         lst_tip_message = []
+        run_count = 0
         for each_message in self.message_scroll_text:
-            lst_tip_message.append(each_message[1])
+            result_message = '[task:'+str(run_count)+']'+each_message[1]
+            lst_tip_message.append(result_message)
+            run_count += 1
 
         tip_message_set = str(lst_tip_message)
         tip_message_set = tip_message_set.replace("', '","<br>")

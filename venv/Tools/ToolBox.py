@@ -23,20 +23,22 @@ class FileFinder():
 
         obFileDialog = FileDialogObject('file_dialog', window_title)
         file_name = obFileDialog.get_file_name()
+        if len(file_name) < 0:
 
-        self.selected_file = file_name
-        self.file_base_location = self.selected_file.rpartition('/')[0]
+            self.selected_file = file_name
+            self.file_base_location = self.selected_file.rpartition('/')[0]
 
-        self.selected_file = self.selected_file.replace('/','\\\\')
+            self.selected_file = self.selected_file.replace('/','\\\\')
 
-        self.process_time = str(datetime.datetime.now())
-        self.process_time = self.process_time.replace(' ','_')
-        self.process_time = self.process_time.partition('.')[0]
-        self.process_time = self.process_time.replace(':','-')
+            self.process_time = str(datetime.datetime.now())
+            self.process_time = self.process_time.replace(' ','_')
+            self.process_time = self.process_time.partition('.')[0]
+            self.process_time = self.process_time.replace(':','-')
 
-        self.basic_out_file_path = self.selected_file.replace('.xlsx','_prcd_'+self.process_time+'.xlsx')
-
-        return True, self.basic_out_file_path
+            self.basic_out_file_path = self.selected_file.replace('.xlsx','_prcd_'+self.process_time+'.xlsx')
+            return True, self.basic_out_file_path
+        else:
+            return False, 'No file selected'
 
     # this will be depricated
     # it's only used for images, and that's a stupid way to do it
@@ -130,35 +132,38 @@ class FileFinder():
 
 def process_file(obFileFinder, file_action_selected):
     # this should all be broken out into a different file
-    selected_file = obFileFinder.ident_file()
-    df_excel = obFileFinder.read_xlsx(selected_file)
-    out_df_excel = df_excel.copy()
-    lst_fish_vwr = []
-    lst_vwr_thom = []
-    lst_thom_fish = []
+    b_file_found, selected_file = obFileFinder.ident_file()
+    if b_file_found:
+        df_excel = obFileFinder.read_xlsx(selected_file)
+        out_df_excel = df_excel.copy()
+        lst_fish_vwr = []
+        lst_vwr_thom = []
+        lst_thom_fish = []
 
-    return_count = 0
+        return_count = 0
 
-    for col_name, row in df_excel.iterrows():
-        return_count += 1
-        fisher_name = str(row['FisherManufacturerName'])
-        vwr_name = str(row['VWRManufacturerName'])
-        thomas_name = str(row['ThomasManufacturerName'])
+        for col_name, row in df_excel.iterrows():
+            return_count += 1
+            fisher_name = str(row['FisherManufacturerName'])
+            vwr_name = str(row['VWRManufacturerName'])
+            thomas_name = str(row['ThomasManufacturerName'])
 
-        fish_vwr_val = fuzz.token_sort_ratio(fisher_name.lower(),vwr_name.lower())
-        lst_fish_vwr.append(fish_vwr_val)
-        vwr_thom_val = fuzz.token_sort_ratio(vwr_name.lower(),thomas_name.lower())
-        lst_vwr_thom.append(vwr_thom_val)
-        thom_fish_val = fuzz.token_sort_ratio(thomas_name.lower(),fisher_name.lower())
-        lst_thom_fish.append(thom_fish_val)
+            fish_vwr_val = fuzz.token_sort_ratio(fisher_name.lower(),vwr_name.lower())
+            lst_fish_vwr.append(fish_vwr_val)
+            vwr_thom_val = fuzz.token_sort_ratio(vwr_name.lower(),thomas_name.lower())
+            lst_vwr_thom.append(vwr_thom_val)
+            thom_fish_val = fuzz.token_sort_ratio(thomas_name.lower(),fisher_name.lower())
+            lst_thom_fish.append(thom_fish_val)
 
-    out_df_excel['vwr_thom'] = lst_vwr_thom
-    out_df_excel['fish_vwr'] = lst_fish_vwr
-    out_df_excel['thom_fish'] = lst_thom_fish
+        out_df_excel['vwr_thom'] = lst_vwr_thom
+        out_df_excel['fish_vwr'] = lst_fish_vwr
+        out_df_excel['thom_fish'] = lst_thom_fish
 
-    out_df_excel.to_excel(selected_file.replace('.xlsx','_out.xlsx'))
+        out_df_excel.to_excel(selected_file.replace('.xlsx','_out.xlsx'))
 
-    out_string = 'Processed {} lines of data.'.format(return_count)
+        out_string = 'Processed {} lines of data.'.format(return_count)
+    else:
+        out_string = 'No File Selected'
 
 
 class BaseDataLoader():
