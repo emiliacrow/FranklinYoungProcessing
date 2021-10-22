@@ -136,6 +136,9 @@ class MinimumProduct(BasicProcessObject):
                         new_country_of_origin_id = self.df_country_translator.loc[
                             (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
                         lst_ids.append(new_country_of_origin_id)
+                    elif country in ['XX','ZZ']:
+                        # unknown
+                        lst_ids.append(259)
                     else:
                         coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
                         lst_ids.append(coo_id)
