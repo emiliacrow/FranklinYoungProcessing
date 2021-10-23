@@ -492,21 +492,21 @@ class IngestionObject:
 
     def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append([newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
+            self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
                                                newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
-                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX])
+                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX))
 
             self.obDal.min_product_cap(self.product_collector)
             self.product_collector = []
 
         else:
-            self.product_collector.append([newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
+            self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
                                                newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
-                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX])
+                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX))
 
     def ingest_product_cleanup(self):
         if self.product_collector != []:
@@ -526,12 +526,12 @@ class IngestionObject:
 
     def fill_product(self, is_last, ProductId, FYProductNotes='', NatoStockNumber='', ModelNumber='', RequiredSampleSize='', NumberOfChannels='', GTIN='', SterilityId=-1, SurfaceTreatmentId=-1, PrecisionId=-1, ProductSEOId=-1, ComponentSetId=-1, FSCCodeId=-1, HazardousCodeId=-1, UNSPSCId=-1, NAICSCodeId=-1, NationalDrugCodeId=-1, ProductWarrantyId=-1, SpeciesId=-1):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append([ProductId, FYProductNotes, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId])
+            self.product_collector.append((ProductId, FYProductNotes, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId))
             self.obDal.product_fill(self.product_collector)
             self.product_collector = []
 
         else:
-            self.product_collector.append([ProductId, FYProductNotes, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId])
+            self.product_collector.append((ProductId, FYProductNotes, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId))
 
     def fill_product_cleanup(self):
         if self.product_collector != []:
@@ -563,15 +563,15 @@ class IngestionObject:
 
     def ingest_product_price(self, is_last, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append([newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity])
+            self.product_collector.append((newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity))
 
             self.obDal.min_product_price_cap(self.product_collector)
             self.product_collector = []
 
         else:
-            self.product_collector.append([newFyProductNumber, newAllowPurchases, newFyPartNumber,
+            self.product_collector.append((newFyProductNumber, newAllowPurchases, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
-                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity])
+                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity))
 
     def ingest_product_price_cleanup(self):
         if self.product_collector != []:
@@ -579,12 +579,12 @@ class IngestionObject:
 
     def fill_product_price(self, is_last, newProductPriceId,newUPC='',newVolume=-1,newWeight=-1,newSize='',newLength=-1,newVariantDesc='',newMinumumFlowTime='',newProfile='',newAmountPriceBreakLevel1=-1,newAmountPriceBreakLevel2=-1,newAmountPriceBreakLevel3=-1,newQuantityPriceBreakLevel1=-1,newQuantityPriceBreakLevel2=-1,newQuantityPriceBreakLevel3=-1,newThicknessId=-1,newHeightId=-1,newDepthId=-1,newWidthId=-1,newCapacityId=-1,newTankCapacityId=-1,newVolumeUnitId=-1,newWeightUnitId=-1,newLengthUnitId=-1,newDimensionsId=-1,newInteriorDimensionsId=-1,newExteriorDimensionsId=-1,newMaterialId=-1,newColorId=-1,newSpeedId=-1,newTubeId=-1,newWeightRangeId=-1,newTemperatureRangeId=-1,newWavelengthId=-1,newWattageId=-1,newVoltageId=-1,newAmperageId=-1,newOuterDiameterId=-1,newInnerDiameterId=-1,newDiameterId=-1,newToleranceId=-1,newAccuracyId=-1,newMassId=-1,newApertureSizeId=-1,newApparelSizeId=-1,newParticleSizeId=-1,newPoreSizeId=-1):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append([newProductPriceId,newUPC,newVolume,newWeight,newSize,newLength,newVariantDesc,newMinumumFlowTime,newProfile,newAmountPriceBreakLevel1,newAmountPriceBreakLevel2,newAmountPriceBreakLevel3,newQuantityPriceBreakLevel1,newQuantityPriceBreakLevel2,newQuantityPriceBreakLevel3,newThicknessId,newHeightId,newDepthId,newWidthId,newCapacityId,newTankCapacityId,newVolumeUnitId,newWeightUnitId,newLengthUnitId,newDimensionsId,newInteriorDimensionsId,newExteriorDimensionsId,newMaterialId,newColorId,newSpeedId,newTubeId,newWeightRangeId,newTemperatureRangeId,newWavelengthId,newWattageId,newVoltageId,newAmperageId,newOuterDiameterId,newInnerDiameterId,newDiameterId,newToleranceId,newAccuracyId,newMassId,newApertureSizeId,newApparelSizeId,newParticleSizeId,newPoreSizeId])
+            self.product_collector.append((newProductPriceId,newUPC,newVolume,newWeight,newSize,newLength,newVariantDesc,newMinumumFlowTime,newProfile,newAmountPriceBreakLevel1,newAmountPriceBreakLevel2,newAmountPriceBreakLevel3,newQuantityPriceBreakLevel1,newQuantityPriceBreakLevel2,newQuantityPriceBreakLevel3,newThicknessId,newHeightId,newDepthId,newWidthId,newCapacityId,newTankCapacityId,newVolumeUnitId,newWeightUnitId,newLengthUnitId,newDimensionsId,newInteriorDimensionsId,newExteriorDimensionsId,newMaterialId,newColorId,newSpeedId,newTubeId,newWeightRangeId,newTemperatureRangeId,newWavelengthId,newWattageId,newVoltageId,newAmperageId,newOuterDiameterId,newInnerDiameterId,newDiameterId,newToleranceId,newAccuracyId,newMassId,newApertureSizeId,newApparelSizeId,newParticleSizeId,newPoreSizeId))
             self.obDal.product_price_fill(self.product_collector)
             self.product_collector = []
 
         else:
-            self.product_collector.append([newProductPriceId,newUPC,newVolume,newWeight,newSize,newLength,newVariantDesc,newMinumumFlowTime,newProfile,newAmountPriceBreakLevel1,newAmountPriceBreakLevel2,newAmountPriceBreakLevel3,newQuantityPriceBreakLevel1,newQuantityPriceBreakLevel2,newQuantityPriceBreakLevel3,newThicknessId,newHeightId,newDepthId,newWidthId,newCapacityId,newTankCapacityId,newVolumeUnitId,newWeightUnitId,newLengthUnitId,newDimensionsId,newInteriorDimensionsId,newExteriorDimensionsId,newMaterialId,newColorId,newSpeedId,newTubeId,newWeightRangeId,newTemperatureRangeId,newWavelengthId,newWattageId,newVoltageId,newAmperageId,newOuterDiameterId,newInnerDiameterId,newDiameterId,newToleranceId,newAccuracyId,newMassId,newApertureSizeId,newApparelSizeId,newParticleSizeId,newPoreSizeId])
+            self.product_collector.append((newProductPriceId,newUPC,newVolume,newWeight,newSize,newLength,newVariantDesc,newMinumumFlowTime,newProfile,newAmountPriceBreakLevel1,newAmountPriceBreakLevel2,newAmountPriceBreakLevel3,newQuantityPriceBreakLevel1,newQuantityPriceBreakLevel2,newQuantityPriceBreakLevel3,newThicknessId,newHeightId,newDepthId,newWidthId,newCapacityId,newTankCapacityId,newVolumeUnitId,newWeightUnitId,newLengthUnitId,newDimensionsId,newInteriorDimensionsId,newExteriorDimensionsId,newMaterialId,newColorId,newSpeedId,newTubeId,newWeightRangeId,newTemperatureRangeId,newWavelengthId,newWattageId,newVoltageId,newAmperageId,newOuterDiameterId,newInnerDiameterId,newDiameterId,newToleranceId,newAccuracyId,newMassId,newApertureSizeId,newApparelSizeId,newParticleSizeId,newPoreSizeId))
 
     def fill_product_price_cleanup(self):
         if self.product_collector != []:
@@ -593,15 +593,15 @@ class IngestionObject:
     def ingest_base_price(self, is_last, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId=-1, newGSAProductPriceId=-1, newHTMEProductPriceId=-1, newECATProductPriceId=-1, newFEDMALLProductPriceId=-1):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
+                (vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                  markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
                  is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
                  newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId,
-                 newFEDMALLProductPriceId])
+                 newFEDMALLProductPriceId))
             self.obDal.base_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId, newFEDMALLProductPriceId])
+            self.product_collector.append((vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId, newFEDMALLProductPriceId))
 
     def ingest_base_price_cleanup(self):
         if self.product_collector != []:
@@ -625,7 +625,7 @@ class IngestionObject:
     def ecat_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice])
+                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newECATPricingApproved, newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice, newMFCPercent, newMFCPrice))
             self.obDal.ecat_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
@@ -644,11 +644,11 @@ class IngestionObject:
     def gsa_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
+                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
             self.obDal.gsa_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN])
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
 
     def ingest_gsa_product_price_cleanup(self):
         if self.product_collector != []:
@@ -658,11 +658,11 @@ class IngestionObject:
     def htme_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice])
+                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice))
             self.obDal.htme_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice])
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice))
 
     def ingest_htme_product_price_cleanup(self):
         if self.product_collector != []:
@@ -672,16 +672,16 @@ class IngestionObject:
     def va_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber,
+                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber,
                  newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,
-                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
+                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN))
             self.obDal.va_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
             self.product_collector.append(
-                [newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber,
+                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber,
                  newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,
-                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN])
+                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN))
 
     def ingest_va_product_price_cleanup(self):
         if self.product_collector != []:
@@ -690,20 +690,20 @@ class IngestionObject:
 
     def image_size_cap(self, is_last, newProductImageUrl, newProductImageName, newProductImageX, newProductImageY):
         if (len(self.product_collector) >= self.load_limit) or (is_last):
-            self.product_collector.append([newProductImageUrl, newProductImageName, newProductImageX, newProductImageY])
+            self.product_collector.append((newProductImageUrl, newProductImageName, newProductImageX, newProductImageY))
             self.obDal.image_size_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append([newProductImageUrl, newProductImageName, newProductImageX, newProductImageY])
+            self.product_collector.append((newProductImageUrl, newProductImageName, newProductImageX, newProductImageY))
 
 
     def image_cap(self, is_last, product_id, image_id, image_preference = 0, image_caption = ''):
         if (len(self.product_image_match_collector) >= self.load_limit) or (is_last):
-            self.product_image_match_collector.append([product_id,image_id,image_preference,image_caption])
+            self.product_image_match_collector.append((product_id,image_id,image_preference,image_caption))
             self.obDal.image_cap(self.product_image_match_collector)
             self.product_image_match_collector = []
         else:
-            self.product_image_match_collector.append([product_id,image_id,image_preference,image_caption])
+            self.product_image_match_collector.append((product_id,image_id,image_preference,image_caption))
 
 
     def set_bigcommerce_rtl(self, is_last, ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger):
@@ -713,7 +713,7 @@ class IngestionObject:
             self.product_collector = []
 
         else:
-            self.product_collector.append([ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger])
+            self.product_collector.append((ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger))
 
 
 ## end ##

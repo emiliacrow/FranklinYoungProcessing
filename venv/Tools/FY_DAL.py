@@ -97,7 +97,6 @@ class DalObject:
         data.to_sql(name=table, con=engine, if_exists='append', index=False)
 
 
-
     def id_cap(self,proc_name,proc_args):
         # this runs the capture step of each capture function
         cap_id = -1
@@ -386,8 +385,9 @@ class DalObject:
 
     def ecat_product_price_cap(self,lst_ecat_product_price):
         proc_name = 'sequoia.ECATProductPrice_capture'
+        proc_statement = 'CALL `sequoia`.`ECATProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_ecat_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
         runner.start()
 
     def get_ecat_price_lookup(self):
@@ -408,8 +408,9 @@ class DalObject:
 
     def gsa_product_price_cap(self,lst_gsa_product_price):
         proc_name = 'sequoia.GSAProductPrice_capture'
+        proc_statement = 'CALL `sequoia`.`GSAProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_gsa_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_product_price)
         runner.start()
 
     def get_gsa_price_lookup(self):
@@ -422,8 +423,9 @@ class DalObject:
 
     def htme_product_price_cap(self,lst_htme_product_price):
         proc_name = 'sequoia.HTMEProductPrice_capture'
+        proc_statement = 'CALL `sequoia`.`HTMEProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_htme_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_product_price)
         runner.start()
 
     def get_htme_price_lookup(self):
@@ -435,25 +437,11 @@ class DalObject:
         return df_htme_price_lookup
 
 
-    def gsa_product_price_cap(self,lst_gsa_product_price):
-        proc_name = 'sequoia.GSAProductPrice_capture'
-        self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_gsa_product_price)
-        runner.start()
-
-    def get_gsa_price_lookup(self):
-        proc_name = 'sequoia.get_GSAPrice_lookup'
-        column_names = ['FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
-                         'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
-        df_gsa_price_lookup = self.get_lookup(proc_name,column_names)
-        return df_gsa_price_lookup
-
-
-
     def va_product_price_cap(self, lst_va_product_price):
         proc_name = 'sequoia.VAProductPrice_capture'
+        proc_statement = 'CALL `sequoia`.`VAProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_va_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_product_price)
         runner.start()
 
     def get_va_price_lookup(self):
@@ -501,8 +489,9 @@ class DalObject:
 
     def image_size_cap(self,lst_product_image):
         proc_name = 'sequoia.ProductImageSize_capture'
+        proc_statement = 'CALL `sequoia`.`ProductImageSize_capture`(%s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_product_image)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_image)
         runner.start()
 
     def get_image_names(self):
@@ -514,8 +503,9 @@ class DalObject:
 
     def image_cap(self, lst_product_image):
         proc_name = 'sequoia.ProductImage_capture'
+        proc_statement = 'CALL `sequoia`.`ProductImage_capture`(%s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_product_image)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_image)
         runner.start()
 
 
@@ -556,15 +546,19 @@ class DalObject:
 
     def min_product_cap(self, lst_product_price):
         proc_name = 'sequoia.MinimumProduct_capture'
+        proc_statement = 'CALL `sequoia`.`MinimumProduct_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
+                         '%s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
 
     def product_fill(self,lst_product_price):
         proc_name = 'sequoia.Product_fill'
+        proc_statement = 'CALL `sequoia`.`Product_fill`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
+                         '%s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
 
@@ -606,15 +600,21 @@ class DalObject:
 
     def min_product_price_cap(self,lst_product_price):
         proc_name = 'sequoia.MinimumProductPrice_capture'
+        proc_statement = 'CALL `sequoia`.`MinimumProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
 
     def product_price_fill(self, lst_product_price):
         proc_name = 'sequoia.ProductPrice_fill'
+        proc_statement = 'CALL `sequoia`.`ProductPrice_fill`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
+                         '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
+                         '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
+                         '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
+                         '%s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
 
@@ -640,8 +640,9 @@ class DalObject:
 
     def base_price_cap(self, lst_base_product_price):
         proc_name = 'sequoia.BaseProductPrice_capture'
+        proc_statement = 'CALL `sequoia`.`BaseProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_base_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_base_product_price)
         runner.start()
 
 
@@ -677,8 +678,9 @@ class DalObject:
 
     def set_bc_rtl(self, lst_bc_rtl):
         proc_name = 'sequoia.set_BigCommerceUpdateToggle'
+        proc_statement = 'CALL `sequoia`.`set_BigCommerceUpdateToggle`(%s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, lst_bc_rtl)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_rtl)
         runner.start()
 
     def get_bc_rtl_state(self):
@@ -703,17 +705,21 @@ class BeeHive(threading.Thread):
 
 
 class DataRunner(threading.Thread):
-    def __init__(self, connection, proc_name, lst_data):
+    def __init__(self, connection, proc_name, proc_statement, lst_data):
         threading.Thread.__init__(self)
         self.connection = connection
         self.proc_name = proc_name
+        self.proc_statement = proc_statement
         self.lst_data = lst_data
 
     def run(self):
         print('Runner report start: ' + self.proc_name)
         obCursor = self.connection.cursor()
-        for each_ingest in self.lst_data:
-            obCursor.callproc(self.proc_name, args=tuple(each_ingest))
+
+        # change nested lists to tuples
+
+        obCursor.executemany(self.proc_statement, self.lst_data)
+
         self.connection.commit()
         self.connection.close()
         print('Runner report end: ' + self.proc_name)
