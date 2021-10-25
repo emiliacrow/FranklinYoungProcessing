@@ -706,7 +706,7 @@ class DataRunner(threading.Thread):
         self.lst_data = lst_data
 
     def run(self):
-        print('Runner report start: ' + self.proc_name)
+        print('Runner report start: ' + self.proc_name+str(len(self.lst_data)))
         obCursor = self.connection.cursor()
 
         # change nested lists to tuples
