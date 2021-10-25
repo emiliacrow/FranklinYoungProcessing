@@ -696,13 +696,6 @@ class DalObject:
         return return_id
 
 
-class BeeHive(threading.Thread):
-    def __init__(self, connection, proc_name, lst_data):
-        threading.Thread.__init__(self)
-
-    def run(self):
-        print('beehive')
-
 
 class DataRunner(threading.Thread):
     def __init__(self, connection, proc_name, proc_statement, lst_data):
