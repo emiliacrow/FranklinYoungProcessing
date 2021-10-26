@@ -561,8 +561,8 @@ class Pathways():
         if ingestion_action_selected in ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)']:
             self.obMinProduct = MinimumProduct(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obMinProduct.begin_process()
+            self.df_product = self.obMinProduct.get_df()
             if b_inter_files:
-                self.df_product = self.obMinProduct.get_df()
                 self.obFileFinder.write_xlsx(self.df_product,'MinProd')
             if self.success == False:
                 return self.success, self.message
@@ -570,8 +570,8 @@ class Pathways():
         if ingestion_action_selected in ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','4-Minimum Product Price(3 steps)']:
             self.obMinPrice = MinimumProductPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obMinPrice.begin_process()
+            self.df_product = self.obMinPrice.get_df()
             if b_inter_files or ingestion_action_selected == '2-Minimum Product Ingestion(2 steps)':
-                self.df_product = self.obMinPrice.get_df()
                 self.obFileFinder.write_xlsx(self.df_product,'MinPrice')
 
             if self.success == False or ingestion_action_selected == '2-Minimum Product Ingestion(2 steps)':
@@ -580,8 +580,8 @@ class Pathways():
         if ingestion_action_selected in ['2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)',]:
             self.obFillProduct = FillProduct(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obFillProduct.begin_process()
+            self.df_product = self.obFillProduct.get_df()
             if b_inter_files:
-                self.df_product = self.obFillProduct.get_df()
                 self.obFileFinder.write_xlsx(self.df_product,'FillProd')
             if self.success == False:
                 return self.success, self.message
@@ -589,8 +589,8 @@ class Pathways():
         if ingestion_action_selected in ['2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)',]:
             self.obFillPrice = FillProductPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obFillPrice.begin_process()
+            self.df_product = self.obFillPrice.get_df()
             if b_inter_files or ingestion_action_selected == '3-Fill Product(2 steps)':
-                self.df_product = self.obFillPrice.get_df()
                 self.obFileFinder.write_xlsx(self.df_product,'FillPrice')
             if self.success == False or ingestion_action_selected == '3-Fill Product(2 steps)':
                 return self.success, self.message
@@ -672,8 +672,8 @@ class Pathways():
         if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '2-Update Full Product(5 steps)']:
             self.obUpdateMinProduct = UpdateMinimumProduct(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obUpdateMinProduct.begin_process()
+            self.df_product = self.obUpdateMinProduct.get_df()
             if b_inter_files:
-                self.df_product = self.obUpdateMinProduct.get_df()
                 self.obFileFinder.write_xlsx(self.df_product, 'UpdateMinProd')
             if self.success == False:
                 return self.success, self.message
@@ -681,8 +681,8 @@ class Pathways():
         if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '1.5-Update Minimum Product Price Data(2 steps)',  '2-Update Full Product(5 steps)']:
             self.obUpdateMinPrice = UpdateMinimumProductPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obUpdateMinPrice.begin_process()
+            self.df_product = self.obUpdateMinPrice.get_df()
             if b_inter_files:
-                self.df_product = self.obUpdateMinPrice.get_df()
                 self.obFileFinder.write_xlsx(self.df_product, 'UpdateMinPrice')
             if self.success == False:
                 return self.success, self.message
@@ -690,8 +690,8 @@ class Pathways():
         if update_action_selected in ['2-Update Full Product(5 steps)', '3-Update Product Attributes(2 steps)']:
             self.UpdateFillProduct = UpdateFillProduct(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.UpdateFillProduct.begin_process()
+            self.df_product = self.UpdateFillProduct.get_df()
             if b_inter_files:
-                self.df_product = self.UpdateFillProduct.get_df()
                 self.obFileFinder.write_xlsx(self.df_product, 'UpdateFillProduct')
             if self.success == False:
                 return self.success, self.message
@@ -699,8 +699,8 @@ class Pathways():
         if update_action_selected in ['2-Update Full Product(5 steps)', '3-Update Product Attributes(2 steps)']:
             self.UpdateFillPrice = UpdateFillProductPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.UpdateFillPrice.begin_process()
+            self.df_product = self.UpdateFillPrice.get_df()
             if b_inter_files or ingestion_action_selected == '3-Update Product Attributes(2 steps)':
-                self.df_product = self.UpdateFillPrice.get_df()
                 self.obFileFinder.write_xlsx(self.df_product, 'UpdateFillProductPrice')
             if self.success == False or update_action_selected == '3-Update Product Attributes(2 steps)':
                 return self.success, self.message

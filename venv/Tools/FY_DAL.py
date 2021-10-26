@@ -696,7 +696,6 @@ class DalObject:
         return return_id
 
 
-
 class DataRunner(threading.Thread):
     def __init__(self, connection, proc_name, proc_statement, lst_data):
         threading.Thread.__init__(self)
@@ -706,7 +705,7 @@ class DataRunner(threading.Thread):
         self.lst_data = lst_data
 
     def run(self):
-        print('Runner report start: ' + self.proc_name+str(len(self.lst_data)))
+        print('Runner report start: ' + self.proc_name)
         obCursor = self.connection.cursor()
 
         # change nested lists to tuples

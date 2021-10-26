@@ -12,7 +12,6 @@ class IngestionObject:
         self.name = 'Ingester Nester'
         self.obDal = obDal
         self.load_limit = 250
-        self.process_size = 25
         self.base_price_collector = []
         self.product_collector = []
         self.product_price_collector = []
