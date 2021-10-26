@@ -71,16 +71,16 @@ class CategoryProcessor(BasicProcessObject):
                 self.ready_report(df_line_product)
                 self.obReporter.report_line_viability(True)
 
-                self.success, return_df_line_product = self.category_evaluation(df_line_product)
+                success, return_df_line_product = self.category_evaluation(df_line_product)
                 self.obReporter.final_report(success)
 
             else:
-                self.obReporter.report_line_viability(True)
-                self.success, return_df_line_product = self.report_missing_data(df_line_product)
+                self.obReporter.report_line_viability(False)
+                success, return_df_line_product = self.report_missing_data(df_line_product)
 
             self.collect_return_dfs.append(return_df_line_product)
 
-            if self.success:
+            if success:
                 good += 1
             else:
                 bad += 1
