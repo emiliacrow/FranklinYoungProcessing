@@ -383,20 +383,12 @@ class CategoryProcessor(BasicProcessObject):
         lst_out_categories = []
         df_collect_product_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            categories_string = row['Category']
-            product_number = row['ProductNumber']
-            if (categories_string != ''):
-                lst_categories = categories_string.split(';')
-                lst_categories.sort(key = lambda x: len(x))
+            description = row['ShortDesc']
+            product_number = row['FyProductNumber']
+            df_cat_match = self.obDal.get_category_match_desc(description)
 
-                previous_category = lst_categories[-1]
-
-                if previous_category not in lst_out_categories:
-                    lst_out_categories.append(previous_category)
-
-        for each_out_category in lst_out_categories:
-            new_line = {'ProductNumber':product_number, 'NewCategory':each_out_category}
-            df_collect_product_data = df_collect_product_data.append(new_line, ignore_index=True)
+            print(df_cat_match)
+            x = input('x')
 
 
         return True, df_collect_product_data

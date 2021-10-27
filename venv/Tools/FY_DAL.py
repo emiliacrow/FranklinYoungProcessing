@@ -676,6 +676,12 @@ class DalObject:
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 
+    def get_category_match_desc(self,new_description):
+        proc_name = 'gardener.get_category_match_description'
+        column_names = ['Category', 'CategoryId', 'VoteCount']
+        df_category_match = self.get_lookup(proc_name, column_names,new_description)
+        return df_category_match
+
     def set_bc_rtl(self, lst_bc_rtl):
         proc_name = 'sequoia.set_BigCommerceUpdateToggle'
         proc_statement = 'CALL `sequoia`.`set_BigCommerceUpdateToggle`(%s, %s, %s, %s);'
