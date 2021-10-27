@@ -175,6 +175,7 @@ class Pathways():
         return True, self.message
 
     def perform_file_split(self,split_on):
+        self.full_file_count = 0
 
         df_column_alone = self.df_product[split_on]
 
