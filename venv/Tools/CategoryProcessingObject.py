@@ -9,6 +9,8 @@ from fuzzywuzzy import fuzz
 from Tools.BasicProcess import ReporterObject
 from Tools.BasicProcess import BasicProcessObject
 
+from Tools.ProgressBar import AssignCategoryDialog
+
 
 # to remove duplicated columns
 # df = df.loc[:,~df.columns.duplicated()]
@@ -25,7 +27,7 @@ class CategoryProcessor(BasicProcessObject):
 
     def header_viability(self):
         if self.proc_to_run == 'Category Management':
-            self.req_fields = ['ProductNumber', 'Category']
+            self.req_fields = ['FyProductNumber', 'ShortDescription']
 
         if self.proc_to_run == 'Category Training':
             self.req_fields = ['Word1','Word2','Category','IsGood']
@@ -104,8 +106,7 @@ class CategoryProcessor(BasicProcessObject):
             word2 = row['Word2'].lower()
             category = row['Category']
             is_good = row['IsGood']
-            vote_count = 0
-            return_id = self.obDal.set_word_category_associations(word1, word2, category, is_good, vote_count)
+            return_id = self.obDal.set_word_category_associations(word1, word2, category, is_good)
 
         return True, df_return_line_product
 
@@ -383,12 +384,39 @@ class CategoryProcessor(BasicProcessObject):
         lst_out_categories = []
         df_collect_product_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            description = row['ShortDesc']
-            product_number = row['FyProductNumber']
+            description = str(row['ShortDescription'])
+            product_number = str(row['FyProductNumber'])
             df_cat_match = self.obDal.get_category_match_desc(description)
 
-            print(df_cat_match)
-            x = input('x')
+            lst_possible_categories = df_cat_match['CategoryName'].to_list()
+
+            self.obCatAssignment = AssignCategoryDialog(description, lst_possible_categories)
+
+            self.obCatAssignment.exec_()
+            result_set = self.obCatAssignment.getReturnSet()
+
+            cat_name_selected = ''
+            if 'AssignedCategoryName' in result_set:
+                cat_name_selected = result_set['AssignedCategoryName']
+
+            word_1 = ''
+            word_2 = ''
+            if ('Word1' in result_set) and ('Word2' in result_set):
+                word_1 = result_set['Word1']
+                word_2 = result_set['Word2']
+
+            if len(cat_name_selected) > 4:
+                assigned_category = str(df_cat_match.loc[df_cat_match['CategoryName'] == cat_name_selected,'CategoryDesc'][0])
+                df_collect_product_data['AssignedCategory'] = assigned_category
+
+                if (len(word_1) > 2) and (len(word_2) > 2):
+                    return_id = self.obDal.set_word_category_associations(word_1, word_2, assigned_category, 1)
+
+
+
+
+
+
 
 
         return True, df_collect_product_data

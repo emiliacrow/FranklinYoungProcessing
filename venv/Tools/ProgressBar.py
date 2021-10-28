@@ -15,6 +15,8 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QCheckBox
 from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QComboBox
+from PyQt5.QtWidgets import QCompleter
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QMainWindow
@@ -336,7 +338,94 @@ class FileDialogObject(QWidget):
         return self.out_file_name
 
 
+class AssignCategoryDialog(QDialog):
+    def __init__(self, new_description, categories_options, parent=None, icon = 'duck'):
+        super().__init__(parent)
+        self.return_textbox = []
+        self.lst_output_req = {}
+
+        self.set_icon = set_icon
+        self.fy_icon = self.set_icon(icon)
+        self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
+
+        self.setWindowTitle("Assign category.")
+        self.setGeometry(100, 300, 500, 100)
+        self.layout = QGridLayout()
+
+        # top level: description
+        desc_info = 'Description: '+ new_description
+        self.desc_label = QLabel(desc_info)
+        self.desc_label.setWordWrap(True)
+        self.layout.addWidget(self.desc_label, 0, 0, 2, 4)
+
+        # second left-most catgegory label
+        self.category_label = QLabel('Category: ')
+        self.layout.addWidget(self.category_label, 2, 0, 1, 1)
+
+        # second right big drop down
+        completer = QCompleter(categories_options)
+
+        self.category_dropdown = QComboBox()
+        self.category_dropdown.addItems(categories_options)
+        self.category_dropdown.setCompleter(completer)
+        self.layout.addWidget(self.category_dropdown, 2, 1, 1, 3)
+
+        # second left-most catgegory label
+        self.word1_label = QLabel('Word1: ')
+        self.word1_label.setToolTip('first word in the pair to match with the category')
+        self.layout.addWidget(self.word1_label, 3, 0, 1, 1)
+
+        # edit text box
+        self.word1_collect = QLineEdit(self)
+        self.word1_collect.setText('')
+        self.word1_collect.setPlaceholderText('required')
+        self.word1_collect.setToolTip('Remember: garbage in, garbage out')
+        self.layout.addWidget(self.word1_collect, 3, 1, 1, 3)
+
+        # second left-most catgegory label
+        self.word2_label = QLabel('Word2: ')
+        self.word2_label.setToolTip('second word in the pair to match with the category')
+        self.layout.addWidget(self.word2_label, 4, 0, 1, 1)
+
+        # edit text box
+        self.word2_collect = QLineEdit(self)
+        self.word2_collect.setText('')
+        self.word2_collect.setPlaceholderText('required')
+        self.word2_collect.setToolTip('Remember: garbage in, garbage out')
+        self.layout.addWidget(self.word2_collect, 4, 1, 1, 3)
+
+        # attempt to accept the data
+        self.assign_button = QPushButton('assign', self)
+        self.assign_button.setToolTip('This will assign the category to the product.')
+        self.assign_button.clicked.connect(self.on_assign)
+        self.layout.addWidget(self.assign_button, 5, 0, 1, 1)
+
+        # skip this one
+        self.skip_button = QPushButton('skip', self)
+        self.skip_button.setToolTip('Pass on assigning')
+        self.skip_button.clicked.connect(self.on_skip)
+        self.layout.addWidget(self.skip_button, 5, 3, 1, 1)
+
+        self.setLayout(self.layout)
+        self.show()
+
+
+    def on_assign(self):
+        self.lst_output_req['AssignedCategoryName'] = str(self.category_dropdown.currentText())
+        self.lst_output_req['Word1'] = str(self.word1_collect.text())
+        self.lst_output_req['Word2'] = str(self.word2_collect.text())
+
+        self.accept()
+
+    def on_skip(self):
+        self.reject()
+
+    def getReturnSet(self):
+        return self.lst_output_req
+
+
 ## testing ##
+
 
 
 class MainWindow(QMainWindow):
@@ -354,12 +443,15 @@ class MainWindow(QMainWindow):
         # the button is just a proxy for some other trigger
 
         print('b')
-        dlg = FileDialogObject('some words')
+        categories = ['Category', 'Manufacturer', 'Vendor', 'Country', 'UNSPSC Codes', 'FSC Codes', 'Hazardous Code', 'NAICS Code', 'Unit of Issue-Symbol','Assign FyPartNumbers', 'File Merger Tool', 'Category Training','Category Assignment', 'Category Management', 'Extract Attributes','Unicode Correction', 'Generate Upload File', 'File Splitter Tool','Load Image Files', 'Product Action Review']
+        description = 'I really should have tested a much longer description. Like I should start typing at "Buttercup lived on small farm in the country Florin. Her favorite past-times were riding her horse, and tormenting the farm-boy who worked there; his name was Wesley, but she never called him that." and stop at that kiss.'
+        description2 = 'a short one'
+        dlg = AssignCategoryDialog(description, categories)
         print('d')
-        file_name = dlg.get_file_name()
+        dlg.exec_()
+        result_set = dlg.getReturnSet()
         print('e')
-
-        print(file_name)
+        print(result_set)
 
         print('this happened')
 

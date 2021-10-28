@@ -121,13 +121,14 @@ class DalObject:
 
         return True
 
-    def get_lookup(self,proc_name,column_names,filter_val=None):
+    def get_lookup(self, proc_name, column_names,filter_val=None):
         # returns the full results of a query
         result_set = []
         self.open_connection()
         cursor = self.connection.cursor()
         if filter_val:
             query_results = cursor.callproc(proc_name,args=(filter_val,))
+
         else:
             query_results = cursor.callproc(proc_name)
 
@@ -212,7 +213,7 @@ class DalObject:
         df_category_lookup.loc[df_category_lookup['is_good'] == 0, 'is_good'] = -1
         return df_category_lookup
 
-    def set_word_category_associations(self,newWord1,newWord2,newCategory,isGood,newCount):
+    def set_word_category_associations(self,newWord1,newWord2,newCategory,isGood = 1,newCount = 1):
         proc_name = 'gardener.set_word_cat_associations'
         proc_args = (newWord1,newWord2,newCategory,isGood,newCount)
         return_id = self.id_cap(proc_name, proc_args)
@@ -676,10 +677,11 @@ class DalObject:
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 
-    def get_category_match_desc(self,new_description):
+    def get_category_match_desc(self, new_description):
         proc_name = 'gardener.get_category_match_description'
-        column_names = ['Category', 'CategoryId', 'VoteCount']
-        df_category_match = self.get_lookup(proc_name, column_names,new_description)
+        column_names = ['CategoryName', 'CategoryId', 'CategoryDesc','VoteCount']
+        proc_args = (new_description,)
+        df_category_match = self.get_lookup(proc_name, column_names, proc_args)
         return df_category_match
 
     def set_bc_rtl(self, lst_bc_rtl):
@@ -714,42 +716,34 @@ class DataRunner(threading.Thread):
         print('Runner report start: ' + self.proc_name)
         obCursor = self.connection.cursor()
 
-        # change nested lists to tuples
-
         obCursor.executemany(self.proc_statement, self.lst_data)
 
         self.connection.commit()
         self.connection.close()
         print('Runner report end: ' + self.proc_name)
 
+def get_lookup(conx, proc_name, column_names,filter_val=None):
+    # returns the full results of a query
+    result_set = []
+    cursor = conx.cursor()
+    if filter_val:
+        query_results = cursor.callproc(proc_name,args=(filter_val,))
+
+    else:
+        query_results = cursor.callproc(proc_name)
+
+    for result in cursor.fetchall():
+        result_set.append(result)
+
+    result_df = pandas.DataFrame(data=result_set,columns = column_names,dtype=str)
+
+    conx.close()
+
+    return(result_df)
+
 
 def test_local_connect():
-    # stupid, don't be it
-
-    # the creds from .aws/credentials
-    rds = boto3.setup_default_session(**session_kwargs)
-    rds = boto3.client('rds')
-
-    token = rds.generate_db_auth_token(DBHostname=end_point, Port=port, DBUsername=user, Region=region)
-
-    # some kind of miracle occurs...
-    # actually there are no miracles. and this doesn't work.
-    # and I'm mad about it.
-    
-    print(token)
-    try:
-        connection = pymysql.connect(host=end_point, user=user, port=port, passwd=token, db='sequoia')
-
-        cur = connection.cursor()
-        cur.execute("""SELECT now()""")
-        query_results = cur.fetchall()
-        print(query_results)
-
-        connection.close()
-    except Exception as e:
-        print("Database connection failed due to {}".format(e))
-
-
+    tell_all = 'Look, man, whatever.'
 
 
 # Press the green button in the gutter to run the script.
