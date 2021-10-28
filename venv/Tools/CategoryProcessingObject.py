@@ -26,7 +26,7 @@ class CategoryProcessor(BasicProcessObject):
 
 
     def header_viability(self):
-        if self.proc_to_run == 'Category Management':
+        if self.proc_to_run == 'Category Picker':
             self.req_fields = ['FyProductNumber', 'ShortDescription']
 
         if self.proc_to_run == 'Category Training':
@@ -45,7 +45,7 @@ class CategoryProcessor(BasicProcessObject):
 
     def run_process(self):
         self.obReporter = ReporterObject()
-        if self.proc_to_run == 'Category Management':
+        if self.proc_to_run == 'Category Picker':
             self.success, self.message = self.run_management_process()
         if self.proc_to_run == 'Category Training':
             self.success, self.message = self.run_training_process()
