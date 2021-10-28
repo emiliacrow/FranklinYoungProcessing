@@ -406,7 +406,8 @@ class CategoryProcessor(BasicProcessObject):
                 word_2 = result_set['Word2']
 
             if len(cat_name_selected) > 4:
-                assigned_category = str(df_cat_match.loc[df_cat_match['CategoryName'] == cat_name_selected,'CategoryDesc'][0])
+                assigned_category = df_cat_match.loc[(df_cat_match['CategoryName'] == cat_name_selected),'CategoryDesc'].values[0]
+
                 df_collect_product_data['AssignedCategory'] = assigned_category
 
                 if (len(word_1) > 2) and (len(word_2) > 2):
