@@ -348,7 +348,7 @@ class AssignCategoryDialog(QDialog):
         self.fy_icon = self.set_icon(icon)
         self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
 
-        self.setWindowTitle("Assign category.")
+        self.setWindowTitle("Please pick a good category.")
         self.setGeometry(100, 300, 500, 100)
         self.layout = QGridLayout()
 
@@ -444,8 +444,8 @@ class MainWindow(QMainWindow):
         # the button is just a proxy for some other trigger
 
         print('b')
-        categories = ['Category', 'Manufacturer', 'Vendor', 'Country', 'UNSPSC Codes', 'FSC Codes', 'Hazardous Code', 'NAICS Code', 'Unit of Issue-Symbol','Assign FyPartNumbers', 'File Merger Tool', 'Category Training','Category Assignment', 'Category Management', 'Extract Attributes','Unicode Correction', 'Generate Upload File', 'File Splitter Tool','Load Image Files', 'Product Action Review']
-        description = 'I really should have tested a much longer description. Like I should start typing at "Buttercup lived on small farm in the country Florin. Her favorite past-times were riding her horse, and tormenting the farm-boy who worked there; his name was Wesley, but she never called him that." and stop at that kiss.'
+        categories = ['Antibodies-3', 'Manufacturer', 'Vendor', 'Country', 'UNSPSC Codes', 'FSC Codes', 'Hazardous Code', 'NAICS Code', 'Unit of Issue-Symbol','Assign FyPartNumbers', 'File Merger Tool', 'Category Training','Category Assignment', 'Category Management', 'Extract Attributes','Unicode Correction', 'Generate Upload File', 'File Splitter Tool','Load Image Files', 'Product Action Review']
+        description = '100mg vial of monoclonal mouse antibody IL23R.'
         description2 = 'a short one'
         dlg = AssignCategoryDialog(description, categories)
         print('d')

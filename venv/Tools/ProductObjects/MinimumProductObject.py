@@ -262,8 +262,7 @@ class MinimumProduct(BasicProcessObject):
             if ('ShippingInstructionsId' not in row):
                 success, df_collect_product_base_data = self.process_shipping(df_collect_product_base_data, row)
                 if success == False:
-                    self.obReporter.update_report('Fail',)
-                    df_collect_product_base_data['FinalReport'] = ['Failed in process shipping instructions']
+                    self.obReporter.update_report('Fail','Failed in process shipping instructions')
                     return success, df_collect_product_base_data
 
             if ('ExpectedLeadTimeId' not in row):
