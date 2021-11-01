@@ -235,7 +235,7 @@ class Pathways():
         return self.message
 
     def file_appender_tool(self):
-        self.full_file_count = 0
+        self.full_file_count = 1
         file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.')
 
         if file_ident_success:
