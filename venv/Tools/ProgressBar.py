@@ -310,6 +310,9 @@ class FileDialogObject(QWidget):
         if dialog_type == 'file_dialog':
             self.openFileNameDialog()
 
+        elif dialog_type == 'files_dialog':
+            self.openFileNamesDialog()
+
         elif dialog_type == 'save_dialog':
             self.saveFileDialog()
 
@@ -324,6 +327,15 @@ class FileDialogObject(QWidget):
         self.out_file_name, _ = QFileDialog.getOpenFileName(self, self.name, '',
                                                    files_to_get, options=options)
 
+    # this is what we use to find a file
+    def openFileNamesDialog(self):
+        files_to_get = 'Excel Files (*.xlsx);;Text files (*.txt)'
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        self.out_file_names, _ = QFileDialog.getOpenFileNames(self, self.name, '',
+                                                   files_to_get, options=options)
+
     # this probably won't be used
     # however, user might want to name their outputs in some cases
     def saveFileDialog(self):
@@ -336,6 +348,9 @@ class FileDialogObject(QWidget):
 
     def get_file_name(self):
         return self.out_file_name
+
+    def get_file_names(self):
+        return self.out_file_names
 
 
 class AssignCategoryDialog(QDialog):
@@ -409,6 +424,13 @@ class AssignCategoryDialog(QDialog):
 
         self.setLayout(self.layout)
         self.show()
+
+
+    def set_category_dict(self):
+        pass
+
+    def set_dropdowns(self):
+        pass
 
 
     def on_assign(self):

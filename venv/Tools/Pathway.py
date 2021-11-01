@@ -103,7 +103,9 @@ class Pathways():
         self.success = False
         self.message = 'File processing pathway'
         # this doesn't behave like the rest of them
-        if file_action_selected == 'File Merger Tool':
+        if file_action_selected == 'File Appender Tool':
+            self.success, self.message = self.file_appender_tool()
+        elif file_action_selected == 'File Merger Tool':
             self.success, self.message = self.file_merger_tool()
         elif file_action_selected == 'File Splitter Tool':
             self.success, self.message = self.file_splitter_tool()
@@ -231,6 +233,32 @@ class Pathways():
 
         self.message = 'Created {} files.'.format(self.full_file_count)
         return self.message
+
+    def file_appender_tool(self):
+        file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.')
+
+        if file_ident_success:
+            first_file = message_or_path.pop()
+            self.df_second_product = self.obFileFinder.read_xlsx(first_file)
+
+            for each_file in message_or_path:
+
+                self.df_intermediate_product = self.obFileFinder.read_xlsx(each_file)
+
+                self.obProgressBar = ProgressBarWindow('Appending data...', icon='append-a')
+                self.obProgressBar.set_anew(10)
+                self.obProgressBar.show()
+                self.obProgressBar.update_unknown()
+
+                self.df_second_product = self.df_second_product.append(self.df_intermediate_product)
+
+                self.obProgressBar.close()
+
+            self.obFileFinder.write_xlsx(self.df_second_product, '(appended-results)', False)
+            self.message = 'Files have been combined.'
+            return file_ident_success, self.message
+        else:
+            return file_ident_success, message_or_path
 
 
     def file_merger_tool(self):
