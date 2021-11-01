@@ -235,6 +235,7 @@ class Pathways():
         return self.message
 
     def file_appender_tool(self):
+        self.full_file_count = 0
         file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.')
 
         if file_ident_success:
@@ -242,7 +243,7 @@ class Pathways():
             self.df_second_product = self.obFileFinder.read_xlsx(first_file)
 
             for each_file in message_or_path:
-
+                self.full_file_count += 1
                 self.df_intermediate_product = self.obFileFinder.read_xlsx(each_file)
 
                 self.obProgressBar = ProgressBarWindow('Appending data...', icon='append-a')
@@ -255,7 +256,7 @@ class Pathways():
                 self.obProgressBar.close()
 
             self.obFileFinder.write_xlsx(self.df_second_product, '(appended-results)', False)
-            self.message = 'Files have been combined.'
+            self.message = '{} files have been combined.'.format(self.full_file_count)
             return file_ident_success, self.message
         else:
             return file_ident_success, message_or_path
