@@ -485,17 +485,17 @@ class AssignCategoryDialog(QDialog):
             split_cat = each_cat.split('/')
             if len(split_cat) == 4:
                 if split_cat[1] not in self.dct_categories:
-                    self.dct_categories[split_cat[1]] = {split_cat[2]:[split_cat[3]]}
+                    self.dct_categories[split_cat[1]] = {split_cat[2]:['',split_cat[3]]}
                 elif split_cat[2] not in self.dct_categories[split_cat[1]]:
-                    self.dct_categories[split_cat[1]][split_cat[2]] = [split_cat[3]]
+                    self.dct_categories[split_cat[1]][split_cat[2]] = ['',split_cat[3]]
                 else:
                     self.dct_categories[split_cat[1]][split_cat[2]].append(split_cat[3])
 
             elif len(split_cat) == 3:
                 if split_cat[1] not in self.dct_categories:
-                    self.dct_categories[split_cat[1]] = {split_cat[2]:[]}
+                    self.dct_categories[split_cat[1]] = {split_cat[2]:['']}
                 elif split_cat[2] not in self.dct_categories[split_cat[1]]:
-                    self.dct_categories[split_cat[1]][split_cat[2]] = []
+                    self.dct_categories[split_cat[1]][split_cat[2]] = ['']
 
             elif len(split_cat) == 2:
                 if split_cat[1] not in self.dct_categories:
