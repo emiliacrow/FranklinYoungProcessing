@@ -388,7 +388,7 @@ class CategoryProcessor(BasicProcessObject):
             product_number = str(row['FyProductNumber'])
             df_cat_match = self.obDal.get_category_match_desc(description)
 
-            lst_possible_categories = df_cat_match['CategoryName'].to_list()
+            lst_possible_categories = df_cat_match['CategoryDesc'].to_list()
 
             self.obCatAssignment = AssignCategoryDialog(description, lst_possible_categories)
 
@@ -396,19 +396,14 @@ class CategoryProcessor(BasicProcessObject):
             result_set = self.obCatAssignment.getReturnSet()
 
             cat_name_selected = ''
-            if 'AssignedCategoryName' in result_set:
-                cat_name_selected = result_set['AssignedCategoryName']
+            if 'AssignedCategory' in result_set:
+                assigned_category = result_set['AssignedCategory']
 
             word_1 = ''
             word_2 = ''
             if ('Word1' in result_set) and ('Word2' in result_set):
                 word_1 = result_set['Word1']
                 word_2 = result_set['Word2']
-
-            if len(cat_name_selected) > 4:
-                assigned_category = df_cat_match.loc[(df_cat_match['CategoryName'] == cat_name_selected),'CategoryDesc'].values[0]
-
-                df_collect_product_data['AssignedCategory'] = assigned_category
 
                 if (len(word_1) > 2) and (len(word_2) > 2):
                     return_id = self.obDal.set_word_category_associations(word_1, word_2, assigned_category, 1)

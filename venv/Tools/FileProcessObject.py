@@ -94,6 +94,18 @@ class FileProcessor(BasicProcessObject):
                         product_name = self.obValidator.remove_unicode(product_name)
                         df_collect_line[each_column_to_clean] = [product_name]
                         temp_prod_name = product_name.replace('º','')
+                        temp_prod_name = product_name.replace('%','')
+                        temp_prod_name = product_name.replace('/','')
+                        temp_prod_name = product_name.replace('-','')
+
+                        temp_prod_name = product_name.replace('[','')
+                        temp_prod_name = product_name.replace(']','')
+                        temp_prod_name = product_name.replace('(','')
+                        temp_prod_name = product_name.replace(')','')
+                        temp_prod_name = product_name.replace('{','')
+                        temp_prod_name = product_name.replace('}','')
+
+
                         if self.obValidator.isEnglish(product_name) == False:
                             self.obReporter.update_report('Alert','Review for unicode ' + each_column_to_clean)
 
