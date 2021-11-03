@@ -111,7 +111,7 @@ class HeaderTranslator():
     def translate_headers(self,lst_in_heads):
         lst_out_heads = []
         for each_header in lst_in_heads:
-            clean_head = each_header.trim()
+            clean_head = each_header.strip()
             if clean_head in self.translator_dict:
                 if self.translator_dict[clean_head] not in lst_out_heads:
                     lst_out_heads.append(self.translator_dict[clean_head])
