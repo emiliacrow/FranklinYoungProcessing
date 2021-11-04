@@ -98,8 +98,8 @@ class MinimumProduct(BasicProcessObject):
         df_attribute = df_attribute.drop_duplicates(subset=['Category'])
         lst_ids = []
         for colName, row in df_attribute.iterrows():
-            category = str(row['Category'])
-            category_name = category.rpartition('/')[2]
+            category = str(row['Category']).strip()
+            category_name = (category.rpartition('/')[2]).strip()
 
             if category_name in self.df_category_names['CategoryName'].values:
                 new_category_id = self.df_category_names.loc[
