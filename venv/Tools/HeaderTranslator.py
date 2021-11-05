@@ -13,20 +13,21 @@ class HeaderTranslator():
                             'ManufacturerName':['ManufacturerName','Manufacturer Name','Manu Name','manufacturer_name','Manufacturer Standard Name'],
                             'SupplierName':['SupplierName','Supplier Name','supplier name','supplier_name'],
 
-                            'VendorPartNumber':['VendorPartNumber','Vendor Part Number','primary_vendor_part_no','Thomas Item #'],
+                            'VendorPartNumber':['VendorPartNumber','Vendor Part Number','primary_vendor_part_no','Thomas Item #','vendor_part_no'],
                             'CountryOfOrigin':['CountryOfOrigin','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code'],
 
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber','manufacturer_part_no','Supplier Part # '],
                             'FyProductNumber':['FyProductNumber', 'Fy Product Number', 'FY Product Number'],
                             'FyPartNumber':['FYPartNumber', 'FyPartNumber', 'fy_part_number', 'fy_part_no', 'Product Code/SKU'],
+                            'RecommendedStorage':['shelf_life_months','RecommendedStorage','StorageInstruction'],
 
-                            'ProductName':['ProductName','Product Name','product_name','primary_vendor_product_name'],
+                            'ProductName':['ProductName','Product Name','product_name','vendor_product_name','primary_vendor_product_name'],
                             'ProductDescription':['ProductDescription','Product Description','product_description','ProductDesc','Product Desc','product_desc'],
                             'ShortDescription':['ShortDescription','Short Description','short_description','short_desc','ShortDesc','Short Desc'],
                             'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
 
-                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty'],
+                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity'],
                             'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue'],
                             'UnitOfMeasure':['UnitOfMeasure','UOM','uom','uom_std'],
                             'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days'],
@@ -49,7 +50,7 @@ class HeaderTranslator():
                             'GSAApprovedPercent':['GSAChannelDiscount', 'GSADiscount', 'GSA Channel Discount',
                                                   'GSA Discount', 'gsa_channel_discount', 'GSA Approved Channel%'],
                             'GSABasePrice':['GSABasePrice', 'GSA Base Price'],
-                            'GSASellPrice':['GSASellPrice', 'GSA Sell Price'],
+                            'GSASellPrice':['GSASellPrice', 'GSA Sell Price','current_gsa_price'],
                             'GSAContractModificationNumber':['GSAContractModificationNumber',
                                                              'GSA Contract Modification Number',
                                                              'GSAContractModification', 'GSA Contract Modification'],

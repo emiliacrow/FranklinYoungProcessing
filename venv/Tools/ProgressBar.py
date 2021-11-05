@@ -371,7 +371,7 @@ class AssignCategoryDialog(QDialog):
         self.layout = QGridLayout()
 
         # top level: description
-        desc_info = 'Description: '+ new_description
+        desc_info = new_description
         self.desc_label = QLabel(desc_info)
         self.desc_label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.desc_label.setWordWrap(True)

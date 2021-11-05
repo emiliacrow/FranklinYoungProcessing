@@ -46,7 +46,7 @@ class CategoryProcessor(BasicProcessObject):
     def run_process(self):
         self.obReporter = ReporterObject()
         if self.proc_to_run == 'Category Picker':
-            self.success, self.message = self.run_management_process()
+            self.success, self.message = self.run_picker_process()
         if self.proc_to_run == 'Category Training':
             self.success, self.message = self.run_training_process()
         if self.proc_to_run == 'Category Assignment':
@@ -335,7 +335,7 @@ class CategoryProcessor(BasicProcessObject):
             yield pre + [indict]
 
 
-    def run_management_process(self):
+    def run_picker_process(self):
         count_of_items = len(self.df_product.index)
         self.return_df_product = pandas.DataFrame(columns=self.df_product.columns)
         self.collect_return_dfs = []
@@ -385,11 +385,30 @@ class CategoryProcessor(BasicProcessObject):
         df_collect_product_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             description = str(row['ShortDescription'])
+
+            # combine
+            if 'LongDescription' in row:
+                description = description+' '+row['LongDescription']
+
+            if 'ProductDescription' in row:
+                description = description+' '+row['ProductDescription']
+
+            # tokenize
+            lst_description = description.split()
+            lst_description = list(dict.fromkeys(lst_description))
+            description = ' '.join(lst_description)
+            description.replace(',','')
+
+            # for later
             product_number = str(row['FyProductNumber'])
+
+            # get df with scores
             df_cat_match = self.obDal.get_category_match_desc(description)
 
+            # give the categories only
             lst_possible_categories = df_cat_match['CategoryDesc'].to_list()
 
+            # display the picker
             self.obCatAssignment = AssignCategoryDialog(description, lst_possible_categories)
 
             self.obCatAssignment.exec_()
