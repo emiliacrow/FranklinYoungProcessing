@@ -33,7 +33,7 @@ class CategoryProcessor(BasicProcessObject):
             self.req_fields = ['Word1','Word2','Category','IsGood']
 
         if self.proc_to_run == 'Category Assignment':
-            self.req_fields = ['ProductName']
+            self.req_fields = ['FyProductNumber', 'ShortDescription']
 
         # inital file viability check
         product_headers = set(self.lst_product_headers)
@@ -112,27 +112,64 @@ class CategoryProcessor(BasicProcessObject):
 
 
     def category_assignment(self,df_product_line):
+        min_score_to_pass = 1
+
         return_df_line_product = df_product_line.copy()
         for colName, row in df_product_line.iterrows():
-            product_name = self.obValidator.prep_for_category_match(row['ProductName'])
-            product_description = ''
-            if 'ShortDescription' in row:
-                product_description = product_description+' '+self.obValidator.prep_for_category_match(row['ShortDescription'])
-            elif 'LongDescription' in row:
-                product_description = product_description+' '+self.obValidator.prep_for_category_match(row['LongDescription'])
-            elif 'ProductDescription' in row:
-                product_description = product_description+' '+self.obValidator.prep_for_category_match(row['ProductDescription'])
 
-            lst_match_set = self.word_split(product_name,product_description)
+            description = str(row['ShortDescription'])
 
-            # if we have enough starter data, we can proceed
-            if len(lst_match_set) >= 1:
-                self.success, return_df_line_product = self.identify_word_matches(lst_match_set, return_df_line_product)
+            # combine
+            if 'LongDescription' in row:
+                description = description+' '+row['LongDescription']
+
+            if 'ProductDescription' in row:
+                description = description+' '+row['ProductDescription']
+
+            # tokenize
+            lst_description = description.split()
+            lst_description = list(dict.fromkeys(lst_description))
+            description = ' '.join(lst_description)
+            description.replace(',','')
+
+            # for later
+            product_number = str(row['FyProductNumber'])
+
+            # get df with scores
+            df_cat_match = self.obDal.get_category_match_desc(description)
+
+            # check if there's a top scorer
+            top_score = int((df_cat_match['VoteCount'].to_list())[0])
+
+            if top_score > min_score_to_pass:
+                assigned_category = (df_cat_match['CategoryDesc'].to_list())[0]
+                return_df_line_product['AssignedCategory'] = assigned_category
+
             else:
-                self.obReporter.update_report('Fail','No category identified')
-                self.success = False
+                # give the categories only
+                lst_possible_categories = df_cat_match['CategoryDesc'].to_list()
 
-        return self.success, return_df_line_product
+                # display the picker
+                self.obCatAssignment = AssignCategoryDialog(description, lst_possible_categories)
+
+                self.obCatAssignment.exec_()
+                result_set = self.obCatAssignment.getReturnSet()
+
+                cat_name_selected = ''
+                if 'AssignedCategory' in result_set:
+                    assigned_category = result_set['AssignedCategory']
+                    return_df_line_product['AssignedCategory'] = assigned_category
+
+                word_1 = ''
+                word_2 = ''
+                if ('Word1' in result_set) and ('Word2' in result_set):
+                    word_1 = result_set['Word1']
+                    word_2 = result_set['Word2']
+
+                    if (len(word_1) > 2) and (len(word_2) > 2):
+                        return_id = self.obDal.set_word_category_associations(word_1, word_2, assigned_category, 1)
+
+        return True, return_df_line_product
 
     def word_split(self, product_name, product_description):
         dct_match_set = {}
@@ -269,17 +306,17 @@ class CategoryProcessor(BasicProcessObject):
                 self.ready_report(df_line_product)
                 self.obReporter.report_line_viability(True)
 
-                self.success, return_df_line_product = self.category_assignment(df_line_product)
+                success, return_df_line_product = self.category_assignment(df_line_product)
                 self.obReporter.final_report(success)
 
-                if self.success:
+                if success:
                     good += 1
                 else:
                     bad += 1
 
             else:
                 self.obReporter.final_report(False)
-                self.success, return_df_line_product = self.report_missing_data(df_line_product)
+                success, return_df_line_product = self.report_missing_data(df_line_product)
 
             self.collect_return_dfs.append(return_df_line_product)
 

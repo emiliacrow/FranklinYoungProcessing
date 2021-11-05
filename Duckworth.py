@@ -194,7 +194,7 @@ class DuckworthWindow(QWidget):
                                     'Unicode Correction', 'Generate Upload File', 'File Splitter Tool',
                                     'Load Image Files', 'Product Action Review']
 
-        self.file_action_options = ['Assign FyPartNumbers', 'File Appender Tool','File Merger Tool', 'Category Picker', 'Category Training',
+        self.file_action_options = ['Assign FyPartNumbers', 'File Appender Tool','File Merger Tool', 'Category Training',
                                     'Category Assignment', 'Extract Attributes',
                                     'Unicode Correction', 'Generate Upload File', 'File Splitter Tool',
                                     'Product Action Review']
