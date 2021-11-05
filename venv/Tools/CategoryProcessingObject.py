@@ -112,7 +112,7 @@ class CategoryProcessor(BasicProcessObject):
 
 
     def category_assignment(self,df_product_line):
-        min_score_to_pass = 1
+        min_score_to_pass = 2
 
         return_df_line_product = df_product_line.copy()
         for colName, row in df_product_line.iterrows():
