@@ -116,15 +116,15 @@ class CategoryProcessor(BasicProcessObject):
 
         return_df_line_product = df_product_line.copy()
         for colName, row in df_product_line.iterrows():
-
+            description = ''
             description = str(row['ShortDescription'])
 
             # combine
             if 'LongDescription' in row:
-                description = description+' '+row['LongDescription']
+                description = description+'\n'+row['LongDescription']
 
             if 'ProductDescription' in row:
-                description = description+' '+row['ProductDescription']
+                description = description+'\n'+row['ProductDescription']
 
             # tokenize
             lst_description = description.split()

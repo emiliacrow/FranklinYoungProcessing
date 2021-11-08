@@ -371,8 +371,8 @@ class AssignCategoryDialog(QDialog):
         self.layout = QGridLayout()
 
         # top level: description
-        desc_info = new_description
-        self.desc_label = QLabel(desc_info)
+        self.search_desc = new_description.replace(' ','+')
+        self.desc_label = QLabel(new_description)
         self.desc_label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.desc_label.setWordWrap(True)
         self.desc_style = 'QLabel{border: 1px solid grey; color: black; background-color: white}'
@@ -448,6 +448,12 @@ class AssignCategoryDialog(QDialog):
         self.word1_label.setToolTip('first word in the pair to match with the category')
         self.layout.addWidget(self.word1_label, 9, 0, 1, 1)
 
+        # attempt to accept the data
+        self.search_it_button = QPushButton('Search description\n on web', self)
+        self.search_it_button.setToolTip('This will search the description.')
+        self.search_it_button.clicked.connect(self.search_action)
+        self.layout.addWidget(self.search_it_button, 9, 3, 2, 1)
+
         # edit text box
         self.word1_collect = QLineEdit(self)
         self.word1_collect.setText('')
@@ -478,6 +484,12 @@ class AssignCategoryDialog(QDialog):
         self.set_dropdowns()
 
         self.show()
+
+    def search_action(self):
+        url = 'https://www.google.com/search?q='+ self.search_desc
+        url_command = "start \"\" " + url
+        os.system(url_command)
+        self.search_desc
 
     def set_category_dict(self, categories):
         self.dct_categories = {}
@@ -634,7 +646,12 @@ def excepthook(exc_type, exc_value, exc_tb):
     QApplication.quit()
 
 
+def open_website():
+    url = 'https://www.google.com/search?q=python+search+,term+on+web'
+    url_command = "start \"\" "+url
+    os.system(url_command)
+
 if __name__ == '__main__':
-    test_frame()
+    open_website()
 
 ## end ##
