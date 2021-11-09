@@ -781,7 +781,7 @@ class Pathways():
         return False, 'Process not built.'
 
     def contract_pathway(self, is_testing, contract_selected):
-        all_pathways = ['Ready to load-BC', 'Ready to load-GSA']
+        all_pathways = ['Ready to load-BC', 'Ready to load-GSA','Discontinue']
 
         self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+contract_selected)
         if self.success == False:
@@ -797,6 +797,13 @@ class Pathways():
             self.success, self.message = self.obBCRTL.begin_process()
             self.df_product = self.obBCRTL.get_df()
             self.obFileFinder.write_xlsx(self.df_product, 'BC_RTL')
+            return self.success, self.message
+
+        elif contract_selected == 'Discontinue':
+            self.obDiscon = DiscontinueObject(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obDiscon.begin_process()
+            self.df_product = self.obDiscon.get_df()
+            self.obFileFinder.write_xlsx(self.df_product, 'discon')
             return self.success, self.message
 
         return False, 'Process not built.'
