@@ -77,9 +77,9 @@ class IngestionObject:
             return -1
 
     # country of origin functions
-    def ingest_country(self,country,country_long_name,country_code,ecatcode):
+    def ingest_country(self,country,country_long_name,country_code,ecatcode,is_taa_compliant):
         # this should do more than just pass through
-        return_id = self.obDal.country_cap(country,country_long_name,country_code,ecatcode)
+        return_id = self.obDal.country_cap(country,country_long_name,country_code,ecatcode,is_taa_compliant)
         return return_id
 
     def ingest_countries(self,df_countries):
@@ -92,8 +92,9 @@ class IngestionObject:
             country_long_name = str(row['CountryLongName'])
             country_code = str(row['CountryCode'])
             ecatcode = str(row['ECATCountryCode'])
-            return_id = self.ingest_country(country,country_long_name,country_code,ecatcode)
-            ingested_set.append([return_id,country,country_long_name,country_code,ecatcode])
+            is_taa_compliant = str(row['IsTAACompliant'])
+            return_id = self.ingest_country(country,country_long_name,country_code,ecatcode,is_taa_compliant)
+            ingested_set.append([return_id,country,country_long_name,country_code,ecatcode,is_taa_compliant])
 
             p_bar += 1
             self.obProgressBarWindow.update_bar(p_bar)
@@ -107,10 +108,12 @@ class IngestionObject:
         return df_country_lookup
 
     def manual_ingest_country(self,atmp_name = '',atmp_long_name = '', atmp_code = '', atmp_ecat_code = ''):
+        is_taa_compliant = '0'
         lst_req_fields = [['CountryName', 45, 'This is a common name<br>like "The Congo"',atmp_name,'required'],
                           ['LongCountryName', 128, 'This is a full name<br>like "Democratic Republic of the Congo"',atmp_long_name,'required'],
                           ['CountryCode', 2, 'This is the 2 letter code, "CG"',atmp_code,'required'],
-                          ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"',atmp_ecat_code,'required']]
+                          ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"',atmp_ecat_code,'required'],
+                          ['IsTAACompliant', 1, 'This is 1 or 0',is_taa_compliant,'required']]
 
         obTextBox = TextBoxObject(lst_req_fields)
         obTextBox.exec()
@@ -121,11 +124,12 @@ class IngestionObject:
             full_country_name = entered_values['LongCountryName']
             country_code = entered_values['CountryCode'].upper()
             country_code_ecat = entered_values['CountryCodeEcat'].upper()
+            is_taa_compliant = int(entered_values['IsTAACompliant'])
         else:
             return 0
 
         if (country_name != '') and (full_country_name != '') and (country_code != '') and (country_code_ecat != ''):
-            coo_id = self.obDal.country_cap(country_name, full_country_name, country_code, country_code_ecat)
+            coo_id = self.obDal.country_cap(country_name, full_country_name, country_code, country_code_ecat, is_taa_compliant)
             return coo_id
         else:
             return -1

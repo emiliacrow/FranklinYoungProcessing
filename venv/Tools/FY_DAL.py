@@ -147,15 +147,15 @@ class DalObject:
         return return_id
 
 
-    def country_cap(self,country,country_long_name,country_code,ecatcode):
+    def country_cap(self,country,country_long_name,country_code,ecatcode,is_taa_compliant=0):
         proc_name = 'sequoia.Country_capture_wrap'
-        proc_args = (country,country_long_name,country_code,ecatcode)
+        proc_args = (country,country_long_name,country_code,ecatcode,is_taa_compliant)
         return_id = self.id_cap(proc_name,proc_args)
         return return_id
 
     def get_country_lookup(self):
         proc_name = 'sequoia.get_Country_lookup'
-        column_names = ['CountryOfOriginId','CountryName','CountryLongName','CountryCode','ECATCountryCode']
+        column_names = ['CountryOfOriginId','CountryName','CountryLongName','CountryCode','ECATCountryCode','IsTAACompliant']
         df_country_lookup = self.get_lookup(proc_name,column_names)
         return df_country_lookup
 
@@ -716,7 +716,10 @@ class DataRunner(threading.Thread):
         print('Runner report start: ' + self.proc_name)
         obCursor = self.connection.cursor()
 
-        obCursor.executemany(self.proc_statement, self.lst_data)
+        for each_item in self.lst_data:
+            obCursor.callproc(self.proc_name, args = each_item)
+
+        #obCursor.executemany(self.proc_statement, self.lst_data)
 
         self.connection.commit()
         self.connection.close()

@@ -112,7 +112,7 @@ class CategoryProcessor(BasicProcessObject):
 
 
     def category_assignment(self,df_product_line):
-        min_score_to_pass = 2
+        min_score_to_pass = 1
 
         return_df_line_product = df_product_line.copy()
         for colName, row in df_product_line.iterrows():
@@ -130,7 +130,10 @@ class CategoryProcessor(BasicProcessObject):
             lst_description = description.split()
             lst_description = list(dict.fromkeys(lst_description))
             description = ' '.join(lst_description)
-            description.replace(',','')
+            description = description.replace(', ',' ')
+            description = description.replace('. ',' ')
+            description = description.replace('; ',' ')
+            description = description.replace(': ',' ')
 
             # for later
             product_number = str(row['FyProductNumber'])
