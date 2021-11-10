@@ -516,7 +516,7 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.min_product_cap(self.product_collector)
 
-    def set_discon_product_price(self, price_id, is_discontinued):
+    def set_discon_product_price(self, is_last, price_id, is_discontinued):
         # if this is the last to join, or if the size has hit the limit, send a runner
         if (len(self.product_collector) > self.load_limit) or (is_last):
             self.product_collector.append((price_id, is_discontinued))

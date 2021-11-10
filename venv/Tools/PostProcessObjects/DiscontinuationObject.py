@@ -31,7 +31,7 @@ class DiscontinueObject(BasicProcessObject):
         # products not in db
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
         # products that need to be updated
-        self.df_product.loc[~(self.df_product['IsDiscontinued_x'] == self.df_product['IsDiscontinued_y'],self.df_product['Filter'] == 'Update'), 'Filter'] = 'Good'
+        self.df_product.loc[(self.df_product['IsDiscontinued_x'] == self.df_product['IsDiscontinued_y']) & (self.df_product['Filter'] == 'Update'), 'Filter'] = 'Good'
         # products that need to be updated, reset the discon column to the new value
         self.df_product.loc[(self.df_product['Filter'] == 'Update'), 'IsDiscontinued'] = self.df_product['IsDiscontinued_x']
 
@@ -40,7 +40,6 @@ class DiscontinueObject(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            print(row)
             if 'Filter' in row:
                 if row['Filter'] == 'Fail':
                     self.obReporter.update_report('Fail','Failed to match this product')

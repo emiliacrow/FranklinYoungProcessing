@@ -605,11 +605,12 @@ class DalObject:
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 
-    def set_discon_product_price(self):
+    def set_discon_product_price(self, lst_product_price):
         proc_name = 'sequoia.set_discon_product'
-        column_names = ['ProductPriceId','IsDiscontinued']
-        df_product_lookup = self.get_lookup(proc_name,column_names)
-        return df_product_lookup
+        proc_statement = 'CALL `sequoia`.`set_discon_product`(%s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
+        runner.start()
 
 
     def min_product_price_cap(self,lst_product_price):
