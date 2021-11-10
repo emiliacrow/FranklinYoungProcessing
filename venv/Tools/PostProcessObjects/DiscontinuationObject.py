@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class DiscontinueObject(BasicProcessObject):
-    req_fields = ['FyProductNumber', 'VendorPartNumber', 'VendorName']
+    req_fields = ['FyProductNumber', 'VendorPartNumber', 'VendorName','IsDiscontinued']
 
     sup_fields = []
     att_fields = []
@@ -20,11 +20,13 @@ class DiscontinueObject(BasicProcessObject):
 
     def define_new(self):
         self.df_discon_products = self.obDal.get_discon_products()
-        match_headers = ['ProductPriceId','FyProductNumber','BCPriceUpdateToggle','BCDataUpdateToggle']
-        self.df_current_BC_toggles['Filter'] = 'Fail'
-        self.df_product = pandas.DataFrame.merge(self.df_product, self.df_current_BC_toggles,
+        match_headers = ['FyProductNumber','VendorPartNumber','VendorName']
+        self.df_discon_products['Filter'] = 'Fail'
+        self.df_product = self.df_product.merge(self.df_discon_products,
                                                          how='left', on=match_headers)
-        self.df_product.loc[(self.df_product['Filter'] != 'Fail'), 'Filter'] = 'Update'
+        self.df_product.loc[(self.df_product['Filter'] != 'Fail'), 'Filter'] = 'Good'
+        self.df_product.loc[~(self.df_product['IsDiscontinued_x'] != self.df_product['IsDiscontinued_y']), 'Filter'] = 'Update'
+
 
 
     def process_product_line(self, df_line_product):
@@ -33,6 +35,9 @@ class DiscontinueObject(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
                 if row['Filter'] == 'Fail':
+                    self.obReporter.update_report('Fail','Failed to match this product')
+                    return False, df_collect_product_base_data
+                if row['Filter'] == 'Good':
                     self.obReporter.update_report('Alert','No change')
                     return True, df_collect_product_base_data
             else:
@@ -45,18 +50,10 @@ class DiscontinueObject(BasicProcessObject):
 
     def process_changes(self, df_collect_product_base_data):
         for colName, row in df_collect_product_base_data.iterrows():
-            price_toggle = 0
-            data_toggle = 0
+            price_id = row['ProductPriceId']
+            is_discontinued = row['IsDiscontinued']
 
-            product_price_id = row['ProductPriceId']
-            fy_product_number = row['FyProductNumber']
-
-            if 'BCPriceUpdateToggle' in row:
-                price_toggle = row['BCPriceUpdateToggle']
-            if 'BCDataUpdateToggle' in row:
-                data_toggle = row['BCDataUpdateToggle']
-
-        # self.obIngester.set_bigcommerce_rtl(self.is_last, product_price_id, fy_product_number, price_toggle, data_toggle)
+            self.obIngester.set_discon_product_price(self.is_last, price_id, is_discontinued)
         return True, df_collect_product_base_data
 
 

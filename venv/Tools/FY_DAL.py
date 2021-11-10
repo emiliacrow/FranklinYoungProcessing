@@ -601,7 +601,13 @@ class DalObject:
 
     def get_discon_products(self):
         proc_name = 'sequoia.get_discon_products_lookup'
-        column_names = ['ProductPriceId','FyProductNumber','VendorName','VendorPartNumber']
+        column_names = ['ProductPriceId','FyProductNumber','VendorName','VendorPartNumber','IsDiscontinued']
+        df_product_lookup = self.get_lookup(proc_name,column_names)
+        return df_product_lookup
+
+    def set_discon_product_price(self):
+        proc_name = 'sequoia.set_discon_product'
+        column_names = ['ProductPriceId','IsDiscontinued']
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 
