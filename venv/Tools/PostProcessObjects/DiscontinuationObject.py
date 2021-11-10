@@ -18,21 +18,29 @@ class DiscontinueObject(BasicProcessObject):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'The Reaper'
 
+    def batch_preprocessing(self):
+        self.define_new()
+
     def define_new(self):
         self.df_discon_products = self.obDal.get_discon_products()
         match_headers = ['FyProductNumber','VendorPartNumber','VendorName']
-        self.df_discon_products['Filter'] = 'Fail'
+        self.df_discon_products['Filter'] = 'Update'
+        # products in db marked update
         self.df_product = self.df_product.merge(self.df_discon_products,
                                                          how='left', on=match_headers)
-        self.df_product.loc[(self.df_product['Filter'] != 'Fail'), 'Filter'] = 'Good'
-        self.df_product.loc[~(self.df_product['IsDiscontinued_x'] != self.df_product['IsDiscontinued_y']), 'Filter'] = 'Update'
-
+        # products not in db
+        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+        # products that need to be updated
+        self.df_product.loc[~(self.df_product['IsDiscontinued_x'] == self.df_product['IsDiscontinued_y'],self.df_product['Filter'] == 'Update'), 'Filter'] = 'Good'
+        # products that need to be updated, reset the discon column to the new value
+        self.df_product.loc[(self.df_product['Filter'] == 'Update'), 'IsDiscontinued'] = self.df_product['IsDiscontinued_x']
 
 
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            print(row)
             if 'Filter' in row:
                 if row['Filter'] == 'Fail':
                     self.obReporter.update_report('Fail','Failed to match this product')
@@ -54,9 +62,11 @@ class DiscontinueObject(BasicProcessObject):
             is_discontinued = row['IsDiscontinued']
 
             self.obIngester.set_discon_product_price(self.is_last, price_id, is_discontinued)
+
         return True, df_collect_product_base_data
 
-
+    def trigger_ingest_cleanup(self):
+        self.obIngester.set_discon_product_price_cleanup()
 
 
 ## end ##

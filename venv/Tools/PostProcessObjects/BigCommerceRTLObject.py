@@ -17,6 +17,8 @@ class BigCommerceRTLObject(BasicProcessObject):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'BC Ready To Load'
 
+    def batch_preprocessing(self):
+        self.define_new()
 
     def define_new(self):
         self.df_current_BC_toggles = self.obDal.get_bc_toggles()
