@@ -232,6 +232,7 @@ class MinimumProduct(BasicProcessObject):
         is_green = 0
         is_latex_free = 0
         is_rx = 0
+        is_hazardous = 0
 
         success = True
         df_collect_product_base_data = df_line_product.copy()
@@ -315,6 +316,14 @@ class MinimumProduct(BasicProcessObject):
                     return success, df_collect_product_base_data
             else:
                 df_collect_product_base_data['IsRX'] = [is_rx]
+
+            if 'IsHazardous' in row:
+                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsHazardous')
+                if success == False:
+                    self.obReporter.update_report('Fail','IsHazardous failed boolean evaluation')
+                    return success, df_collect_product_base_data
+            else:
+                df_collect_product_base_data['IsHazardous'] = [is_hazardous]
 
 
         return_df_line_product = self.minimum_product(df_collect_product_base_data)
@@ -422,12 +431,13 @@ class MinimumProduct(BasicProcessObject):
             is_green = row['IsGreen']
             is_latex_free = row['IsLatexFree']
             is_rx = row['IsRX']
+            is_hazardous = row['IsHazardous']
 
         self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_product_id, product_name, short_desc,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id, is_controlled, is_disposible,
-                                                 is_green, is_latex_free, is_rx)
+                                                 is_green, is_latex_free, is_rx, is_hazardous)
 
         return df_line_product
 

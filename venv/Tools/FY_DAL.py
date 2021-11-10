@@ -601,9 +601,10 @@ class DalObject:
 
     def get_discon_products(self):
         proc_name = 'sequoia.get_discon_products_lookup'
-        column_names = []
+        column_names = ['ProductPriceId','FyProductNumber','VendorName','VendorPartNumber']
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
+
 
     def min_product_price_cap(self,lst_product_price):
         proc_name = 'sequoia.MinimumProductPrice_capture'

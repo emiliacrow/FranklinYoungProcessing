@@ -9,9 +9,9 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class DiscontinueObject(BasicProcessObject):
-    req_fields = ['ProductPriceId','FyProductNumber', 'FyCatalogNumber']
+    req_fields = ['FyProductNumber', 'VendorPartNumber', 'VendorName']
 
-    sup_fields = ['ManufacturerPartNumber', 'VendorPartNumber']
+    sup_fields = []
     att_fields = []
     gen_fields = []
     def __init__(self,df_product, user, password, is_testing):

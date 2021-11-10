@@ -494,14 +494,14 @@ class IngestionObject:
         return ingested_set
 
 
-    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0):
+    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0, newIsHazardous=0):
         # if this is the last to join, or if the size has hit the limit, send a runner
         if (len(self.product_collector) > self.load_limit) or (is_last):
             self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
                                                newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
-                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX))
+                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX, newIsHazardous))
 
             self.obDal.min_product_cap(self.product_collector)
             self.product_collector = []
@@ -510,7 +510,7 @@ class IngestionObject:
                                                newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
-                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX))
+                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX, newIsHazardous))
 
     def ingest_product_cleanup(self):
         if self.product_collector != []:
