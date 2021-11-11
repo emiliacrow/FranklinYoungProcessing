@@ -496,39 +496,42 @@ class AssignCategoryDialog(QDialog):
         for each_cat in categories:
             split_cat = each_cat.split('/')
             if len(split_cat) == 4:
-                if split_cat[1] not in self.dct_categories:
+                if split_cat[1] not in self.dct_categories.keys():
                     self.dct_categories[split_cat[1]] = {split_cat[2]:['',split_cat[3]]}
-                elif split_cat[2] not in self.dct_categories[split_cat[1]]:
+                elif split_cat[2] not in self.dct_categories[split_cat[1]].keys():
                     self.dct_categories[split_cat[1]][split_cat[2]] = ['',split_cat[3]]
-                else:
+                elif split_cat[3] not in self.dct_categories[split_cat[1]][split_cat[2]]:
                     self.dct_categories[split_cat[1]][split_cat[2]].append(split_cat[3])
 
             elif len(split_cat) == 3:
-                if split_cat[1] not in self.dct_categories:
+                if split_cat[1] not in self.dct_categories.keys():
                     self.dct_categories[split_cat[1]] = {split_cat[2]:['']}
-                elif split_cat[2] not in self.dct_categories[split_cat[1]]:
+                elif split_cat[2] not in self.dct_categories[split_cat[1]].keys():
                     self.dct_categories[split_cat[1]][split_cat[2]] = ['']
 
             elif len(split_cat) == 2:
-                if split_cat[1] not in self.dct_categories:
+                if split_cat[1] not in self.dct_categories.keys():
                     self.dct_categories[split_cat[1]] = {}
 
 
     def set_dropdowns(self):
         top_level = list(self.dct_categories.keys())
         top_level.sort()
+        self.category1_dropdown.clear()
         self.category1_dropdown.addItems(top_level)
         completer1 = QCompleter(top_level)
         self.category1_dropdown.setCompleter(completer1)
 
         mid_level = list(self.dct_categories[top_level[0]].keys())
         mid_level.sort()
+        self.category2_dropdown.clear()
         self.category2_dropdown.addItems(mid_level)
         completer2 = QCompleter(mid_level)
         self.category2_dropdown.setCompleter(completer2)
 
         bot_level = self.dct_categories[top_level[0]][mid_level[0]]
         bot_level.sort()
+        self.category3_dropdown.clear()
         self.category3_dropdown.addItems(bot_level)
         completer3 = QCompleter(bot_level)
         self.category3_dropdown.setCompleter(completer3)
