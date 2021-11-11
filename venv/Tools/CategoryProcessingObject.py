@@ -121,10 +121,10 @@ class CategoryProcessor(BasicProcessObject):
 
             # combine
             if 'LongDescription' in row:
-                description = description+'\n'+row['LongDescription']
+                description = description+' - '+row['LongDescription']
 
             if 'ProductDescription' in row:
-                description = description+'\n'+row['ProductDescription']
+                description = description+' - '+row['ProductDescription']
 
             # tokenize
             lst_description = description.split()
@@ -170,6 +170,10 @@ class CategoryProcessor(BasicProcessObject):
                     word_2 = result_set['Word2']
 
                     if (len(word_1) > 2) and (len(word_2) > 2):
+                        if len(assigned_category) - len(assigned_category.replace('/','')) > 2:
+                            up_category = assigned_category.rpartition('/')[0]
+                            return_id = self.obDal.set_word_category_associations(word_1, word_2, up_category, 1)
+
                         return_id = self.obDal.set_word_category_associations(word_1, word_2, assigned_category, 1)
 
         return True, return_df_line_product

@@ -42,7 +42,7 @@ class DiscontinueObject(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
                 if row['Filter'] == 'Fail':
-                    self.obReporter.update_report('Fail','Failed to match this product')
+                    self.obReporter.update_report('Fail','Failed to match a DB product')
                     return False, df_collect_product_base_data
                 if row['Filter'] == 'Good':
                     self.obReporter.update_report('Alert','No change')
