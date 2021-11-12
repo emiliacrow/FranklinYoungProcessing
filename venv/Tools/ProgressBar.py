@@ -355,11 +355,12 @@ class FileDialogObject(QWidget):
 
 
 class AssignCategoryDialog(QDialog):
-    def __init__(self, new_description, lst_categories, parent=None, icon = 'duck'):
+    def __init__(self, product_number, new_description, lst_categories, parent=None, icon = 'duck'):
         super().__init__(parent)
         self.return_textbox = []
         self.lst_output_req = {}
         self.set_category_dict(lst_categories)
+        self.lst_categories = lst_categories
 
         self.set_icon = set_icon
         self.fy_icon = self.set_icon(icon)
@@ -372,13 +373,35 @@ class AssignCategoryDialog(QDialog):
 
         # top level: description
         self.search_desc = new_description.replace(' ','+')
+        self.product_number = product_number
+
+        self.desc_style = 'QLabel{border: 1px solid grey; color: black; background-color: white}'
+        self.frame_style = 'QFrame{background-color: 1px solid grey}'
+
+        self.search_style = 'QButton{border: 1px solid grey; color: lightblue}'
+        self.assign_style = 'QButton{border: 1px solid grey; color: lightgreen}'
+        self.skip_style = 'QButton{border: 1px solid grey; color: pink}'
+
         self.desc_label = QLabel(new_description)
         self.desc_label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.desc_label.setWordWrap(True)
-        self.desc_style = 'QLabel{border: 1px solid grey; color: black; background-color: white}'
-        self.frame_style = 'QFrame{background-color: 1px solid grey}'
         self.desc_label.setStyleSheet(self.desc_style)
         self.layout.addWidget(self.desc_label, 0, 0, 2, 3)
+
+        # attempt to accept the data
+        self.search_desc_button = QPushButton('Search description on web', self)
+        self.search_desc_button.setToolTip('This will search the description.')
+        self.search_desc_button.clicked.connect(self.search_desc_action)
+        self.search_desc_button.setStyleSheet(self.search_style)
+        self.layout.addWidget(self.search_desc_button, 0, 3, 1, 1)
+
+        # attempt to accept the data
+        search_button_text = 'Search {0} on web'.format(self.product_number)
+        self.search_prod_button = QPushButton(search_button_text, self)
+        self.search_prod_button.setToolTip('This will search the product number.')
+        self.search_prod_button.clicked.connect(self.search_prod_action)
+        self.search_prod_button.setStyleSheet(self.search_style)
+        self.layout.addWidget(self.search_prod_button, 1, 3, 1, 1)
 
         self.frame_line_1 = QFrame()
         self.frame_line_1.setFrameShape(QFrame.HLine)
@@ -412,9 +435,10 @@ class AssignCategoryDialog(QDialog):
         self.layout.addWidget(self.category3_dropdown, 5, 1, 1, 2)
 
         # attempt to accept the data
-        self.assign_button = QPushButton('\nAssign by level\n', self)
+        self.assign_button = QPushButton('\nAssign by Level\n', self)
         self.assign_button.setToolTip('This will assign the category based on level selection to the product.')
         self.assign_button.clicked.connect(self.on_assign)
+        self.assign_button.setStyleSheet(self.assign_style)
         self.layout.addWidget(self.assign_button, 3, 3, 3, 1)
 
         self.frame_line_2 = QFrame()
@@ -422,62 +446,69 @@ class AssignCategoryDialog(QDialog):
         self.frame_line_2.setStyleSheet(self.frame_style)
         self.layout.addWidget(self.frame_line_2, 6, 0, 1, 4)
 
+
         # second left-most catgegory label
-        self.full_category_label = QLabel('Full Category: ')
-        self.layout.addWidget(self.full_category_label, 7, 0, 1, 1)
+        self.cat_search_label = QLabel('Search Categories: ')
+        self.cat_search_label.setToolTip('first word in the pair to match with the category')
+        self.layout.addWidget(self.cat_search_label, 7, 0, 1, 1)
+
+        self.cat_search_collect = QLineEdit(self)
+        self.cat_search_collect.setText('')
+        self.cat_search_collect.textChanged.connect(self.cat_search_change)
+        self.layout.addWidget(self.cat_search_collect, 7, 1, 1, 2)
+
+        # second left-most catgegory label
+        self.full_category_label = QLabel('Top Score Category: ')
+        self.layout.addWidget(self.full_category_label, 8, 0, 1, 1)
 
         # second right big drop down
         self.full_category_dropdown = QComboBox()
-        self.full_category_dropdown.addItems(lst_categories)
-        self.layout.addWidget(self.full_category_dropdown, 7, 1, 1, 2)
+        self.full_category_dropdown.addItems(self.lst_categories)
+        self.layout.addWidget(self.full_category_dropdown, 8, 1, 1, 2)
 
         # attempt to accept the data
-        self.take_full_button = QPushButton('Assign category', self)
+        self.take_full_button = QPushButton('Assign Category', self)
         self.take_full_button.setToolTip('This will assign the category from the full category to the product.')
         self.take_full_button.clicked.connect(self.on_take_full)
-        self.layout.addWidget(self.take_full_button, 7, 3, 1, 1)
+        self.take_full_button.setStyleSheet(self.assign_style)
+        self.layout.addWidget(self.take_full_button, 8, 3, 1, 1)
 
 
         self.frame_line_3 = QFrame()
         self.frame_line_3.setFrameShape(QFrame.HLine)
         self.frame_line_3.setStyleSheet(self.frame_style)
-        self.layout.addWidget(self.frame_line_3, 8, 0, 1, 4)
+        self.layout.addWidget(self.frame_line_3, 9, 0, 1, 4)
 
         # second left-most catgegory label
-        self.word1_label = QLabel('Word1: ')
-        self.word1_label.setToolTip('first word in the pair to match with the category')
-        self.layout.addWidget(self.word1_label, 9, 0, 1, 1)
-
-        # attempt to accept the data
-        self.search_it_button = QPushButton('Search description\n on web', self)
-        self.search_it_button.setToolTip('This will search the description.')
-        self.search_it_button.clicked.connect(self.search_action)
-        self.layout.addWidget(self.search_it_button, 9, 3, 2, 1)
+        self.word1_label = QLabel('Word or phrase: ')
+        self.word1_label.setToolTip('This will be made lower case')
+        self.layout.addWidget(self.word1_label, 10, 0, 1, 1)
 
         # edit text box
         self.word1_collect = QLineEdit(self)
         self.word1_collect.setText('')
         self.word1_collect.setPlaceholderText('required')
         self.word1_collect.setToolTip('Remember: garbage in, garbage out')
-        self.layout.addWidget(self.word1_collect, 9, 1, 1, 2)
+        self.layout.addWidget(self.word1_collect, 10, 1, 1, 2)
 
         # second left-most catgegory label
-        self.word2_label = QLabel('Word2: ')
-        self.word2_label.setToolTip('second word in the pair to match with the category')
-        self.layout.addWidget(self.word2_label, 10, 0, 1, 1)
+        self.word2_label = QLabel('Word or phrase: ')
+        self.word2_label.setToolTip('This will be made lower case')
+        self.layout.addWidget(self.word2_label, 11, 0, 1, 1)
 
         # edit text box
         self.word2_collect = QLineEdit(self)
         self.word2_collect.setText('')
         self.word2_collect.setPlaceholderText('required')
         self.word2_collect.setToolTip('Remember: garbage in, garbage out')
-        self.layout.addWidget(self.word2_collect, 10, 1, 1, 2)
+        self.layout.addWidget(self.word2_collect, 11, 1, 1, 2)
 
         # skip this one
         self.skip_button = QPushButton('\nskip assignment\n', self)
         self.skip_button.setToolTip('Pass on assigning')
         self.skip_button.clicked.connect(self.on_skip)
-        self.layout.addWidget(self.skip_button, 0, 3, 2, 1)
+        self.skip_button.setStyleSheet(self.skip_style)
+        self.layout.addWidget(self.skip_button, 10, 3, 2, 1)
 
         self.setLayout(self.layout)
 
@@ -485,8 +516,32 @@ class AssignCategoryDialog(QDialog):
 
         self.show()
 
-    def search_action(self):
+    def cat_search_change(self):
+        self.full_category_dropdown.clear()
+        search_value = str(self.cat_search_collect.text())
+        filter_categories = []
+        if len(search_value) > 1:
+
+            for each_cat in self.lst_categories:
+                if (search_value.lower()) in (each_cat.lower()):
+                    filter_categories.append(each_cat)
+
+            if len(filter_categories) == 0:
+                filter_categories = ['No match']
+
+            self.full_category_dropdown.addItems(filter_categories)
+        else:
+            self.full_category_dropdown.addItems(self.lst_categories)
+
+
+    def search_desc_action(self):
         url = 'https://www.google.com/search?q='+ self.search_desc
+        url_command = "start \"\" " + url
+        os.system(url_command)
+        self.search_desc
+
+    def search_prod_action(self):
+        url = 'https://www.google.com/search?q='+ self.product_number
         url_command = "start \"\" " + url
         os.system(url_command)
         self.search_desc
@@ -563,6 +618,7 @@ class AssignCategoryDialog(QDialog):
             self.category3_dropdown.setCompleter(completer3)
 
     def on_take_full(self):
+        assigned_category = str(self.full_category_dropdown.currentText())
         self.lst_output_req['AssignedCategory'] = str(self.full_category_dropdown.currentText())
         self.lst_output_req['Word1'] = str(self.word1_collect.text())
         self.lst_output_req['Word2'] = str(self.word2_collect.text())

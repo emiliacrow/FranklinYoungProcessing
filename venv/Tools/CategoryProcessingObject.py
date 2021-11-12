@@ -27,7 +27,7 @@ class CategoryProcessor(BasicProcessObject):
 
     def header_viability(self):
         if self.proc_to_run == 'Category Picker':
-            self.req_fields = ['FyProductNumber', 'ShortDescription']
+            self.req_fields = ['ManufacturerPartNumber', 'ShortDescription']
 
         if self.proc_to_run == 'Category Training':
             self.req_fields = ['Word1','Word2','Category','IsGood']
@@ -127,16 +127,19 @@ class CategoryProcessor(BasicProcessObject):
                 description = description+' - '+row['ProductDescription']
 
             # tokenize
-            lst_description = description.split()
-            lst_description = list(dict.fromkeys(lst_description))
-            description = ' '.join(lst_description)
+
             description = description.replace(', ',' ')
             description = description.replace('. ',' ')
             description = description.replace('; ',' ')
             description = description.replace(': ',' ')
+            description = description.replace(': ',' ')
+            description = description.lower()
+            lst_description = description.split()
+            lst_description = list(dict.fromkeys(lst_description))
+            description = ' '.join(lst_description)
 
             # for later
-            product_number = str(row['FyProductNumber'])
+            product_number = str(row['ManufacturerPartNumber'])
 
             # get df with scores
             df_cat_match = self.obDal.get_category_match_desc(description)
@@ -146,6 +149,8 @@ class CategoryProcessor(BasicProcessObject):
 
             if top_score > min_score_to_pass:
                 assigned_category = (df_cat_match['CategoryDesc'].to_list())[0]
+                print(description)
+                print(assigned_category)
                 return_df_line_product['AssignedCategory'] = assigned_category
 
             else:
@@ -153,15 +158,17 @@ class CategoryProcessor(BasicProcessObject):
                 lst_possible_categories = df_cat_match['CategoryDesc'].to_list()
 
                 # display the picker
-                self.obCatAssignment = AssignCategoryDialog(description, lst_possible_categories)
+                self.obCatAssignment = AssignCategoryDialog(product_number, description, lst_possible_categories)
 
                 self.obCatAssignment.exec_()
                 result_set = self.obCatAssignment.getReturnSet()
 
-                cat_name_selected = ''
                 if 'AssignedCategory' in result_set:
                     assigned_category = result_set['AssignedCategory']
-                    return_df_line_product['AssignedCategory'] = assigned_category
+                    if '/' in assigned_category:
+                        return_df_line_product['AssignedCategory'] = assigned_category
+                    else:
+                        return_df_line_product['AssignedCategory'] = ''
 
                 word_1 = ''
                 word_2 = ''
@@ -444,7 +451,7 @@ class CategoryProcessor(BasicProcessObject):
             description.replace(',','')
 
             # for later
-            product_number = str(row['FyProductNumber'])
+            product_number = str(row['ManufacturerPartNumber'])
 
             # get df with scores
             df_cat_match = self.obDal.get_category_match_desc(description)
@@ -453,7 +460,7 @@ class CategoryProcessor(BasicProcessObject):
             lst_possible_categories = df_cat_match['CategoryDesc'].to_list()
 
             # display the picker
-            self.obCatAssignment = AssignCategoryDialog(description, lst_possible_categories)
+            self.obCatAssignment = AssignCategoryDialog(product_number, description, lst_possible_categories)
 
             self.obCatAssignment.exec_()
             result_set = self.obCatAssignment.getReturnSet()
