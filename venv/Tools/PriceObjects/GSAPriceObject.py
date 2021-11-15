@@ -16,7 +16,7 @@ class GSAPrice(BasicProcessObject):
 
     sup_fields = []
     att_fields = []
-    gen_fields = []
+    gen_fields = ['ContractedManufacturerPartNumber']
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'GSA Price Ingestion'
@@ -156,6 +156,9 @@ class GSAPrice(BasicProcessObject):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            if 'ContractedManufacturerPartNumber' not in row:
+                return_df_line_product['ContractedManufacturerPartNumber'] = ''
+
             if 'GSABasePrice' not in row:
                 approved_list_price = float(row['GSAApprovedListPrice'])
                 approved_percent = float(row['GSAApprovedPercent'])
@@ -194,6 +197,8 @@ class GSAPrice(BasicProcessObject):
             except ValueError:
                 approved_price_date = str(row['GSAApprovedPriceDate'])
 
+            contract_manu_number = row['ContractedManufacturerPartNumber']
+
             approved_list_price = row['GSAApprovedListPrice']
             approved_percent = row['GSAApprovedPercent']
 
@@ -206,8 +211,8 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_Sin']
 
 
-        self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, contract_number, contract_mod_number,
-                                                             is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
+        self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, approved_list_price, contract_manu_number, contract_number, contract_mod_number,
+                                                             is_pricing_approved, approved_price_date, approved_percent,
                                                              gsa_base_price, gsa_sell_price, mfc_precent, mfc_price,sin)
 
 
