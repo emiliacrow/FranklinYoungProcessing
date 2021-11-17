@@ -3,6 +3,7 @@
 # Updated: 20210927
 # CreateFor: Franklin Young International
 
+import pandas
 
 from Tools.BasicProcess import BasicProcessObject
 
