@@ -21,7 +21,7 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.define_new()
 
     def define_new(self):
-        self.df_current_BC_toggles = self.obDal.get_bc_toggles()
+        self.df_current_BC_toggles = self.obDal.get_bc_rtl_state()
         match_headers = ['ProductPriceId','FyProductNumber','BCPriceUpdateToggle','BCDataUpdateToggle']
         self.df_current_BC_toggles['Filter'] = 'Fail'
         self.df_product = pandas.DataFrame.merge(self.df_product, self.df_current_BC_toggles,
