@@ -10,6 +10,7 @@ class HeaderTranslator():
         # I would prefer this get read from elsewhere so it doesn't live in code
         # that's stupid
         self.dct_headers = {'VendorName':['VendorName','Vendor Name','primary_vendor_name'],
+                            'VendorCode':['VendorCode', 'Vendor Code', 'primary_vendor_code'],
                             'ManufacturerName':['ManufacturerName','Manufacturer Name','Manu Name','manufacturer_name','Manufacturer Standard Name'],
                             'SupplierName':['SupplierName','Supplier Name','supplier name','supplier_name'],
 
@@ -22,7 +23,7 @@ class HeaderTranslator():
                             'RecommendedStorage':['shelf_life_months','RecommendedStorage','StorageInstruction'],
 
                             'ProductName':['ProductName','Product Name','product_name','vendor_product_name','primary_vendor_product_name'],
-                            'ProductDescription':['ProductDescription','Product Description','product_description','ProductDesc','Product Desc','product_desc'],
+                            'ProductDescription':['ProductDescription','Product Description','product_description','ProductDesc','Product Desc','product_desc', 'prodname'],
                             'ShortDescription':['ShortDescription','Short Description','short_description','short_desc','ShortDesc','Short Desc'],
                             'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
