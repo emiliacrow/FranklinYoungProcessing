@@ -681,7 +681,7 @@ class DalObject:
 
     def get_base_product_price_lookup_by_vendor_id(self, vendor_id):
         proc_name = 'sequoia.get_BasePrice_lookup_vendor_id'
-        column_names = ['FyProductNumber','ProductPriceId', 'FyCost']
+        column_names = ['FyProductNumber','ProductPriceId']
         df_base_price_lookup = self.get_lookup(proc_name,column_names,vendor_id)
         return df_base_price_lookup
 
