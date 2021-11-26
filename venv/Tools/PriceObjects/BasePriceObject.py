@@ -122,161 +122,294 @@ class BasePrice(BasicProcessObject):
         success, df_line_product = self.base_price(df_collect_product_base_data)
         return success, df_line_product
 
-
-    def process_pricing(self, df_collect_product_base_data, row):
-        try:
-            fy_cost = round(float(row['FyCost']),2)
-            df_collect_product_base_data['FyCost'] = [fy_cost]
-        except ValueError:
-            self.obReporter.update_report('Fail', 'Bad Fy Cost.')
-            return False, df_collect_product_base_data
-
-        if 'VendorListPrice' in row and 'Discount' in row:
-            try:
-                vendor_list_price = round(float(row['VendorListPrice']), 2)
-                fy_discount_percent = round(float(row['Discount']), 2)
-
-            except ValueError:
-                self.obReporter.update_report('Alert', 'Bad vendor list or discount.')
-                return False, df_collect_product_base_data
-
-            if fy_discount_percent != 0:
-                # discount and cost
-                fy_cost_test = vendor_list_price - round((vendor_list_price * fy_discount_percent), 2)
-                check_val = abs(fy_cost_test - fy_cost)
-                # we trust the cost provided over the discount given
-                if check_val > 0.01:
-                    fy_discount_percent = round((1 - (fy_cost / vendor_list_price)), 2)
-                    df_collect_product_base_data['Discount'] = [fy_discount_percent]
-
-        elif 'Discount' in row:
-            try:
-                fy_discount_percent = round(float(row['Discount']), 2)
-            except ValueError:
-                self.obReporter.update_report('Alert', 'Bad vendor discount.')
-                return False, df_collect_product_base_data
-
-            if fy_discount_percent != 0:
-                vendor_list_price = round(fy_cost/(1-fy_discount_percent), 2)
-                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
-            else:
-                df_collect_product_base_data['VendorListPrice'] = [0]
-
-        elif 'VendorListPrice' in row:
+    def process_vendor_price(self, df_collect_product_base_data, row):
+        vendor_list_price = -1
+        if 'VendorListPrice' in row:
             try:
                 vendor_list_price = round(float(row['VendorListPrice']), 2)
             except ValueError:
-                self.obReporter.update_report('Alert', 'Bad vendor list price.')
-                return False, df_collect_product_base_data
+                self.obReporter.update_report('Fail', 'Bad vendor list price.')
+                return False, df_collect_product_base_data, vendor_list_price
 
-            if vendor_list_price != 0:
-                fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
-                df_collect_product_base_data['Discount'] = fy_discount_percent
-            else:
-                df_collect_product_base_data['Discount'] = [0]
+        elif 'db_VendorListPrice' in row:
+            try:
+                vendor_list_price = round(float(row['VendorListPrice']), 2)
+                df_collect_product_base_data['VendorListPrice'] = row['db_VendorListPrice']
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad DB vendor list price.')
+                return False, df_collect_product_base_data, vendor_list_price
         else:
-            df_collect_product_base_data['Discount'] = [0]
-            df_collect_product_base_data['VendorListPrice'] = [0]
+            vendor_list_price = 0
+            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+            self.obReporter.update_report('Alert', 'Vendor list price set to 0.')
 
-        if 'Fixed Shipping Cost' not in row:
-            estimated_freight = 0
-            df_collect_product_base_data['Fixed Shipping Cost'] = estimated_freight
+        return True, df_collect_product_base_data, vendor_list_price
+
+
+    def process_vendor_discount_price(self, df_collect_product_base_data, row):
+        fy_discount_percent = -1
+        if 'Discount' in row:
+            try:
+                fy_discount_percent = round(float(row['Discount']), 2)
+
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad discount.')
+                return False, df_collect_product_base_data, fy_discount_percent
+
+        elif 'db_Discount' in row:
+            try:
+                fy_discount_percent = round(float(row['db_Discount']), 2)
+
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad DB discount.')
+                return False, df_collect_product_base_data,fy_discount_percent
         else:
+            fy_discount_percent = 0
+            df_collect_product_base_data['Discount'] = [fy_discount_percent]
+            self.obReporter.update_report('Alert', 'Discount to 0.')
+
+        return True, df_collect_product_base_data, fy_discount_percent
+
+
+    def set_vendor_list(self, df_collect_product_base_data, fy_cost, fy_discount_percent):
+        vendor_list_price = round(fy_cost / (1 - fy_discount_percent), 2)
+        df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+        self.obReporter.update_report('Alert', 'VendorListPrice was calculated.')
+        return df_collect_product_base_data
+
+    def set_vendor_discount(self, df_collect_product_base_data, fy_cost, vendor_list_price):
+        fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
+        df_collect_product_base_data['Discount'] = fy_discount_percent
+        self.obReporter.update_report('Alert', 'Discount was calculated.')
+        return df_collect_product_base_data
+
+
+    def process_shipping_cost(self, df_collect_product_base_data, row, fy_cost):
+        fy_landed_cost = -1
+        if 'Landed Cost' in row:
+            try:
+                fy_landed_cost = round(float(row['Landed Cost']), 2)
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Landed cost must be a number.')
+                return False, df_collect_product_base_data, fy_landed_cost
+
+
+        if 'Fixed Shipping Cost' in row:
             try:
                 estimated_freight = round(float(row['Fixed Shipping Cost']), 2)
+
             except ValueError:
-                self.obReporter.update_report('Alert', 'Bad estimated freight value.')
-                return False, df_collect_product_base_data
+                self.obReporter.update_report('Fail', 'Bad Fixed Shipping Cost.')
+                return False, df_collect_product_base_data, fy_landed_cost
 
-        fy_landed_cost = round(fy_cost + estimated_freight, 2)
-        df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
-
-        if 'LandedCostMarkupPercent_FYSell' in row and 'ECommerceDiscount' not in row and 'Retail Price' not in row:
+        elif 'db_shipping_cost' not in row:
             try:
-                mark_up_sell = round(float(row['LandedCostMarkupPercent_FYSell']), 2)
-                fy_sell_price = round(fy_landed_cost * mark_up_sell, 2)
-                df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+                estimated_freight = round(float(row['db_shipping_cost']), 2)
+                df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
             except ValueError:
-                self.obReporter.update_report('Fail', 'Bad mark up value.')
-                return False, df_collect_product_base_data
+                self.obReporter.update_report('Fail', 'Bad db_shipping_cost.')
+                return False, df_collect_product_base_data, fy_landed_cost
 
-            if 'LandedCostMarkupPercent_FYList' not in row:
-                mark_up_list = mark_up_sell + self.lindas_increase
-                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
-            else:
-                try:
-                    mark_up_list = round(float(row['LandedCostMarkupPercent_FYList']), 2)
-                except ValueError:
-                    self.obReporter.update_report('Fail', 'Bad mark up.')
-                    return False, df_collect_product_base_data
-            fy_list_price = round(fy_landed_cost * mark_up_list, 2)
-            df_collect_product_base_data['Retail Price'] = [fy_list_price]
+        else:
+            estimated_freight = 0
+            df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
+            self.obReporter.update_report('Alert', 'Fixed Shipping Cost set to 0.')
 
-            df_collect_product_base_data['ECommerceDiscount'] = [round(1-float(fy_sell_price/fy_list_price), 2)]
+        if 'Landed Cost' not in row:
+            fy_landed_cost = round(fy_cost + estimated_freight, 2)
+            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+            self.obReporter.update_report('Alert', 'Landed Cost was calculated.')
 
-        elif ('ECommerceDiscount' in row or 'MfcDiscountPercent' in row) and 'Retail Price' not in row and 'LandedCostMarkupPercent_FYList' in row:
+        return True, df_collect_product_base_data, fy_landed_cost
+
+    def process_markup_sell(self, df_collect_product_base_data, row):
+        markup_sell = -1
+        if 'LandedCostMarkupPercent_FYSell' in row:
             try:
-                mark_up_list = round(float(row['LandedCostMarkupPercent_FYList']), 2)
-                fy_list_price = round(fy_landed_cost * mark_up_list, 2)
-                df_collect_product_base_data['Retail Price'] = fy_list_price
-
+                markup_sell = round(float(row['LandedCostMarkupPercent_FYSell']), 2)
             except ValueError:
-                self.obReporter.update_report('Fail', 'Bad mark up value.')
-                return False, df_collect_product_base_data
+                self.obReporter.update_report('Fail', 'Bad markup sell value.')
+                return False, df_collect_product_base_data, markup_sell
+        elif 'db_MarkUp_sell' in row:
+            try:
+                markup_sell = round(float(row['db_MarkUp_sell']), 2)
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad markup sell value.')
+                return False, df_collect_product_base_data, markup_sell
 
-            if 'ECommerceDiscount' not in row:
-                try:
-                    ecommerce_discount = round(float(row['MfcDiscountPercent']), 2)
-                    df_collect_product_base_data['ECommerceDiscount'] = [ecommerce_discount]
-                    self.obReporter.update_report('Alert', 'MfcDiscountPercent was used in place of ECommerceDiscount.')
+        return True, df_collect_product_base_data, markup_sell
 
-                except ValueError:
-                    self.obReporter.update_report('Fail', 'Bad MfcDiscountPercent.')
-                    return False, df_collect_product_base_data
-            else:
-                try:
-                    ecommerce_discount = round(float(row['ECommerceDiscount']), 2)
-                except ValueError:
-                    self.obReporter.update_report('Fail', 'Bad ECommerceDiscount.')
-                    return False, df_collect_product_base_data
 
+    def process_markup_list(self, df_collect_product_base_data, row, markup_sell):
+        markup_list = -1
+        if 'LandedCostMarkupPercent_FYList' in row:
+            try:
+                markup_list = round(float(row['LandedCostMarkupPercent_FYList']), 2)
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad markup list value.')
+                return False, df_collect_product_base_data, markup_list
+
+        elif 'db_MarkUp_list' in row:
+            try:
+                markup_list = round(float(row['db_MarkUp_list']), 2)
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad markup list value.')
+                return False, df_collect_product_base_data, markup_list
+        elif markup_sell > 0:
+            markup_list = markup_sell + self.lindas_increase
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+
+        return True, df_collect_product_base_data, markup_list
+
+
+    def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
+        fy_sell_price = round(fy_landed_cost * markup_sell, 2)
+        df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+
+        fy_list_price = round(fy_landed_cost * markup_sell, 2)
+        df_collect_product_base_data['Retail Price'] = [fy_list_price]
+
+        df_collect_product_base_data['ECommerceDiscount'] = [round(1 - float(fy_sell_price / fy_list_price), 2)]
+
+        return df_collect_product_base_data
+
+    def process_ecom_discount(self, df_collect_product_base_data, row):
+        ecommerce_discount = -1
+        if 'ECommerceDiscount' in row:
+            try:
+                ecommerce_discount = round(float(row['ECommerceDiscount']), 2)
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad ECommerceDiscount value.')
+                return False, df_collect_product_base_data, ecommerce_discount
+
+        elif 'db_ECommerceDiscount' in row:
+            try:
+                ecommerce_discount = round(float(row['db_ECommerceDiscount']), 2)
+                df_collect_product_base_data['ECommerceDiscount'] = [ecommerce_discount]
+                self.obReporter.update_report('Alert', 'db_ECommerceDiscount was used in place of ECommerceDiscount.')
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad MfcDiscountPercent value.')
+                return False, df_collect_product_base_data, ecommerce_discount
+
+        elif 'MfcDiscountPercent' in row:
+            try:
+                ecommerce_discount = round(float(row['MfcDiscountPercent']), 2)
+                df_collect_product_base_data['ECommerceDiscount'] = [ecommerce_discount]
+                self.obReporter.update_report('Alert', 'MfcDiscountPercent was used in place of ECommerceDiscount.')
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad MfcDiscountPercent value.')
+                return False, df_collect_product_base_data, ecommerce_discount
+
+        return True, df_collect_product_base_data, ecommerce_discount
+
+
+    def process_discount_off_list(self, df_collect_product_base_data, row, fy_landed_cost, markup_list):
+        fy_list_price = round(fy_landed_cost * markup_list, 2)
+        df_collect_product_base_data['Retail Price'] = [fy_list_price]
+
+        success, df_collect_product_base_data, ecommerce_discount  = self.process_ecom_discount(df_collect_product_base_data, row)
+        if success:
             fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
             df_collect_product_base_data['Sell Price'] = [fy_sell_price]
             df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [round(float(fy_sell_price/fy_landed_cost), 2)]
+            return True, df_collect_product_base_data
+        else:
+            self.obReporter.update_report('Fail', 'No ECommerce value to take.')
+            return success, df_collect_product_base_data
 
-
-        elif 'Retail Price' in row and ('ECommerceDiscount' in row or 'MfcDiscountPercent' in row):
+    def process_from_list_price(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell):
+        if 'Retail Price' in row:
             try:
                 fy_list_price = round(float(row['Retail Price']), 2)
-                mark_up_list = round(float(fy_list_price/fy_landed_cost), 2)
+                markup_list = round(float(fy_list_price/fy_landed_cost), 2)
+                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
 
             except ValueError:
                 self.obReporter.update_report('Fail', 'Bad retail price.')
                 return False, df_collect_product_base_data
 
-            if 'LandedCostMarkupPercent_FYList' not in row:
-                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [mark_up_list]
-
-            if 'ECommerceDiscount' not in row:
-                try:
-                    mfc_discount = round(float(row['MfcDiscountPercent']), 2)
-                    df_collect_product_base_data['ECommerceDiscount'] = [mfc_discount]
-                    self.obReporter.update_report('Alert', 'MfcDiscountPercent was used in place of ECommerceDiscount.')
-                except ValueError:
-                    self.obReporter.update_report('Fail', 'Bad MfcDiscountPercent.')
-                    return False, df_collect_product_base_data
+            success, df_collect_product_base_data, ecommerce_discount  = self.process_ecom_discount(df_collect_product_base_data, row)
+            if success:
+                fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
+                df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [round(float(fy_sell_price/fy_landed_cost), 2)]
             else:
-                try:
-                    ecommerce_discount = round(float(row['ECommerceDiscount']), 2)
-                except ValueError:
-                    self.obReporter.update_report('Fail', 'Bad ECommerceDiscount.')
-                    return False, df_collect_product_base_data
+                self.obReporter.update_report('Fail', 'No ECommerce value to take.')
+                return False, df_collect_product_base_data
 
-            fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
+            return True, df_collect_product_base_data
+        else:
+            fy_sell_price = round(fy_landed_cost * markup_sell, 2)
             df_collect_product_base_data['Sell Price'] = [fy_sell_price]
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [round(float(fy_sell_price/fy_landed_cost), 2)]
+            markup_list = markup_sell + self.lindas_increase
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+
+            fy_list_price = round(fy_landed_cost * markup_list, 2)
+            df_collect_product_base_data['Retail Price'] = [fy_list_price]
+            df_collect_product_base_data['ECommerceDiscount'] = [round(1-float(fy_sell_price/fy_list_price), 2)]
+
+            return True, df_collect_product_base_data
+
+    def process_pricing(self, df_collect_product_base_data, row):
+        # check if we can math the value
+        try:
+            fy_cost = round(float(row['FyCost']),2)
+            df_collect_product_base_data['FyCost'] = [fy_cost]
+        except ValueError:
+            self.obReporter.update_report('Fail', 'Bad FyCost value.')
+            return False, df_collect_product_base_data
+
+        # this is where the calculation for vendor price, and discount
+        success, df_collect_product_base_data, vendor_list_price = self.process_vendor_price(df_collect_product_base_data, row)
+        if success == False:
+            return success, df_collect_product_base_data
+
+        success, df_collect_product_base_data, fy_discount_percent = self.process_vendor_discount_price(df_collect_product_base_data, row)
+        if success == False:
+            return success, df_collect_product_base_data
+
+        # generate values where possible
+        # non-failable
+        if fy_discount_percent > 0 and vendor_list_price == 0:
+            df_collect_product_base_data = self.set_vendor_list(df_collect_product_base_data, fy_cost, fy_discount_percent)
+
+        if fy_discount_percent == 0 and vendor_list_price > 0:
+            df_collect_product_base_data = self.set_vendor_discount(df_collect_product_base_data, fy_cost, vendor_list_price)
+
+        # estimated freight and landed cost
+        success, df_collect_product_base_data, fy_landed_cost = self.process_shipping_cost(df_collect_product_base_data, row, fy_cost)
+        if success == False:
+            return success, df_collect_product_base_data
+
+        # these handle markups if they exist
+        success, df_collect_product_base_data, markup_sell = self.process_markup_sell(df_collect_product_base_data, row)
+        if success == False:
+            return success, df_collect_product_base_data
+
+        success, df_collect_product_base_data, markup_list = self.process_markup_list(df_collect_product_base_data, row, markup_sell)
+        if success == False:
+            return success, df_collect_product_base_data
+
+
+        # we usually sell this price, and present List as retail price
+        # landed cost + each of these
+        if markup_sell > 0 and markup_list > 0:
+            df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)
+            return True, df_collect_product_base_data
+
+        elif markup_list > 0:
+            success, df_collect_product_base_data = self.process_discount_off_list(df_collect_product_base_data, row, fy_landed_cost, markup_list)
+            return success, df_collect_product_base_data
+
+        elif markup_sell > 0:
+            success, df_collect_product_base_data = self.process_from_list_price(df_collect_product_base_data, row, fy_landed_cost, markup_sell)
+            return success, df_collect_product_base_data
 
         else:
+            # at this point we should know that:
+            # the data provided was not enough to generate all the values required
+            # there is not enough legacy data in the db to use as fall back
+            # therefore we can't generate all the values
             if 'LandedCostMarkupPercent_FYSell' not in row:
                 df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [0]
 
@@ -297,8 +430,7 @@ class BasePrice(BasicProcessObject):
 
             self.obReporter.update_report('Alert', 'Basic pricing was loaded.')
 
-
-        return True, df_collect_product_base_data
+            return True, df_collect_product_base_data
 
 
     def process_visibility(self, df_collect_product_base_data, row):
