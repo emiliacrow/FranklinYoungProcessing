@@ -202,7 +202,7 @@ class BasePrice(BasicProcessObject):
                 self.obReporter.update_report('Fail', 'Bad Fixed Shipping Cost.')
                 return False, df_collect_product_base_data, fy_landed_cost
 
-        elif 'db_shipping_cost' not in row:
+        elif 'db_shipping_cost' in row:
             try:
                 estimated_freight = round(float(row['db_shipping_cost']), 2)
                 df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
@@ -252,6 +252,7 @@ class BasePrice(BasicProcessObject):
         elif 'db_MarkUp_list' in row:
             try:
                 markup_list = round(float(row['db_MarkUp_list']), 2)
+                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
             except ValueError:
                 self.obReporter.update_report('Fail', 'Bad markup list value.')
                 return False, df_collect_product_base_data, markup_list
