@@ -116,6 +116,10 @@ class CategoryProcessor(BasicProcessObject):
 
         return_df_line_product = df_product_line.copy()
         for colName, row in df_product_line.iterrows():
+            if 'Category' in row:
+                # skip if there is already a category
+                continue
+
             description = ''
             description = str(row['ShortDescription'])
 
@@ -149,8 +153,6 @@ class CategoryProcessor(BasicProcessObject):
 
             if top_score > min_score_to_pass:
                 assigned_category = (df_cat_match['CategoryDesc'].to_list())[0]
-                print(description)
-                print(assigned_category)
                 return_df_line_product['AssignedCategory'] = assigned_category
 
             else:
