@@ -356,6 +356,8 @@ class FillProduct(BasicProcessObject):
                 except IndexError:
                     image_id = 1
                     self.obReporter.update_report('Alert','This image must be imported first.')
+            else:
+                image_id = 1
 
             if image_id != -1:
                 # check image name against db names

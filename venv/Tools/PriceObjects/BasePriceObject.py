@@ -267,7 +267,7 @@ class BasePrice(BasicProcessObject):
         fy_sell_price = round(fy_landed_cost * markup_sell, 2)
         df_collect_product_base_data['Sell Price'] = [fy_sell_price]
 
-        fy_list_price = round(fy_landed_cost * markup_sell, 2)
+        fy_list_price = round(fy_landed_cost * markup_list, 2)
         df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
         df_collect_product_base_data['ECommerceDiscount'] = [round(1 - float(fy_sell_price / fy_list_price), 2)]

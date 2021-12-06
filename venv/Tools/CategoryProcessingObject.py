@@ -150,6 +150,8 @@ class CategoryProcessor(BasicProcessObject):
 
             # check if there's a top scorer
             top_score = int((df_cat_match['VoteCount'].to_list())[0])
+            # make this somehow related to how much data was tested
+            # for example you could use some log(len(lst_description)) or something to make a leveling off value
 
             if top_score > min_score_to_pass:
                 assigned_category = (df_cat_match['CategoryDesc'].to_list())[0]
