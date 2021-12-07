@@ -146,6 +146,7 @@ class MinimumProductPrice(BasicProcessObject):
             if success == False:
                 self.obReporter.update_report('Fail','Failed at pricing processing')
                 return success, df_collect_product_base_data
+            df_collect_product_base_data = self.process_discontinued(df_collect_product_base_data, row)
 
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
@@ -243,6 +244,19 @@ class MinimumProductPrice(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
+
+    def process_discontinued(self, df_collect_product_base_data, row):
+        if ('IsDiscontinued' not in row):
+            df_collect_product_base_data['IsDiscontinued'] = [0]
+            self.obReporter.update_report('Alert','IsDiscontinued was assigned')
+        elif str(row['IsDiscontinued']) == 'N':
+            df_collect_product_base_data['IsDiscontinued'] = [0]
+        elif str(row['IsDiscontinued']) == 'Y':
+            df_collect_product_base_data['IsDiscontinued'] = [1]
+
+        return df_collect_product_base_data
+
+
     def minimum_product_price(self,df_line_product):
         # ship it!
         for colName, row in df_line_product.iterrows():
@@ -251,6 +265,7 @@ class MinimumProductPrice(BasicProcessObject):
             fy_part_number = row['FyPartNumber']
             product_tax_class = row['ProductTaxClass']
             vendor_part_number = row['VendorPartNumber']
+            is_discontinued = row['IsDiscontinued']
 
             product_id = row['ProductId']
             vendor_id = row['VendorId']
@@ -259,7 +274,7 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_issue_quantity = row['Conv Factor/QTY UOM']
 
         self.obIngester.ingest_product_price(self.is_last, fy_product_number,allow_purchases,fy_part_number,
-                                             product_tax_class, vendor_part_number,product_id, vendor_id,
+                                             product_tax_class, vendor_part_number, is_discontued, product_id, vendor_id,
                                              unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
 
         return True, df_line_product

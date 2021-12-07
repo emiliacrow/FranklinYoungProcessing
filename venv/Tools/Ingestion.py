@@ -577,14 +577,14 @@ class IngestionObject:
         return return_id
 
 
-    def ingest_product_price(self, is_last, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity):
+    def ingest_product_price(self, is_last, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity):
         if (len(self.product_collector) > self.load_limit) or (is_last):
-            self.product_collector.append((newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity))
+            self.product_collector.append((newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity))
             self.obDal.min_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
             self.product_collector.append((newFyProductNumber, newAllowPurchases, newFyPartNumber,
-                                                newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
+                                                newProductTaxClass, newVendorPartNumber, newIsDiscontinued, newProductId, newVendorId,
                                                 newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity))
 
     def ingest_product_price_cleanup(self):

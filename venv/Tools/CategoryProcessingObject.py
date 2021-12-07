@@ -33,7 +33,7 @@ class CategoryProcessor(BasicProcessObject):
             self.req_fields = ['Word1','Word2','Category','IsGood']
 
         if self.proc_to_run == 'Category Assignment':
-            self.req_fields = ['FyProductNumber', 'ShortDescription']
+            self.req_fields = ['FyProductNumber', 'ManufacturerPartNumber', 'ShortDescription']
 
         # inital file viability check
         product_headers = set(self.lst_product_headers)

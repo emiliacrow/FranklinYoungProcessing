@@ -15,7 +15,7 @@ class HeaderTranslator():
                             'SupplierName':['SupplierName','Supplier Name','supplier name','supplier_name'],
 
                             'VendorPartNumber':['VendorPartNumber','Vendor Part Number','primary_vendor_part_no','Thomas Item #','vendor_part_no'],
-                            'CountryOfOrigin':['CountryOfOrigin','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code'],
+                            'CountryOfOrigin':['CountryOfOrigin','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
 
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber','manufacturer_part_no','Supplier Part # '],
                             'FyProductNumber':['FyProductNumber', 'Fy Product Number', 'FY Product Number'],
@@ -45,6 +45,8 @@ class HeaderTranslator():
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
                             'OnContract':['OnContract','GSAOnContract','VAOnContract','ECATOnContract','HTMEOnContract','FEDMALLOnContract','On Contract','GSA On Contract','VA On Contract','ECAT On Contract','HTME On Contract','FEDMALL On Contract'],
+                            'IsDiscontinued':['IsDiscontinued','Discontinued','is discontinued','Is Discontinued'],
+
 # GSA
                             'GSAApprovedListPrice':['GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
                                                     'GSAApprovedFYListPrice'],
