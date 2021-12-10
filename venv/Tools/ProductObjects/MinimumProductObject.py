@@ -318,12 +318,19 @@ class MinimumProduct(BasicProcessObject):
                 df_collect_product_base_data['IsRX'] = [is_rx]
 
             if 'IsHazardous' in row:
-                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsHazardous')
-                if success == False:
-                    self.obReporter.update_report('Fail','IsHazardous failed boolean evaluation')
-                    return success, df_collect_product_base_data
+                if str(row['IsHazardous']) == 'N':
+                    df_collect_product_base_data['IsHazardous'] = [0]
+                elif str(row['IsHazardous']) == 'Y':
+                    df_collect_product_base_data['IsHazardous'] = [1]
+                else:
+                    success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsHazardous')
+                    if success == False:
+                        self.obReporter.update_report('Fail','IsHazardous failed boolean evaluation')
+                        return success, df_collect_product_base_data
+
             else:
-                df_collect_product_base_data['IsHazardous'] = [is_hazardous]
+                df_collect_product_base_data['IsHazardous'] = [0]
+                self.obReporter.update_report('Alert', 'IsDiscontinued was assigned')
 
 
         return_df_line_product = self.minimum_product(df_collect_product_base_data)

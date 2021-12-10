@@ -31,7 +31,9 @@ class HeaderTranslator():
                             'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity'],
                             'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue'],
                             'UnitOfMeasure':['UnitOfMeasure','UOM','uom','uom_std'],
-                            'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days'],
+                            'IsHazardous':['IsHazardous','Is Hazardous','Hazardous'],
+                            'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
+                            'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times'],
                             'LeadTimeDaysExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
 
                             'VendorListPrice':['Vendor List Price','VendorListPrice','List Price','primary_vendor_list_price','vendor_list_price'],
