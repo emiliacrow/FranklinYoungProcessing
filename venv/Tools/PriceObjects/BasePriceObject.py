@@ -473,16 +473,44 @@ class BasePrice(BasicProcessObject):
             if 'FEDMALLProductPriceId' in row:
                 fedmall_product_price_id = row['FEDMALLProductPriceId']
 
+
+
+
+
             vendor_list_price = row['VendorListPrice']
             fy_discount_percent = row['Discount']
             fy_cost = row['FyCost']
             estimated_freight = row['Fixed Shipping Cost']
             fy_landed_cost = row['Landed Cost']
-            markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']
-            fy_sell_price = row['Sell Price']
-            markup_percent_fy_list = row['LandedCostMarkupPercent_FYList']
-            fy_list_price = row['Retail Price']
-            ecommerce_discount = row['ECommerceDiscount']
+
+            if 'LandedCostMarkupPercent_FYSell' not in row:
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [0]
+                markup_percent_fy_sell = 0
+            else:
+                markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']
+
+            if 'Sell Price' not in row:
+                df_collect_product_base_data['Sell Price'] = [0]
+                fy_sell_price = 0
+            else:
+                fy_sell_price = row['Sell Price']
+
+            if 'LandedCostMarkupPercent_FYSell' not in row:
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [0]
+                markup_percent_fy_list = 0
+            else:
+                markup_percent_fy_list = row['LandedCostMarkupPercent_FYList']
+
+            if 'Retail Price' not in row:
+                df_collect_product_base_data['Retail Price'] = [0]
+                fy_list_price = 0
+            else:
+                fy_list_price = row['Retail Price']
+
+            if 'ECommerceDiscount' not in row:
+                df_collect_product_base_data['ECommerceDiscount'] = [0]
+            else:
+                ecommerce_discount = row['ECommerceDiscount']
 
             if 'DateCatalogReceived' in row:
                 try:

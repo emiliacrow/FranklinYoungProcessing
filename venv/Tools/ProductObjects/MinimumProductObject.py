@@ -463,7 +463,7 @@ class UpdateMinimumProduct(MinimumProduct):
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
-        self.name = 'Fill Minimum Product'
+        self.name = 'Update Minimum Product'
         self.quick_country = {}
 
     def filter_check_in(self, row):
