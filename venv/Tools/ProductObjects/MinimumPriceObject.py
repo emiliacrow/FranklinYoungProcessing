@@ -273,8 +273,8 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_measure_symbol_id = row['UnitOfMeasureSymbolId']
             unit_of_issue_quantity = row['Conv Factor/QTY UOM']
 
-        self.obIngester.ingest_product_price(self.is_last, fy_product_number,allow_purchases,fy_part_number,
-                                             product_tax_class, vendor_part_number, is_discontued, product_id, vendor_id,
+        self.obIngester.ingest_product_price(self.is_last, fy_product_number, allow_purchases, fy_part_number,
+                                             product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
                                              unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
 
         return True, df_line_product
