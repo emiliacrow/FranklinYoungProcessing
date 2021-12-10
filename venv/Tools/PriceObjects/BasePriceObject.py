@@ -473,10 +473,6 @@ class BasePrice(BasicProcessObject):
             if 'FEDMALLProductPriceId' in row:
                 fedmall_product_price_id = row['FEDMALLProductPriceId']
 
-
-
-
-
             vendor_list_price = row['VendorListPrice']
             fy_discount_percent = row['Discount']
             fy_cost = row['FyCost']
@@ -509,6 +505,7 @@ class BasePrice(BasicProcessObject):
 
             if 'ECommerceDiscount' not in row:
                 df_collect_product_base_data['ECommerceDiscount'] = [0]
+                ecommerce_discount = 0
             else:
                 ecommerce_discount = row['ECommerceDiscount']
 
