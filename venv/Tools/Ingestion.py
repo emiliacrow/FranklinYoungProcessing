@@ -762,6 +762,16 @@ class IngestionObject:
             self.product_collector.append((ProductId, ProductBrochureUrl, ProductBrochureName))
 
 
+    def set_productcertificate_cap(self, is_last, ProductId, ProductCertificateUrl, ProductCertificateName):
+        if (len(self.product_collector) > self.load_limit) or (is_last):
+            self.product_collector.append([ProductId, ProductCertificateUrl, ProductCertificateName])
+            self.obDal.productcertificate_cap(self.product_collector)
+            self.product_collector = []
+
+        else:
+            self.product_collector.append((ProductId, ProductCertificateUrl, ProductCertificateName))
+
+
     def set_productvideo_cap(self, is_last, ProductId, ProductVideoUrl, ProductVideoName):
         if (len(self.product_collector) > self.load_limit) or (is_last):
             self.product_collector.append([ProductId, ProductVideoUrl, ProductVideoName])
@@ -771,15 +781,6 @@ class IngestionObject:
         else:
             self.product_collector.append((ProductId, ProductVideoUrl, ProductVideoName))
 
-
-    def set_productcertificate_cap(self, is_last, ProductId, ProductCertificateUrl, ProductCertificateName):
-        if (len(self.product_collector) > self.load_limit) or (is_last):
-            self.product_collector.append([ProductId, ProductCertificateUrl, ProductCertificateName])
-            self.obDal.productcertificate_cap(self.product_collector)
-            self.product_collector = []
-
-        else:
-            self.product_collector.append((ProductId, ProductCertificateUrl, ProductCertificateName))
 
 
 ## end ##

@@ -734,18 +734,18 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productbrochure)
         runner.start()
 
-    def productvideo_cap(self, lst_productvideo):
-        proc_name = 'sequoia.ProductVideo_capture'
-        proc_statement = 'CALL `sequoia`.`ProductVideo_capture`(%s, %s, %s);'
-        self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productvideo)
-        runner.start()
-
     def productcertificate_cap(self, lst_productcertificate):
         proc_name = 'sequoia.ProductCertificate_capture'
         proc_statement = 'CALL `sequoia`.`ProductCertificate_capture`(%s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productcertificate)
+        runner.start()
+
+    def productvideo_cap(self, lst_productvideo):
+        proc_name = 'sequoia.ProductVideo_capture'
+        proc_statement = 'CALL `sequoia`.`ProductVideo_capture`(%s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productvideo)
         runner.start()
 
 
