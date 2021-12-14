@@ -711,6 +711,44 @@ class DalObject:
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 
+
+
+    def productimage_cap(self, lst_productsafetysheet):
+        proc_name = 'sequoia.ProductSafetySheet_capture'
+        proc_statement = 'CALL `sequoia`.`ProductSafetySheet_capture`(%s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
+        runner.start()
+
+    def productsafetysheet_cap(self, lst_productsafetysheet):
+        proc_name = 'sequoia.ProductSafetySheet_capture'
+        proc_statement = 'CALL `sequoia`.`ProductSafetySheet_capture`(%s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
+        runner.start()
+
+    def productbrochure_cap(self, lst_productbrochure):
+        proc_name = 'sequoia.ProductBrochure_capture'
+        proc_statement = 'CALL `sequoia`.`ProductBrochure_capture`(%s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productbrochure)
+        runner.start()
+
+    def productvideo_cap(self, lst_productvideo):
+        proc_name = 'sequoia.ProductVideo_capture'
+        proc_statement = 'CALL `sequoia`.`ProductVideo_capture`(%s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productvideo)
+        runner.start()
+
+    def productcertificate_cap(self, lst_productcertificate):
+        proc_name = 'sequoia.ProductCertificate_capture'
+        proc_statement = 'CALL `sequoia`.`ProductCertificate_capture`(%s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productcertificate)
+        runner.start()
+
+
     def naked_cap(self,thisdoesnothing,noreally):
         proc_name = 'sequoia.Unknown_capture_wrap'
         proc_args = (thisdoesnothing,noreally)

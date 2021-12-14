@@ -729,4 +729,57 @@ class IngestionObject:
             self.product_collector.append((ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger))
 
 
+    def set_productimage_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):
+        # this may require a new loading object or process to better handle images
+        # see the example below
+        # sequoia.ProductImage_capture(196365, 2, 10, '')
+        if (len(self.product_collector) > self.load_limit) or (is_last):
+            self.product_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
+            self.obDal.productimage_cap(self.product_collector)
+            self.product_collector = []
+
+        else:
+            self.product_collector.append((ProductId, ProductSafetySheetUrl, ProductSafetySheetName))
+
+
+    def set_productsafetysheet_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):
+        if (len(self.product_collector) > self.load_limit) or (is_last):
+            self.product_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
+            self.obDal.productsafetysheet_cap(self.product_collector)
+            self.product_collector = []
+
+        else:
+            self.product_collector.append((ProductId, ProductSafetySheetUrl, ProductSafetySheetName))
+
+
+    def set_productbrochure_cap(self, is_last, ProductId, ProductBrochureUrl, ProductBrochureName):
+        if (len(self.product_collector) > self.load_limit) or (is_last):
+            self.product_collector.append([ProductId, ProductBrochureUrl, ProductBrochureName])
+            self.obDal.productbrochure_cap(self.product_collector)
+            self.product_collector = []
+
+        else:
+            self.product_collector.append((ProductId, ProductBrochureUrl, ProductBrochureName))
+
+
+    def set_productvideo_cap(self, is_last, ProductId, ProductVideoUrl, ProductVideoName):
+        if (len(self.product_collector) > self.load_limit) or (is_last):
+            self.product_collector.append([ProductId, ProductVideoUrl, ProductVideoName])
+            self.obDal.productvideo_cap(self.product_collector)
+            self.product_collector = []
+
+        else:
+            self.product_collector.append((ProductId, ProductVideoUrl, ProductVideoName))
+
+
+    def set_productcertificate_cap(self, is_last, ProductId, ProductCertificateUrl, ProductCertificateName):
+        if (len(self.product_collector) > self.load_limit) or (is_last):
+            self.product_collector.append([ProductId, ProductCertificateUrl, ProductCertificateName])
+            self.obDal.productcertificate_cap(self.product_collector)
+            self.product_collector = []
+
+        else:
+            self.product_collector.append((ProductId, ProductCertificateUrl, ProductCertificateName))
+
+
 ## end ##
