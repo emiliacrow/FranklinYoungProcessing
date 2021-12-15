@@ -715,7 +715,9 @@ class DalObject:
 
     def productimage_cap(self, lst_productsafetysheet):
         proc_name = 'sequoia.ProductSafetySheet_capture'
+
         proc_statement = 'CALL `sequoia`.`ProductSafetySheet_capture`(%s, %s, %s);'
+
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
         runner.start()

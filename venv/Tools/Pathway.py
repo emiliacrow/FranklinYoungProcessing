@@ -28,6 +28,7 @@ from Tools.ProductAgniKaiObject import ProductAgniKaiObject
 from Tools.CategoryProcessingObject import CategoryProcessor
 from Tools.PostProcessObjects.BigCommerceRTLObject import BigCommerceRTLObject as BC_RTL_Object
 from Tools.PostProcessObjects.DiscontinuationObject import DiscontinueObject
+from Tools.PostProcessObjects.ProcessProductAssetObject import ProcessProductAssetObject
 
 # product objects
 from Tools.ProductObjects.MinimumProductObject import MinimumProduct
@@ -375,7 +376,7 @@ class Pathways():
     def image_load_tool(self, is_testing):
         # set objects
         self.obDal = DalObject(self.user, self.password)
-        self.obS3 = S3Object(self.aws_access_key_id,self.aws_secret_access_key)
+        self.obS3 = S3Object(self.aws_access_key_id, self.aws_secret_access_key)
         self.bucket = 'franklin-young-image-bank'
         self.obIngester = IngestionObject(self.obDal)
         self.obDal.set_testing(is_testing)
@@ -782,7 +783,7 @@ class Pathways():
         return False, 'Process not built.'
 
     def contract_pathway(self, is_testing, contract_selected):
-        all_pathways = ['Ready to load-BC', 'Ready to load-GSA','Discontinue Products']
+        all_pathways = ['Ready to load-BC', 'Ready to load-GSA','Discontinue Products','Process Product Assets']
 
         self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+contract_selected)
         if self.success == False:
@@ -805,6 +806,13 @@ class Pathways():
             self.success, self.message = self.obDiscon.begin_process()
             self.df_product = self.obDiscon.get_df()
             self.obFileFinder.write_xlsx(self.df_product, 'discon')
+            return self.success, self.message
+
+        elif contract_selected == 'Process Product Assets':
+            self.obAsset = ProcessProductAssetObject(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obAsset.begin_process()
+            self.df_product = self.obAsset.get_df()
+            self.obFileFinder.write_xlsx(self.df_product, 'asset')
             return self.success, self.message
 
         return False, 'Process not built.'
