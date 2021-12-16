@@ -21,14 +21,15 @@ class S3Object:
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
 
-    def put_image(self, file_path, file_name, bucket, object_name = None):
+    def put_file(self, file_path, file_name, bucket, object_name = None):
         if object_name is None:
             object_name = file_name
 
         s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
                                    aws_secret_access_key=self.aws_secret_access_key)
 
-        response = s3_client.upload_file(file_path,bucket,file_name)
+        response = s3_client.upload_file(file_path, bucket, file_name, ExtraArgs={'ACL': 'public-read'})
+
 
     def generate_url(self,bucket,object_name):
         expiration = 3600
@@ -750,6 +751,11 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productvideo)
         runner.start()
 
+    def get_current_assets(self):
+        proc_name = 'sequoia.get_current_assets'
+        column_names = ['FyProductNumber','ProductId','CurrentAssetPath']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
 
     def naked_cap(self,thisdoesnothing,noreally):
         proc_name = 'sequoia.Unknown_capture_wrap'

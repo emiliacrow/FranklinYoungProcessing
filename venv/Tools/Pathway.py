@@ -417,7 +417,7 @@ class Pathways():
 
             s3_name = vendor_name + '/' + image_name
 
-            self.obS3.put_image(image_path, s3_name, self.bucket)
+            self.obS3.put_file(image_path, s3_name, self.bucket)
 
             # this provides a link for downloading the image
             # image_presigned_url = self.obS3.generate_url(self.bucket, s3_name)
