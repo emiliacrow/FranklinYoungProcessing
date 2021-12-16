@@ -17,6 +17,12 @@ class IngestionObject:
         self.product_price_collector = []
         self.product_image_match_collector = []
 
+        self.product_image_collector = []
+        self.product_safetysheet_collector = []
+        self.product_brochure_collector = []
+        self.product_certificate_collector = []
+        self.product_video_collector = []
+
     def set_progress_bar(self, name, count_of_steps):
         self.obProgressBarWindow = ProgressBarWindow(name)
         self.obProgressBarWindow.show()
@@ -733,53 +739,73 @@ class IngestionObject:
         # this may require a new loading object or process to better handle images
         # see the example below
         # sequoia.ProductImage_capture(196365, 2, 10, '')
-        if (len(self.product_collector) > self.load_limit) or (is_last):
-            self.product_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
-            self.obDal.productimage_cap(self.product_collector)
-            self.product_collector = []
+        if (len(self.product_image_collector) > self.load_limit) or (is_last):
+            self.product_image_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
+            self.obDal.productimage_cap(self.product_image_collector)
+            self.product_image_collector = []
 
         else:
-            self.product_collector.append((ProductId, ProductSafetySheetUrl, ProductSafetySheetName))
+            self.product_image_collector.append((ProductId, ProductSafetySheetUrl, ProductSafetySheetName))
+
+    def set_productimage_cleanup(self):
+        if self.product_image_collector != []:
+            self.obDal.productimage_cap(self.product_image_collector)
 
 
     def set_productsafetysheet_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):
-        if (len(self.product_collector) > self.load_limit) or (is_last):
-            self.product_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
-            self.obDal.productsafetysheet_cap(self.product_collector)
-            self.product_collector = []
+        if (len(self.product_safetysheet_collector) > self.load_limit) or (is_last):
+            self.product_safetysheet_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
+            self.obDal.productsafetysheet_cap(self.product_safetysheet_collector)
+            self.product_safetysheet_collector = []
 
         else:
-            self.product_collector.append((ProductId, ProductSafetySheetUrl, ProductSafetySheetName))
+            self.product_safetysheet_collector.append((ProductId, ProductSafetySheetUrl, ProductSafetySheetName))
+
+    def set_productsafetysheet_cleanup(self):
+        if self.product_safetysheet_collector != []:
+            self.obDal.productsafetysheet_cap(self.product_safetysheet_collector)
 
 
     def set_productbrochure_cap(self, is_last, ProductId, ProductBrochureUrl, ProductBrochureName):
-        if (len(self.product_collector) > self.load_limit) or (is_last):
-            self.product_collector.append([ProductId, ProductBrochureUrl, ProductBrochureName])
-            self.obDal.productbrochure_cap(self.product_collector)
-            self.product_collector = []
+        if (len(self.product_brochure_collector) > self.load_limit) or (is_last):
+            self.product_brochure_collector.append([ProductId, ProductBrochureUrl, ProductBrochureName])
+            self.obDal.productbrochure_cap(self.product_brochure_collector)
+            self.product_brochure_collector = []
 
         else:
-            self.product_collector.append((ProductId, ProductBrochureUrl, ProductBrochureName))
+            self.product_brochure_collector.append((ProductId, ProductBrochureUrl, ProductBrochureName))
+
+    def set_productbrochure_cleanup(self):
+        if self.product_brochure_collector != []:
+            self.obDal.productbrochure_cap(self.product_brochure_collector)
 
 
     def set_productcertificate_cap(self, is_last, ProductId, ProductCertificateUrl, ProductCertificateName):
-        if (len(self.product_collector) > self.load_limit) or (is_last):
-            self.product_collector.append([ProductId, ProductCertificateUrl, ProductCertificateName])
-            self.obDal.productcertificate_cap(self.product_collector)
-            self.product_collector = []
+        if (len(self.product_certificate_collector) > self.load_limit) or (is_last):
+            self.product_certificate_collector.append([ProductId, ProductCertificateUrl, ProductCertificateName])
+            self.obDal.productcertificate_cap(self.product_certificate_collector)
+            self.product_certificate_collector = []
 
         else:
-            self.product_collector.append((ProductId, ProductCertificateUrl, ProductCertificateName))
+            self.product_certificate_collector.append((ProductId, ProductCertificateUrl, ProductCertificateName))
+
+    def set_productcertificate_cleanup(self):
+        if self.product_certificate_collector != []:
+            self.obDal.productcertificate_cap(self.product_certificate_collector)
 
 
     def set_productvideo_cap(self, is_last, ProductId, ProductVideoUrl, ProductVideoName):
-        if (len(self.product_collector) > self.load_limit) or (is_last):
-            self.product_collector.append([ProductId, ProductVideoUrl, ProductVideoName])
-            self.obDal.productvideo_cap(self.product_collector)
-            self.product_collector = []
+        if (len(self.product_video_collector) > self.load_limit) or (is_last):
+            self.product_video_collector.append([ProductId, ProductVideoUrl, ProductVideoName])
+            self.obDal.productvideo_cap(self.product_video_collector)
+            self.product_video_collector = []
 
         else:
-            self.product_collector.append((ProductId, ProductVideoUrl, ProductVideoName))
+            self.product_video_collector.append((ProductId, ProductVideoUrl, ProductVideoName))
+
+    def set_productvideo_cleanup(self):
+        if self.product_video_collector != []:
+            self.obDal.productvideo_cap(self.product_video_collector)
 
 
 

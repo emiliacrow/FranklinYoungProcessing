@@ -809,7 +809,7 @@ class Pathways():
             return self.success, self.message
 
         elif contract_selected == 'Process Product Assets':
-            self.obAsset = ProcessProductAssetObject(self.df_product, self.user, self.password, is_testing)
+            self.obAsset = ProcessProductAssetObject(self.df_product, self.user, self.password, is_testing, self.aws_access_key_id, self.aws_secret_access_key)
             self.success, self.message = self.obAsset.begin_process()
             self.df_product = self.obAsset.get_df()
             self.obFileFinder.write_xlsx(self.df_product, 'asset')

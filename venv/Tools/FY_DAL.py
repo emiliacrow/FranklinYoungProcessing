@@ -753,7 +753,7 @@ class DalObject:
 
     def get_current_assets(self):
         proc_name = 'sequoia.get_current_assets'
-        column_names = ['FyProductNumber','ProductId','CurrentAssetPath']
+        column_names = ['FyProductNumber','ProductId','CurrentAssetPath','AssetType']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 
