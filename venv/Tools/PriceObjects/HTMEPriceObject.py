@@ -99,10 +99,12 @@ class HTMEPrice(BasicProcessObject):
 
 
     def remove_private_headers(self):
-        private_headers = ['Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
+        private_headers = {'Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
                            'ProductPriceId_x','BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
-                           'HTMEProductPriceId','HTMEProductPriceId_x','HTMEProductPriceId_y','Filter']
-        self.df_product = self.df_product.drop(columns=private_headers)
+                           'HTMEProductPriceId','HTMEProductPriceId_x','HTMEProductPriceId_y','Filter'}
+        current_headers = set(self.df_product.columns)
+        remove_headers = list(current_headers.intersection(private_headers))
+        self.df_product = self.df_product.drop(columns=remove_headers)
 
 
     def filter_check_in(self, row):
