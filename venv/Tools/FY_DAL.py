@@ -28,7 +28,7 @@ class S3Object:
         s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
                                    aws_secret_access_key=self.aws_secret_access_key)
 
-        response = s3_client.upload_file(file_path, bucket, file_name, ExtraArgs={'ACL': 'public-read'})
+        response = s3_client.upload_file(file_path, bucket, file_name)
 
 
     def generate_url(self,bucket,object_name):

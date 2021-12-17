@@ -159,6 +159,7 @@ class BasePrice(BasicProcessObject):
         elif 'db_Discount' in row:
             try:
                 fy_discount_percent = round(float(row['db_Discount']), 2)
+                df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
             except ValueError:
                 self.obReporter.update_report('Fail', 'Bad DB discount.')

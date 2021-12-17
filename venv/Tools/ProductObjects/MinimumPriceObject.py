@@ -30,6 +30,15 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product_lookup = self.obDal.get_product_lookup()
         self.df_product_price_lookup = self.obDal.get_product_price_lookup()
 
+        if 'ProductId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=['ProductId'])
+
+        if 'ProductId_y' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=['ProductId_y'])
+
+        if 'ProductId_x' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=['ProductId_x'])
+
         # if there's already a filter column, we remove it.
         if 'Filter' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns=['Filter'])
@@ -44,7 +53,9 @@ class MinimumProductPrice(BasicProcessObject):
             self.df_product = self.df_product.merge(self.df_product_lookup,
                                                             how='left', on=['FyCatalogNumber'])
 
+
         if 'ProductId_y' in self.df_product.columns:
+            print(self.df_product.columns)
             self.df_product['ProductId'] = self.df_product[['ProductId_y']]
             self.df_product = self.df_product.drop(columns=['ProductId_x'])
             self.df_product = self.df_product.drop(columns=['ProductId_y'])

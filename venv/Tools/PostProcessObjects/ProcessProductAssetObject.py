@@ -27,6 +27,8 @@ class ProcessProductAssetObject(BasicProcessObject):
     def batch_preprocessing(self):
         self.define_new()
         self.vendor_name = self.vendor_name_selection()
+        self.vendor_name = self.vendor_name.replace(',','')
+        self.vendor_name = self.vendor_name.replace(' ','_')
         pass
 
     def define_new(self):
@@ -92,9 +94,8 @@ class ProcessProductAssetObject(BasicProcessObject):
                 print('do video processing')
                 success, return_df_line_product = self.process_video(row, df_collect_product_base_data)
 
-            x = input('X')
 
-        shutil.rmtree('temp_asset_files\\')
+        shutil.rmtree(str(os.getcwd())+'temp_asset_files\\')
 
         return success, return_df_line_product
 
@@ -133,7 +134,7 @@ class ProcessProductAssetObject(BasicProcessObject):
                 whole_path = str(os.getcwd())+'\\'+temp_path
 
                 if os.path.exists(whole_path):
-                    self.obReporter.update_report('Alert','Asset exists.')
+                    object_name = whole_path.rpartition('\\')[2]
                 else:
                     # Make http request for remote file data
                     asset_data = requests.get(asset_path)
@@ -161,12 +162,10 @@ class ProcessProductAssetObject(BasicProcessObject):
             # THOMAS/imagename.png
             s3_name = self.vendor_name + '/' + object_name
 
-            print('put object:', whole_path, s3_name, bucket)
             # this puts the object into s3
-            self.obS3.put_file(asset_path, s3_name, bucket)
+            self.obS3.put_file(whole_path, s3_name, bucket)
 
             product_id = row['ProductId']
-            print('Push to db:', product_id, safety_sheet_url, safety_sheet_name)
 
             # this sets the data in the database
             self.obIngester.set_productsafetysheet_cap(self.is_last, product_id, safety_sheet_url, object_name)
