@@ -25,6 +25,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def batch_preprocessing(self):
+        self.remove_private_headers()
         self.define_new()
         self.vendor_name = self.vendor_name_selection()
         self.vendor_name = self.vendor_name.replace(',','')
@@ -38,6 +39,18 @@ class ProcessProductAssetObject(BasicProcessObject):
         self.df_product = pandas.DataFrame.merge(self.df_product, self.current_assets,
                                                          how='left', on=match_headers)
         self.df_product.loc[(self.df_product['Filter'] != 'Fail'), 'Filter'] = 'Update'
+
+    def remove_private_headers(self):
+        private_headers = {'ProductId','ProductId_y','ProductId_x',
+                           'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
+                           'VendorId','VendorId_x','VendorId_y',
+                           'CategoryId','CategoryId_x','CategoryId_y',
+                           'IsDiscontinued','IsDiscontinued_x','IsDiscontinued_y',
+                           'Report','Filter'}
+        current_headers = set(self.df_product.columns)
+        remove_headers = list(current_headers.intersection(private_headers))
+        if remove_headers != []:
+            self.df_product = self.df_product.drop(columns=remove_headers)
 
 
     def filter_check_in(self, row):

@@ -100,11 +100,12 @@ class BasePrice(BasicProcessObject):
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
                            'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
-                           'CategoryIdId','CategoryIdId_x','CategoryId_y',
+                           'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
-        self.df_product = self.df_product.drop(columns=remove_headers)
+        if remove_headers != []:
+            self.df_product = self.df_product.drop(columns=remove_headers)
 
 
     def filter_check_in(self, row):
