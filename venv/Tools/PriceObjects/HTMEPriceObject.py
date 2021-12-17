@@ -102,8 +102,7 @@ class HTMEPrice(BasicProcessObject):
         private_headers = ['Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
                            'ProductPriceId_x','BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
                            'HTMEProductPriceId','HTMEProductPriceId_x','HTMEProductPriceId_y','Filter']
-        if each_private_header in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=private_headers)
+        self.df_product = self.df_product.drop(columns=private_headers)
 
 
     def filter_check_in(self, row):
