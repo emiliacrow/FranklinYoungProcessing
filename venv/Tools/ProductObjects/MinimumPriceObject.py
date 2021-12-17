@@ -19,6 +19,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.name = 'Minimum Product Price'
 
     def batch_preprocessing(self):
+        self.remove_private_headers()
         self.df_uois_lookup = self.obDal.get_unit_of_issue_symbol_lookup()
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
@@ -29,19 +30,6 @@ class MinimumProductPrice(BasicProcessObject):
         # these are the df's for assigning data.
         self.df_product_lookup = self.obDal.get_product_lookup()
         self.df_product_price_lookup = self.obDal.get_product_price_lookup()
-
-        if 'ProductId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=['ProductId'])
-
-        if 'ProductId_y' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=['ProductId_y'])
-
-        if 'ProductId_x' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=['ProductId_x'])
-
-        # if there's already a filter column, we remove it.
-        if 'Filter' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=['Filter'])
 
         self.df_product_lookup['Filter'] = 'Update'
         # match all products on FyProdNum and Manufacturer part, clearly
@@ -91,6 +79,10 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.df_product = self.df_product.append(self.df_update_product)
 
+    def remove_private_headers(self):
+        private_headers = ['ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y','ProductPriceId_x','Filter']
+        if each_private_header in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=private_headers)
 
     def batch_process_vendor(self):
         if 'VendorName' not in self.df_product.columns:

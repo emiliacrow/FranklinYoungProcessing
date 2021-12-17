@@ -19,6 +19,7 @@ class FillProduct(BasicProcessObject):
 
 
     def batch_preprocessing(self):
+        self.remove_private_headers()
         self.define_new()
 
         self.df_image_names = self.obDal.get_image_names()
@@ -37,14 +38,6 @@ class FillProduct(BasicProcessObject):
         # these are the df's for assigning data.
         self.df_product_lookup = self.obDal.get_product_lookup()
         self.df_product_full_lookup = self.obDal.get_product_fill_lookup()
-
-        # if there's already a filter column, we remove it.
-        if 'Filter' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=['Filter'])
-        if 'ProductId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=['ProductId'])
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=['ProductPriceId'])
 
         self.df_product_lookup['Filter'] = 'Update'
         # match all products on FyProdNum and Manufacturer part, clearly
@@ -91,6 +84,11 @@ class FillProduct(BasicProcessObject):
 
             # recombine with product
             self.df_product = self.df_product.append(self.df_update_product)
+
+    def remove_private_headers(self):
+        private_headers = ['ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y','ProductPriceId_x','Filter']
+        if each_private_header in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=private_headers)
 
 
     def batch_process_attribute(self,attribute):

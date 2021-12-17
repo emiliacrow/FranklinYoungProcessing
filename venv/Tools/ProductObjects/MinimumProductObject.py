@@ -25,6 +25,7 @@ class MinimumProduct(BasicProcessObject):
 
     def batch_preprocessing(self):
         # TODO add something here to allow the user to just select the vendor name.
+        self.remove_private_headers()
         self.batch_process_vendor()
         self.define_new()
         self.batch_process_category()
@@ -45,6 +46,11 @@ class MinimumProduct(BasicProcessObject):
         self.batch_process_lead_time()
 
         return self.df_product
+
+    def remove_private_headers(self):
+        private_headers = ['ProductId','ProductId_y','ProductId_x','Filter']
+        if each_private_header in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=private_headers)
 
 
     def batch_process_vendor(self):

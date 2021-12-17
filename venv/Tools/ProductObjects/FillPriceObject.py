@@ -23,6 +23,7 @@ class FillProductPrice(BasicProcessObject):
         self.name = 'Product Price Fill'
 
     def batch_preprocessing(self):
+        self.remove_private_headers()
         # ident product price id
         self.batch_process_vendor()
         self.define_new()
@@ -86,6 +87,11 @@ class FillProductPrice(BasicProcessObject):
             self.df_product['Filter'] = 'Fail'
         else:
             self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+
+    def remove_private_headers(self):
+        private_headers = ['ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y','ProductPriceId_x','Filter']
+        if each_private_header in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=private_headers)
 
 
     def batch_process_attribute(self,attribute):
