@@ -84,7 +84,7 @@ class FillProductPrice(BasicProcessObject):
             self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
     def remove_private_headers(self):
-        private_headers = ['ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
+        private_headers = ['Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
                            'ProductPriceId_x','BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x','Filter']
         if each_private_header in self.df_product.columns:
             self.df_product = self.df_product.drop(columns=private_headers)

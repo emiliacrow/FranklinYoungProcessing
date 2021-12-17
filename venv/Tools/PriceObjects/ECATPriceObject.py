@@ -21,6 +21,7 @@ class ECATPrice(BasicProcessObject):
         self.name = 'ECAT Price Ingestion'
 
     def batch_preprocessing(self):
+        self.remove_private_headers()
         # define new, update, non-update
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
@@ -53,6 +54,7 @@ class ECATPrice(BasicProcessObject):
 
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])
+
 
     def define_new(self):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
@@ -95,6 +97,14 @@ class ECATPrice(BasicProcessObject):
             self.df_product = self.df_product.append(self.df_update_products)
 
             # this shouldn't always be 0
+
+
+    def remove_private_headers(self):
+        private_headers = ['Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
+                           'ProductPriceId_x','BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
+                           'ECATProductPriceId','ECATProductPriceId_x','ECATProductPriceId_y','Filter']
+        if each_private_header in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=private_headers)
 
 
     def filter_check_in(self, row):

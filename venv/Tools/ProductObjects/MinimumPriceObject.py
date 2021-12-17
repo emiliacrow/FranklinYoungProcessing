@@ -80,7 +80,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product = self.df_product.append(self.df_update_product)
 
     def remove_private_headers(self):
-        private_headers = ['ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y','ProductPriceId_x','Filter']
+        private_headers = ['Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y','ProductPriceId_x','Filter']
         if each_private_header in self.df_product.columns:
             self.df_product = self.df_product.drop(columns=private_headers)
 

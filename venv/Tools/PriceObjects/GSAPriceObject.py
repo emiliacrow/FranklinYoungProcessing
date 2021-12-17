@@ -22,6 +22,7 @@ class GSAPrice(BasicProcessObject):
         self.name = 'GSA Price Ingestion'
 
     def batch_preprocessing(self):
+        self.remove_private_headers()
         # define new, update, non-update
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
@@ -99,6 +100,14 @@ class GSAPrice(BasicProcessObject):
             self.df_product = self.df_product.append(self.df_update_products)
 
             # this shouldn't always be 0
+
+
+    def remove_private_headers(self):
+        private_headers = ['Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
+                           'ProductPriceId_x','BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
+                           'GSAProductPriceId','GSAProductPriceId_x','GSAProductPriceId_y','Filter']
+        if each_private_header in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=private_headers)
 
 
     def filter_check_in(self, row):
