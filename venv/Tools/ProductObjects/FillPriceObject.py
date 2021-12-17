@@ -74,11 +74,6 @@ class FillProductPrice(BasicProcessObject):
         self.df_base_price_lookup['Filter'] = 'Update'
         self.df_base_price_check_in = self.df_base_price_lookup[['FyProductNumber','ProductPriceId','Filter']]
 
-        if 'Filter' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'Filter')
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'ProductPriceId')
-
         # match all products on FyProdNum
         self.df_product = self.df_product.merge(self.df_base_price_check_in,
                                                  how='left', on='FyProductNumber')
