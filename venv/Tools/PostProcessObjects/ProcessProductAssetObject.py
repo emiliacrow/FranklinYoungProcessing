@@ -126,6 +126,7 @@ class ProcessProductAssetObject(BasicProcessObject):
         success = True
         return success, df_collect_product_base_data
 
+
     def process_safety_sheet(self, row, df_collect_product_base_data):
         success = True
         bucket = 'franklin-young-safetysheet-bank'
