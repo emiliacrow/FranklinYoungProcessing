@@ -18,6 +18,7 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.product_collector = {}
 
     def batch_preprocessing(self):
+        self.remove_private_headers()
         vendor_filter = self.vendor_name_selection()
 
         self.df_product_price_lookup = self.obDal.get_product_action_review_lookup(vendor_filter)
@@ -25,23 +26,6 @@ class ProductAgniKaiObject(BasicProcessObject):
         return self.df_product
 
     def define_new(self):
-        if 'Filter' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'Filter')
-        if 'Filter X' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'Filter X')
-        if 'Filter Y' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'Filter Y')
-
-        if 'ProductId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'ProductId')
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'ProductPriceId')
-
-        if 'BaseProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='BaseProductPriceId')
-
-
-
         # simple first
         self.df_product['Filter X'] = 'Update'
         self.df_product_price_lookup['Filter Y'] = 'Update'
@@ -85,6 +69,13 @@ class ProductAgniKaiObject(BasicProcessObject):
 
         self.df_product = self.df_product.drop(columns = ['Filter X','Filter Y','is_duplicated'])
 
+    def remove_private_headers(self):
+        private_headers = {'Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
+                           'ProductPriceId_x','BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
+                           'is_duplicated','Filter X', 'Filter Y', 'Filter'}
+        current_headers = set(self.df_product.columns)
+        remove_headers = list(current_headers.intersection(private_headers))
+        self.df_product = self.df_product.drop(columns=remove_headers)
 
     def run_process(self):
         self.set_progress_bar(10, 'Batch preprocessing')

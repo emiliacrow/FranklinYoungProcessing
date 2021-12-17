@@ -102,9 +102,13 @@ class VAPrice(BasicProcessObject):
 
 
     def remove_private_headers(self):
-        private_headers = {'Report','ProductId','ProductId_y','ProductId_x','ProductPriceId','ProductPriceId_y',
-                           'ProductPriceId_x','BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
-                           'VAProductPriceId','VAProductPriceId_x','VAProductPriceId_y','Filter'}
+        private_headers = {'ProductId','ProductId_y','ProductId_x',
+                           'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
+                           'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
+                           'VAProductPriceId','VAProductPriceId_x','VAProductPriceId_y',
+                           'VendorId','VendorId_x','VendorId_y',
+                           'CategoryIdId','CategoryIdId_x','CategoryId_y',
+                           'Report','Filter'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         self.df_product = self.df_product.drop(columns=remove_headers)
