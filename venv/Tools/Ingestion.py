@@ -734,6 +734,11 @@ class IngestionObject:
         else:
             self.product_collector.append((ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger))
 
+    def set_bigcommerce_rtl_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.set_bc_rtl(self.product_collector)
+
+
 
     def set_productimage_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):
         # this may require a new loading object or process to better handle images

@@ -61,3 +61,6 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         self.obIngester.set_bigcommerce_rtl(self.is_last, product_price_id, fy_product_number, price_toggle, data_toggle)
         return True, df_collect_product_base_data
+
+    def trigger_ingest_cleanup(self):
+        self.obIngester.set_bigcommerce_rtl_cleanup()
