@@ -26,6 +26,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.define_new()
+        self.vendor_name = self.vendor_name_selection()
         pass
 
     def define_new(self):
@@ -131,30 +132,34 @@ class ProcessProductAssetObject(BasicProcessObject):
                 # This is the true path to the file
                 whole_path = str(os.getcwd())+'\\'+temp_path
 
-                # Make http request for remote file data
-                asset_data = requests.get(asset_path)
-
-                if asset_data.ok:
-                    # Save file data to local copy
-                    with open(temp_path, 'wb')as file:
-                        file.write(asset_data.content)
+                if os.path.exists(whole_path):
+                    self.obReporter.update_report('Alert','Asset exists.')
                 else:
-                    self.obReporter.update_report('Alert','This url doesn\'t work.')
-                    return False, return_df_line_product
+                    # Make http request for remote file data
+                    asset_data = requests.get(asset_path)
+
+                    if asset_data.ok:
+                        # Save file data to local copy
+                        with open(temp_path, 'wb')as file:
+                            file.write(asset_data.content)
+                    else:
+                        self.obReporter.update_report('Alert','This url doesn\'t work.')
+                        return False, return_df_line_product
 
             elif os.path.exists(asset_path):
                 print('This is a file')
                 object_name = asset_path.rpartition('\\\\')[2]
+                whole_path = asset_path
             else:
                 return False, return_df_line_product
 
             # this sets the actual url to our file, see this example
             # https://franklin-young-image-bank.s3.us-west-2.amazonaws.com/CONSOLIDATED+STERILIZER+SYSTEMS/PT-SR-24AB-26AB-ADVPRO.jpg
-            safety_sheet_url = 'https://'+bucket+'.s3.us-west-2.amazonaws.com/'+vendor_name+'/'+object_name
+            safety_sheet_url = 'https://'+bucket+'.s3.us-west-2.amazonaws.com/'+self.vendor_name+'/'+object_name
 
             # This is the name to put in our bucket
             # THOMAS/imagename.png
-            s3_name = vendor_name + '/' + object_name
+            s3_name = self.vendor_name + '/' + object_name
 
             print('put object:', whole_path, s3_name, bucket)
             # this puts the object into s3
