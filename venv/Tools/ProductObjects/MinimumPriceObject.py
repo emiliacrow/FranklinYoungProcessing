@@ -41,13 +41,6 @@ class MinimumProductPrice(BasicProcessObject):
             self.df_product = self.df_product.merge(self.df_product_lookup,
                                                             how='left', on=['FyCatalogNumber'])
 
-
-        if 'ProductId_y' in self.df_product.columns:
-            print(self.df_product.columns)
-            self.df_product['ProductId'] = self.df_product[['ProductId_y']]
-            self.df_product = self.df_product.drop(columns=['ProductId_x'])
-            self.df_product = self.df_product.drop(columns=['ProductId_y'])
-
         # we assign a label to the products that haven't been loaded through product yet
         if 'Filter' not in self.df_product.columns:
             self.df_product['Filter'] = 'Fail'
@@ -66,7 +59,11 @@ class MinimumProductPrice(BasicProcessObject):
                 self.df_update_product = self.df_update_product.drop(columns=['Filter'])
 
             # this gets the productId again
-            self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
+            if 'ManufacturerPartNumber' in self.df_product.columns:
+                self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
+                                                             how='left', on=['FyProductNumber','ManufacturerPartNumber'])
+            else:
+                self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
                                                              how='left', on=['FyProductNumber'])
 
             self.df_update_product.loc[(self.df_update_product['Filter'] != 'Update'), 'Filter'] = 'New'
@@ -77,7 +74,11 @@ class MinimumProductPrice(BasicProcessObject):
                 self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
             # recombine with product
 
-        self.df_product = self.df_product.append(self.df_update_product)
+        if len(self.df_product.index)==0:
+            self.df_product = self.df_update_product.copy()
+        else:
+            self.df_product = self.df_product.append(self.df_update_product)
+
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -267,7 +268,6 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def minimum_product_price(self,df_line_product):
-        # ship it!
         for colName, row in df_line_product.iterrows():
             fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']
@@ -316,4 +316,33 @@ class UpdateMinimumProductPrice(MinimumProductPrice):
             self.obReporter.update_report('Fail','This product price failed filtering')
             return False
 
-## end ##
+
+    def define_new(self):
+        # these are the df's for assigning data.
+        self.df_product_lookup = self.obDal.get_product_lookup()
+        self.df_product_price_lookup = self.obDal.get_product_price_lookup()
+
+        self.df_product_lookup['Filter'] = 'Update'
+        # match all products on FyProdNum and Manufacturer part, clearly
+        if 'ManufacturerPartNumber' in self.df_product.columns:
+            self.df_product = self.df_product.merge(self.df_product_lookup,
+                                                            how='left',
+                                                            on=['FyCatalogNumber', 'ManufacturerPartNumber'])
+        else:
+            self.df_product = self.df_product.merge(self.df_product_lookup,
+                                                            how='left', on=['FyCatalogNumber'])
+
+        # we assign a label to the products that haven't been loaded through product yet
+        if 'Filter' not in self.df_product.columns:
+            self.df_product['Filter'] = 'Fail'
+        else:
+            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+
+        # split the data for a moment
+        self.df_product = self.df_product[(self.df_product['Filter'] == 'Update')]
+
+
+
+
+
+# end ##

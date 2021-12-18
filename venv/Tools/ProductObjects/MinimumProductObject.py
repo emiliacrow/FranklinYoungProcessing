@@ -101,7 +101,6 @@ class MinimumProduct(BasicProcessObject):
         else:
             self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
-
     def batch_process_category(self):
         # this needs to be handled better
         df_attribute = self.df_product[['Category']]
@@ -464,7 +463,7 @@ class MinimumProduct(BasicProcessObject):
 
 class UpdateMinimumProduct(MinimumProduct):
     req_fields = ['ShortDescription', 'ManufacturerPartNumber',
-                                'CountryOfOrigin', 'ManufacturerName','VendorName','Category']
+                                'CountryOfOrigin', 'ManufacturerName','Category']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
