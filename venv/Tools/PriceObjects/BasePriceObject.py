@@ -146,47 +146,6 @@ class BasePrice(BasicProcessObject):
         return fy_discount_percent
 
 
-    def process_markup_sell(self, df_collect_product_base_data, row):
-        markup_sell = -1
-        if 'LandedCostMarkupPercent_FYSell' in row:
-            try:
-                markup_sell = round(float(row['LandedCostMarkupPercent_FYSell']), 2)
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad markup sell value.')
-                return False, df_collect_product_base_data, markup_sell
-        elif 'db_MarkUp_sell' in row:
-            try:
-                markup_sell = round(float(row['db_MarkUp_sell']), 2)
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad markup sell value.')
-                return False, df_collect_product_base_data, markup_sell
-
-        return True, df_collect_product_base_data, markup_sell
-
-
-    def process_markup_list(self, df_collect_product_base_data, row, markup_sell):
-        markup_list = -1
-        if 'LandedCostMarkupPercent_FYList' in row:
-            try:
-                markup_list = round(float(row['LandedCostMarkupPercent_FYList']), 2)
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad markup list value.')
-                return False, df_collect_product_base_data, markup_list
-
-        elif 'db_MarkUp_list' in row:
-            try:
-                markup_list = round(float(row['db_MarkUp_list']), 2)
-                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad markup list value.')
-                return False, df_collect_product_base_data, markup_list
-        elif markup_sell > 0:
-            markup_list = markup_sell + self.lindas_increase
-            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
-
-        return True, df_collect_product_base_data, markup_list
-
-
     def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
         fy_sell_price = round(fy_landed_cost * markup_sell, 2)
         df_collect_product_base_data['Sell Price'] = [fy_sell_price]
@@ -301,7 +260,7 @@ class BasePrice(BasicProcessObject):
 
     def process_pricing(self, df_collect_product_base_data, row):
         # Check FyCost is valid, this is a proper fail
-        # this prepares FyCost
+        # this prepares FyCost, we can't load if this fails
         success, fy_cost = self.row_check(row,'FyCost')
         if success == False:
             # fail line if missing
@@ -346,12 +305,11 @@ class BasePrice(BasicProcessObject):
             fy_discount_percent = self.set_vendor_discount(fy_cost, vendor_list_price)
             df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
-
+        # checks for shipping costs
         success, estimated_freight = self.row_check(row, 'Fixed Shipping Cost')
         if success:
             success, estimated_freight = self.float_check(row, estimated_freight)
             df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
-
 
         if not success:
             success, estimated_freight = self.row_check(row, 'db_shipping_cost')
@@ -364,7 +322,7 @@ class BasePrice(BasicProcessObject):
             df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
             self.obReporter.update_report('Alert', 'Fixed Shipping Cost value was set to 0.')
 
-
+        # do math!
         success, fy_landed_cost = self.row_check(row,'Landed Cost')
         if success:
             success, fy_landed_cost = self.float_check(row, fy_landed_cost)
@@ -374,29 +332,53 @@ class BasePrice(BasicProcessObject):
             fy_landed_cost = fy_cost + estimated_freight
             df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
 
+        # up to here, we're good
 
+        # checks for values
+        mus_success, markup_sell = self.row_check(row, 'LandedCostMarkupPercent_FYSell')
+        if mus_success:
+            mus_success, markup_sell = self.float_check(row, markup_sell)
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
 
+        mul_success, markup_list = self.row_check(row, 'LandedCostMarkupPercent_FYList')
+        if mul_success:
+            mul_success, markup_list = self.float_check(row, markup_list)
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
 
+        if not mus_success and mul_success:
+            markup_list = markup_sell + self.lindas_increase
+            self.obReporter.update_report('Alert', 'LandedCostMarkupPercent_FYList was calculated.')
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+            mus_success = True
 
+        elif mus_success and not mul_success:
+            markup_sell = markup_list - self.lindas_increase
+            self.obReporter.update_report('Alert', 'LandedCostMarkupPercent_FYSell was calculated.')
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+            mul_success = True
 
-
-        # these handle markups if they exist
-        success, df_collect_product_base_data, markup_sell = self.process_markup_sell(df_collect_product_base_data, row)
-        if success == False:
-            return success, df_collect_product_base_data
-
-        success, df_collect_product_base_data, markup_list = self.process_markup_list(df_collect_product_base_data, row, markup_sell)
-        if success == False:
-            return success, df_collect_product_base_data
-
-
-        # we usually sell this price, and present List as retail price
-        # landed cost + each of these
-        if markup_sell > 0 and markup_list > 0:
+        # we only want to do this if we're actually doing the pricing Ron's way
+        if mus_success and mul_success:
             df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)
             return True, df_collect_product_base_data
 
-        elif markup_list > 0:
+
+        fy_list_price = round(fy_landed_cost * markup_list, 2)
+        df_collect_product_base_data['Retail Price'] = [fy_list_price]
+
+        success, df_collect_product_base_data, ecommerce_discount  = self.process_ecom_discount(df_collect_product_base_data, row)
+        if success:
+            fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
+            df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [round(float(fy_sell_price/fy_landed_cost), 2)]
+            return True, df_collect_product_base_data
+        else:
+            self.obReporter.update_report('Fail', 'No ECommerce value to take.')
+            return success, df_collect_product_base_data
+
+
+
+        if markup_list > 0:
             success, df_collect_product_base_data = self.process_discount_off_list(df_collect_product_base_data, row, fy_landed_cost, markup_list)
             return success, df_collect_product_base_data
 
