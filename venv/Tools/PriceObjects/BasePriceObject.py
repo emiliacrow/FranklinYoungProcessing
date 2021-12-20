@@ -146,44 +146,6 @@ class BasePrice(BasicProcessObject):
         return fy_discount_percent
 
 
-    def process_shipping_cost(self, df_collect_product_base_data, row, fy_cost):
-        fy_landed_cost = -1
-        if 'Landed Cost' in row:
-            try:
-                fy_landed_cost = round(float(row['Landed Cost']), 2)
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Landed cost must be a number.')
-                return False, df_collect_product_base_data, fy_landed_cost
-
-
-        if 'Fixed Shipping Cost' in row:
-            try:
-                estimated_freight = round(float(row['Fixed Shipping Cost']), 2)
-
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad Fixed Shipping Cost.')
-                return False, df_collect_product_base_data, fy_landed_cost
-
-        elif 'db_shipping_cost' in row:
-            try:
-                estimated_freight = round(float(row['db_shipping_cost']), 2)
-                df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad db_shipping_cost.')
-                return False, df_collect_product_base_data, fy_landed_cost
-
-        else:
-            estimated_freight = 0
-            df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
-            self.obReporter.update_report('Alert', 'Fixed Shipping Cost set to 0.')
-
-        if 'Landed Cost' not in row:
-            fy_landed_cost = round(fy_cost + estimated_freight, 2)
-            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
-            self.obReporter.update_report('Alert', 'Landed Cost was calculated.')
-
-        return True, df_collect_product_base_data, fy_landed_cost
-
     def process_markup_sell(self, df_collect_product_base_data, row):
         markup_sell = -1
         if 'LandedCostMarkupPercent_FYSell' in row:
@@ -365,29 +327,58 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
         # this prepares the discount value
-        discout_success, fy_discount_percent = self.row_check(row,'Discount')
-        if discout_success:
-            discout_success, fy_discount_percent = self.fy_discount_percent(row,'Discount')
+        discount_success, fy_discount_percent = self.row_check(row,'Discount')
+        if discount_success:
+            discount_success, fy_discount_percent = self.fy_discount_percent(row,'Discount')
+            df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
+        # discount processing
+        if not vlp_success and not discount_success:
+            self.obReporter.update_report('Alert', 'VendorListPrice, Discount values were set to 0.')
+            df_collect_product_base_data['VendorListPrice'] = [0]
+            df_collect_product_base_data['Discount'] = [0]
 
-        if not vlp_success and not discout_success:
-            self.obReporter.update_report('Alert', 'Review VendorListPrice, Discount values.'.format(checked_float_value))
-            return success, df_collect_product_base_data
-
-        if not vlp_success and discout_success:
+        if not vlp_success and discount_success:
             vendor_list_price = self.set_vendor_list(fy_cost, fy_discount_percent)
             df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
-        if vlp_success and not discout_success:
+        if vlp_success and not discount_success:
             fy_discount_percent = self.set_vendor_discount(fy_cost, vendor_list_price)
             df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
 
+        success, estimated_freight = self.row_check(row, 'Fixed Shipping Cost')
+        if success:
+            success, estimated_freight = self.float_check(row, estimated_freight)
+            df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
 
-        # estimated freight and landed cost
-        success, df_collect_product_base_data, fy_landed_cost = self.process_shipping_cost(df_collect_product_base_data, row, fy_cost)
-        if success == False:
-            return success, df_collect_product_base_data
+
+        if not success:
+            success, estimated_freight = self.row_check(row, 'db_shipping_cost')
+            if success:
+                success, estimated_freight = self.float_check(row, estimated_freight)
+                df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
+
+        if not success:
+            estimated_freight = 0
+            df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
+            self.obReporter.update_report('Alert', 'Fixed Shipping Cost value was set to 0.')
+
+
+        success, fy_landed_cost = self.row_check(row,'Landed Cost')
+        if success:
+            success, fy_landed_cost = self.float_check(row, fy_landed_cost)
+            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+
+        if not success:
+            fy_landed_cost = fy_cost + estimated_freight
+            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+
+
+
+
+
+
 
         # these handle markups if they exist
         success, df_collect_product_base_data, markup_sell = self.process_markup_sell(df_collect_product_base_data, row)
