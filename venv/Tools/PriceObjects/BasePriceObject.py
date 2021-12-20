@@ -313,37 +313,65 @@ class BasePrice(BasicProcessObject):
 
             return True, df_collect_product_base_data
 
-    def float_check(self, df_collect_product_base_data, row, name_to_check):
+    def row_check(self, row, name_to_check):
         try:
-            checked_float_value = round(float(row[name_to_check]), 2)
+            name_value = row[name_to_check]
+            return True, name_value
+        except IndexError:
+            self.obReporter.update_report('Alert', '{0} was missing.'.format(checked_float_value))
+            return False, 0
+
+
+    def float_check(self, float_name_val, report_name):
+        try:
+            checked_float_value = round(float(float_name_val), 2)
             if checked_float_value > 0:
-                df_collect_product_base_data['VendorListPrice'] = [checked_float_value]
-                return True, df_collect_product_base_data, checked_float_value
+                return True, checked_float_value
             else:
-                self.obReporter.update_report('Fail', '{0} must be a positive number.'.format(checked_float_value))
-                return False, df_collect_product_base_data, checked_float_value
+                self.obReporter.update_report('Alert', '{0} must be a positive number.'.format(report_name))
+                return False, checked_float_value
 
         except ValueError:
-            self.obReporter.update_report('Fail', '{0} must be a positive number.'.format(checked_float_value))
-            return False, df_collect_product_base_data, checked_float_value
+            self.obReporter.update_report('Alert', '{0} must be a positive number.'.format(report_name))
+            return False, 0
+
 
 
     def process_pricing(self, df_collect_product_base_data, row):
         # Check FyCost is valid, this is a proper fail
-        success, df_collect_product_base_data, fy_cost = self.float_check(df_collect_product_base_data, row,'FyCost')
+        # this prepares FyCost
+        success, fy_cost = self.row_check(row,'FyCost')
         if success == False:
+            # fail line if missing
+            self.obReporter.update_report('Fail', 'FyCost was missing.')
             return success, df_collect_product_base_data
 
-        vlp_success, df_collect_product_base_data, vendor_list_price = self.float_check(df_collect_product_base_data, row,'VendorListPrice')
-        if vlp_success == False:
-            vlp_success, df_collect_product_base_data, vendor_list_price = self.float_check(df_collect_product_base_data,
-                                                                                        row, 'db_VendorListPrice')
+        success, fy_cost = self.float_check(fy_cost,'FyCost')
+        if success == False:
+            # fail if it's negative
+            self.obReporter.update_report('Fail', 'Please check that FyCost is a positive number.')
+            return success, df_collect_product_base_data
+
+        # this prepares VendorListPrice
+        vlp_success, vendor_list_price = self.row_check(row,'VendorListPrice')
+        if vlp_success:
+            vlp_success, vendor_list_price = self.float_check(vendor_list_price,'VendorListPrice')
             df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
-        discout_success, df_collect_product_base_data, fy_discount_percent = self.float_check(df_collect_product_base_data, row,'Discount')
+        if not vlp_success:
+            vlp_success, vendor_list_price = self.row_check(row,'db_VendorListPrice')
+            if vlp_success:
+                vlp_success, vendor_list_price = self.float_check(vendor_list_price,'db_VendorListPrice')
+                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+
+        # this prepares the discount value
+        discout_success, fy_discount_percent = self.row_check(row,'Discount')
+        if discout_success:
+            discout_success, fy_discount_percent = self.fy_discount_percent(row,'Discount')
+
 
         if not vlp_success and not discout_success:
-            self.obReporter.update_report('Fail', 'Review VendorListPrice, Discount values.'.format(checked_float_value))
+            self.obReporter.update_report('Alert', 'Review VendorListPrice, Discount values.'.format(checked_float_value))
             return success, df_collect_product_base_data
 
         if not vlp_success and discout_success:
