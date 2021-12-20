@@ -136,67 +136,14 @@ class BasePrice(BasicProcessObject):
         success, df_line_product = self.base_price(df_collect_product_base_data)
         return success, df_line_product
 
-    def process_vendor_price(self, df_collect_product_base_data, row):
-        vendor_list_price = -1
-        if 'VendorListPrice' in row:
-            try:
-                vendor_list_price = round(float(row['VendorListPrice']), 2)
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad vendor list price.')
-                return False, df_collect_product_base_data, vendor_list_price
 
-        elif 'db_VendorListPrice' in row:
-            try:
-                vendor_list_price = round(float(row['VendorListPrice']), 2)
-                df_collect_product_base_data['VendorListPrice'] = row['db_VendorListPrice']
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad DB vendor list price.')
-                return False, df_collect_product_base_data, vendor_list_price
-        else:
-            vendor_list_price = 0
-            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
-            self.obReporter.update_report('Alert', 'Vendor list price set to 0.')
-
-        return True, df_collect_product_base_data, vendor_list_price
-
-
-    def process_vendor_discount_price(self, df_collect_product_base_data, row):
-        fy_discount_percent = -1
-        if 'Discount' in row:
-            try:
-                fy_discount_percent = round(float(row['Discount']), 2)
-
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Make sure your Discount is a number.')
-                return False, df_collect_product_base_data, fy_discount_percent
-
-        elif 'db_Discount' in row:
-            try:
-                fy_discount_percent = round(float(row['db_Discount']), 2)
-                df_collect_product_base_data['Discount'] = [fy_discount_percent]
-
-            except ValueError:
-                self.obReporter.update_report('Fail', 'This shouldn\'t happen, check the database value for Discount.')
-                return False, df_collect_product_base_data,fy_discount_percent
-        else:
-            fy_discount_percent = 0
-            df_collect_product_base_data['Discount'] = [fy_discount_percent]
-            self.obReporter.update_report('Alert', 'Discount to 0.')
-
-        return True, df_collect_product_base_data, fy_discount_percent
-
-
-    def set_vendor_list(self, df_collect_product_base_data, fy_cost, fy_discount_percent):
+    def set_vendor_list(self, fy_cost, fy_discount_percent):
         vendor_list_price = round(fy_cost / (1 - fy_discount_percent), 2)
-        df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
-        self.obReporter.update_report('Alert', 'VendorListPrice was calculated.')
-        return df_collect_product_base_data
+        return vendor_list_price
 
-    def set_vendor_discount(self, df_collect_product_base_data, fy_cost, vendor_list_price):
+    def set_vendor_discount(self, fy_cost, vendor_list_price):
         fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
-        df_collect_product_base_data['Discount'] = fy_discount_percent
-        self.obReporter.update_report('Alert', 'Discount was calculated.')
-        return df_collect_product_base_data
+        return fy_discount_percent
 
 
     def process_shipping_cost(self, df_collect_product_base_data, row, fy_cost):
@@ -366,31 +313,48 @@ class BasePrice(BasicProcessObject):
 
             return True, df_collect_product_base_data
 
-    def process_pricing(self, df_collect_product_base_data, row):
-        # check if we can math the value
+    def float_check(self, df_collect_product_base_data, row, name_to_check):
         try:
-            fy_cost = round(float(row['FyCost']),2)
-            df_collect_product_base_data['FyCost'] = [fy_cost]
+            checked_float_value = round(float(row[name_to_check]), 2)
+            if checked_float_value > 0:
+                df_collect_product_base_data['VendorListPrice'] = [checked_float_value]
+                return True, df_collect_product_base_data, checked_float_value
+            else:
+                self.obReporter.update_report('Fail', '{0} must be a positive number.'.format(checked_float_value))
+                return False, df_collect_product_base_data, checked_float_value
+
         except ValueError:
-            self.obReporter.update_report('Fail', 'Bad FyCost value.')
-            return False, df_collect_product_base_data
+            self.obReporter.update_report('Fail', '{0} must be a positive number.'.format(checked_float_value))
+            return False, df_collect_product_base_data, checked_float_value
 
-        # this is where the calculation for vendor price, and discount
-        success, df_collect_product_base_data, vendor_list_price = self.process_vendor_price(df_collect_product_base_data, row)
+
+    def process_pricing(self, df_collect_product_base_data, row):
+        # Check FyCost is valid, this is a proper fail
+        success, df_collect_product_base_data, fy_cost = self.float_check(df_collect_product_base_data, row,'FyCost')
         if success == False:
             return success, df_collect_product_base_data
 
-        success, df_collect_product_base_data, fy_discount_percent = self.process_vendor_discount_price(df_collect_product_base_data, row)
-        if success == False:
+        vlp_success, df_collect_product_base_data, vendor_list_price = self.float_check(df_collect_product_base_data, row,'VendorListPrice')
+        if vlp_success == False:
+            vlp_success, df_collect_product_base_data, vendor_list_price = self.float_check(df_collect_product_base_data,
+                                                                                        row, 'db_VendorListPrice')
+            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+
+        discout_success, df_collect_product_base_data, fy_discount_percent = self.float_check(df_collect_product_base_data, row,'Discount')
+
+        if not vlp_success and not discout_success:
+            self.obReporter.update_report('Fail', 'Review VendorListPrice, Discount values.'.format(checked_float_value))
             return success, df_collect_product_base_data
 
-        # generate values where possible
-        # non-failable
-        if fy_discount_percent > 0 and vendor_list_price == 0:
-            df_collect_product_base_data = self.set_vendor_list(df_collect_product_base_data, fy_cost, fy_discount_percent)
+        if not vlp_success and discout_success:
+            vendor_list_price = self.set_vendor_list(fy_cost, fy_discount_percent)
+            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
-        if fy_discount_percent == 0 and vendor_list_price > 0:
-            df_collect_product_base_data = self.set_vendor_discount(df_collect_product_base_data, fy_cost, vendor_list_price)
+        if vlp_success and not discout_success:
+            fy_discount_percent = self.set_vendor_discount(fy_cost, vendor_list_price)
+            df_collect_product_base_data['Discount'] = [fy_discount_percent]
+
+
 
         # estimated freight and landed cost
         success, df_collect_product_base_data, fy_landed_cost = self.process_shipping_cost(df_collect_product_base_data, row, fy_cost)
