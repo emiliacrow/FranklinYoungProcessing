@@ -138,12 +138,18 @@ class BasePrice(BasicProcessObject):
 
 
     def set_vendor_list(self, fy_cost, fy_discount_percent):
-        vendor_list_price = round(fy_cost / (1 - fy_discount_percent), 2)
+        if fy_discount_percent == 0:
+            vendor_list_price = round(fy_cost, 2)
+        else:
+            vendor_list_price = round(fy_cost / (1 - fy_discount_percent), 2)
         return vendor_list_price
 
 
     def set_vendor_discount(self, fy_cost, vendor_list_price):
-        fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
+        if vendor_list_price == fy_cost:
+            fy_discount_percent = 0
+        else:
+            fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
         return fy_discount_percent
 
 
@@ -202,7 +208,7 @@ class BasePrice(BasicProcessObject):
     def float_check(self, float_name_val, report_name):
         try:
             checked_float_value = round(float(float_name_val), 2)
-            if checked_float_value > 0:
+            if checked_float_value >= 0:
                 return True, checked_float_value
             else:
                 self.obReporter.update_report('Alert', '{0} must be a positive number.'.format(report_name))
@@ -223,42 +229,60 @@ class BasePrice(BasicProcessObject):
             return success, df_collect_product_base_data
 
         success, fy_cost = self.float_check(fy_cost,'FyCost')
-        if success == False:
+        if success == False or fy_cost == 0:
             # fail if it's negative
             self.obReporter.update_report('Fail', 'Please check that FyCost is a positive number.')
             return success, df_collect_product_base_data
 
-        # this prepares VendorListPrice
+
+        # try to get vendor list price from the file
         vlp_success, vendor_list_price = self.row_check(row,'VendorListPrice')
         if vlp_success:
             vlp_success, vendor_list_price = self.float_check(vendor_list_price,'VendorListPrice')
             df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
-        if not vlp_success:
-            vlp_success, vendor_list_price = self.row_check(row,'db_VendorListPrice')
-            if vlp_success:
-                vlp_success, vendor_list_price = self.float_check(vendor_list_price,'db_VendorListPrice')
-                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
-
-        # this prepares the discount value
+        # try to get the discount from the file
         discount_success, fy_discount_percent = self.row_check(row,'Discount')
         if discount_success:
-            discount_success, fy_discount_percent = self.fy_discount_percent(row,'Discount')
+            discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'Discount')
             df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
-        # discount processing
+
+
+        # if neither one worked, we try to get the discount from the db
         if not vlp_success and not discount_success:
-            self.obReporter.update_report('Alert', 'VendorListPrice, Discount values were set to 0.')
-            df_collect_product_base_data['VendorListPrice'] = [0]
-            df_collect_product_base_data['Discount'] = [0]
+            discount_success, fy_discount_percent = self.row_check(row,'db_Discount')
+            if discount_success:
+                discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'db_Discount')
+                if discount_success:
+                    self.obReporter.update_report('Alert', 'Discount pulled from database.')
+                    df_collect_product_base_data['Discount'] = [fy_discount_percent]
+
+            if not discount_success:
+                vlp_success, vendor_list_price = self.row_check(row,'db_VendorListPrice')
+                if vlp_success:
+                    vlp_success, vendor_list_price = self.float_check(vendor_list_price,'db_VendorListPrice')
+                    if vlp_success:
+                        self.obReporter.update_report('Alert', 'VendorListPrice pulled from database.')
+                        df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+
+                if not vlp_success:
+                    self.obReporter.update_report('Alert', 'VendorListPrice, Discount values were set to 0.')
+                    df_collect_product_base_data['VendorListPrice'] = [0]
+                    df_collect_product_base_data['Discount'] = [0]
+
 
         if not vlp_success and discount_success:
             vendor_list_price = self.set_vendor_list(fy_cost, fy_discount_percent)
+            self.obReporter.update_report('Alert', 'VendorListPrice was calculated.')
             df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+
 
         if vlp_success and not discount_success:
             fy_discount_percent = self.set_vendor_discount(fy_cost, vendor_list_price)
+            self.obReporter.update_report('Alert', 'Discount was calculated.')
             df_collect_product_base_data['Discount'] = [fy_discount_percent]
+
 
         # checks for shipping costs
         success, estimated_freight = self.row_check(row, 'Fixed Shipping Cost')
@@ -285,6 +309,7 @@ class BasePrice(BasicProcessObject):
 
         if not success:
             fy_landed_cost = fy_cost + estimated_freight
+            self.obReporter.update_report('Alert', 'Landed Cost was calculated.')
             df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
 
         # up to here, we're good
@@ -292,12 +317,12 @@ class BasePrice(BasicProcessObject):
         # checks for values
         mus_success, markup_sell = self.row_check(row, 'LandedCostMarkupPercent_FYSell')
         if mus_success:
-            mus_success, markup_sell = self.float_check(row, markup_sell)
+            mus_success, markup_sell = self.float_check(markup_sell, 'LandedCostMarkupPercent_FYSell')
             df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
 
         mul_success, markup_list = self.row_check(row, 'LandedCostMarkupPercent_FYList')
         if mul_success:
-            mul_success, markup_list = self.float_check(row, markup_list)
+            mul_success, markup_list = self.float_check(markup_list, 'LandedCostMarkupPercent_FYSell')
             df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
 
 
@@ -315,11 +340,12 @@ class BasePrice(BasicProcessObject):
                     fy_sell_price = round(fy_list_price-(fy_list_price*ecommerce_discount),2)
                     df_collect_product_base_data['Sell Price'] = [fy_sell_price]
                     df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [round(float(fy_sell_price/fy_landed_cost), 2)]
+                    mul_success = True
+                    return True, df_collect_product_base_data
                 else:
                     self.obReporter.update_report('Fail', 'No ECommerce value to take.')
                     return False, df_collect_product_base_data
 
-                return True, df_collect_product_base_data
 
             else:
                 fy_sell_price = round(fy_landed_cost * markup_sell, 2)
@@ -346,6 +372,7 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['Sell Price'] = [fy_sell_price]
                 df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [
                     round(float(fy_sell_price / fy_landed_cost), 2)]
+                mus_success = True
                 return True, df_collect_product_base_data
             else:
                 self.obReporter.update_report('Fail', 'No ECommerce value to take.')
@@ -355,7 +382,7 @@ class BasePrice(BasicProcessObject):
 
 
         # we only want to do this if we're actually doing the pricing Ron's way
-        if mus_success and mul_success:
+        elif mus_success and mul_success:
             df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)
             return True, df_collect_product_base_data
 
