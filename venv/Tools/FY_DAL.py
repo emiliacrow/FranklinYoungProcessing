@@ -343,11 +343,6 @@ class DalObject:
         return return_id
 
 
-    def product_document_cap(self, newProductId, newProductCertificate='', newProductBrochure='',newProductSafetySheet='',newProductUrl=''):
-        proc_name = 'sequoia.ProductDocument_capture_wrap'
-        proc_args = (newProductCertificate, newProductBrochure,newProductSafetySheet,newProductUrl,newProductId)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
 
     def product_seo_cap(self,newKeywords):
         proc_name = 'sequoia.ProductSEO_capture_wrap'
@@ -723,6 +718,15 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
         runner.start()
 
+
+    def product_document_cap(self, lst_productdocuments):
+        proc_name = 'sequoia.ProductDocument_capture'
+        proc_statement = 'CALL `sequoia`.`ProductDocument_capture`(%s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
+        runner.start()
+
+
     def productsafetysheet_cap(self, lst_productsafetysheet):
         proc_name = 'sequoia.ProductSafetySheet_capture'
         proc_statement = 'CALL `sequoia`.`ProductSafetySheet_capture`(%s, %s, %s);'
@@ -756,6 +760,9 @@ class DalObject:
         column_names = ['FyProductNumber','ProductId','CurrentAssetPath','AssetType']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
+
+
+
 
     def naked_cap(self,thisdoesnothing,noreally):
         proc_name = 'sequoia.Unknown_capture_wrap'
