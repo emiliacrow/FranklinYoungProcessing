@@ -86,50 +86,28 @@ class ProcessProductAssetObject(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             asset_type = row['AssetType']
 
-            if asset_type == 'Brochure':
-                print('do brochure processing')
-                success, return_df_line_product = self.process_brochure(row, df_collect_product_base_data)
-
-            elif asset_type == 'Certificate':
+            if asset_type == 'Document':
                 print('do video processing')
-                success, return_df_line_product = self.process_certificate(row, df_collect_product_base_data)
+                success, return_df_line_product = self.process_document(row, df_collect_product_base_data)
 
             elif asset_type == 'Image':
                 # this will require some additional data like caption if any
                 print('do image processing')
                 success, return_df_line_product = self.process_image(row, df_collect_product_base_data)
 
-            elif asset_type == 'SafetySheet':
-                print('do safety sheet processing')
-                success, return_df_line_product = self.process_safety_sheet(row, df_collect_product_base_data)
-
             elif asset_type == 'Video':
                 print('do video processing')
                 success, return_df_line_product = self.process_video(row, df_collect_product_base_data)
 
-
-        shutil.rmtree(str(os.getcwd())+'temp_asset_files\\')
+        # the idea being to use a temporary location and remove them all after
+        # shutil.rmtree(str(os.getcwd())+'temp_asset_files\\')
 
         return success, return_df_line_product
 
-    def process_brochure(self, row, df_collect_product_base_data):
-        success = True
-        return success, df_collect_product_base_data
 
-    def process_certificate(self, row, df_collect_product_base_data):
-        # other_requirements = ['']
+    def process_document(self, row, df_collect_product_base_data):
         success = True
-        return success, df_collect_product_base_data
-
-    def process_image(self, row, df_collect_product_base_data):
-        # other_requirements = ['']
-        success = True
-        return success, df_collect_product_base_data
-
-
-    def process_safety_sheet(self, row, df_collect_product_base_data):
-        success = True
-        bucket = 'franklin-young-safetysheet-bank'
+        bucket = 'franklin-young-document-bank'
         return_df_line_product = df_collect_product_base_data.copy()
         # step wise
         # pull values from df_ob
@@ -180,10 +158,28 @@ class ProcessProductAssetObject(BasicProcessObject):
             self.obS3.put_file(whole_path, s3_name, bucket)
 
             product_id = row['ProductId']
+            asset_type = row['AssetType']
+            success, document_preference = self.row_check(row,'AssetPreference')
+            if success:
+                success, document_preference = self.float_check(document_preference, 'AssetPreference')
+                if success:
+                    document_preference = int(document_preference)
+                else:
+                    self.obReporter.update_report('Alert','AssetPreference must be a number')
 
-            # this sets the data in the database
-            self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, 'SafetySheet')
+            if success:
+                # this sets the data in the database
+                self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, document_type, int(document_preference))
+            else:
+                self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, document_type)
+
             return True, return_df_line_product
+
+
+    def process_image(self, row, df_collect_product_base_data):
+        # other_requirements = ['']
+        success = True
+        return success, df_collect_product_base_data
 
 
     def process_video(self, row, return_df_line_product):
