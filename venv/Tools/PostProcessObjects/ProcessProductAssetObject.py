@@ -30,7 +30,7 @@ class ProcessProductAssetObject(BasicProcessObject):
         self.vendor_name = self.vendor_name_selection()
         self.vendor_name = self.vendor_name.replace(',','')
         self.vendor_name = self.vendor_name.replace(' ','_')
-        pass
+
 
     def define_new(self):
         self.current_assets = self.obDal.get_current_assets()
@@ -38,7 +38,7 @@ class ProcessProductAssetObject(BasicProcessObject):
         self.current_assets['Filter'] = 'Pass'
         self.df_product = pandas.DataFrame.merge(self.df_product, self.current_assets,
                                                          how='left', on=match_headers)
-        self.df_product.loc[(self.df_product['Filter'] != 'Fail'), 'Filter'] = 'Update'
+        self.df_product.loc[(self.df_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -67,7 +67,7 @@ class ProcessProductAssetObject(BasicProcessObject):
                     return False
                 else:
                     self.obReporter.update_report('Alert', 'This product asset was overwritten.')
-
+                    return True
 
         else:
             self.obReporter.update_report('Fail', 'This product hasn\' been ingested.')
@@ -84,19 +84,18 @@ class ProcessProductAssetObject(BasicProcessObject):
             pass
 
         for colName, row in df_line_product.iterrows():
+            if self.filter_check_in(row) == False:
+                return False, df_collect_product_base_data
             asset_type = row['AssetType']
 
             if asset_type == 'Document':
-                print('do video processing')
                 success, return_df_line_product = self.process_document(row, df_collect_product_base_data)
 
             elif asset_type == 'Image':
                 # this will require some additional data like caption if any
-                print('do image processing')
                 success, return_df_line_product = self.process_image(row, df_collect_product_base_data)
 
             elif asset_type == 'Video':
-                print('do video processing')
                 success, return_df_line_product = self.process_video(row, df_collect_product_base_data)
 
         # the idea being to use a temporary location and remove them all after
@@ -169,9 +168,9 @@ class ProcessProductAssetObject(BasicProcessObject):
 
             if success:
                 # this sets the data in the database
-                self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, document_type, int(document_preference))
+                self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, asset_type, document_preference)
             else:
-                self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, document_type)
+                self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, asset_type)
 
             return True, return_df_line_product
 
