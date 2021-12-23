@@ -131,6 +131,28 @@ class BasicProcessObject:
     def trigger_ingest_cleanup(self):
         pass
 
+    def row_check(self, row, name_to_check):
+        try:
+            name_value = row[name_to_check]
+            return True, name_value
+        except KeyError:
+            self.obReporter.update_report('Alert', '{0} was missing.'.format(name_to_check))
+            return False, 0
+
+
+    def float_check(self, float_name_val, report_name):
+        try:
+            checked_float_value = round(float(float_name_val), 2)
+            if checked_float_value >= 0:
+                return True, checked_float_value
+            else:
+                self.obReporter.update_report('Alert', '{0} must be a positive number.'.format(report_name))
+                return False, checked_float_value
+
+        except TypeError:
+            self.obReporter.update_report('Alert', '{0} must be a positive number.'.format(report_name))
+            return False, 0
+
     def run_process(self):
         self.obReporter = ReporterObject()
         self.set_progress_bar(10, 'Batch preprocessing')

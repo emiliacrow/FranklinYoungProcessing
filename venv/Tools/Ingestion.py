@@ -17,6 +17,7 @@ class IngestionObject:
         self.product_price_collector = []
         self.product_image_match_collector = []
 
+        self.product_document_collector = []
         self.product_image_collector = []
         self.product_safetysheet_collector = []
         self.product_brochure_collector = []
@@ -755,6 +756,20 @@ class IngestionObject:
     def set_productimage_cleanup(self):
         if self.product_image_collector != []:
             self.obDal.productimage_cap(self.product_image_collector)
+
+
+    def set_productdocument_cap(self, is_last, ProductId, ProductDocumentUrl, ProductDocumentName, ProductDocumentType, ProductDocumentPreference = 0):
+        if (len(self.product_document_collector) > self.load_limit):
+            self.product_document_collector.append([ProductId, ProductDocumentUrl, ProductDocumentName, ProductDocumentType, ProductDocumentPreference])
+            self.obDal.productsafetysheet_cap(self.product_document_collector)
+            self.product_document_collector = []
+
+        else:
+            self.product_document_collector.append((ProductId, ProductDocumentUrl, ProductDocumentName, ProductDocumentType, ProductDocumentPreference))
+
+    def set_productdocument_cleanup(self):
+        if self.product_document_collector != []:
+            self.obDal.productsafetysheet_cap(self.product_document_collector)
 
 
     def set_productsafetysheet_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):

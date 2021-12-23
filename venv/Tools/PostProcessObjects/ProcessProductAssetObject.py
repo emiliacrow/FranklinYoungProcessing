@@ -182,7 +182,7 @@ class ProcessProductAssetObject(BasicProcessObject):
             product_id = row['ProductId']
 
             # this sets the data in the database
-            self.obIngester.set_productsafetysheet_cap(self.is_last, product_id, safety_sheet_url, object_name)
+            self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, 'SafetySheet')
             return True, return_df_line_product
 
 
@@ -192,10 +192,8 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def trigger_ingest_cleanup(self):
-        self.obIngester.set_productbrochure_cleanup()
-        self.obIngester.set_productcertificate_cleanup()
+        self.obIngester.set_productdocument_cleanup()
         self.obIngester.set_productimage_cleanup()
-        self.obIngester.set_productsafetysheet_cap()
         self.obIngester.set_productvideo_cleanup()
 
 

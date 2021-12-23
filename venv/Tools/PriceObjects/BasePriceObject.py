@@ -199,29 +199,6 @@ class BasePrice(BasicProcessObject):
             return True, df_collect_product_base_data, ecommerce_discount
 
 
-    def row_check(self, row, name_to_check):
-        try:
-            name_value = row[name_to_check]
-            return True, name_value
-        except KeyError:
-            self.obReporter.update_report('Alert', '{0} was missing.'.format(name_to_check))
-            return False, 0
-
-
-    def float_check(self, float_name_val, report_name):
-        try:
-            checked_float_value = round(float(float_name_val), 2)
-            if checked_float_value >= 0:
-                return True, checked_float_value
-            else:
-                self.obReporter.update_report('Alert', '{0} must be a positive number.'.format(report_name))
-                return False, checked_float_value
-
-        except TypeError:
-            self.obReporter.update_report('Alert', '{0} must be a positive number.'.format(report_name))
-            return False, 0
-
-
     def process_pricing(self, df_collect_product_base_data, row):
         # Check FyCost is valid, this is a proper fail
         # this prepares FyCost, we can't load if this fails
