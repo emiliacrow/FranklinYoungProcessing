@@ -171,6 +171,34 @@ class MinimumProductPrice(BasicProcessObject):
 
         return True, df_line_product
 
+    def normalize_units(self, units):
+        units = units.upper()
+
+        if units in ['BOTTLE','BOTTLES']:
+            units = 'BT'
+        elif units in ['BOX','BOXES']:
+            units = 'BX'
+        elif units in ['CARTON','CARTONS']:
+            units = 'CT'
+        elif units in ['CASE','CASES']:
+            units = 'CS'
+        elif units in ['EACH','EACHES','ITEM','ITEMS','TEST','TESTS','TST','TSTS']:
+            units = 'EA'
+        elif units in ['JAR','JARS']:
+            units = 'JR'
+        elif units in ['KIT','KITS']:
+            units = 'KT'
+        elif units in ['PAK','PAKS','PACK','PACKS','PACKAGE','PACKAGES']:
+            units = 'PK'
+        elif units in ['PAIR','PAIRS']:
+            units = 'PR'
+        elif units in ['ROLL','ROLLS']:
+            units = 'RL'
+        elif units in ['SET','SETS']:
+            units = 'ST'
+
+        return units
+
     def identify_fy_product_number(self, df_collect_product_base_data, row):
         if ('Conv Factor/QTY UOM' not in row):
             df_collect_product_base_data['Conv Factor/QTY UOM'] = 1
@@ -179,11 +207,13 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_measure = 'EA'
             df_collect_product_base_data['UnitOfMeasure'] = unit_of_measure
         else:
-            unit_of_measure = row['UnitOfMeasure']
+            unit_of_measure = self.normalize_units(row['UnitOfMeasure'])
+            df_collect_product_base_data['UnitOfMeasure'] = unit_of_measure
 
         unit_of_issue = 'EA'
         if 'UnitOfIssue' in row:
-            unit_of_issue = row['UnitOfIssue']
+            unit_of_issue = self.normalize_units(row['UnitOfIssue'])
+            df_collect_product_base_data['UnitOfIssue'] = unit_of_issue
 
         try:
             unit_of_issue_symbol_id = self.df_uois_lookup.loc[(self.df_uois_lookup['UnitOfIssueSymbol'] == unit_of_issue),'UnitOfIssueSymbolId'].values[0]
