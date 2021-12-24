@@ -708,45 +708,21 @@ class DalObject:
         return df_base_price_lookup
 
 
-
     def productimage_cap(self, lst_productsafetysheet):
-        proc_name = 'sequoia.ProductSafetySheet_capture'
-
-        proc_statement = 'CALL `sequoia`.`ProductSafetySheet_capture`(%s, %s, %s);'
-
+        proc_name = 'sequoia.ProductImage_capture'
+        proc_statement = 'CALL `sequoia`.`ProductImage_capture`(%s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
         runner.start()
 
 
-    def product_document_cap(self, lst_productdocuments):
+    def productdocument_cap(self, lst_productdocuments):
         proc_name = 'sequoia.ProductDocument_capture'
         proc_statement = 'CALL `sequoia`.`ProductDocument_capture`(%s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productdocuments)
         runner.start()
 
-
-    def productsafetysheet_cap(self, lst_productsafetysheet):
-        proc_name = 'sequoia.ProductSafetySheet_capture'
-        proc_statement = 'CALL `sequoia`.`ProductSafetySheet_capture`(%s, %s, %s);'
-        self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
-        runner.start()
-
-    def productbrochure_cap(self, lst_productbrochure):
-        proc_name = 'sequoia.ProductBrochure_capture'
-        proc_statement = 'CALL `sequoia`.`ProductBrochure_capture`(%s, %s, %s);'
-        self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productbrochure)
-        runner.start()
-
-    def productcertificate_cap(self, lst_productcertificate):
-        proc_name = 'sequoia.ProductCertificate_capture'
-        proc_statement = 'CALL `sequoia`.`ProductCertificate_capture`(%s, %s, %s);'
-        self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productcertificate)
-        runner.start()
 
     def productvideo_cap(self, lst_productvideo):
         proc_name = 'sequoia.ProductVideo_capture'
@@ -757,7 +733,7 @@ class DalObject:
 
     def get_current_assets(self):
         proc_name = 'sequoia.get_current_assets'
-        column_names = ['FyProductNumber','ProductId','CurrentAssetPath','AssetType']
+        column_names = ['FyProductNumber','ProductId','CurrentAssetPath','CurrentAssetType']
         df_current_assets = self.get_lookup(proc_name,column_names)
         return df_current_assets
 

@@ -34,10 +34,9 @@ class ProcessProductAssetObject(BasicProcessObject):
 
     def define_new(self):
         self.current_assets = self.obDal.get_current_assets()
-        match_headers = ['FyProductNumber','AssetType']
+        match_headers = ['FyProductNumber']
         self.current_assets['Filter'] = 'Pass'
-        self.df_product = pandas.DataFrame.merge(self.df_product, self.current_assets,
-                                                         how='left', on=match_headers)
+        self.df_product = self.df_product.merge(self.current_assets, how='left', on=match_headers)
         self.df_product.loc[(self.df_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
 
     def remove_private_headers(self):
@@ -86,93 +85,94 @@ class ProcessProductAssetObject(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
+
             asset_type = row['AssetType']
 
-            if asset_type == 'Document':
-                success, return_df_line_product = self.process_document(row, df_collect_product_base_data)
+            if asset_type in ['Document','SafetyDataSheet','Certificate','Brochure','Warranty']:
+                success, df_collect_product_base_data = self.process_document(row, df_collect_product_base_data)
 
             elif asset_type == 'Image':
                 # this will require some additional data like caption if any
-                success, return_df_line_product = self.process_image(row, df_collect_product_base_data)
+                success, df_collect_product_base_data = self.process_image(row, df_collect_product_base_data)
 
             elif asset_type == 'Video':
-                success, return_df_line_product = self.process_video(row, df_collect_product_base_data)
+                success, df_collect_product_base_data = self.process_video(row, df_collect_product_base_data)
 
         # the idea being to use a temporary location and remove them all after
         # shutil.rmtree(str(os.getcwd())+'temp_asset_files\\')
 
-        return success, return_df_line_product
+        return success, df_collect_product_base_data
 
 
     def process_document(self, row, df_collect_product_base_data):
         success = True
         bucket = 'franklin-young-document-bank'
-        return_df_line_product = df_collect_product_base_data.copy()
         # step wise
         # pull values from df_ob
         # create temp path
         # iterate assets
-        for colName, row in df_collect_product_base_data.iterrows():
-            fy_product_number = row['FyProductNumber']
-            asset_path = row['AssetPath']
-            if 'http' in asset_path:
-                # asset path is a url to fetch
-                # this is the name of the file as pulled from the url
-                url_name = asset_path.rpartition('/')[2]
-                # this is the path which is placed, relatively to CWD
-                temp_path = 'temp_asset_files\\'+url_name
-                # This is the true path to the file
-                whole_path = str(os.getcwd())+'\\'+temp_path
+        fy_product_number = row['FyProductNumber']
+        asset_path = row['AssetPath']
+        if 'http' in asset_path:
+            # asset path is a url to fetch
+            # this is the name of the file as pulled from the url
+            url_name = asset_path.rpartition('/')[2]
+            # this is the path which is placed, relatively to CWD
+            temp_path = 'temp_asset_files\\'+url_name
+            # This is the true path to the file
+            whole_path = str(os.getcwd())+'\\'+temp_path
 
-                if os.path.exists(whole_path):
+            if os.path.exists(whole_path):
+                object_name = whole_path.rpartition('\\')[2]
+            else:
+                # Make http request for remote file data
+                asset_data = requests.get(asset_path)
+
+                if asset_data.ok:
+                    # Save file data to local copy
+                    with open(temp_path, 'wb')as file:
+                        file.write(asset_data.content)
                     object_name = whole_path.rpartition('\\')[2]
                 else:
-                    # Make http request for remote file data
-                    asset_data = requests.get(asset_path)
+                    self.obReporter.update_report('Alert','This url doesn\'t work.')
+                    return False, df_collect_product_base_data
 
-                    if asset_data.ok:
-                        # Save file data to local copy
-                        with open(temp_path, 'wb')as file:
-                            file.write(asset_data.content)
-                    else:
-                        self.obReporter.update_report('Alert','This url doesn\'t work.')
-                        return False, return_df_line_product
+        elif os.path.exists(asset_path):
+            print('This is a file')
+            object_name = asset_path.rpartition('\\\\')[2]
+            whole_path = asset_path
+        else:
+            return False, df_collect_product_base_data
 
-            elif os.path.exists(asset_path):
-                print('This is a file')
-                object_name = asset_path.rpartition('\\\\')[2]
-                whole_path = asset_path
-            else:
-                return False, return_df_line_product
+        # this sets the actual url to our file, see this example
+        # https://franklin-young-image-bank.s3.us-west-2.amazonaws.com/CONSOLIDATED+STERILIZER+SYSTEMS/PT-SR-24AB-26AB-ADVPRO.jpg
+        safety_sheet_url = 'https://'+bucket+'.s3.us-west-2.amazonaws.com/'+self.vendor_name+'/'+object_name
 
-            # this sets the actual url to our file, see this example
-            # https://franklin-young-image-bank.s3.us-west-2.amazonaws.com/CONSOLIDATED+STERILIZER+SYSTEMS/PT-SR-24AB-26AB-ADVPRO.jpg
-            safety_sheet_url = 'https://'+bucket+'.s3.us-west-2.amazonaws.com/'+self.vendor_name+'/'+object_name
+        # This is the name to put in our bucket
+        # THOMAS/imagename.png
+        s3_name = self.vendor_name + '/' + object_name
 
-            # This is the name to put in our bucket
-            # THOMAS/imagename.png
-            s3_name = self.vendor_name + '/' + object_name
+        # this puts the object into s3
+        self.obS3.put_file(whole_path, s3_name, bucket)
 
-            # this puts the object into s3
-            self.obS3.put_file(whole_path, s3_name, bucket)
+        product_id = row['ProductId']
+        asset_type = row['AssetType']
 
-            product_id = row['ProductId']
-            asset_type = row['AssetType']
-            success, document_preference = self.row_check(row,'AssetPreference')
+        success, document_preference = self.row_check(row,'AssetPreference')
+        if success:
+            success, document_preference = self.float_check(document_preference, 'AssetPreference')
             if success:
-                success, document_preference = self.float_check(document_preference, 'AssetPreference')
-                if success:
-                    document_preference = int(document_preference)
-                else:
-                    self.obReporter.update_report('Alert','AssetPreference must be a number')
-
-            if success:
-                # this sets the data in the database
-                self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, asset_type, document_preference)
+                document_preference = int(document_preference)
             else:
-                self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, asset_type)
+                self.obReporter.update_report('Alert','AssetPreference must be a number')
 
-            return True, return_df_line_product
+        if success:
+            # this sets the data in the database
+            self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, asset_type, document_preference)
+        else:
+            self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, asset_type)
+
+        return True, df_collect_product_base_data
 
 
     def process_image(self, row, df_collect_product_base_data):
