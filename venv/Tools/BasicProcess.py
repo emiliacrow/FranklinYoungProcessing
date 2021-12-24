@@ -131,6 +131,34 @@ class BasicProcessObject:
     def trigger_ingest_cleanup(self):
         pass
 
+    def normalize_units(self, units):
+        units = units.upper()
+
+        if units in ['BOTTLE','BOTTLES']:
+            units = 'BT'
+        elif units in ['BOX','BOXES']:
+            units = 'BX'
+        elif units in ['CARTON','CARTONS']:
+            units = 'CT'
+        elif units in ['CASE','CASES']:
+            units = 'CS'
+        elif units in ['EACH','EACHES','ITEM','ITEMS','TEST','TESTS','TST','TSTS']:
+            units = 'EA'
+        elif units in ['JAR','JARS']:
+            units = 'JR'
+        elif units in ['KIT','KITS']:
+            units = 'KT'
+        elif units in ['PAK','PAKS','PACK','PACKS','PACKAGE','PACKAGES']:
+            units = 'PK'
+        elif units in ['PAIR','PAIRS']:
+            units = 'PR'
+        elif units in ['ROLL','ROLLS']:
+            units = 'RL'
+        elif units in ['SET','SETS']:
+            units = 'ST'
+
+        return units
+
     def row_check(self, row, name_to_check):
         try:
             name_value = row[name_to_check]
@@ -303,9 +331,10 @@ class BasicProcessObject:
             fy_product_number = fy_catalog_number
 
             if 'UnitOfIssue' in row:
-                unit_of_issue = row['UnitOfIssue']
+                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
                 self.obReporter.default_uoi_report()
@@ -327,9 +356,10 @@ class BasicProcessObject:
             fy_product_number = fy_catalog_number
 
             if 'UnitOfIssue' in row:
-                unit_of_issue = row['UnitOfIssue']
+                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
                 self.obReporter.default_uoi_report()
@@ -352,9 +382,10 @@ class BasicProcessObject:
             fy_product_number = fy_catalog_number
 
             if 'UnitOfIssue' in row:
-                unit_of_issue = row['UnitOfIssue']
+                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
                 self.obReporter.default_uoi_report()
@@ -378,9 +409,10 @@ class BasicProcessObject:
             fy_product_number = fy_catalog_number
 
             if 'UnitOfIssue' in row:
-                unit_of_issue = row['UnitOfIssue']
+                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
                 self.obReporter.default_uoi_report()
@@ -406,9 +438,10 @@ class BasicProcessObject:
 
                 fy_product_number = fy_catalog_number
                 if 'UnitOfIssue' in row:
-                    unit_of_issue = row['UnitOfIssue']
+                    unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                     if unit_of_issue != 'EA':
                         fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+                        df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
 
                 else:
                     df_collect_product_base_data['UnitOfIssue'] = ['EA']
@@ -435,9 +468,10 @@ class BasicProcessObject:
             fy_product_number = fy_catalog_number
 
             if 'UnitOfIssue' in row:
-                unit_of_issue = row['UnitOfIssue']
+                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
                 df_collect_product_base_data['UnitOfIssue'] = ['EA']
                 self.obReporter.default_uoi_report()
