@@ -39,7 +39,7 @@ class HeaderTranslator():
                             'VendorListPrice':['Vendor List Price','VendorListPrice','List Price','primary_vendor_list_price','vendor_list_price'],
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent','FyDiscByVendor'],
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
-                            'Fixed Shipping Cost':['Fixed Shipping Cost','Shipping Cost','FixedShippingCost','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
+                            'Estimated Freight':['Estimated Freight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
                             'Landed Cost':['FyLandedCost','LandedCost','Fy Landed Cost','Landed Cost'],
                             'LandedCostMarkupPercent_FYSell':['MarkUp','LandedCostMarkupPercent_FYSell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
                             'Sell Price':['FySellPrice','FyPrice','BC Sell Price','Ecom Sell Price'],

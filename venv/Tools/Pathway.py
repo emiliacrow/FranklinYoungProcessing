@@ -385,6 +385,8 @@ class Pathways():
         # ident path
         clean_image_paths = self.obFileFinder.ident_directory('Select image directory to process:')
 
+        print(clean_image_paths)
+
         # get vendor name from path
         vendor_name = (clean_image_paths[0][0].rpartition('\\\\')[0]).rpartition('\\\\')[2]
 

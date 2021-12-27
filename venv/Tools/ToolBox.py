@@ -84,26 +84,6 @@ class FileFinder():
         else:
             return False, 'No file selected'
 
-        root = tk.Tk()
-        root.withdraw()
-        # select directory
-        directory = filedialog.askdirectory(initialdir=path, title=window_title,mustexist=True)
-
-        directory = directory+'/*.*'
-        lst_images = glob.glob(directory)
-
-        clean_image_paths = []
-
-        for each_image_path in lst_images:
-            clean_image_path = each_image_path.replace('\\','\\\\')
-            clean_image_path = clean_image_path.replace('/','\\\\')
-
-            clean_image_name = clean_image_path.rpartition('\\')[2]
-
-            clean_image_paths.append([clean_image_path,clean_image_name])
-
-        return clean_image_paths
-
 
     def read_xlsx(self, base_data_file=''):
         if base_data_file != '':

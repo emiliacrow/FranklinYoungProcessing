@@ -258,21 +258,21 @@ class BasePrice(BasicProcessObject):
             df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
         # checks for shipping costs
-        success, estimated_freight = self.row_check(row, 'Fixed Shipping Cost')
+        success, estimated_freight = self.row_check(row, 'Estimated Freight')
         if success:
-            success, estimated_freight = self.float_check(estimated_freight,'Fixed Shipping Cost')
-            df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
+            success, estimated_freight = self.float_check(estimated_freight,'Estimated Freight')
+            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
 
         if not success:
             success, estimated_freight = self.row_check(row, 'db_shipping_cost')
             if success:
                 success, estimated_freight = self.float_check(estimated_freight,'db_shipping_cost')
-                df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
+                df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
 
         if not success:
             estimated_freight = 0
-            df_collect_product_base_data['Fixed Shipping Cost'] = [estimated_freight]
-            self.obReporter.update_report('Alert', 'Fixed Shipping Cost value was set to 0')
+            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+            self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
 
 
         success, fy_landed_cost = self.row_check(row,'Landed Cost')
@@ -462,7 +462,7 @@ class BasePrice(BasicProcessObject):
             vendor_list_price = row['VendorListPrice']
             fy_discount_percent = row['Discount']
             fy_cost = row['FyCost']
-            estimated_freight = row['Fixed Shipping Cost']
+            estimated_freight = row['Estimated Freight']
             fy_landed_cost = row['Landed Cost']
 
             if 'LandedCostMarkupPercent_FYSell' not in row:
