@@ -67,7 +67,23 @@ class FileFinder():
 
     # this will be depricated
     # it's only used for images, and that's a stupid way to do it
-    def ident_directory(self, window_title = 'Please select directory', path = None):
+    def ident_directory(self, window_title = 'Please select files', path = None):
+        obFileDialog = FileDialogObject('files_dialog', window_title)
+        file_names = obFileDialog.get_file_names()
+        file_set = []
+
+        if len(file_names) > 1:
+            for each_path in file_names:
+                selected_file = each_path
+                file_base_location = selected_file.rpartition('/')[0]
+
+                selected_file = selected_file.replace('/','\\\\')
+                file_set.append(selected_file)
+
+            return True, file_set
+        else:
+            return False, 'No file selected'
+
         root = tk.Tk()
         root.withdraw()
         # select directory
