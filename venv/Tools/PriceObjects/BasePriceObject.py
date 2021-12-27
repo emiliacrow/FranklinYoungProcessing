@@ -191,6 +191,12 @@ class BasePrice(BasicProcessObject):
             except ValueError:
                 self.obReporter.update_report('Fail', 'Bad ECommerceDiscount value')
                 return False, df_collect_product_base_data, ecommerce_discount
+        elif 'MfcDiscountPercent' in row:
+            try:
+                ecommerce_discount = round(float(row['MfcDiscountPercent']), 2)
+            except ValueError:
+                self.obReporter.update_report('Fail', 'Bad MfcDiscountPercent value')
+                return False, df_collect_product_base_data, ecommerce_discount
 
         if ecommerce_discount < 0:
             return False, df_collect_product_base_data, ecommerce_discount
