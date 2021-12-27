@@ -277,7 +277,7 @@ class BasePrice(BasicProcessObject):
 
         success, fy_landed_cost = self.row_check(row,'Landed Cost')
         if success:
-            success, fy_landed_cost = self.float_check(row, fy_landed_cost)
+            success, fy_landed_cost = self.float_check(fy_landed_cost, 'Landed Cost')
             df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
 
         if not success:
