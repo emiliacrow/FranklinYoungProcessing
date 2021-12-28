@@ -383,12 +383,13 @@ class Pathways():
         self.region_name = 'us-west-2'
 
         # ident path
-        clean_image_paths = self.obFileFinder.ident_directory('Select image directory to process:')
+        file_success, clean_image_paths = self.obFileFinder.ident_directory('Select image directory to process:')
 
-        print(clean_image_paths)
+        if not file_success:
+            return False, 'No files selected'
 
         # get vendor name from path
-        vendor_name = (clean_image_paths[0][0].rpartition('\\\\')[0]).rpartition('\\\\')[2]
+        folder_name = (clean_image_paths[0][0].rpartition('\\\\')[0]).rpartition('\\\\')[2]
 
         # get list of image names
         current_image_names = self.obDal.get_image_names()
@@ -413,11 +414,12 @@ class Pathways():
             # get image size
             image_path = each_image[0]
             image_name = each_image[1]
+
             current_image = Image.open(image_path)
 
             image_width, image_height = current_image.size
 
-            s3_name = vendor_name + '/' + image_name
+            s3_name = folder_name + '/' + image_name
 
             self.obS3.put_file(image_path, s3_name, self.bucket)
 

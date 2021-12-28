@@ -328,9 +328,9 @@ class FileDialogObject(QWidget):
         self.out_file_name, _ = QFileDialog.getOpenFileName(self, self.name, '',
                                                    files_to_get, options=options)
 
-    # this is what we use to find a file
+    # this is what we use to find several file
     def openFileNamesDialog(self):
-        files_to_get = 'Excel Files (*.xlsx);;Text files (*.txt)'
+        files_to_get = 'Excel Files (*.xlsx);;Text files (*.txt);;Any files (*.*)'
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog

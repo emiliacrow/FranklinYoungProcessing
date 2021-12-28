@@ -78,7 +78,8 @@ class FileFinder():
                 file_base_location = selected_file.rpartition('/')[0]
 
                 selected_file = selected_file.replace('/','\\\\')
-                file_set.append(selected_file)
+                file_name = selected_file.rpartition('\\\\')[2]
+                file_set.append([selected_file,file_name])
 
             return True, file_set
         else:
