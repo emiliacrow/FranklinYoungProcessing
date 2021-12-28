@@ -222,7 +222,7 @@ class JoinSelectionDialog(QDialog):
 
 
 class TextBoxObject(QDialog):
-    def __init__(self,lst_input_reqs, parent=None, icon = 'duck'):
+    def __init__(self, lst_input_reqs, parent=None, icon = 'duck', title='Please enter text.'):
         super().__init__(parent)
         self.return_textbox = []
         self.lst_output_req = {}
@@ -231,7 +231,7 @@ class TextBoxObject(QDialog):
         self.fy_icon = self.set_icon(icon)
         self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
 
-        self.setWindowTitle("Please enter text.")
+        self.setWindowTitle(title)
         self.setGeometry(100, 300, 0, 0)
         self.layout = QGridLayout()
 

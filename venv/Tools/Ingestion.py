@@ -67,7 +67,7 @@ class IngestionObject:
     def manual_ingest_category(self, name = '', hierarchy = ''):
         lst_req_fields = [['CategoryName', 128, 'This is most likely the bottom level value<br>like "Lab Supplies"',name,'required'],
                           ['CategoryHierarchy', 128, 'This is the full hierarchy<br>like "All Products/Life Science/Lab Supplies"',hierarchy,'required']]
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title='Create new category')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -122,7 +122,7 @@ class IngestionObject:
                           ['CountryCodeEcat', 3, 'This is the 3 letter code, "178"',atmp_ecat_code,'required'],
                           ['IsTAACompliant', 1, 'This is 1 or 0',is_taa_compliant,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title= 'Country of origin entry')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -170,7 +170,7 @@ class IngestionObject:
                           ['FSCCodeName',128,'This is the title<br>like "EDUCATION (BASIC)"',atmp_name,'required'],
                           ['FSCCodeDesc',128,'Any additional info<br>like "EDUCATION - BASIC RESEARCH"',atmp_desc,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title='FSC code entry')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -214,7 +214,7 @@ class IngestionObject:
         lst_req_fields = [['HazardCode',45,'This is the code<br>like "NA1270"',atmp_code,'required'],
                           ['HazardDesc',256,'This is the description<br>like "Petroleum oil"',atmp_desc,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title='Hazard code entry')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -267,7 +267,7 @@ class IngestionObject:
         lst_req_fields = [['SupplierName',45,'This is the ugly version of the name<br>like "thermo electron (karlsruhe) gmbh"', atmp_sup,'required'],
                           ['ManufacturerName',45,'This is the standardized name<br>like "THERMO ELECTRON"', atmp_man,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title='Manufacturer entry')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -310,7 +310,7 @@ class IngestionObject:
         lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"',atmp_code,'required'],
                           ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"',atmp_name,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title='NAICS Code entry')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -355,7 +355,7 @@ class IngestionObject:
                           ['UnitName',45,'This is name<br>like "GALLON"',atmp_name,'required'],
                           ['ECATUnitSymbol',45,'This is different symbol for ecat<br>like "GL"', '','not required']]
 
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title='Unit of issue entry')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -401,7 +401,7 @@ class IngestionObject:
                           ['UNSPSCTitle', 45, 'This is name<br>like "Aluminum"',atmp_title,'required'],
                           ['UNSPSCDescription', 128, 'This is any other info<br>like "This is aluminum metal"',atmp_desc,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title= 'UNSPSC title entry')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -451,13 +451,13 @@ class IngestionObject:
         lst_req_fields = [['VendorName', 45, 'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"', atmp_name,'required'],
                           ['VendorCode', 45, 'This is the not so pretty name<br>like "Consolidated Ster"', atmp_code,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields)
+        obTextBox = TextBoxObject(lst_req_fields, title='Vendor entry')
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
         if ('VendorName' in entered_values.keys()) and ('VendorCode' in entered_values.keys()):
-            vendor_name = entered_values['VendorName']
-            vendor_code = entered_values['VendorCode']
+            vendor_name = entered_values['VendorName'].upper()
+            vendor_code = entered_values['VendorCode'].upper()
         else:
             return 0
 

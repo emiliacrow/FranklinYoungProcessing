@@ -518,11 +518,11 @@ class BasePrice(BasicProcessObject):
 
         if fy_landed_cost >= fy_sell_price and fy_sell_price != 0:
             self.obReporter.update_report('Fail','Margin was zero')
-            return fail, df_line_product
+            return False, df_line_product
 
         if fy_sell_price > fy_list_price and fy_list_price != 0:
             self.obReporter.update_report('Fail','Sell price too high')
-            return fail, df_line_product
+            return False, df_line_product
 
 
         self.obIngester.ingest_base_price(self.is_last, vendor_list_price, fy_discount_percent, fy_cost,
