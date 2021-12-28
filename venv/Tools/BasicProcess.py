@@ -170,7 +170,7 @@ class BasicProcessObject:
 
     def float_check(self, float_name_val, report_name):
         try:
-            checked_float_value = round(float(float_name_val), 2)
+            checked_float_value = round(float(float_name_val), 4)
             if checked_float_value >= 0:
                 return True, checked_float_value
             else:

@@ -178,6 +178,7 @@ class GSAPrice(BasicProcessObject):
                 approved_list_price = float(row['GSAApprovedListPrice'])
                 approved_percent = float(row['GSAApprovedPercent'])
                 gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
+
                 return_df_line_product['GSABasePrice'] = gsa_base_price
             else:
                 gsa_base_price = float(row['GSABasePrice'])
@@ -185,7 +186,8 @@ class GSAPrice(BasicProcessObject):
 
             if 'GSASellPrice' not in row:
                 iff_fee_percent = 0.0075
-                return_df_line_product['GSASellPrice'] = round(gsa_base_price+(gsa_base_price*iff_fee_percent))
+                gsa_sell_price = gsa_base_price+(gsa_base_price*iff_fee_percent)
+                return_df_line_product['GSASellPrice'] = gsa_sell_price
 
             if 'MfcPrice' not in row:
                 mfc_precent = float(row['MfcDiscountPercent'])
@@ -214,6 +216,7 @@ class GSAPrice(BasicProcessObject):
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
+            approved_sell_price = row['GSAApprovedSellPrice']
             approved_list_price = row['GSAApprovedListPrice']
             approved_percent = row['GSAApprovedPercent']
 
@@ -226,7 +229,7 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_Sin']
 
 
-        self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, approved_list_price, contract_manu_number, contract_number, contract_mod_number,
+        self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, approved_sell_price, approved_list_price, contract_manu_number, contract_number, contract_mod_number,
                                                              is_pricing_approved, approved_price_date, approved_percent,
                                                              gsa_base_price, gsa_sell_price, mfc_precent, mfc_price,sin)
 

@@ -661,14 +661,14 @@ class IngestionObject:
         return return_id
 
 
-    def gsa_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
+    def gsa_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN):
         if (len(self.product_collector) > self.load_limit):
             self.product_collector.append(
-                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
+                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
             self.obDal.gsa_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
 
     def ingest_gsa_product_price_cleanup(self):
         if self.product_collector != []:

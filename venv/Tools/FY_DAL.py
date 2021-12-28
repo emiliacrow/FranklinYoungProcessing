@@ -405,7 +405,7 @@ class DalObject:
 
     def gsa_product_price_cap(self,lst_gsa_product_price):
         proc_name = 'sequoia.GSAProductPrice_capture'
-        proc_statement = 'CALL `sequoia`.`GSAProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`GSAProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_product_price)
         runner.start()

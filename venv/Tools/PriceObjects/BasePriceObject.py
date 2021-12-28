@@ -177,6 +177,7 @@ class BasePrice(BasicProcessObject):
         fy_list_price = round(fy_landed_cost * markup_list, 2)
         df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
+        # TODO check that this is working right
         df_collect_product_base_data['ECommerceDiscount'] = [round(1 - float(fy_sell_price / fy_list_price), 2)]
 
         return df_collect_product_base_data
@@ -307,7 +308,7 @@ class BasePrice(BasicProcessObject):
             if success:
                 success, fy_list_price = self.float_check(fy_list_price, 'Retail Price')
                 if success:
-                    markup_list = round(float(fy_list_price / fy_landed_cost), 2)
+                    markup_list = float(fy_list_price / fy_landed_cost)
                     df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
                     if markup_list > 0:
                         self.obReporter.update_report('Alert', 'LandedCostMarkupPercent_FYList was reverse calculated from Retail Price')
