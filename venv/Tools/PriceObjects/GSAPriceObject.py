@@ -185,8 +185,8 @@ class GSAPrice(BasicProcessObject):
                 return_df_line_product['GSABasePrice'] = gsa_base_price
 
             if 'GSASellPrice' not in row:
-                iff_fee_percent = 0.0075
-                gsa_sell_price = gsa_base_price+(gsa_base_price*iff_fee_percent)
+                iff_fee_percent = 0.9925
+                gsa_sell_price = gsa_base_price/iff_fee_percent
                 return_df_line_product['GSASellPrice'] = gsa_sell_price
 
             if 'MfcPrice' not in row:
