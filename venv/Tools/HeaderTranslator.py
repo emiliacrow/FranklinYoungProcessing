@@ -56,7 +56,7 @@ class HeaderTranslator():
                                                   'GSA Discount', 'gsa_channel_discount', 'GSA Approved Channel%'],
                             'GSABasePrice':['GSABasePrice', 'GSA Base Price'],
                             'GSASellPrice':['GSASellPrice', 'GSA Sell Price','current_gsa_price'],
-                            'GSAContractModificationNumber':['GSAContractModificationNumber',
+                            'GSAContractModificationNumber':['GSAContractModificationNumber','GSAModificationNumber',
                                                              'GSA Contract Modification Number',
                                                              'GSAContractModification', 'GSA Contract Modification'],
                             'GSAApprovedPriceDate':['GSAApprovedPriceDate', 'GSA Approved Price Date',
