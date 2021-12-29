@@ -115,6 +115,12 @@ class BasicProcessObject:
             self.success, self.message = self.run_process()
         elif self.message == 'No message':
             missing_heads = self.get_missing_heads()
+            missing_string = str(missing_heads)
+            missing_string = missing_string.replace(']','')
+            missing_string = missing_string.replace('[','')
+            missing_string = missing_string.replace('\'','')
+
+            self.df_product['Missing Headers'] = missing_string
             if len(missing_heads) == 1:
                 self.message = 'The file is missing a product field: ' + missing_heads[0]
             elif len(missing_heads) != 0:
