@@ -34,7 +34,7 @@ class DiscontinueObject(BasicProcessObject):
         # products that need to be updated
         self.df_product.loc[(self.df_product['IsDiscontinued_x'] == self.df_product['IsDiscontinued_y']) & (self.df_product['Filter'] == 'Update'), 'Filter'] = 'Good'
         # products that need to be updated, reset the discon column to the new value
-        self.df_product.loc[(self.df_product['Filter'] == 'Update'), 'IsDiscontinued'] = self.df_product['IsDiscontinued_x']
+        self.df_product['IsDiscontinued'] = self.df_product['IsDiscontinued_x'].copy()
 
 
     def remove_private_headers(self):
@@ -42,7 +42,7 @@ class DiscontinueObject(BasicProcessObject):
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'IsDiscontinued','IsDiscontinued_x','IsDiscontinued_y',
+                           'IsDiscontinued_x','IsDiscontinued_y',
                            'Report','Filter'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
