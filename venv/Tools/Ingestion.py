@@ -77,8 +77,17 @@ class IngestionObject:
         else:
             return 0
 
-        if (cat_name != '') and (cat_hierarchy != ''):
+        if (cat_name != '') and (cat_hierarchy != '') and ('All Products/' in cat_hierarchy):
             cat_id = self.obDal.category_cap(cat_name, cat_hierarchy)
+            new_cat_name = cat_hierarchy.rpartition('/')[2]
+            if new_cat_name != cat_name:
+                cat_id = self.obDal.category_cap(new_cat_name, cat_hierarchy)
+
+            while ('/' in cat_hierarchy):
+                cat_hierarchy = cat_hierarchy.rpartition('/')[0]
+                cat_name = cat_hierarchy.rpartition('/')[2]
+                level_cat_id = self.obDal.category_cap(cat_name, cat_hierarchy)
+
             return cat_id
         else:
             return -1
