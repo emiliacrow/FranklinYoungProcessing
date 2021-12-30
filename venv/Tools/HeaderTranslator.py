@@ -28,7 +28,7 @@ class HeaderTranslator():
                             'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
 
-                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1'],
+                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity'],
                             'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue'],
                             'UnitOfMeasure':['UnitOfMeasure','UOM','uom','uom_std'],
                             'IsHazardous':['IsHazardous','Is Hazardous','Hazardous'],
@@ -36,7 +36,7 @@ class HeaderTranslator():
                             'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times'],
                             'LeadTimeDaysExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
 
-                            'VendorListPrice':['Vendor List Price','VendorListPrice','List Price','primary_vendor_list_price','vendor_list_price'],
+                            'VendorListPrice':['Vendor List Price','VendorListPrice','VendorList','Vendor List','List Price','primary_vendor_list_price','vendor_list_price'],
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent','FyDiscByVendor'],
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
                             'Estimated Freight':['Estimated Freight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
