@@ -41,9 +41,9 @@ class HeaderTranslator():
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
                             'Estimated Freight':['Estimated Freight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
                             'Landed Cost':['FyLandedCost','LandedCost','Fy Landed Cost','Landed Cost'],
-                            'LandedCostMarkupPercent_FYSell':['MarkUp','LandedCostMarkupPercent_FYSell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
+                            'LandedCostMarkupPercent_FYSell':['LandedCostMarkupPercent_FYSell', 'LandedCostMarkupPercent_FySell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
                             'Sell Price':['FySellPrice','FyPrice','BC Sell Price','Ecom Sell Price'],
-                            'LandedCostMarkupPercent_FYList':['LandedCostMarkupPercent_FYList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
+                            'LandedCostMarkupPercent_FYList':['LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FyList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
                             'OnContract':['OnContract','GSAOnContract','VAOnContract','ECATOnContract','HTMEOnContract','FEDMALLOnContract','On Contract','GSA On Contract','VA On Contract','ECAT On Contract','HTME On Contract','FEDMALL On Contract'],
