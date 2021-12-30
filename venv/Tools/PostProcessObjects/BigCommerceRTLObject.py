@@ -26,13 +26,13 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.df_current_BC_toggles = self.obDal.get_bc_rtl_state()
         match_headers = ['ProductPriceId','FyProductNumber','BCPriceUpdateToggle','BCDataUpdateToggle']
         self.df_current_BC_toggles['Filter'] = 'Fail'
-        self.df_product = pandas.DataFrame.merge(self.df_product, self.df_current_BC_toggles,
+        self.df_product = self.df_product.merge(self.df_current_BC_toggles,
                                                          how='left', on=match_headers)
         self.df_product.loc[(self.df_product['Filter'] != 'Fail'), 'Filter'] = 'Update'
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
-                           'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
+                           'ProductPriceId_y','ProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter'}
