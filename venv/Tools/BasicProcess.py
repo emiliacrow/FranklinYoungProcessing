@@ -339,6 +339,8 @@ class BasicProcessObject:
             if 'UnitOfIssue' in row:
                 unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
+                    if fy_catalog_number[:-2] == unit_of_issue:
+                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
                     df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
@@ -364,6 +366,8 @@ class BasicProcessObject:
             if 'UnitOfIssue' in row:
                 unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
+                    if fy_catalog_number[:-2] == unit_of_issue:
+                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
                     df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
@@ -390,6 +394,8 @@ class BasicProcessObject:
             if 'UnitOfIssue' in row:
                 unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
+                    if fy_catalog_number[:-2] == unit_of_issue:
+                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
                     df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
@@ -417,6 +423,8 @@ class BasicProcessObject:
             if 'UnitOfIssue' in row:
                 unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
+                    if fy_catalog_number[:-2] == unit_of_issue:
+                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
                     df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
@@ -446,6 +454,8 @@ class BasicProcessObject:
                 if 'UnitOfIssue' in row:
                     unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                     if unit_of_issue != 'EA':
+                        if fy_catalog_number[:-2] == unit_of_issue:
+                            self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
                         fy_product_number = fy_catalog_number + ' ' + unit_of_issue
                         df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
 
@@ -476,6 +486,8 @@ class BasicProcessObject:
             if 'UnitOfIssue' in row:
                 unit_of_issue = self.normalize_units(row['UnitOfIssue'])
                 if unit_of_issue != 'EA':
+                    if fy_catalog_number[:-2] == unit_of_issue:
+                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
                     fy_product_number = fy_catalog_number + ' ' + unit_of_issue
                     df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             else:
