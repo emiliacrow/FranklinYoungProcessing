@@ -57,7 +57,7 @@ class BasePrice(BasicProcessObject):
         df_attribute['VendorId'] = lst_ids
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup_by_vendor_id(lst_ids[0])
 
-        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+        self.df_product = self.df_product.merge(df_attribute,
                                                  how='left', on=['VendorName'])
 
 
@@ -68,26 +68,23 @@ class BasePrice(BasicProcessObject):
         self.df_base_price_lookup['Filter'] = 'Update'
         self.df_base_price_check_in = self.df_base_price_lookup[['FyProductNumber','ProductPriceId','Filter']]
 
-        if 'Filter' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'Filter')
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'ProductPriceId')
-
         # match all products on FyProdNum
         self.df_update_products = self.df_product.merge(self.df_base_price_check_in,
                                                  how='left', on='FyProductNumber')
+
         # all products that matched on FyProdNum
         self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
         self.df_product = self.df_update_products[(self.df_update_products['Filter'] != 'Update')]
+
         self.df_update_products = self.df_update_products[(self.df_update_products['Filter'] == 'Update')]
+
 
         if len(self.df_update_products.index) != 0:
             # this could end up empty
             self.df_base_price_lookup['Filter'] = 'Update'
             self.df_update_products = self.df_update_products.drop(columns='Filter')
-            self.df_update_products = pandas.DataFrame.merge(self.df_update_products, self.df_base_price_lookup,
-                                                     how='left', on=match_headers)
+            self.df_update_products = self.df_update_products.merge(self.df_base_price_lookup, how='left', on=match_headers)
 
             # this does not seem to be matching correctly in the above
             # I suspect this has to do with the numbers being strings?
