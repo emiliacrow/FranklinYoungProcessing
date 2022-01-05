@@ -303,6 +303,7 @@ class UpdateMinimumProductPrice(MinimumProductPrice):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Update Minimum Product Price'
 
+
     def filter_check_in(self, row):
         if 'Filter' in row:
             if row['Filter'] == 'Update':
