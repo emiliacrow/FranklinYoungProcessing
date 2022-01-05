@@ -228,6 +228,11 @@ class GSAPrice(BasicProcessObject):
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
+            if 'GSAApprovedBasePrice' in row:
+                approved_base_price = row['GSAApprovedBasePrice']
+            else:
+                approved_base_price = ''
+
             approved_sell_price = row['GSAApprovedSellPrice']
             approved_list_price = row['GSAApprovedListPrice']
             approved_percent = row['GSAApprovedPercent']
@@ -241,13 +246,14 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_Sin']
 
 
-        print(fy_product_number, contract_manu_number)
-        self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, approved_sell_price, approved_list_price, contract_manu_number, contract_number, contract_mod_number,
+        self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price, approved_sell_price, approved_list_price, contract_manu_number, contract_number, contract_mod_number,
                                                              is_pricing_approved, approved_price_date, approved_percent,
-                                                             gsa_base_price, gsa_sell_price, mfc_precent, mfc_price,sin)
+                                                             gsa_base_price, gsa_sell_price, mfc_precent, mfc_price, sin)
 
 
         return success, return_df_line_product
 
+    def trigger_ingest_cleanup(self):
+        self.obIngester.ingest_gsa_product_price_cleanup()
 
 ## end ##
