@@ -171,8 +171,20 @@ class GSAPrice(BasicProcessObject):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            if 'ContractedManufacturerPartNumber' not in row:
+            if 'ContractedManufacturerPartNumber' in row:
+                contract_manu_number = row['ContractedManufacturerPartNumber']
+
+                if 'db_ContractedManufacturerPartNumber' in row and contract_manu_number == '':
+                    db_contract_manu_number = row['db_ContractedManufacturerPartNumber']
+                    contract_manu_number = db_contract_manu_number
+                    return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+
+            elif 'db_ContractedManufacturerPartNumber' in row:
+                contract_manu_number = db_contract_manu_number
+                return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+            else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
+
 
             if 'GSABasePrice' not in row:
                 approved_list_price = float(row['GSAApprovedListPrice'])
@@ -229,6 +241,7 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_Sin']
 
 
+        print(fy_product_number, contract_manu_number)
         self.obIngester.gsa_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, approved_sell_price, approved_list_price, contract_manu_number, contract_number, contract_mod_number,
                                                              is_pricing_approved, approved_price_date, approved_percent,
                                                              gsa_base_price, gsa_sell_price, mfc_precent, mfc_price,sin)
