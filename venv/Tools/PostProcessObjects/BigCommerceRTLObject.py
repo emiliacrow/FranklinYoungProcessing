@@ -14,9 +14,10 @@ class BigCommerceRTLObject(BasicProcessObject):
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle']
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product, user, password, is_testing):
+    def __init__(self,df_product, user, password, is_testing,full_run=False):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'BC Ready To Load'
+        self.full_run = full_run
 
     def batch_preprocessing(self):
         self.remove_private_headers()
@@ -47,7 +48,7 @@ class BigCommerceRTLObject(BasicProcessObject):
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
-                if row['Filter'] == 'Fail':
+                if row['Filter'] == 'Fail' and not self.full_run:
                     self.obReporter.update_report('Alert','No change')
                     return True, df_collect_product_base_data
             else:

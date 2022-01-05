@@ -799,7 +799,13 @@ class Pathways():
         self.df_product = self.obFileFinder.read_xlsx()
 
         if contract_selected == 'Ready to load-BC':
-            self.obBCRTL = BC_RTL_Object(self.df_product, self.user, self.password, is_testing)
+
+            self.obYNBox = YesNoDialog('Process regardless of change?')
+            self.obYNBox.initUI('Toggle dialog.', 'Would you like to process all products regardless of change?')
+            if self.obYNBox.yes_selected == True:
+                b_full_run = True
+
+            self.obBCRTL = BC_RTL_Object(self.df_product, self.user, self.password, is_testing, full_run = b_full_run)
             self.success, self.message = self.obBCRTL.begin_process()
             self.df_product = self.obBCRTL.get_df()
             self.obFileFinder.write_xlsx(self.df_product, 'BC_RTL')
