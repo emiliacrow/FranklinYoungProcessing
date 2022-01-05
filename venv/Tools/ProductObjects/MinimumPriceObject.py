@@ -59,9 +59,9 @@ class MinimumProductPrice(BasicProcessObject):
                 self.df_update_product = self.df_update_product.drop(columns=['Filter'])
 
             # this gets the productId again
-            if 'ManufacturerPartNumber' in self.df_product.columns:
+            if 'VendorPartNumber' in self.df_product.columns:
                 self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
-                                                             how='left', on=['FyProductNumber','ManufacturerPartNumber'])
+                                                             how='left', on=['FyProductNumber','VendorPartNumber'])
             else:
                 self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
                                                              how='left', on=['FyProductNumber'])
@@ -227,7 +227,7 @@ class MinimumProductPrice(BasicProcessObject):
             df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
 
         if ('VendorPartNumber' not in row):
-            self.obReporter.update_report('Fail','VendorPartNumber was missing')
+            self.obReporter.update_report('Fail','VendorPartNumber was missing; srsly, how did this happen?!')
             return False, df_collect_product_base_data
 
         return True, df_collect_product_base_data

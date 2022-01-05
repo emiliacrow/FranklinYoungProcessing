@@ -573,7 +573,7 @@ class DalObject:
 
     def get_product_price_lookup(self):
         proc_name = 'sequoia.get_ProductPrice_lookup'
-        column_names = ['ProductId','ProductPriceId','FyProductNumber','ManufacturerPartNumber']
+        column_names = ['ProductId','ProductPriceId','FyProductNumber','VendorPartNumber']
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 
