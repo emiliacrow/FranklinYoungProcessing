@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
+    req_fields = ['FyProductNumber','VendorPartNumber','OnContract', 'GSAApprovedListPrice',
                   'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
 
     sup_fields = []
@@ -63,22 +63,15 @@ class GSAPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
 
-        match_headers = ['FyProductNumber','FyPartNumber','OnContract', 'GSAApprovedListPrice',
+        match_headers = ['FyProductNumber','VendorPartNumber','OnContract', 'GSAApprovedListPrice',
                          'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
 
-        if 'Filter' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='Filter')
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='ProductPriceId')
-        if 'BaseProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='BaseProductPriceId')
-
         # match all products on FyProdNum
         self.df_update_products = self.df_product.merge(self.df_base_price_lookup,
-                                                         how='left', on=['FyProductNumber','FyPartNumber'])
+                                                         how='left', on=['FyProductNumber','VendorPartNumber'])
         # all products that matched on FyProdNum
         self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
@@ -214,6 +207,7 @@ class GSAPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
+            vendor_part_number = row['VendorPartNumber']
             on_contract = row['OnContract']
 
 
@@ -246,9 +240,11 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_Sin']
 
 
-        self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price, approved_sell_price, approved_list_price, contract_manu_number, contract_number, contract_mod_number,
-                                                             is_pricing_approved, approved_price_date, approved_percent,
-                                                             gsa_base_price, gsa_sell_price, mfc_precent, mfc_price, sin)
+        self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, vendor_part_number, on_contract, approved_base_price,
+                                              approved_sell_price, approved_list_price, contract_manu_number,
+                                              contract_number, contract_mod_number, is_pricing_approved,
+                                              approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
+                                              mfc_precent, mfc_price, sin)
 
 
         return success, return_df_line_product

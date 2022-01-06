@@ -405,14 +405,14 @@ class DalObject:
 
     def gsa_product_price_cap(self,lst_gsa_product_price):
         proc_name = 'sequoia.GSAProductPrice_capture'
-        proc_statement = 'CALL `sequoia`.`GSAProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`GSAProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_product_price)
         runner.start()
 
     def get_gsa_price_lookup(self):
         proc_name = 'sequoia.get_GSAPrice_lookup'
-        column_names = ['FyProductNumber','FyPartNumber','OnContract','db_ContractedManufacturerPartNumber', 'GSAApprovedListPrice',
+        column_names = ['FyProductNumber','VendorPartNumber','OnContract','db_ContractedManufacturerPartNumber', 'GSAApprovedListPrice',
                          'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
         df_gsa_price_lookup = self.get_lookup(proc_name,column_names)
         return df_gsa_price_lookup
@@ -683,7 +683,7 @@ class DalObject:
 
     def get_base_product_price_lookup(self):
         proc_name = 'sequoia.get_BasePrice_lookup'
-        column_names = ['FyProductNumber','FyPartNumber','ProductPriceId','BaseProductPriceId']
+        column_names = ['FyProductNumber','VendorPartNumber','ProductPriceId','BaseProductPriceId']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 
