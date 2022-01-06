@@ -8,8 +8,6 @@ import xlrd
 
 from Tools.BasicProcess import BasicProcessObject
 
-
-
 class GSAPrice(BasicProcessObject):
     req_fields = ['FyProductNumber','VendorPartNumber','OnContract', 'GSAApprovedListPrice',
                   'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
@@ -240,7 +238,7 @@ class GSAPrice(BasicProcessObject):
             sin = row['GSA_Sin']
 
 
-        self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, vendor_part_number, on_contract, approved_base_price,
+        self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
                                               approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
