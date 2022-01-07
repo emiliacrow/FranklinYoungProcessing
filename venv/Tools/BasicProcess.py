@@ -333,6 +333,7 @@ class BasicProcessObject:
 
         if 'FyManufacturerPrefix' in row:
             new_prefix = str(row['FyManufacturerPrefix'])
+
             fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
             fy_product_number = fy_catalog_number
 
@@ -512,6 +513,8 @@ class BasicProcessObject:
         else:
             clean_part_number = self.obValidator.clean_part_number(manufacturer_part_number)
             FY_catalog_number = str(prefix)+'-'+clean_part_number
+
+        print(FY_catalog_number)
 
         return FY_catalog_number
 

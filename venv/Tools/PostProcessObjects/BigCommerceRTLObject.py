@@ -77,3 +77,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
     def trigger_ingest_cleanup(self):
         self.obIngester.set_bigcommerce_rtl_cleanup()
+
+
+
+## end ##

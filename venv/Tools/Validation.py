@@ -44,7 +44,7 @@ class Validator:
         return return_val
 
     def clean_part_number(self,str_to_clean):
-        pattern = '(\-|\.|\\|/|(|)|\+|\&|\_|\s|\"|\'|#|=|$)'
+        pattern = '(\-|\.|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
         str_to_clean = re.sub(pattern, '', str_to_clean)
         str_to_clean = str_to_clean.strip()
         return str_to_clean
@@ -172,23 +172,17 @@ class Validator:
 
 
 def test_frame():
-    vlad = Validator()
-    a = 'here are some words'
-    if vlad.isEnglish(a):
-        print(a)
-        print('oh yeah, this one\'s fine.')
-    else:
-        print(a)
-        print('that\'s dumb, why\'s this even here?')
+    char = ')'
+    test_word = char+'123'+char+'456'+char
+    print(test_word)
+    print(clean_part_number(test_word))
 
-    a = 'fart³'
-    if vlad.isEnglish(a):
-        print(a)
-        print('oh yeah, this one\'s fine.')
-    else:
-        print(a)
-        print('that\'s dumb, why\'s this even here?')
 
+def clean_part_number(str_to_clean):
+    pattern = '(\-|\.|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
+    str_to_clean = re.sub(pattern, '', str_to_clean)
+    str_to_clean = str_to_clean.strip()
+    return str_to_clean
 
 if __name__ == '__main__':
     test_frame()

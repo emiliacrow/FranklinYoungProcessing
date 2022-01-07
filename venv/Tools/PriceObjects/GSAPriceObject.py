@@ -129,14 +129,6 @@ class GSAPrice(BasicProcessObject):
             if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
-            if 'Filter' in row:
-                if row['Filter'] == 'Pass':
-                    self.obReporter.update_report('Fail','This product needs to be ingested')
-                    return True, df_collect_product_base_data
-            else:
-                self.obReporter.update_report('Fail','This product needs to be ingested')
-                return False, df_collect_product_base_data
-
             df_collect_product_base_data = self.process_oncontract(df_collect_product_base_data, row)
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
