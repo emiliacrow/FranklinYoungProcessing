@@ -694,18 +694,18 @@ class DalObject:
         df_category_match = self.get_lookup(proc_name, column_names, proc_args)
         return df_category_match
 
-    def set_bc_rtl(self, lst_bc_rtl):
-        proc_name = 'sequoia.set_BigCommerceUpdateToggle'
-        proc_statement = 'CALL `sequoia`.`set_BigCommerceUpdateToggle`(%s, %s, %s, %s);'
+    def set_toggles(self, lst_toggles):
+        proc_name = 'sequoia.set_Toggles'
+        proc_statement = 'CALL `sequoia`.`set_Toggles`(%s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_rtl)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_toggles)
         runner.start()
 
-    def get_bc_rtl_state(self):
-        proc_name = 'sequoia.get_BigCommerceUpdateToggle'
-        column_names = ['ProductPriceId','FyProductNumber','BCPriceUpdateToggle','BCDataUpdateToggle']
-        df_base_price_lookup = self.get_lookup(proc_name,column_names)
-        return df_base_price_lookup
+    def get_toggles(self):
+        proc_name = 'sequoia.get_Toggles'
+        column_names = ['ProductId','ProductPriceId','BaseProductPriceId','FyProductNumber','VendorPartNumber']
+        df_toggles = self.get_lookup(proc_name,column_names)
+        return df_toggles
 
 
     def productimage_cap(self, lst_productsafetysheet):

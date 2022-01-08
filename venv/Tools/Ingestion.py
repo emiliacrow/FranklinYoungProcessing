@@ -532,7 +532,7 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.min_product_cap(self.product_collector)
 
-    def set_discon_product_price(self, is_last, price_id, is_discontinued):
+    def set_discon_product_price(self, price_id, is_discontinued):
         # if this is the last to join, or if the size has hit the limit, send a runner
         if (len(self.product_collector) > self.load_limit):
             self.product_collector.append((price_id, is_discontinued))
@@ -735,18 +735,27 @@ class IngestionObject:
             self.product_image_match_collector.append((product_id,image_id,image_preference,image_caption))
 
 
-    def set_bigcommerce_rtl(self, is_last, ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger):
+    def set_toggles(self, product_id, price_id, base_id, fy_product_number, vendor_part_number, price_toggle,
+                                    data_toggle, is_discontinued, allow_purchases, is_visible, update_image,
+                                    ecat_contract, ecat_approved, htme_contract, htme_approved,
+                                    gsa_contract, gsa_approved, va_contract, va_approved):
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append([ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger])
-            self.obDal.set_bc_rtl(self.product_collector)
+            self.product_collector.append([product_id, price_id, base_id, fy_product_number, vendor_part_number, price_toggle,
+                                    data_toggle, is_discontinued, allow_purchases, is_visible, update_image,
+                                    ecat_contract, ecat_approved, htme_contract, htme_approved,
+                                    gsa_contract, gsa_approved, va_contract, va_approved])
+            self.obDal.set_toggles(self.product_collector)
             self.product_collector = []
 
         else:
-            self.product_collector.append((ProductPriceId, FyProductNumber, PriceTrigger, DataTrigger))
+            self.product_collector.append((product_id, price_id, base_id, fy_product_number, vendor_part_number, price_toggle,
+                                    data_toggle, is_discontinued, allow_purchases, is_visible, update_image,
+                                    ecat_contract, ecat_approved, htme_contract, htme_approved,
+                                    gsa_contract, gsa_approved, va_contract, va_approved))
 
-    def set_bigcommerce_rtl_cleanup(self):
+    def set_toggles_cleanup(self):
         if self.product_collector != []:
-            self.obDal.set_bc_rtl(self.product_collector)
+            self.obDal.set_toggles(self.product_collector)
 
 
 

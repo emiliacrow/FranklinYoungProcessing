@@ -341,7 +341,7 @@ class DuckworthWindow(QWidget):
 
 
     def contract_buttons(self,column_pos):
-        self.contract_options = ['Ready to load-BC','Ready to load-GSA','Discontinue Products','Process Product Assets']
+        self.contract_options = ['Update Toggles','Process Product Assets']
         self.contract_options.sort()
 
         self.contract_button = QPushButton('Post Processing Action')

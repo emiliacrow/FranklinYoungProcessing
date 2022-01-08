@@ -787,7 +787,7 @@ class Pathways():
         return False, 'Process not built.'
 
     def contract_pathway(self, is_testing, contract_selected):
-        all_pathways = ['Ready to load-BC', 'Ready to load-GSA','Discontinue Products','Process Product Assets']
+        all_pathways = ['Update Toggles','Process Product Assets']
 
         self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+contract_selected)
         if self.success == False:
@@ -798,7 +798,7 @@ class Pathways():
 
         self.df_product = self.obFileFinder.read_xlsx()
 
-        if contract_selected == 'Ready to load-BC':
+        if contract_selected == 'Update Toggles':
 
             self.obYNBox = YesNoDialog('Process regardless of change?')
             self.obYNBox.initUI('Toggle dialog.', 'Would you like to process all products regardless of change?')
