@@ -694,18 +694,6 @@ class DalObject:
         df_category_match = self.get_lookup(proc_name, column_names, proc_args)
         return df_category_match
 
-    def set_toggles(self, lst_toggles):
-        proc_name = 'sequoia.set_Toggles'
-        proc_statement = 'CALL `sequoia`.`set_Toggles`(%s, %s, %s, %s);'
-        self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_toggles)
-        runner.start()
-
-    def get_toggles(self):
-        proc_name = 'sequoia.get_Toggles'
-        column_names = ['ProductId','ProductPriceId','BaseProductPriceId','FyProductNumber','VendorPartNumber']
-        df_toggles = self.get_lookup(proc_name,column_names)
-        return df_toggles
 
 
     def productimage_cap(self, lst_productsafetysheet):
@@ -737,6 +725,71 @@ class DalObject:
         df_current_assets = self.get_lookup(proc_name,column_names)
         return df_current_assets
 
+
+
+    def get_toggles(self):
+        proc_name = 'sequoia.get_Toggles'
+        column_names = ['ProductId','ProductPriceId','BaseProductPriceId','ECATProductPriceId','HTMEProductPriceId',
+                        'GSAProductPriceId','VAProductPriceId','FyProductNumber','VendorPartNumber']
+        df_toggles = self.get_lookup(proc_name,column_names)
+        return df_toggles
+
+
+    def set_bc_toggles(self, lst_bc_toggles):
+        proc_name = 'sequoia.set_BC_toggles'
+        proc_statement = 'CALL `sequoia`.`set_BC_toggles`(%s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)
+        runner.start()
+
+    def set_discon(self, lst_discon_toggles):
+        proc_name = 'sequoia.set_is_discon_allow_purchase'
+        proc_statement = 'CALL `sequoia`.`set_is_discon_allow_purchase`(%s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_discon_toggles)
+        runner.start()
+
+    def set_is_visible(self, lst_is_vis_toggles):
+        proc_name = 'sequoia.set_is_visible'
+        proc_statement = 'CALL `sequoia`.`set_is_visible`(%s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_is_vis_toggles)
+        runner.start()
+
+    def set_update_image(self, lst_update_images_toggles):
+        proc_name = 'sequoia.set_update_images'
+        proc_statement = 'CALL `sequoia`.`set_is_visible`(%s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_update_images_toggles)
+        runner.start()
+
+    def set_ecat_toggles(self, lst_ecat_toggles):
+        proc_name = 'sequoia.set_ecat_toggles'
+        proc_statement = 'CALL `sequoia`.`set_ecat_toggles`(%s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_toggles)
+        runner.start()
+
+    def set_htme_toggles(self, lst_htme_toggles):
+        proc_name = 'sequoia.set_htme_toggles'
+        proc_statement = 'CALL `sequoia`.`set_htme_toggles`(%s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_toggles)
+        runner.start()
+
+    def set_gsa_toggles(self, lst_gsa_toggles):
+        proc_name = 'sequoia.set_gsa_toggles'
+        proc_statement = 'CALL `sequoia`.`set_ecat_toggles`(%s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_toggles)
+        runner.start()
+
+    def set_va_toggles(self, lst_va_toggles):
+        proc_name = 'sequoia.set_va_toggles'
+        proc_statement = 'CALL `sequoia`.`set_va_toggles`(%s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_toggles)
+        runner.start()
 
 
 

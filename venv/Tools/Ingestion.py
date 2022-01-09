@@ -19,10 +19,18 @@ class IngestionObject:
 
         self.product_document_collector = []
         self.product_image_collector = []
-        self.product_safetysheet_collector = []
-        self.product_brochure_collector = []
-        self.product_certificate_collector = []
         self.product_video_collector = []
+
+        self.product_bc_toggle_collector = []
+        self.product_discon_collector = []
+        self.product_is_visible_collector = []
+        self.product_update_image_collector = []
+
+        self.product_ecat_toggle_collector = []
+        self.product_htme_toggle_collector = []
+        self.product_gsa_toggle_collector = []
+        self.product_va_toggle_collector = []
+
 
     def set_progress_bar(self, name, count_of_steps):
         self.obProgressBarWindow = ProgressBarWindow(name)
@@ -735,29 +743,6 @@ class IngestionObject:
             self.product_image_match_collector.append((product_id,image_id,image_preference,image_caption))
 
 
-    def set_toggles(self, product_id, price_id, base_id, fy_product_number, vendor_part_number, price_toggle,
-                                    data_toggle, is_discontinued, allow_purchases, is_visible, update_image,
-                                    ecat_contract, ecat_approved, htme_contract, htme_approved,
-                                    gsa_contract, gsa_approved, va_contract, va_approved):
-        if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append([product_id, price_id, base_id, fy_product_number, vendor_part_number, price_toggle,
-                                    data_toggle, is_discontinued, allow_purchases, is_visible, update_image,
-                                    ecat_contract, ecat_approved, htme_contract, htme_approved,
-                                    gsa_contract, gsa_approved, va_contract, va_approved])
-            self.obDal.set_toggles(self.product_collector)
-            self.product_collector = []
-
-        else:
-            self.product_collector.append((product_id, price_id, base_id, fy_product_number, vendor_part_number, price_toggle,
-                                    data_toggle, is_discontinued, allow_purchases, is_visible, update_image,
-                                    ecat_contract, ecat_approved, htme_contract, htme_approved,
-                                    gsa_contract, gsa_approved, va_contract, va_approved))
-
-    def set_toggles_cleanup(self):
-        if self.product_collector != []:
-            self.obDal.set_toggles(self.product_collector)
-
-
 
     def set_productimage_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):
         # this may require a new loading object or process to better handle images
@@ -790,48 +775,6 @@ class IngestionObject:
             self.obDal.productdocument_cap(self.product_document_collector)
 
 
-    def set_productsafetysheet_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):
-        if (len(self.product_safetysheet_collector) > self.load_limit):
-            self.product_safetysheet_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
-            self.obDal.productsafetysheet_cap(self.product_safetysheet_collector)
-            self.product_safetysheet_collector = []
-
-        else:
-            self.product_safetysheet_collector.append((ProductId, ProductSafetySheetUrl, ProductSafetySheetName))
-
-    def set_productsafetysheet_cleanup(self):
-        if self.product_safetysheet_collector != []:
-            self.obDal.productsafetysheet_cap(self.product_safetysheet_collector)
-
-
-    def set_productbrochure_cap(self, is_last, ProductId, ProductBrochureUrl, ProductBrochureName):
-        if (len(self.product_brochure_collector) > self.load_limit):
-            self.product_brochure_collector.append([ProductId, ProductBrochureUrl, ProductBrochureName])
-            self.obDal.productbrochure_cap(self.product_brochure_collector)
-            self.product_brochure_collector = []
-
-        else:
-            self.product_brochure_collector.append((ProductId, ProductBrochureUrl, ProductBrochureName))
-
-    def set_productbrochure_cleanup(self):
-        if self.product_brochure_collector != []:
-            self.obDal.productbrochure_cap(self.product_brochure_collector)
-
-
-    def set_productcertificate_cap(self, is_last, ProductId, ProductCertificateUrl, ProductCertificateName):
-        if (len(self.product_certificate_collector) > self.load_limit):
-            self.product_certificate_collector.append([ProductId, ProductCertificateUrl, ProductCertificateName])
-            self.obDal.productcertificate_cap(self.product_certificate_collector)
-            self.product_certificate_collector = []
-
-        else:
-            self.product_certificate_collector.append((ProductId, ProductCertificateUrl, ProductCertificateName))
-
-    def set_productcertificate_cleanup(self):
-        if self.product_certificate_collector != []:
-            self.obDal.productcertificate_cap(self.product_certificate_collector)
-
-
     def set_productvideo_cap(self, is_last, ProductId, ProductVideoUrl, ProductVideoName):
         if (len(self.product_video_collector) > self.load_limit):
             self.product_video_collector.append([ProductId, ProductVideoUrl, ProductVideoName])
@@ -845,6 +788,117 @@ class IngestionObject:
         if self.product_video_collector != []:
             self.obDal.productvideo_cap(self.product_video_collector)
 
+
+    def set_bc_update_toggles(self, price_id, fy_product_number, price_toggle, data_toggle):
+        if (len(self.product_bc_toggle_collector) > self.load_limit):
+            self.product_bc_toggle_collector.append((price_id, fy_product_number, price_toggle, data_toggle))
+            self.obDal.set_bc_toggles(self.product_bc_toggle_collector)
+            self.product_bc_toggle_collector = []
+
+        else:
+            self.product_bc_toggle_collector.append((price_id, fy_product_number, price_toggle, data_toggle))
+
+    def set_bc_update_toggles_cleanup(self):
+        if self.product_bc_toggle_collector != []:
+            self.obDal.set_bc_toggles(self.product_bc_toggle_collector)
+
+
+    def set_is_discon_allow_purchase(self, price_id, fy_product_number, is_discontinued, allow_purchases):
+        if (len(self.product_discon_collector) > self.load_limit):
+            self.product_discon_collector.append((price_id, fy_product_number, is_discontinued, allow_purchases))
+            self.obDal.set_discon(self.product_discon_collector)
+            self.product_discon_collector = []
+
+        else:
+            self.product_discon_collector.append((price_id, fy_product_number, is_discontinued, allow_purchases))
+
+    def set_is_discon_allow_purchase_cleanup(self):
+        if self.product_discon_collector != []:
+            self.obDal.set_discon(self.product_discon_collector)
+
+
+    def set_is_visible(self,base_id, is_visible):
+        if (len(self.product_is_visible_collector) > self.load_limit):
+            self.product_is_visible_collector.append((base_id, is_visible))
+            self.obDal.set_is_visible(self.product_is_visible_collector)
+            self.product_is_visible_collector = []
+
+        else:
+            self.product_is_visible_collector.append((base_id, is_visible))
+
+    def set_is_visible_cleanup(self):
+        if self.product_is_visible_collector != []:
+            self.obDal.set_is_visible(self.product_is_visible_collector)
+
+
+    def set_update_image(self, product_id, update_image):
+        if (len(self.product_update_image_collector) > self.load_limit):
+            self.product_update_image_collector.append((product_id, update_image))
+            self.obDal.set_update_image(self.product_update_image_collector)
+            self.product_update_image_collector = []
+
+        else:
+            self.product_update_image_collector.append((product_id, update_image))
+
+    def set_update_image_cleanup(self):
+        if self.product_update_image_collector != []:
+            self.obDal.set_update_image(self.product_update_image_collector)
+
+
+    def set_ecat_toggles(self,base_id, fy_product_number, ecat_contract, ecat_approved):
+        if (len(self.product_ecat_toggle_collector) > self.load_limit):
+            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved))
+            self.obDal.set_ecat_toggles(self.product_ecat_toggle_collector)
+            self.product_ecat_toggle_collector = []
+
+        else:
+            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved))
+
+    def set_ecat_toggles_cleanup(self):
+        if self.product_ecat_toggle_collector != []:
+            self.obDal.set_ecat_toggles(self.product_ecat_toggle_collector)
+
+
+    def set_htme_toggles(self,base_id, fy_product_number, htme_contract, htme_approved):
+        if (len(self.product_htme_toggle_collector) > self.load_limit):
+            self.product_htme_toggle_collector.append((base_id, fy_product_number, htme_contract, htme_approved))
+            self.obDal.set_htme_toggles(self.product_htme_toggle_collector)
+            self.product_htme_toggle_collector = []
+
+        else:
+            self.product_htme_toggle_collector.append((base_id, fy_product_number, htme_contract, htme_approved))
+
+    def set_htme_toggles_cleanup(self):
+        if self.product_htme_toggle_collector != []:
+            self.obDal.set_htme_toggles(self.product_htme_toggle_collector)
+
+
+    def set_gsa_toggles(self,base_id, fy_product_number, gsa_contract, gsa_approved):
+        if (len(self.product_gsa_toggle_collector) > self.load_limit):
+            self.product_gsa_toggle_collector.append((base_id, fy_product_number, gsa_contract, gsa_approved))
+            self.obDal.set_gsa_toggles(self.product_gsa_toggle_collector)
+            self.product_gsa_toggle_collector = []
+
+        else:
+            self.product_gsa_toggle_collector.append((base_id, fy_product_number, gsa_contract, gsa_approved))
+
+    def set_gsa_toggles_cleanup(self):
+        if self.product_gsa_toggle_collector != []:
+            self.obDal.set_gsa_toggles(self.product_gsa_toggle_collector)
+
+
+    def set_va_toggles(self,base_id, fy_product_number, va_contract, va_approved):
+        if (len(self.product_va_toggle_collector) > self.load_limit):
+            self.product_va_toggle_collector.append((base_id, fy_product_number, va_contract, va_approved))
+            self.obDal.set_va_toggles(self.product_va_toggle_collector)
+            self.product_va_toggle_collector = []
+
+        else:
+            self.product_va_toggle_collector.append((base_id, fy_product_number, va_contract, va_approved))
+
+    def set_va_toggles_cleanup(self):
+        if self.product_va_toggle_collector != []:
+            self.obDal.set_va_toggles(self.product_va_toggle_collector)
 
 
 ## end ##
