@@ -514,8 +514,6 @@ class BasicProcessObject:
             clean_part_number = self.obValidator.clean_part_number(manufacturer_part_number)
             FY_catalog_number = str(prefix)+'-'+clean_part_number
 
-        print(FY_catalog_number)
-
         return FY_catalog_number
 
     def line_viability(self,df_product_line):
