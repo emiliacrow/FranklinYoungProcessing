@@ -761,9 +761,9 @@ class IngestionObject:
             self.obDal.productimage_cap(self.product_image_collector)
 
 
-    def set_productdocument_cap(self, is_last, ProductId, ProductDocumentUrl, ProductDocumentName, ProductDocumentType, ProductDocumentPreference = 0):
+    def set_productdocument_cap(self, ProductId, ProductDocumentUrl, ProductDocumentName, ProductDocumentType, ProductDocumentPreference = 0):
         if (len(self.product_document_collector) > self.load_limit):
-            self.product_document_collector.append([ProductId, ProductDocumentUrl, ProductDocumentName, ProductDocumentType, ProductDocumentPreference])
+            self.product_document_collector.append((ProductId, ProductDocumentUrl, ProductDocumentName, ProductDocumentType, ProductDocumentPreference))
             self.obDal.productdocument_cap(self.product_document_collector)
             self.product_document_collector = []
 

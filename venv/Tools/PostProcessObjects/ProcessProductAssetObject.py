@@ -97,6 +97,9 @@ class ProcessProductAssetObject(BasicProcessObject):
 
             elif asset_type == 'Video':
                 success, df_collect_product_base_data = self.process_video(row, df_collect_product_base_data)
+            else:
+                self.obReporter.update_report('Fail','Asset type not recognized')
+                success = False
 
         # the idea being to use a temporary location and remove them all after
         # shutil.rmtree(str(os.getcwd())+'temp_asset_files\\')
@@ -168,9 +171,10 @@ class ProcessProductAssetObject(BasicProcessObject):
 
         if success:
             # this sets the data in the database
-            self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, asset_type, document_preference)
+            self.obIngester.set_productdocument_cap(product_id, safety_sheet_url, object_name, asset_type, document_preference)
         else:
-            self.obIngester.set_productdocument_cap(self.is_last, product_id, safety_sheet_url, object_name, asset_type)
+            self.obReporter.update_report('Alert','AssetPreference was assigned as 0')
+            self.obIngester.set_productdocument_cap(product_id, safety_sheet_url, object_name, asset_type)
 
         return True, df_collect_product_base_data
 
