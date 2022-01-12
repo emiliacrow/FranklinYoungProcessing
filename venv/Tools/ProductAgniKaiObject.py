@@ -6,7 +6,7 @@
 from Tools.BasicProcess import BasicProcessObject
 
 class ProductAgniKaiObject(BasicProcessObject):
-    req_fields = ['FyProductNumber','ManufacturerPartNumber']
+    req_fields = ['FyProductNumber','VendorPartNumber']
     sup_fields = []
     att_fields = []
     gen_fields = []
@@ -30,8 +30,8 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.df_product['Filter X'] = 'Update'
         self.df_product_price_lookup['Filter Y'] = 'Update'
 
-        # match all products on FyProdNum
-        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='outer',on=['FyProductNumber','ManufacturerPartNumber'])
+        # match all products on FyProdNum and vendor part number
+        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='outer',on=['FyProductNumber','VendorPartNumber'])
 
         # counts FyProductNumber occurance as series
         self.srs_matched_product = self.df_product.loc[:,'FyProductNumber'].value_counts()

@@ -18,8 +18,8 @@ class HeaderTranslator():
                             'CountryOfOrigin':['CountryOfOrigin','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
 
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber','manufacturer_part_no','Supplier Part # '],
-                            'FyProductNumber':['FyProductNumber', 'FYProductNumber', 'Fy Product Number', 'FY Product Number'],
-                            'FyCatalogNumber':['FyCatalogNumber', 'FYCatalogNumber', 'Fy Catalog Number', 'FY Catalog Number'],
+                            'FyProductNumber':['FyProductNumber','FyProduct#', 'FYProductNumber', 'Fy Product Number', 'FY Product Number'],
+                            'FyCatalogNumber':['FyCatalogNumber','FyCatalog#', 'FYCatalogNumber', 'Fy Catalog Number', 'FY Catalog Number'],
                             'FyPartNumber':['FYPartNumber', 'FyPartNumber', 'fy_part_number', 'fy_part_no', 'Product Code/SKU'],
                             'RecommendedStorage':['shelf_life_months','RecommendedStorage','StorageInstruction'],
 
