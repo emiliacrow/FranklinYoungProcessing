@@ -278,7 +278,6 @@ class BasePrice(BasicProcessObject):
             df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
             self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
 
-
         success, fy_landed_cost = self.row_check(row,'Landed Cost')
         if success:
             success, fy_landed_cost = self.float_check(fy_landed_cost, 'Landed Cost')
