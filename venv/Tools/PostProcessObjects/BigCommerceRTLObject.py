@@ -99,6 +99,9 @@ class BigCommerceRTLObject(BasicProcessObject):
                 is_visible = row['IsVisible']
             if 'UpdateImages' in row:
                 update_image = row['UpdateImages']
+
+            if 'UpdateAssets' in row:
+                update_asset = row['UpdateAssets']
             
             ecat_contract = -1
             ecat_approved = -1
@@ -144,6 +147,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         if (update_image != -1):
             self.obIngester.set_update_image(product_id, update_image)
+
+        if (update_asset != -1):
+            self.obIngester.set_update_asset(product_id, update_asset)
 
         # should we cascade the update toggles?
 

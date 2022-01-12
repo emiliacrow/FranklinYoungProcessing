@@ -763,6 +763,13 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_update_images_toggles)
         runner.start()
 
+    def set_update_asset(self, lst_update_assets_toggles):
+        proc_name = 'sequoia.set_update_assets'
+        proc_statement = 'CALL `sequoia`.`set_update_assets`(%s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_update_assets_toggles)
+        runner.start()
+
     def set_ecat_toggles(self, lst_ecat_toggles):
         proc_name = 'sequoia.set_ecat_toggles'
         proc_statement = 'CALL `sequoia`.`set_ecat_toggles`(%s, %s, %s, %s);'
