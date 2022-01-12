@@ -471,6 +471,36 @@ class BasicProcessObject:
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
                 df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
                 return True, df_collect_product_base_data
+            else:
+                new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=supplier)
+                self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
+                # this needs to return the prefix so it can be used
+
+                new_prefix = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
+
+                fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
+
+                fy_product_number = fy_catalog_number
+
+                if 'UnitOfIssue' in row:
+                    unit_of_issue = self.normalize_units(row['UnitOfIssue'])
+                    if unit_of_issue != 'EA':
+                        if fy_catalog_number[:-2] == unit_of_issue:
+                            self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
+                        fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+                        df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
+                else:
+                    df_collect_product_base_data['UnitOfIssue'] = ['EA']
+                    self.obReporter.default_uoi_report()
+
+                if 'FyPartNumber' not in row:
+                    df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
+                df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
+                df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+                df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+                df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
+                return True, df_collect_product_base_data
 
         else:
             new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer)
