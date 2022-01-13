@@ -714,7 +714,7 @@ class DalObject:
 
     def productvideo_cap(self, lst_productvideo):
         proc_name = 'sequoia.ProductVideo_capture'
-        proc_statement = 'CALL `sequoia`.`ProductVideo_capture`(%s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`ProductVideo_capture`(%s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productvideo)
         runner.start()

@@ -775,14 +775,14 @@ class IngestionObject:
             self.obDal.productdocument_cap(self.product_document_collector)
 
 
-    def set_productvideo_cap(self, is_last, ProductId, ProductVideoUrl, ProductVideoName):
+    def set_productvideo_cap(self, product_id, video_path, video_caption, video_preference = 0):
         if (len(self.product_video_collector) > self.load_limit):
-            self.product_video_collector.append([ProductId, ProductVideoUrl, ProductVideoName])
+            self.product_video_collector.append((product_id, video_path, video_caption, video_preference))
             self.obDal.productvideo_cap(self.product_video_collector)
             self.product_video_collector = []
 
         else:
-            self.product_video_collector.append((ProductId, ProductVideoUrl, ProductVideoName))
+            self.product_video_collector.append((product_id, video_path, video_caption, video_preference))
 
     def set_productvideo_cleanup(self):
         if self.product_video_collector != []:

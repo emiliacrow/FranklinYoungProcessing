@@ -186,8 +186,20 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def process_video(self, row, return_df_line_product):
-        success = True
-        return success, return_df_line_product
+        product_id = row['ProductId']
+        video_path = row['AssetPath']
+        video_caption = ''
+        video_preference = 0
+
+        if 'VideoCaption' in row:
+            video_caption = row['VideoCaption']
+
+        if 'VideoPreference' in row:
+            video_preference = row['VideoPreference']
+
+        self.obIngester.set_productvideo_cap(product_id, video_path, video_caption,
+                                                video_preference)
+        return True, return_df_line_product
 
 
     def trigger_ingest_cleanup(self):
