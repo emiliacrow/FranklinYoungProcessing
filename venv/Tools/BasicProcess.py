@@ -539,10 +539,10 @@ class BasicProcessObject:
             if len(manufacturer_part_number) >= 22:
                 self.obReporter.update_report('Alert','Long Manufacturer Part Number')
 
-            FY_catalog_number = str(prefix) + '-' + manufacturer_part_number
+            FY_catalog_number = str(prefix) + '-' + manufacturer_part_number.upper()
         else:
             clean_part_number = self.obValidator.clean_part_number(manufacturer_part_number)
-            FY_catalog_number = str(prefix)+'-'+clean_part_number
+            FY_catalog_number = str(prefix)+'-'+clean_part_number.upper()
 
         return FY_catalog_number
 

@@ -705,8 +705,20 @@ class Pathways():
 
         self.obYNBox.close()
 
+
+
+
         if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '2-Update Full Product(5 steps)']:
-            self.obUpdateMinProduct = UpdateMinimumProduct(self.df_product, self.user, self.password, is_testing)
+
+            self.obYNBox = YesNoDialog('Process new products?')
+            self.obYNBox.initUI('Include products dialog.', 'Include new products in processing?')
+            if self.obYNBox.yes_selected == True:
+                self.full_process = True
+            else:
+                self.full_process = False
+
+            self.obUpdateMinProduct = UpdateMinimumProduct(self.df_product, self.user, self.password, is_testing,full_process=self.full_process)
+
             self.success, self.message = self.obUpdateMinProduct.begin_process()
             self.df_product = self.obUpdateMinProduct.get_df()
             if b_inter_files:
@@ -715,7 +727,7 @@ class Pathways():
                 return self.success, self.message
 
         if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '1.5-Update Minimum Product Price Data(2 steps)',  '2-Update Full Product(5 steps)']:
-            self.obUpdateMinPrice = UpdateMinimumProductPrice(self.df_product, self.user, self.password, is_testing)
+            self.obUpdateMinPrice = UpdateMinimumProductPrice(self.df_product, self.user, self.password, is_testing,full_process=self.full_process)
             self.success, self.message = self.obUpdateMinPrice.begin_process()
             self.df_product = self.obUpdateMinPrice.get_df()
             if b_inter_files:

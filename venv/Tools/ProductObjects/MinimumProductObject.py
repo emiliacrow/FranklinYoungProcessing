@@ -97,9 +97,20 @@ class MinimumProduct(BasicProcessObject):
             self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['ManufacturerPartNumber'])
 
         if 'Filter' not in self.df_product.columns:
-            self.df_product['Filter'] = 'New'
+            self.df_product['Filter'] = 'Fail'
         else:
             self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
+
+    def filter_check_in(self, row):
+        if row['Filter'] == 'Update':
+            self.obReporter.update_report('Alert', 'This is a product update')
+            return False
+        elif row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'This is a new product')
+            return True
+        else:
+            self.obReporter.update_report('Pass', 'This product is new')
+            return True
 
     def batch_process_category(self):
         # this needs to be handled better
@@ -225,14 +236,6 @@ class MinimumProduct(BasicProcessObject):
 
             self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=[attribute])
-
-    def filter_check_in(self, row):
-        if row['Filter'] == 'Update':
-            self.obReporter.update_report('Alert', 'This is a product update')
-            return False
-        else:
-            self.obReporter.update_report('Pass', 'This product is new')
-            return True
 
 
     def process_product_line(self, df_line_product):
@@ -470,14 +473,18 @@ class UpdateMinimumProduct(MinimumProduct):
                                 'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
                                 'ExpectedLeadTimeId']
 
-    def __init__(self,df_product, user, password, is_testing):
+    def __init__(self,df_product, user, password, is_testing, full_process=False):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Update Minimum Product'
         self.quick_country = {}
+        self.full_process = full_process
 
     def filter_check_in(self, row):
         if row['Filter'] == 'Update':
             self.obReporter.update_report('Pass', 'This product can be updated')
+            return True
+        elif (row['Filter'] == 'New') and self.full_process:
+            self.obReporter.update_report('Alert', 'This was a new product')
             return True
         else:
             self.obReporter.update_report('Alert', 'This product must be loaded')

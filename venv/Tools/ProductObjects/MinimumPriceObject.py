@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['VendorPartNumber','FyCatalogNumber','FyProductNumber']
+    req_fields = ['VendorPartNumber','ManufacturerPartNumber','FyProductNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -30,22 +30,23 @@ class MinimumProductPrice(BasicProcessObject):
         # these are the df's for assigning data.
         self.df_product_lookup = self.obDal.get_product_lookup()
         self.df_product_price_lookup = self.obDal.get_product_price_lookup()
+        self.df_product_lookup['ManufacturerPartNumber'].astype(str)
 
         self.df_product_lookup['Filter'] = 'Update'
-        # match all products on FyProdNum and Manufacturer part, clearly
-        if 'ManufacturerPartNumber' in self.df_product.columns:
+
+        if 'FyCatalogNumber' in self.df_product.columns:
             self.df_product = self.df_product.merge(self.df_product_lookup,
                                                             how='left',
                                                             on=['FyCatalogNumber', 'ManufacturerPartNumber'])
         else:
             self.df_product = self.df_product.merge(self.df_product_lookup,
-                                                            how='left', on=['FyCatalogNumber'])
+                                                            how='left', on=['ManufacturerPartNumber'])
 
-        # we assign a label to the products that haven't been loaded through product yet
         if 'Filter' not in self.df_product.columns:
             self.df_product['Filter'] = 'Fail'
         else:
             self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+
 
         # split the data for a moment
         self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
@@ -81,7 +82,7 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def remove_private_headers(self):
-        private_headers = {'ProductId','ProductId_y','ProductId_x',
+        private_headers = {'ProductId_y','ProductId_x',
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
@@ -299,9 +300,10 @@ class UpdateMinimumProductPrice(MinimumProductPrice):
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
 
-    def __init__(self,df_product, user, password, is_testing):
+    def __init__(self,df_product, user, password, is_testing, full_process=False):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Update Minimum Product Price'
+        self.full_process = full_process
 
 
     def filter_check_in(self, row):
@@ -310,8 +312,13 @@ class UpdateMinimumProductPrice(MinimumProductPrice):
                 self.obReporter.update_report('Pass','This product price is an update')
                 return True
             elif row['Filter'] == 'New':
-                self.obReporter.update_report('Alert','This product price is new')
-                return False
+                if self.full_process:
+                    self.obReporter.update_report('Alert','This was a new product price')
+                    return True
+                else:
+                    self.obReporter.update_report('Alert','This product price is new')
+                    return False
+
             else:
                 self.obReporter.update_report('Alert','This product must be ingested in product')
                 return False
@@ -319,30 +326,6 @@ class UpdateMinimumProductPrice(MinimumProductPrice):
             self.obReporter.update_report('Fail','This product price failed filtering')
             return False
 
-
-    def define_new(self):
-        # these are the df's for assigning data.
-        self.df_product_lookup = self.obDal.get_product_lookup()
-        self.df_product_price_lookup = self.obDal.get_product_price_lookup()
-
-        self.df_product_lookup['Filter'] = 'Update'
-        # match all products on FyProdNum and Manufacturer part, clearly
-        if 'ManufacturerPartNumber' in self.df_product.columns:
-            self.df_product = self.df_product.merge(self.df_product_lookup,
-                                                            how='left',
-                                                            on=['FyCatalogNumber', 'ManufacturerPartNumber'])
-        else:
-            self.df_product = self.df_product.merge(self.df_product_lookup,
-                                                            how='left', on=['FyCatalogNumber'])
-
-        # we assign a label to the products that haven't been loaded through product yet
-        if 'Filter' not in self.df_product.columns:
-            self.df_product['Filter'] = 'Fail'
-        else:
-            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
-
-        # split the data for a moment
-        self.df_product = self.df_product[(self.df_product['Filter'] == 'Update')]
 
 
 
