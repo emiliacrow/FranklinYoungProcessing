@@ -95,6 +95,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             
             is_visible = -1
             update_image = -1
+            update_asset = -1
             if 'IsVisible' in row:
                 is_visible = row['IsVisible']
             if 'UpdateImages' in row:
