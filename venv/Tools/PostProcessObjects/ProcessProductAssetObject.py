@@ -141,7 +141,6 @@ class ProcessProductAssetObject(BasicProcessObject):
                     return False, df_collect_product_base_data
 
         elif os.path.exists(asset_path):
-            print('This is a file')
             object_name = asset_path.rpartition('\\\\')[2]
             whole_path = asset_path
         else:

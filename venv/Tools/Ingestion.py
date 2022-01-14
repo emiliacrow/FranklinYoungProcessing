@@ -728,39 +728,14 @@ class IngestionObject:
     def set_productimage(self, product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height):
         if (len(self.product_collector) > self.load_limit):
             self.product_collector.append((product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height))
-            self.obDal.image_size_cap(self.product_collector)
+            self.obDal.product_image_capture(self.product_collector)
             self.product_collector = []
         else:
             self.product_collector.append((product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height))
 
     def set_productimage_cleanup(self):
         if self.product_collector != []:
-            self.obDal.image_size_cap(self.product_collector)
-
-
-    def image_cap(self, is_last, product_id, image_id, image_preference = 0, image_caption = ''):
-        if (len(self.product_image_match_collector) >= self.load_limit):
-            self.product_image_match_collector.append((product_id,image_id,image_preference,image_caption))
-            self.obDal.image_cap(self.product_image_match_collector)
-            self.product_image_match_collector = []
-        else:
-            self.product_image_match_collector.append((product_id,image_id,image_preference,image_caption))
-
-
-
-    def set_productimage_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):
-        # sequoia.ProductImage_capture(196365, 2, 10, '')
-        if (len(self.product_image_collector) > self.load_limit):
-            self.product_image_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
-            self.obDal.productimage_cap(self.product_image_collector)
-            self.product_image_collector = []
-
-        else:
-            self.product_image_collector.append((ProductId, ProductSafetySheetUrl, ProductSafetySheetName))
-
-    def set_productimage_cleanup(self):
-        if self.product_image_collector != []:
-            self.obDal.productimage_cap(self.product_image_collector)
+            self.obDal.product_image_capture(self.product_collector)
 
 
     def set_productdocument_cap(self, ProductId, ProductDocumentUrl, ProductDocumentName, ProductDocumentType, ProductDocumentPreference = 0):

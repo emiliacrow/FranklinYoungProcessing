@@ -487,9 +487,9 @@ class DalObject:
         return return_id
 
 
-    def image_size_cap(self,lst_product_image):
-        proc_name = 'sequoia.ProductImageSize_capture'
-        proc_statement = 'CALL `sequoia`.`ProductImageSize_capture`(%s, %s, %s, %s, %s, %s, %s);'
+    def product_image_capture(self,lst_product_image):
+        proc_name = 'sequoia.ProductImage_capture'
+        proc_statement = 'CALL `sequoia`.`ProductImage_capture`(%s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_image)
         runner.start()
@@ -696,15 +696,6 @@ class DalObject:
         proc_args = (new_description,)
         df_category_match = self.get_lookup(proc_name, column_names, proc_args)
         return df_category_match
-
-
-
-    def productimage_cap(self, lst_productsafetysheet):
-        proc_name = 'sequoia.ProductImage_capture'
-        proc_statement = 'CALL `sequoia`.`ProductImage_capture`(%s, %s, %s);'
-        self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_productsafetysheet)
-        runner.start()
 
 
     def productdocument_cap(self, lst_productdocuments):
