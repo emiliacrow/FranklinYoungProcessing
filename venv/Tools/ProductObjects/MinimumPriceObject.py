@@ -60,7 +60,7 @@ class MinimumProductPrice(BasicProcessObject):
                 self.df_update_product = self.df_update_product.drop(columns=['Filter'])
 
             # this gets the productId again
-            if 'VendorPartNumber' in self.df_product.columns:
+            if 'VendorPartNumber' in self.df_update_product.columns:
                 self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
                                                              how='left', on=['FyProductNumber','VendorPartNumber'])
             else:
@@ -160,17 +160,21 @@ class MinimumProductPrice(BasicProcessObject):
             df_collect_product_base_data = self.process_discontinued(df_collect_product_base_data, row)
 
 
-        success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
-        df_line_product = df_collect_product_base_data
+        try:
+            success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
+        except KeyError:
+            print(df_collect_product_base_data)
+            self.obReporter.update_report('Fail','Failed minimum price')
+            return False, df_collect_product_base_data
 
         if success:
             self.obReporter.price_report(success)
-            return True, df_line_product
+            return True, df_collect_product_base_data
         else:
             self.obReporter.price_report(success)
-            return False, df_line_product
+            return False, df_collect_product_base_data
 
-        return True, df_line_product
+        return True, df_collect_product_base_data
 
     def identify_fy_product_number(self, df_collect_product_base_data, row):
         if ('Conv Factor/QTY UOM' not in row):

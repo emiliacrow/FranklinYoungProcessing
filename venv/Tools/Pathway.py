@@ -682,6 +682,7 @@ class Pathways():
         if self.success == False:
             return self.success, self.message
 
+        self.full_process = True
         self.success = False
         b_inter_files = False
         self.message = 'Update data pathway'
