@@ -8,6 +8,8 @@ import shutil
 import pandas
 import requests
 
+from PIL import Image
+
 from Tools.FY_DAL import S3Object
 from Tools.BasicProcess import BasicProcessObject
 
@@ -88,13 +90,8 @@ class ProcessProductAssetObject(BasicProcessObject):
 
             asset_type = row['AssetType']
 
-            if asset_type in ['Document','SafetyDataSheet','Certificate','Brochure','Warranty']:
-                success, df_collect_product_base_data = self.process_document(row, df_collect_product_base_data)
-
-            elif asset_type == 'Image':
-                # this will require some additional data like caption if any
-                success, df_collect_product_base_data = self.process_image(row, df_collect_product_base_data)
-
+            if asset_type in ['Document','SafetyDataSheet','Certificate','Brochure','Warranty','Image']:
+                success, df_collect_product_base_data = self.process_document(row, df_collect_product_base_data, asset_type)
             elif asset_type == 'Video':
                 success, df_collect_product_base_data = self.process_video(row, df_collect_product_base_data)
             else:
@@ -107,9 +104,12 @@ class ProcessProductAssetObject(BasicProcessObject):
         return success, df_collect_product_base_data
 
 
-    def process_document(self, row, df_collect_product_base_data):
+    def process_document(self, row, df_collect_product_base_data, asset_type):
         success = True
-        bucket = 'franklin-young-document-bank'
+        if asset_type != 'Image':
+            bucket = 'franklin-young-document-bank'
+        else:
+            bucket = 'franklin-young-image-bank'
         # step wise
         # pull values from df_ob
         # create temp path
@@ -167,22 +167,32 @@ class ProcessProductAssetObject(BasicProcessObject):
             if success:
                 document_preference = int(document_preference)
             else:
+                document_preference = 0
                 self.obReporter.update_report('Alert','AssetPreference must be a number')
-
-        if success:
-            # this sets the data in the database
-            self.obIngester.set_productdocument_cap(product_id, safety_sheet_url, object_name, asset_type, document_preference)
         else:
-            self.obReporter.update_report('Alert','AssetPreference was assigned as 0')
-            self.obIngester.set_productdocument_cap(product_id, safety_sheet_url, object_name, asset_type)
+            document_preference = 0
+            self.obReporter.update_report('Alert','AssetPreference set to 0')
+
+
+        if asset_type != 'Image':
+            self.obIngester.set_productdocument_cap(product_id, safety_sheet_url, object_name, asset_type,
+                                                    document_preference)
+
+        else:
+            caption = ''
+            if 'ImageCaption' in row:
+                caption = row['ImageCaption']
+            image_width, image_height = self.get_image_size(whole_path)
+            self.obIngester.set_productimage(product_id, safety_sheet_url, object_name, document_preference, caption, image_width, image_height)
+
 
         return True, df_collect_product_base_data
 
 
-    def process_image(self, row, df_collect_product_base_data):
-        # other_requirements = ['']
-        success = True
-        return success, df_collect_product_base_data
+    def get_image_size(self, image_path):
+        current_image = Image.open(image_path)
+        image_width, image_height = current_image.size
+        return image_width, image_height
 
 
     def process_video(self, row, return_df_line_product):

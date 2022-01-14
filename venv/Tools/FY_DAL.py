@@ -25,10 +25,13 @@ class S3Object:
         if object_name is None:
             object_name = file_name
 
+
+        # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#client
         s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
                                    aws_secret_access_key=self.aws_secret_access_key)
 
-        response = s3_client.upload_file(file_path, bucket, file_name)
+        extra_args = {'ACL': 'public-read'}
+        response = s3_client.upload_file(file_path, bucket, file_name, ExtraArgs = extra_args)
 
 
     def generate_url(self,bucket,object_name):
@@ -486,7 +489,7 @@ class DalObject:
 
     def image_size_cap(self,lst_product_image):
         proc_name = 'sequoia.ProductImageSize_capture'
-        proc_statement = 'CALL `sequoia`.`ProductImageSize_capture`(%s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`ProductImageSize_capture`(%s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_image)
         runner.start()

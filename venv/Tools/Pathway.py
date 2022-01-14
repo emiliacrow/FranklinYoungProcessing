@@ -429,7 +429,7 @@ class Pathways():
             p_bar += 1
             if p_bar == len(new_images):
                 is_last = True
-            self.obIngester.image_size_cap(is_last, s3_name, image_name, image_width, image_height)
+            self.obIngester.image_size_cap(s3_name, image_name, image_width, image_height)
 
             self.obProgressBarWindow.update_bar(p_bar)
 

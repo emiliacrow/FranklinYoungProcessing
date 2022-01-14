@@ -725,13 +725,17 @@ class IngestionObject:
             self.obDal.va_product_price_cap(self.product_collector)
 
 
-    def image_size_cap(self, is_last, newProductImageUrl, newProductImageName, newProductImageX, newProductImageY):
+    def set_productimage(self, product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height):
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append((newProductImageUrl, newProductImageName, newProductImageX, newProductImageY))
+            self.product_collector.append((product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height))
             self.obDal.image_size_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append((newProductImageUrl, newProductImageName, newProductImageX, newProductImageY))
+            self.product_collector.append((product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height))
+
+    def set_productimage_cleanup(self):
+        if self.product_collector != []:
+            self.obDal.image_size_cap(self.product_collector)
 
 
     def image_cap(self, is_last, product_id, image_id, image_preference = 0, image_caption = ''):
@@ -745,8 +749,6 @@ class IngestionObject:
 
 
     def set_productimage_cap(self, is_last, ProductId, ProductSafetySheetUrl, ProductSafetySheetName):
-        # this may require a new loading object or process to better handle images
-        # see the example below
         # sequoia.ProductImage_capture(196365, 2, 10, '')
         if (len(self.product_image_collector) > self.load_limit):
             self.product_image_collector.append([ProductId, ProductSafetySheetUrl, ProductSafetySheetName])
