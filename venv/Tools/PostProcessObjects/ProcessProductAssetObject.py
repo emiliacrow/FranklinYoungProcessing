@@ -105,6 +105,11 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def process_document(self, row, df_collect_product_base_data, asset_type):
+        # this still needs to have better define_new process
+        # especially with images because they need to check if there already exists a file on s3
+        # right now this guesses in places and does unecessary pushing of images.
+
+
         success = True
         if asset_type != 'Image':
             bucket = 'franklin-young-document-bank'
@@ -141,7 +146,8 @@ class ProcessProductAssetObject(BasicProcessObject):
                     return False, df_collect_product_base_data
 
         elif os.path.exists(asset_path):
-            object_name = asset_path.rpartition('\\\\')[2]
+
+            object_name = asset_path.rpartition('\\')[2]
             whole_path = asset_path
         else:
             return False, df_collect_product_base_data
@@ -152,7 +158,13 @@ class ProcessProductAssetObject(BasicProcessObject):
 
         # This is the name to put in our bucket
         # THOMAS/imagename.png
-        s3_name = self.vendor_name + '/' + object_name
+
+        # this needs better logic, this works for now
+
+        if 'FranklinYoungDefaultImage' in whole_path:
+            s3_name = 'FranklinYoungDefaultImage/' + object_name
+        else:
+            s3_name = self.vendor_name + '/' + object_name
 
         # this puts the object into s3
         self.obS3.put_file(whole_path, s3_name, bucket)
@@ -182,6 +194,7 @@ class ProcessProductAssetObject(BasicProcessObject):
             if 'ImageCaption' in row:
                 caption = row['ImageCaption']
             image_width, image_height = self.get_image_size(whole_path)
+
             self.obIngester.set_productimage(product_id, safety_sheet_url, object_name, document_preference, caption, image_width, image_height)
 
 
