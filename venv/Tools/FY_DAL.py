@@ -728,7 +728,7 @@ class DalObject:
 
     def get_current_assets(self):
         proc_name = 'sequoia.get_current_assets'
-        column_names = ['FyProductNumber','ProductId','AssetPath','AssetType']
+        column_names = ['FyProductNumber','ProductId','AssetPath','CurrentAssetType']
         df_current_assets = self.get_lookup(proc_name,column_names)
         return df_current_assets
 

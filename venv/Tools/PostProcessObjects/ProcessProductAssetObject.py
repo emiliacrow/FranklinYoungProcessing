@@ -53,7 +53,7 @@ class ProcessProductAssetObject(BasicProcessObject):
             self.current_assets['Filter'] = 'Pass'
 
             # then we should be matching on FyProductNumber, AssetPath
-            match_headers = ['ProductId','FyProductNumber','AssetPath','AssetType']
+            match_headers = ['ProductId','FyProductNumber','AssetPath']
             self.df_process_product = self.df_process_product.merge(self.current_assets, how='left', on=match_headers)
 
             self.df_process_product.loc[(self.df_process_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
@@ -87,20 +87,8 @@ class ProcessProductAssetObject(BasicProcessObject):
             if row['Filter'] == 'Fail':
                 self.obReporter.update_report('Fail', 'This product hasn\' been ingested.')
                 return False
-            elif row['Filter'] == 'Pass':
-                self.obReporter.update_report('Alert', 'This product asset association already exists.')
-                return False
-
-            elif 'CurrentAssetPath' in row:
-                current_asset_path = row['CurrentAssetPath']
-                proposed_asset_path = row['AssetPath']
-                asset_type = row['AssetPath']
-                if current_asset_path == proposed_asset_path and asset_type != 'Image':
-                    self.obReporter.update_report('Fail', 'This product hasn\' been ingested.')
-                    return False
-                else:
-                    self.obReporter.update_report('Alert', 'This product asset was overwritten.')
-                    return True
+            else:
+                return True
 
         else:
             self.obReporter.update_report('Fail', 'This product hasn\' been ingested.')
@@ -137,10 +125,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def process_document(self, row, df_collect_product_base_data, asset_type):
-        # this still needs to have better define_new process
-        # especially with images because they need to check if there already exists a file on s3
-        # right now this guesses in places and does unecessary pushing of images.
-
+        df_return_product = df_collect_product_base_data.copy()
         # this may also need to include functionality for changing the ACL for an asset.
         # which mean we might want to pull the asset list from S3 after all
 
@@ -163,9 +148,11 @@ class ProcessProductAssetObject(BasicProcessObject):
             temp_path = 'temp_asset_files\\'+url_name
             # This is the true path to the file
             whole_path = str(os.getcwd())+'\\'+temp_path
+            df_return_product['WholeFilePath'] = [whole_path]
 
             if os.path.exists(whole_path):
                 object_name = whole_path.rpartition('\\')[2]
+                self.obReporter.update_report('Alert','This was previously scraped')
             else:
                 # Make http request for remote file data
                 asset_data = requests.get(asset_path)
@@ -175,21 +162,35 @@ class ProcessProductAssetObject(BasicProcessObject):
                     with open(temp_path, 'wb')as file:
                         file.write(asset_data.content)
                     object_name = whole_path.rpartition('\\')[2]
+                    df_return_product['AssetObjectName'] = [object_name]
+                    self.obReporter.update_report('Alert','This asset was scraped')
                 else:
-                    self.obReporter.update_report('Alert','This url doesn\'t work.')
-                    return False, df_collect_product_base_data
+                    self.obReporter.update_report('Fail','This url doesn\'t work.')
+                    return False, df_return_product
 
         elif os.path.exists(asset_path):
             object_name = asset_path.rpartition('\\')[2]
             whole_path = asset_path
+            df_return_product['AssetObjectName'] = [object_name]
         else:
-            return False, df_collect_product_base_data
+            self.obReporter.update_report('Alert','Please check that the path is a url or file path')
+            return False, df_return_product
 
 
         if 'FranklinYoungDefaultImage' in whole_path:
             s3_name = 'FranklinYoungDefaultImage/' + object_name
         else:
             s3_name = self.vendor_name + '/' + object_name
+
+        # we check if the documents
+        if 'CurrentAssetPath' in row:
+            current_asset_path = row['CurrentAssetPath']
+            if current_asset_path == whole_path and asset_type != 'Image' and asset_type != 'Video':
+                self.obReporter.update_report('Fail', 'This asset already exists.')
+                return False, df_return_product
+            else:
+                self.obReporter.update_report('Alert', 'This product asset was overwritten.')
+
 
         # this puts the object into s3
         # only send to s3 if it doesn't already exist
@@ -217,7 +218,6 @@ class ProcessProductAssetObject(BasicProcessObject):
             document_preference = 0
             self.obReporter.update_report('Alert','AssetPreference set to 0')
 
-
         if asset_type != 'Image':
             self.obIngester.set_productdocument_cap(product_id, s3_name, object_name, asset_type,
                                                     document_preference)
@@ -231,7 +231,7 @@ class ProcessProductAssetObject(BasicProcessObject):
             self.obIngester.set_productimage(product_id, s3_name, object_name, document_preference, caption, image_width, image_height)
 
 
-        return True, df_collect_product_base_data
+        return True, df_return_product
 
 
     def get_image_size(self, image_path):
