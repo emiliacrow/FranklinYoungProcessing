@@ -35,11 +35,39 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def define_new(self):
-        self.current_assets = self.obDal.get_current_assets()
-        match_headers = ['FyProductNumber']
-        self.current_assets['Filter'] = 'Pass'
-        self.df_product = self.df_product.merge(self.current_assets, how='left', on=match_headers)
-        self.df_product.loc[(self.df_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
+        # we use FyProductNumber to get ProductId
+        self.df_prod_id = self.obDal.get_product_fill_lookup()
+        self.df_prod_id['Filter'] = 'Pass'
+        self.df_product = self.df_product.merge(self.df_prod_id, how='left', on=['FyProductNumber'])
+
+        self.df_product.loc[(self.df_product['Filter'] != 'Pass'), 'Filter'] = 'Fail'
+
+        # split the data for a moment
+        self.df_process_product = self.df_product[(self.df_product['Filter'] == 'Pass')]
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'Pass')]
+
+        if len(self.df_process_product.index) != 0:
+            self.df_process_product = self.df_process_product.drop(columns=['Filter'])
+            # this gets all the currect assets, images included
+            self.current_assets = self.obDal.get_current_assets()
+            self.current_assets['Filter'] = 'Pass'
+
+            # then we should be matching on FyProductNumber, AssetPath
+            match_headers = ['ProductId','FyProductNumber','AssetPath','AssetType']
+            self.df_process_product = self.df_process_product.merge(self.current_assets, how='left', on=match_headers)
+
+            self.df_process_product.loc[(self.df_process_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
+
+        if len(self.df_product.index)==0:
+            self.df_product = self.df_process_product.copy()
+        else:
+            self.df_product = self.df_product.append(self.df_process_product)
+
+        self.lst_image_objects = self.obS3.get_object_list('franklin-young-image-bank')
+        self.lst_document_objects = self.obS3.get_object_list('franklin-young-document-bank')
+
+        # then check for matching values in url and skip
+
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -59,6 +87,10 @@ class ProcessProductAssetObject(BasicProcessObject):
             if row['Filter'] == 'Fail':
                 self.obReporter.update_report('Fail', 'This product hasn\' been ingested.')
                 return False
+            elif row['Filter'] == 'Pass':
+                self.obReporter.update_report('Alert', 'This product asset association already exists.')
+                return False
+
             elif 'CurrentAssetPath' in row:
                 current_asset_path = row['CurrentAssetPath']
                 proposed_asset_path = row['AssetPath']
@@ -109,6 +141,8 @@ class ProcessProductAssetObject(BasicProcessObject):
         # especially with images because they need to check if there already exists a file on s3
         # right now this guesses in places and does unecessary pushing of images.
 
+        # this may also need to include functionality for changing the ACL for an asset.
+        # which mean we might want to pull the asset list from S3 after all
 
         success = True
         if asset_type != 'Image':
@@ -146,20 +180,11 @@ class ProcessProductAssetObject(BasicProcessObject):
                     return False, df_collect_product_base_data
 
         elif os.path.exists(asset_path):
-
             object_name = asset_path.rpartition('\\')[2]
             whole_path = asset_path
         else:
             return False, df_collect_product_base_data
 
-        # this sets the actual url to our file, see this example
-        # https://franklin-young-image-bank.s3.us-west-2.amazonaws.com/CONSOLIDATED+STERILIZER+SYSTEMS/PT-SR-24AB-26AB-ADVPRO.jpg
-        safety_sheet_url = 'https://'+bucket+'.s3.us-west-2.amazonaws.com/'+self.vendor_name+'/'+object_name
-
-        # This is the name to put in our bucket
-        # THOMAS/imagename.png
-
-        # this needs better logic, this works for now
 
         if 'FranklinYoungDefaultImage' in whole_path:
             s3_name = 'FranklinYoungDefaultImage/' + object_name
@@ -167,7 +192,15 @@ class ProcessProductAssetObject(BasicProcessObject):
             s3_name = self.vendor_name + '/' + object_name
 
         # this puts the object into s3
-        self.obS3.put_file(whole_path, s3_name, bucket)
+        # only send to s3 if it doesn't already exist
+        if asset_type == 'Image':
+            if s3_name not in self.lst_image_objects:
+                self.obS3.put_file(whole_path, s3_name, bucket)
+                self.lst_image_objects.append(s3_name)
+
+        elif s3_name not in self.lst_document_objects:
+            self.obS3.put_file(whole_path, s3_name, bucket)
+            self.lst_document_objects.append(s3_name)
 
         product_id = row['ProductId']
         asset_type = row['AssetType']
@@ -186,7 +219,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
         if asset_type != 'Image':
-            self.obIngester.set_productdocument_cap(product_id, safety_sheet_url, object_name, asset_type,
+            self.obIngester.set_productdocument_cap(product_id, s3_name, object_name, asset_type,
                                                     document_preference)
 
         else:
@@ -195,7 +228,7 @@ class ProcessProductAssetObject(BasicProcessObject):
                 caption = row['ImageCaption']
             image_width, image_height = self.get_image_size(whole_path)
 
-            self.obIngester.set_productimage(product_id, safety_sheet_url, object_name, document_preference, caption, image_width, image_height)
+            self.obIngester.set_productimage(product_id, s3_name, object_name, document_preference, caption, image_width, image_height)
 
 
         return True, df_collect_product_base_data
@@ -228,6 +261,16 @@ class ProcessProductAssetObject(BasicProcessObject):
         self.obIngester.set_productdocument_cleanup()
         self.obIngester.set_productimage_cleanup()
         self.obIngester.set_productvideo_cleanup()
+
+
+def test_frame():
+    print('I do things')
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    test_frame()
+
 
 
 ## end ##

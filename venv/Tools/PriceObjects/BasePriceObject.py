@@ -164,7 +164,10 @@ class BasePrice(BasicProcessObject):
         return fy_sell_price
 
     def set_markup_sell(self, fy_landed_cost, fy_sell_price):
-        markup_sell = round(float(fy_sell_price / fy_landed_cost), 2)
+        try:
+            markup_sell = round(float(fy_sell_price / fy_landed_cost), 2)
+        except ZeroDivisionError:
+            markup_sell = 0
         return markup_sell
 
     def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
@@ -175,7 +178,10 @@ class BasePrice(BasicProcessObject):
         df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
         # TODO check that this is working right
-        df_collect_product_base_data['ECommerceDiscount'] = [round(1 - float(fy_sell_price / fy_list_price), 2)]
+        try:
+            df_collect_product_base_data['ECommerceDiscount'] = [round(1 - float(fy_sell_price / fy_list_price), 2)]
+        except ZeroDivisionError:
+            df_collect_product_base_data['ECommerceDiscount'] = [0]
 
         return df_collect_product_base_data
 

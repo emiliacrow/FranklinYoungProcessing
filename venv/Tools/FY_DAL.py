@@ -34,6 +34,19 @@ class S3Object:
         response = s3_client.upload_file(file_path, bucket, file_name, ExtraArgs = extra_args)
 
 
+    def get_object_list(self, bucket):
+        s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
+                                   aws_secret_access_key=self.aws_secret_access_key)
+        s3_objects = s3_client.list_objects(Bucket=bucket)
+        lst_objects = []
+        banked_objects = s3_objects['Contents']
+        for each_banked_object in banked_objects:
+            doc_name = each_banked_object['Key']
+            lst_objects.append(doc_name)
+
+        return lst_objects
+
+
     def generate_url(self,bucket,object_name):
         expiration = 3600
         s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
@@ -715,7 +728,7 @@ class DalObject:
 
     def get_current_assets(self):
         proc_name = 'sequoia.get_current_assets'
-        column_names = ['FyProductNumber','ProductId','CurrentAssetPath','CurrentAssetType']
+        column_names = ['FyProductNumber','ProductId','AssetPath','AssetType']
         df_current_assets = self.get_lookup(proc_name,column_names)
         return df_current_assets
 
@@ -822,6 +835,7 @@ class DataRunner(threading.Thread):
         self.connection.close()
         print('Runner report end: ' + self.proc_name)
 
+
 def get_lookup(conx, proc_name, column_names,filter_val=None):
     # returns the full results of a query
     result_set = []
@@ -844,6 +858,7 @@ def get_lookup(conx, proc_name, column_names,filter_val=None):
 
 def test_local_connect():
     tell_all = 'Look, man, whatever.'
+    print(tell_all)
 
 
 # Press the green button in the gutter to run the script.
