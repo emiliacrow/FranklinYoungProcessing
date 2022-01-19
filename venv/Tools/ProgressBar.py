@@ -290,13 +290,14 @@ class TextBoxObject(QDialog):
 
 class FileDialogObject(QWidget):
 
-    def __init__(self, dialog_type='file_dialog', name = 'Please select a file', icon='duck'):
+    def __init__(self, dialog_type='file_dialog', name = 'Please select a file', icon='duck',path=''):
         super().__init__()
         self.left = 10
         self.top = 10
         self.width = 640
         self.height = 480
 
+        self.start_path = path
         self.set_icon = set_icon
         self.fy_icon = self.set_icon(icon)
         self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
@@ -304,6 +305,7 @@ class FileDialogObject(QWidget):
         self.out_file_name = ''
         self.name = name
         self.initUI(dialog_type)
+
 
     def initUI(self, dialog_type):
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -325,7 +327,7 @@ class FileDialogObject(QWidget):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        self.out_file_name, _ = QFileDialog.getOpenFileName(self, self.name, '',
+        self.out_file_name, _ = QFileDialog.getOpenFileName(self, self.name, self.start_path,
                                                    files_to_get, options=options)
 
     # this is what we use to find several file
@@ -334,7 +336,7 @@ class FileDialogObject(QWidget):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        self.out_file_names, _ = QFileDialog.getOpenFileNames(self, self.name, '',
+        self.out_file_names, _ = QFileDialog.getOpenFileNames(self, self.name, self.start_path,
                                                    files_to_get, options=options)
 
     # this probably won't be used
@@ -344,7 +346,7 @@ class FileDialogObject(QWidget):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        self.out_file_name, _ = QFileDialog.getSaveFileName(self, self.name, '',
+        self.out_file_name, _ = QFileDialog.getSaveFileName(self, self.name, self.start_path,
                                                    files_to_get, options=options)
 
     def get_file_name(self):

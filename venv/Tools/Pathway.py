@@ -63,10 +63,11 @@ class Pathways():
         self.obFileFinder = FileFinder()
 
         self.perm_file = os.getcwd() + '\\venv\Assets\SequoiaCredentials.txt'
-        self.user, self.password, self.aws_access_key_id, self.aws_secret_access_key = self.test_perm_file()
+        self.user, self.password, self.aws_access_key_id, self.aws_secret_access_key, self.start_path = self.test_perm_file()
 
 
     def test_perm_file(self):
+        self.start_path = ''
         try:
             with open(self.perm_file) as f:
                 lines = f.readlines()
@@ -98,7 +99,18 @@ class Pathways():
                 self.aws_secret_access_key = line.replace('aws_secret_access_key:','')
                 self.aws_secret_access_key = self.aws_secret_access_key.replace('\n','')
 
-        return self.user, self.password,self.aws_access_key_id,self.aws_secret_access_key
+            if 'file_path_return:' in line:
+                self.start_path = line.replace('file_path_return:','')
+                self.start_path = self.start_path.replace('\n','')
+
+        return self.user, self.password,self.aws_access_key_id,self.aws_secret_access_key, self.start_path
+
+
+    def set_perm_file(self):
+        file_text = "\n".join(['Username:'+self.user, 'Password:'+self.password,'aws_access_key_id:'+self.aws_access_key_id
+                                  ,'aws_secret_access_key:'+self.aws_secret_access_key, 'file_path_return:'+self.start_path])
+        with open(self.perm_file, 'w') as f:
+            f.write(file_text)
 
 
     def file_processing_pathway(self, is_testing, file_action_selected):
@@ -114,10 +126,13 @@ class Pathways():
         elif file_action_selected == 'Load Image Files':
             self.success, self.message = self.image_load_tool(is_testing)
         else:
-            file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected)
+            file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected, path = self.start_path)
             if file_ident_success == False:
                 return file_ident_success, message_or_path
             else:
+                self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\','\\')
+                self.set_perm_file()
+
                 if 'Category' in file_action_selected:
                     self.df_product = self.obFileFinder.read_xlsx()
                     self.obCategoryProcessor = CategoryProcessor(self.df_product, self.user, self.password, is_testing,
@@ -161,7 +176,7 @@ class Pathways():
         self.message = 'It\'s finished'
 
         # which file you wanna split
-        file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to split.')
+        file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to split.', path = self.start_path)
         if file_ident_success == False:
             return file_ident_success, message_or_path
         else:
@@ -238,7 +253,7 @@ class Pathways():
 
     def file_appender_tool(self):
         self.full_file_count = 1
-        file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.')
+        file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.', path = self.start_path)
 
         if file_ident_success:
             first_file = message_or_path.pop()
@@ -573,7 +588,7 @@ class Pathways():
 
 
     def ingest_data_pathway(self, is_testing, ingestion_action_selected):
-        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+ingestion_action_selected)
+        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+ingestion_action_selected, path = self.start_path)
         if self.success == False:
             return self.success, self.message
 
@@ -678,7 +693,7 @@ class Pathways():
 
 
     def update_data_pathway(self, is_testing, update_action_selected):
-        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+update_action_selected)
+        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+update_action_selected, path = self.start_path)
         if self.success == False:
             return self.success, self.message
 
@@ -802,7 +817,7 @@ class Pathways():
     def contract_pathway(self, is_testing, contract_selected):
         all_pathways = ['Update Toggles','Process Product Assets']
 
-        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+contract_selected)
+        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+contract_selected, path = self.start_path)
         if self.success == False:
             return self.success, self.message
 
