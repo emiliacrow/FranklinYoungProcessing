@@ -808,19 +808,6 @@ class IngestionObject:
             self.obDal.set_is_visible(self.product_is_visible_collector)
 
 
-    def set_update_image(self, product_id, update_image):
-        if (len(self.product_update_image_collector) > self.load_limit):
-            self.product_update_image_collector.append((product_id, update_image))
-            self.obDal.set_update_image(self.product_update_image_collector)
-            self.product_update_image_collector = []
-
-        else:
-            self.product_update_image_collector.append((product_id, update_image))
-
-    def set_update_image_cleanup(self):
-        if self.product_update_image_collector != []:
-            self.obDal.set_update_image(self.product_update_image_collector)
-
     def set_update_asset(self, product_id, update_asset):
         if (len(self.product_update_asset_collector) > self.load_limit):
             self.product_update_asset_collector.append((product_id, update_image))

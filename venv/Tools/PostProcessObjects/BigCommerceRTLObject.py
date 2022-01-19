@@ -98,12 +98,10 @@ class BigCommerceRTLObject(BasicProcessObject):
             update_asset = -1
             if 'IsVisible' in row:
                 is_visible = row['IsVisible']
-            if 'UpdateImages' in row:
-                update_image = row['UpdateImages']
 
             if 'UpdateAssets' in row:
                 update_asset = row['UpdateAssets']
-            
+
             ecat_contract = -1
             ecat_approved = -1
             if row['ECATProductPriceId'] != -1:
@@ -146,9 +144,6 @@ class BigCommerceRTLObject(BasicProcessObject):
         if (is_visible != -1):
             self.obIngester.set_is_visible(base_id, is_visible)
 
-        if (update_image != -1):
-            self.obIngester.set_update_image(product_id, update_image)
-
         if (update_asset != -1):
             self.obIngester.set_update_asset(product_id, update_asset)
 
@@ -173,7 +168,7 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.obIngester.set_bc_update_toggles_cleanup()
         self.obIngester.set_is_discon_allow_purchase_cleanup()
         self.obIngester.set_is_visible_cleanup()
-        self.obIngester.set_update_image_cleanup()
+        self.obIngester.set_update_asset_cleanup()
         self.obIngester.set_ecat_toggles_cleanup()
         self.obIngester.set_htme_toggles_cleanup()
         self.obIngester.set_gsa_toggles_cleanup()
