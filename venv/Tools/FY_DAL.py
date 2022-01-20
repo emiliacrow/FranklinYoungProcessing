@@ -311,7 +311,7 @@ class DalObject:
 
     def get_lead_times(self):
         proc_name = 'sequoia.get_LeadTime_lookup'
-        column_names = ['ExpectedLeadTimeId', 'LeadTimeDays', 'LeadTimeDaysExpedited']
+        column_names = ['ExpectedLeadTimeId', 'LeadTime', 'LeadTimeExpedited']
         df_lead_time_lookup = self.get_lookup(proc_name, column_names)
         return df_lead_time_lookup
 

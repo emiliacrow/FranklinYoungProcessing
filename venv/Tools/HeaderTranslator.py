@@ -34,8 +34,8 @@ class HeaderTranslator():
                             'UnitOfMeasure':['UnitOfMeasure','UOM','uom','uom_std'],
                             'IsHazardous':['IsHazardous','Is Hazardous','Hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
-                            'LeadTimeDays':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times'],
-                            'LeadTimeDaysExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
+                            'LeadTime':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
+                            'LeadTimeExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
 
                             'VendorListPrice':['Vendor List Price','VendorListPrice','VendorList','Vendor List','List Price','primary_vendor_list_price','vendor_list_price'],
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent','FyDiscByVendor'],

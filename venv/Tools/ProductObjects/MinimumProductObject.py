@@ -191,22 +191,19 @@ class MinimumProduct(BasicProcessObject):
     def batch_process_lead_time(self):
         self.df_lead_times = self.obDal.get_lead_times()
 
-        if 'ExpectedLeadTime' not in self.df_product.columns:
-            self.df_product['ExpectedLeadTimeId'] = 2
-
-        else:
-            df_attribute = self.df_product[['LeadTimeDays']]
-            df_attribute = df_attribute.drop_duplicates(subset=['LeadTimeDays'])
+        if 'ExpectedLeadTime' in self.df_product.columns:
+            df_attribute = self.df_product[['LeadTime']]
+            df_attribute = df_attribute.drop_duplicates(subset=['LeadTime'])
             lst_ids = []
             for colName, row in df_attribute.iterrows():
-                lead_time = row['LeadTimeDays']
-                if lead_time in self.df_lead_times['LeadTimeDays'].tolist():
+                lead_time = row['LeadTime']
+                if lead_time in self.df_lead_times['LeadTime'].tolist():
                     new_lead_time_id = self.df_lead_times.loc[
-                        (self.df_lead_times['LeadTimeDays'] == lead_time), 'ExpectedLeadTimeId'].values[0]
+                        (self.df_lead_times['LeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
 
                 else:
-                    if 'LeadTimeDaysExpedited' in row:
-                        expedited_lead_time = row['LeadTimeDaysExpedited']
+                    if 'LeadTimeExpedited' in row:
+                        expedited_lead_time = row['LeadTimeExpedited']
                     else:
                         expedited_lead_time = lead_time
 
@@ -216,6 +213,9 @@ class MinimumProduct(BasicProcessObject):
             df_attribute['ExpectedLeadTimeId'] = lst_ids
             self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=['ExpectedLeadTime'])
+        else:
+            self.df_product['ExpectedLeadTimeId'] = 2
+
 
     def batch_process_attribute(self,attribute):
         set_128 = ['RecommendedStorageId']
