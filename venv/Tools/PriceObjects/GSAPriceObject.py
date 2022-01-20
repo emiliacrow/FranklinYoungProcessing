@@ -11,13 +11,14 @@ from Tools.BasicProcess import BasicProcessObject
 class GSAPrice(BasicProcessObject):
     req_fields = ['FyProductNumber','VendorPartNumber','OnContract', 'GSAApprovedListPrice',
                   'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
-
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']
+
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'GSA Price Ingestion'
+
 
     def batch_preprocessing(self):
         self.remove_private_headers()
@@ -25,6 +26,7 @@ class GSAPrice(BasicProcessObject):
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
         self.define_new()
+
 
     def batch_process_vendor(self):
         # there should only be one vendor, really.
@@ -35,9 +37,6 @@ class GSAPrice(BasicProcessObject):
         df_attribute = self.df_product[['VendorName']]
         df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
         lst_ids = []
-        if 'VendorName' not in self.df_product.columns:
-            vendor_name = self.vendor_name_selection()
-            self.df_product['VendorName'] = vendor_name
 
         for colName, row in df_attribute.iterrows():
             vendor_name = row['VendorName'].upper()
@@ -56,6 +55,7 @@ class GSAPrice(BasicProcessObject):
 
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])
+
 
     def define_new(self):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
@@ -119,12 +119,11 @@ class GSAPrice(BasicProcessObject):
             self.obReporter.update_report('Fail','This product price failed filtering')
             return False
 
-    def trigger_ingest_cleanup(self):
-        self.obIngester.ingest_gsa_product_price_cleanup()
 
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
+
         for colName, row in df_line_product.iterrows():
             if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
@@ -139,6 +138,7 @@ class GSAPrice(BasicProcessObject):
 
         return success, return_df_line_product
 
+
     def process_oncontract(self, df_collect_product_base_data, row):
         if ('OnContract' not in row):
             df_collect_product_base_data['OnContract'] = [0]
@@ -149,6 +149,7 @@ class GSAPrice(BasicProcessObject):
             df_collect_product_base_data['OnContract'] = [1]
 
         return df_collect_product_base_data
+
 
     def process_pricing(self, df_line_product):
         success = True
@@ -167,7 +168,6 @@ class GSAPrice(BasicProcessObject):
                 return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
-
 
             if 'GSABasePrice' not in row:
                 approved_list_price = float(row['GSAApprovedListPrice'])
@@ -197,13 +197,12 @@ class GSAPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            vendor_part_number = row['VendorPartNumber']
             on_contract = row['OnContract']
-
 
             contract_number = 'GS-07F-0636W'
             contract_mod_number = row['GSAContractModificationNumber']
             is_pricing_approved = row['GSAPricingApproved']
+
             try:
                 approved_price_date = int(row['GSAApprovedPriceDate'])
                 approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
@@ -236,8 +235,8 @@ class GSAPrice(BasicProcessObject):
                                               approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
                                               mfc_precent, mfc_price, sin)
 
-
         return success, return_df_line_product
+
 
     def trigger_ingest_cleanup(self):
         self.obIngester.ingest_gsa_product_price_cleanup()

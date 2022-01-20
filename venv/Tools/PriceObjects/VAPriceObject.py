@@ -3,24 +3,22 @@
 # Updated: 20210827
 # CreateFor: Franklin Young International
 
-
 import pandas
 import xlrd
 
 from Tools.BasicProcess import BasicProcessObject
 
-
-
 class VAPrice(BasicProcessObject):
-    req_fields = ['VendorName','FyProductNumber','FyPartNumber','OnContract', 'VAApprovedListPrice',
+    req_fields = ['FyProductNumber','VendorPartNumber','OnContract', 'VAApprovedListPrice',
                   'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved']
-
     sup_fields = []
     att_fields = []
-    gen_fields = []
+    gen_fields = ['ContractedManufacturerPartNumber']
+
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'VA Price Ingestion'
+
 
     def batch_preprocessing(self):
         self.remove_private_headers()
@@ -28,6 +26,7 @@ class VAPrice(BasicProcessObject):
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
         self.define_new()
+
 
     def batch_process_vendor(self):
         # there should only be one vendor, really.
@@ -62,26 +61,17 @@ class VAPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_va_price_lookup = self.obDal.get_va_price_lookup()
 
-        match_headers = ['FyProductNumber','FyPartNumber','OnContract', 'VAApprovedListPrice',
-                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate']
+        match_headers = ['FyProductNumber','VendorPartNumber','OnContract', 'VAApprovedListPrice',
+                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
 
-        if 'Filter' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='Filter')
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='ProductPriceId')
-        if 'BaseProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='BaseProductPriceId')
-
         # match all products on FyProdNum
         self.df_update_products = self.df_product.merge(self.df_base_price_lookup,
-                                                         how='left', on=['FyProductNumber','FyPartNumber'])
-        if 'Filter' not in self.df_update_products.columns:
-            self.df_update_products['Filter'] = 'Fail'
-        else:
-            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
+                                                         how='left', on=['FyProductNumber','VendorPartNumber'])
+        # all products that matched on FyProdNum
+        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
         self.df_product = self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update')]
         self.df_update_products = self.df_update_products.loc[(self.df_update_products['Filter'] == 'Update')]
@@ -99,6 +89,8 @@ class VAPrice(BasicProcessObject):
             self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'Update'
 
             self.df_product = self.df_product.append(self.df_update_products)
+
+            # this shouldn't always be 0
 
 
     def remove_private_headers(self):
@@ -127,8 +119,6 @@ class VAPrice(BasicProcessObject):
             self.obReporter.update_report('Fail','This product price failed filtering')
             return False
 
-    def trigger_ingest_cleanup(self):
-        self.obIngester.ingest_va_product_price_cleanup()
 
     def process_product_line(self, df_line_product):
         success = True
@@ -148,6 +138,7 @@ class VAPrice(BasicProcessObject):
 
         return success, return_df_line_product
 
+
     def process_oncontract(self, df_collect_product_base_data, row):
         if ('OnContract' not in row):
             df_collect_product_base_data['OnContract'] = [1]
@@ -159,22 +150,39 @@ class VAPrice(BasicProcessObject):
 
         return df_collect_product_base_data
 
+
     def process_pricing(self, df_line_product):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            if 'ContractedManufacturerPartNumber' in row:
+                contract_manu_number = row['ContractedManufacturerPartNumber']
+
+                if 'db_ContractedManufacturerPartNumber' in row and contract_manu_number == '':
+                    db_contract_manu_number = row['db_ContractedManufacturerPartNumber']
+                    contract_manu_number = db_contract_manu_number
+                    return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+
+            elif 'db_ContractedManufacturerPartNumber' in row:
+                contract_manu_number = db_contract_manu_number
+                return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+            else:
+                return_df_line_product['ContractedManufacturerPartNumber'] = ''
+
             if 'VABasePrice' not in row:
                 approved_list_price = float(row['VAApprovedListPrice'])
                 approved_percent = float(row['VAApprovedPercent'])
                 va_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
+
                 return_df_line_product['VABasePrice'] = va_base_price
             else:
                 va_base_price = float(row['VABasePrice'])
                 return_df_line_product['VABasePrice'] = va_base_price
 
             if 'VASellPrice' not in row:
-                iff_fee_percent = 0.005
-                return_df_line_product['VASellPrice'] = round(va_base_price+(va_base_price*iff_fee_percent))
+                iff_fee_percent = 0.995
+                va_sell_price = va_base_price/iff_fee_percent
+                return_df_line_product['GSASellPrice'] = va_sell_price
 
             if 'MfcPrice' not in row:
                 mfc_precent = float(row['MfcDiscountPercent'])
@@ -201,6 +209,14 @@ class VAPrice(BasicProcessObject):
             except ValueError:
                 approved_price_date = str(row['VAApprovedPriceDate'])
 
+            contract_manu_number = row['ContractedManufacturerPartNumber']
+
+            if 'VAApprovedBasePrice' in row:
+                approved_base_price = row['VAApprovedBasePrice']
+            else:
+                approved_base_price = ''
+
+            approved_sell_price = row['VAApprovedSellPrice']
             approved_list_price = row['VAApprovedListPrice']
             approved_percent = row['VAApprovedPercent']
 
@@ -213,10 +229,16 @@ class VAPrice(BasicProcessObject):
             sin = row['VA_Sin']
 
 
-        self.obIngester.va_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, contract_number, contract_mod_number,
-                                                             is_pricing_approved, approved_price_date, approved_list_price, approved_percent,
-                                                             va_base_price, va_sell_price, mfc_precent, mfc_price,sin)
-
+        self.obIngester.va_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
+                                             approved_sell_price, approved_list_price, contract_manu_number,
+                                             contract_number, contract_mod_number, is_pricing_approved,
+                                             approved_price_date, approved_percent, va_base_price, va_sell_price,
+                                             mfc_precent, mfc_price, sin)
 
         return success, return_df_line_product
 
+
+    def trigger_ingest_cleanup(self):
+        self.obIngester.ingest_va_product_price_cleanup()
+
+## end ##

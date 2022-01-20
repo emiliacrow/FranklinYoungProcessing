@@ -706,19 +706,13 @@ class IngestionObject:
             self.obDal.htme_product_price_cap(self.product_collector)
 
 
-    def va_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN):
+    def va_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN):
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append(
-                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber,
-                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,
-                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN))
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN))
             self.obDal.va_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append(
-                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber,
-                 newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,
-                 newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN))
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newVABasePrice, newVASellPrice, newMFCPercent, newMFCPrice, newVA_SIN))
 
     def ingest_va_product_price_cleanup(self):
         if self.product_collector != []:
