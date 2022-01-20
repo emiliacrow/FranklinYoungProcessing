@@ -121,6 +121,7 @@ class Pathways():
             self.success, self.message = self.file_appender_tool()
         elif file_action_selected == 'File Merger Tool':
             self.success, self.message = self.file_merger_tool()
+
         elif file_action_selected == 'File Splitter Tool':
             self.success, self.message = self.file_splitter_tool()
         elif file_action_selected == 'Load Image Files':
@@ -129,43 +130,43 @@ class Pathways():
             file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected, path = self.start_path)
             if file_ident_success == False:
                 return file_ident_success, message_or_path
-            else:
-                self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\','\\')
-                self.set_perm_file()
 
-                if 'Category' in file_action_selected:
-                    self.df_product = self.obFileFinder.read_xlsx()
-                    self.obCategoryProcessor = CategoryProcessor(self.df_product, self.user, self.password, is_testing,
-                                                                 file_action_selected)
-                    self.success, self.message = self.obCategoryProcessor.begin_process()
-                    self.df_product = self.obCategoryProcessor.get_df()
+            self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\','\\')
+            self.set_perm_file()
 
-                    self.obFileFinder.write_xlsx(self.df_product,
-                                                 'cat_' + file_action_selected.replace('Category ', ''))
+            if 'Category' in file_action_selected:
+                self.df_product = self.obFileFinder.read_xlsx()
+                self.obCategoryProcessor = CategoryProcessor(self.df_product, self.user, self.password, is_testing,
+                                                             file_action_selected)
+                self.success, self.message = self.obCategoryProcessor.begin_process()
+                self.df_product = self.obCategoryProcessor.get_df()
 
-                elif file_action_selected == 'Product Action Review':
-                    self.df_product = self.obFileFinder.read_xlsx()
+                self.obFileFinder.write_xlsx(self.df_product,
+                                             'cat_' + file_action_selected.replace('Category ', ''))
 
-                    self.obYNBox = YesNoDialog('Include discon?')
-                    self.obYNBox.initUI('Include discontinues dialog.', 'Create outputs for discontinues?')
-                    if self.obYNBox.yes_selected == True:
-                        self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected, True)
-                    else:
-                        self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected)
+            elif file_action_selected == 'Product Action Review':
+                self.df_product = self.obFileFinder.read_xlsx()
 
-                    self.obYNBox.close()
-                    self.success, self.message = self.obAgniKai.begin_process()
-                    self.df_product = self.obAgniKai.get_df()
-                    # perform split and create files
-                    self.message = self.perform_file_split(['Filter'])
-
+                self.obYNBox = YesNoDialog('Include discon?')
+                self.obYNBox.initUI('Include discontinues dialog.', 'Create outputs for discontinues?')
+                if self.obYNBox.yes_selected == True:
+                    self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected, True)
                 else:
-                    self.df_product = self.obFileFinder.read_xlsx()
-                    self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected)
-                    self.success, self.message = self.obFileProcessor.begin_process()
-                    self.df_product = self.obFileProcessor.get_df()
+                    self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected)
 
-                    self.obFileFinder.write_xlsx(self.df_product,'file_process')
+                self.obYNBox.close()
+                self.success, self.message = self.obAgniKai.begin_process()
+                self.df_product = self.obAgniKai.get_df()
+                # perform split and create files
+                self.message = self.perform_file_split(['Filter'])
+
+            else:
+                self.df_product = self.obFileFinder.read_xlsx()
+                self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected)
+                self.success, self.message = self.obFileProcessor.begin_process()
+                self.df_product = self.obFileProcessor.get_df()
+
+                self.obFileFinder.write_xlsx(self.df_product,'file_process')
 
 
         return self.success, self.message
@@ -179,8 +180,11 @@ class Pathways():
         file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to split.', path = self.start_path)
         if file_ident_success == False:
             return file_ident_success, message_or_path
-        else:
-            self.df_product = self.obFileFinder.read_xlsx()
+
+        self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\', '\\')
+        self.set_perm_file()
+
+        self.df_product = self.obFileFinder.read_xlsx()
 
         # get the column on which to split
         column_headers = list(self.df_product.columns)
@@ -192,6 +196,7 @@ class Pathways():
         self.message = self.perform_file_split(split_on)
 
         return True, self.message
+
 
     def perform_file_split(self,split_on):
         self.full_file_count = 0
@@ -251,12 +256,14 @@ class Pathways():
         self.message = 'Created {} files.'.format(self.full_file_count)
         return self.message
 
+
     def file_appender_tool(self):
         self.full_file_count = 1
         file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.', path = self.start_path)
 
         if file_ident_success:
             first_file = message_or_path.pop()
+
             self.df_second_product = self.obFileFinder.read_xlsx(first_file)
 
             for each_file in message_or_path:
@@ -274,6 +281,9 @@ class Pathways():
 
             self.obFileFinder.write_xlsx(self.df_second_product, '(appended-results)', False)
             self.message = '{} files have been combined.'.format(self.full_file_count)
+
+            self.start_path = (first_file.rpartition('\\')[0]).replace('\\\\', '\\')
+            self.set_perm_file()
             return file_ident_success, self.message
         else:
             return file_ident_success, message_or_path
@@ -314,6 +324,7 @@ class Pathways():
             if self.obYNBox.yes_selected:
                 file_ident_success, message_or_path = self.obFileFinder.ident_file('Select second File: This file recieves the first file.')
                 if file_ident_success:
+
                     self.df_second_product = self.obFileFinder.read_xlsx()
                     self.obYNBox.initUI('Append file dialog.','Add more data to the second dataframe?',icon='append-b')
                     while self.obYNBox.yes_selected == True:
@@ -334,7 +345,6 @@ class Pathways():
 
                         self.obYNBox.initUI('Append file dialog.','Add more data to the second dataframe?',icon='append-b')
 
-
                     first_headers = set(self.df_first_product.columns)
                     second_headers = set(self.df_second_product.columns)
 
@@ -347,7 +357,10 @@ class Pathways():
                         join_list = self.onMergeDialog.get_selected_items()
 
                         if len(join_list)==0:
+                            self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\', '\\')
+                            self.set_perm_file()
                             return False,'No matching columns assigned.'
+
                         elif len(join_list) > 1:
                             join_phrase = 'Join on: {0} and {1} more.'.format(join_list[0],str(len(join_list)-1))
                         else:
@@ -367,8 +380,12 @@ class Pathways():
 
                             self.obFileFinder.write_xlsx(self.df_combined_product, '(match-result)')
 
+                            self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\', '\\')
+                            self.set_perm_file()
                             return True, 'Output has been generated'
                     else:
+                        self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\', '\\')
+                        self.set_perm_file()
                         return False, 'No column header overlap detected'
 
                 else:
@@ -379,8 +396,12 @@ class Pathways():
                 if self.obYNBox.yes_selected:
                     self.obFileFinder.write_xlsx(self.df_first_product, '(appended-results)')
 
+                    self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\', '\\')
+                    self.set_perm_file()
                     return True, 'Output has been generated.'
                 else:
+                    self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\', '\\')
+                    self.set_perm_file()
                     return False, 'Canceled by user at output.'
 
             self.obYNBox.close()
@@ -402,6 +423,9 @@ class Pathways():
 
         if not file_success:
             return False, 'No files selected'
+
+        self.start_path = (clean_image_paths[0][0].rpartition('\\')[0]).replace('\\\\', '\\')
+        self.set_perm_file()
 
         # get vendor name from path
         folder_name = (clean_image_paths[0][0].rpartition('\\\\')[0]).rpartition('\\\\')[2]
@@ -552,45 +576,14 @@ class Pathways():
         else:
             return False, 'No file available.'
 
-    def base_data_files(self, table_to_load):
-        if table_to_load == 'Category':
-            category_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestCategory.xlsx'
-            return True, category_base_data_file
-        elif table_to_load == 'Manufacturer':
-            manufacturer_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestManufacturer.xlsx'
-            return True, manufacturer_base_data_file
-        elif table_to_load == 'Vendor':
-            vendor_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestVendor.xlsx'
-            return True, vendor_base_data_file
-        elif table_to_load == 'Country':
-            country_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestCountry.xlsx'
-            return True, country_base_data_file
-        elif table_to_load == 'UNSPSC Codes':
-            unspsc_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUNSPSCCode.xlsx'
-            return True, unspsc_base_data_file
-        elif table_to_load == 'FSC Codes':
-            fsc_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestFSCCode.xlsx'
-            return True, fsc_base_data_file
-        elif table_to_load == 'Hazardous Code':
-            hazard_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestHazardCode.xlsx'
-            return True, hazard_base_data_file
-        elif table_to_load == 'NAICS Code':
-            naics_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestNaicsCode.xlsx'
-            return True, naics_base_data_file
-        elif table_to_load == 'Unit of Issue-Symbol':
-            uoi_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUOISymbol.xlsx'
-            return True, uoi_base_data_file
-        elif table_to_load == 'Unit of Issue':
-            uoi_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUOI.xlsx'
-            return True, uoi_base_data_file
-        else:
-            return False, 'No file available.'
-
-
     def ingest_data_pathway(self, is_testing, ingestion_action_selected):
-        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+ingestion_action_selected, path = self.start_path)
+        self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+ingestion_action_selected, path = self.start_path)
         if self.success == False:
-            return self.success, self.message
+            return self.success, message_or_path
+
+        self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\','\\')
+        self.set_perm_file()
+
 
         self.success = False
         b_inter_files = False
@@ -693,9 +686,12 @@ class Pathways():
 
 
     def update_data_pathway(self, is_testing, update_action_selected):
-        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+update_action_selected, path = self.start_path)
+        self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+update_action_selected, path = self.start_path)
         if self.success == False:
-            return self.success, self.message
+            return self.success, message_or_path
+
+        self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\','\\')
+        self.set_perm_file()
 
         self.full_process = True
         self.success = False
@@ -720,9 +716,6 @@ class Pathways():
                      'Update FEDMALL Pricing']
 
         self.obYNBox.close()
-
-
-
 
         if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '2-Update Full Product(5 steps)']:
 
@@ -817,9 +810,12 @@ class Pathways():
     def contract_pathway(self, is_testing, contract_selected):
         all_pathways = ['Update Toggles','Process Product Assets']
 
-        self.success, self.message = self.obFileFinder.ident_file('Select product data file: '+contract_selected, path = self.start_path)
+        self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+contract_selected, path = self.start_path)
         if self.success == False:
-            return self.success, self.message
+            return self.success, message_or_path
+
+        self.start_path = (message_or_path.rpartition('\\')[0]).replace('\\\\','\\')
+        self.set_perm_file()
 
         self.success = False
         self.message = 'Post Processing Pathway'
@@ -854,6 +850,44 @@ class Pathways():
             return self.success, self.message
 
         return False, 'Process not built.'
+
+
+    ## depricated ##
+
+
+    def base_data_files(self, table_to_load):
+        if table_to_load == 'Category':
+            category_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestCategory.xlsx'
+            return True, category_base_data_file
+        elif table_to_load == 'Manufacturer':
+            manufacturer_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestManufacturer.xlsx'
+            return True, manufacturer_base_data_file
+        elif table_to_load == 'Vendor':
+            vendor_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestVendor.xlsx'
+            return True, vendor_base_data_file
+        elif table_to_load == 'Country':
+            country_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestCountry.xlsx'
+            return True, country_base_data_file
+        elif table_to_load == 'UNSPSC Codes':
+            unspsc_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUNSPSCCode.xlsx'
+            return True, unspsc_base_data_file
+        elif table_to_load == 'FSC Codes':
+            fsc_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestFSCCode.xlsx'
+            return True, fsc_base_data_file
+        elif table_to_load == 'Hazardous Code':
+            hazard_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestHazardCode.xlsx'
+            return True, hazard_base_data_file
+        elif table_to_load == 'NAICS Code':
+            naics_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestNaicsCode.xlsx'
+            return True, naics_base_data_file
+        elif table_to_load == 'Unit of Issue-Symbol':
+            uoi_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUOISymbol.xlsx'
+            return True, uoi_base_data_file
+        elif table_to_load == 'Unit of Issue':
+            uoi_base_data_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUOI.xlsx'
+            return True, uoi_base_data_file
+        else:
+            return False, 'No file available.'
 
 
 ## end ##
