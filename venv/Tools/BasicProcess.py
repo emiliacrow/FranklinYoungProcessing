@@ -329,7 +329,8 @@ class BasicProcessObject:
         b_override = False
 
         if 'FyProductNumberOverride' in row:
-            b_override = row['FyProductNumberOverride']
+            if row['FyProductNumberOverride'] == 1:
+                b_override = True
 
         if 'FyManufacturerPrefix' in row:
             new_prefix = str(row['FyManufacturerPrefix'])

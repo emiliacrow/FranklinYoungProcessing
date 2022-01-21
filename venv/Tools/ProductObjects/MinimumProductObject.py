@@ -191,7 +191,7 @@ class MinimumProduct(BasicProcessObject):
     def batch_process_lead_time(self):
         self.df_lead_times = self.obDal.get_lead_times()
 
-        if 'ExpectedLeadTime' in self.df_product.columns:
+        if 'LeadTime' in self.df_product.columns:
             df_attribute = self.df_product[['LeadTime']]
             df_attribute = df_attribute.drop_duplicates(subset=['LeadTime'])
             lst_ids = []
@@ -207,12 +207,16 @@ class MinimumProduct(BasicProcessObject):
                     else:
                         expedited_lead_time = lead_time
 
-                    new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
+                    if lead_time != '' and ('hour' in lead_time or 'day' in lead_time or 'week' in lead_time or 'month' in lead_time or 'year' in lead_time):
+                        new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
+                    else:
+                        new_lead_time_id = 2
+
                 lst_ids.append(new_lead_time_id)
 
             df_attribute['ExpectedLeadTimeId'] = lst_ids
             self.df_product = self.df_product.merge(df_attribute,
-                                                              how='left', on=['ExpectedLeadTime'])
+                                                              how='left', on=['LeadTime'])
         else:
             self.df_product['ExpectedLeadTimeId'] = 2
 

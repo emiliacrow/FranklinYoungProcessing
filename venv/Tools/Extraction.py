@@ -121,8 +121,6 @@ class Extractor:
         return phrase
 
     def reinject_phrase(self, phrase):
-        #print('b', self.lst_extractions)
-        #print('c', phrase)
         phrase = phrase.format(*self.lst_extractions)
         self.lst_extractions = []
         return phrase
@@ -135,8 +133,6 @@ class Extractor:
             # does pattern matching
             pattern = re.compile(use_pattern, flags=re.IGNORECASE)
             lst_result = pattern.findall(outer_text)
-            # print(use_pattern)
-            # print(outer_text)
 
             # this should refine the results and return a single string value
             outer_text, attribute = self.refine_results(outer_text, lst_result)
@@ -153,12 +149,10 @@ class Extractor:
             # each_tup/lst_result[0] is tuple of result strings
             # first_results is list of result strings
             for each_tup in lst_result:
-                # print(lst_result)
                 if isinstance(each_tup, tuple):
                     results = list(each_tup)
                     results.sort(key=lambda x:len(x))
                     results.reverse()
-                    # print('results:', results)
                     cur_attribute = results[0]
                 else:
                     cur_attribute = each_tup

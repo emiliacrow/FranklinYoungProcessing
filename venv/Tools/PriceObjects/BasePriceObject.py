@@ -496,7 +496,7 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['Retail Price'] = [0]
                 fy_list_price = 0
             else:
-                fy_list_price = row['Retail Price']
+                fy_list_price = float(row['Retail Price'])
 
             if 'ECommerceDiscount' not in row:
                 df_collect_product_base_data['ECommerceDiscount'] = [0]

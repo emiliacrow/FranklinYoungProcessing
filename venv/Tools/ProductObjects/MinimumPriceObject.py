@@ -163,8 +163,7 @@ class MinimumProductPrice(BasicProcessObject):
         try:
             success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
         except KeyError:
-            print(df_collect_product_base_data)
-            self.obReporter.update_report('Fail','Failed minimum price')
+            self.obReporter.update_report('Fail','Failed in send to DB: KeyError')
             return False, df_collect_product_base_data
 
         if success:
