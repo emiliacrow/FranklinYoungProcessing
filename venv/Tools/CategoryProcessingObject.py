@@ -333,8 +333,23 @@ class CategoryProcessor(BasicProcessObject):
                     bad += 1
 
             else:
+                bad += 1
                 self.obReporter.final_report(False)
                 success, return_df_line_product = self.report_missing_data(df_line_product)
+
+            report_set = self.obReporter.get_report()
+            if 'Pass' in return_df_line_product.columns:
+                return_df_line_product = return_df_line_product.drop(columns='Pass')
+
+            if 'Alert' in return_df_line_product.columns:
+                return_df_line_product = return_df_line_product.drop(columns='Alert')
+
+            if 'Fail' in return_df_line_product.columns:
+                return_df_line_product = return_df_line_product.drop(columns='Fail')
+
+            return_df_line_product.insert(1, 'Pass', report_set[0])
+            return_df_line_product.insert(2, 'Alert', report_set[1])
+            return_df_line_product.insert(3, 'Fail', report_set[2])
 
             self.collect_return_dfs.append(return_df_line_product)
 
