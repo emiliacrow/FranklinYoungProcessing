@@ -30,8 +30,8 @@ class HeaderTranslator():
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
 
                             'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity'],
-                            'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue'],
-                            'UnitOfMeasure':['UnitOfMeasure','UOM','uom','uom_std'],
+                            'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue','unit of issue'],
+                            'UnitOfMeasure':['UnitOfMeasure','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD'],
                             'IsHazardous':['IsHazardous','Is Hazardous','Hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
                             'LeadTime':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
