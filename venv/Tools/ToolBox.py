@@ -143,6 +143,7 @@ class FileFinder():
             bumper = bumper.rpartition('_')[0]
 
             self.out_file_path = file_directory+'\\\\'+bumper
+
             if not os.path.exists(self.out_file_path):
                 os.makedirs(self.out_file_path)
             self.out_file_path = self.out_file_path +'\\\\' + filename

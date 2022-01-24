@@ -158,7 +158,10 @@ class Pathways():
                 self.success, self.message = self.obAgniKai.begin_process()
                 self.df_product = self.obAgniKai.get_df()
                 # perform split and create files
-                self.message = self.perform_file_split(['Filter'])
+                if 'Filter' in self.df_product.columns:
+                    self.message = self.perform_file_split(['Filter'])
+                else:
+                    self.obFileFinder.write_xlsx(self.df_product,'split_fail')
 
             else:
                 self.df_product = self.obFileFinder.read_xlsx()
@@ -198,7 +201,7 @@ class Pathways():
         return True, self.message
 
 
-    def perform_file_split(self,split_on):
+    def perform_file_split(self, split_on):
         self.full_file_count = 0
 
         df_column_alone = self.df_product[split_on]
@@ -250,7 +253,8 @@ class Pathways():
                     chunk_count -= 1
             else:
                 pb_name = 'Writing file #{0}: {1}'.format(str(self.full_file_count),file_name)
-                self.obFileFinder.write_xlsx(df_layer, file_name, False, pb_name)
+                layer_name = file_name + '_0'
+                self.obFileFinder.write_xlsx_sub_folder(df_layer, layer_name, False, pb_name)
                 self.full_file_count += 1
 
         self.message = 'Created {} files.'.format(self.full_file_count)
