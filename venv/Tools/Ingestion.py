@@ -21,6 +21,8 @@ class IngestionObject:
         self.product_image_collector = []
         self.product_video_collector = []
 
+        self.product_update_asset_collector = []
+
         self.product_bc_toggle_collector = []
         self.product_discon_collector = []
         self.product_is_visible_collector = []

@@ -159,7 +159,7 @@ class Pathways():
                 self.df_product = self.obAgniKai.get_df()
                 # perform split and create files
                 if 'Filter' in self.df_product.columns:
-                    self.message = self.perform_file_split(['Filter'], b_sub_dir = True)
+                    self.message = self.perform_file_split(['Filter'])
                 else:
                     self.obFileFinder.write_xlsx(self.df_product,'split_fail')
 
@@ -196,7 +196,7 @@ class Pathways():
         # split on column or column
         split_on = self.onMergeDialog.get_selected_items()
 
-        self.message = self.perform_file_split(split_on)
+        self.message = self.perform_file_split(split_on, b_sub_dir=True)
 
         return True, self.message
 
