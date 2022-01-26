@@ -324,12 +324,11 @@ class BasicProcessObject:
     def process_manufacturer(self, df_collect_product_base_data, row):
         manufacturer = row['ManufacturerName']
         manufacturer = manufacturer.strip().replace('  ',' ')
-
         manufacturer_product_id = str(row['ManufacturerPartNumber'])
-        b_override = False
 
+        b_override = False
         if 'FyProductNumberOverride' in row:
-            if row['FyProductNumberOverride'] == 1:
+            if row['FyProductNumberOverride'] == '1' or row['FyProductNumberOverride'] == 1:
                 b_override = True
 
         if 'FyManufacturerPrefix' in row:
@@ -535,7 +534,7 @@ class BasicProcessObject:
             return True, df_collect_product_base_data
 
 
-    def make_fy_catalog_number(self,prefix,manufacturer_part_number,b_override = False):
+    def make_fy_catalog_number(self,prefix, manufacturer_part_number, b_override = False):
         if b_override:
             if len(manufacturer_part_number) >= 22:
                 self.obReporter.update_report('Alert','Long Manufacturer Part Number')
