@@ -18,10 +18,12 @@ class MinimumProduct(BasicProcessObject):
                                 'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
                                 'ExpectedLeadTimeId']
 
+
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Minimum Product'
         self.quick_country = {}
+
 
     def batch_preprocessing(self):
         self.remove_private_headers()
@@ -41,7 +43,6 @@ class MinimumProduct(BasicProcessObject):
             self.df_product['CountryOfOrigin'].replace(to_replace = '',value='UNKNOWN',inplace=True)
 
         self.batch_process_country()
-
         self.batch_process_lead_time()
 
         return self.df_product
@@ -90,6 +91,9 @@ class MinimumProduct(BasicProcessObject):
         self.df_loaded_product['Filter'] = 'Update'
         self.df_loaded_product['ManufacturerPartNumber'].astype(str)
 
+        # this is the only place we don't need product id
+        self.df_loaded_product.drop(columns=['ProductId'])
+
         if 'FyCatalogNumber' in self.df_product:
             self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
 
@@ -101,6 +105,7 @@ class MinimumProduct(BasicProcessObject):
         else:
             self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
 
+
     def filter_check_in(self, row):
         if row['Filter'] == 'Update':
             self.obReporter.update_report('Alert', 'This is a product update')
@@ -111,6 +116,7 @@ class MinimumProduct(BasicProcessObject):
         else:
             self.obReporter.update_report('Pass', 'This product is new')
             return True
+
 
     def batch_process_category(self):
         # this needs to be handled better
@@ -221,7 +227,7 @@ class MinimumProduct(BasicProcessObject):
             self.df_product['ExpectedLeadTimeId'] = 2
 
 
-    def batch_process_attribute(self,attribute):
+    def batch_process_attribute(self, attribute):
         set_128 = ['RecommendedStorageId']
         str_attribute_id = attribute +'Id'
         if str_attribute_id not in self.df_product.columns:
@@ -387,7 +393,6 @@ class MinimumProduct(BasicProcessObject):
         if len(ec_long_desc) > 700:
             ec_long_desc = ec_long_desc[:700]
 
-
         df_collect_product_base_data['ECommerceLongDescription'] = [ec_long_desc]
         df_collect_product_base_data['LongDescription'] = [long_desc]
 
@@ -433,7 +438,7 @@ class MinimumProduct(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
 
             fy_catalog_number = row['FyCatalogNumber']
-            manufacturer_product_id = row['ManufacturerPartNumber']
+            manufacturer_part_number = row['ManufacturerPartNumber']
             product_name = row['ProductName']
             short_desc = row['ShortDescription']
 
@@ -456,7 +461,7 @@ class MinimumProduct(BasicProcessObject):
             is_rx = row['IsRX']
             is_hazardous = row['IsHazardous']
 
-        self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_product_id, product_name, short_desc,
+        self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_part_number, product_name, short_desc,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id, is_controlled, is_disposible,
