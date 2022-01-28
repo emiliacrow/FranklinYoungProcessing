@@ -29,7 +29,11 @@ class ProcessProductAssetObject(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
+
+        # this needs to change
+
         self.vendor_name = self.vendor_name_selection()
+
         self.vendor_name = self.vendor_name.replace(',','')
         self.vendor_name = self.vendor_name.replace(' ','_')
 
