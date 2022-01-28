@@ -43,9 +43,12 @@ class Validator:
             return_val = True
         return return_val
 
-    def clean_part_number(self,str_to_clean):
-        pattern = '(\-|\.|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
-        str_to_clean = re.sub(pattern, '', str_to_clean)
+    def clean_part_number(self,str_to_clean, leave_gap = False):
+        pattern = '(\-|\.|,|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
+        if leave_gap:
+            str_to_clean = re.sub(pattern, ' ', str_to_clean)
+        else:
+            str_to_clean = re.sub(pattern, '', str_to_clean)
         str_to_clean = str_to_clean.strip()
         return str_to_clean
 
@@ -172,14 +175,14 @@ class Validator:
 
 
 def test_frame():
-    char = ')'
+    char = ','
     test_word = char+'123'+char+'456'+char
     print(test_word)
     print(clean_part_number(test_word))
 
 
 def clean_part_number(str_to_clean):
-    pattern = '(\-|\.|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
+    pattern = '(\-|\.|,|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
     str_to_clean = re.sub(pattern, '', str_to_clean)
     str_to_clean = str_to_clean.strip()
     return str_to_clean

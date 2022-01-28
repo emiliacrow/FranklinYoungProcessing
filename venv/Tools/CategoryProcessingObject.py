@@ -136,8 +136,11 @@ class CategoryProcessor(BasicProcessObject):
             description = description.replace('. ',' ')
             description = description.replace('; ',' ')
             description = description.replace(': ',' ')
-            description = description.replace(': ',' ')
+            description = description.replace('  ',' ')
             description = description.lower()
+
+            description = self.obValidator.clean_part_number(description, leave_gap = True)
+
             lst_description = description.split()
             lst_description = list(dict.fromkeys(lst_description))
             description = ' '.join(lst_description)

@@ -819,6 +819,9 @@ def create_gantt(
     show_hover_fill=True,
 ):
     """
+    **deprecated**, use instead
+    :func:`plotly.express.timeline`.
+
     Returns figure for a gantt chart
 
     :param (array|list) df: input data for gantt chart. Must be either a
@@ -973,7 +976,7 @@ def create_gantt(
             raise exceptions.PlotlyError(
                 "Error. You have set colors to a dictionary but have not "
                 "picked an index. An index is required if you are "
-                "assigning colors to particular values in a dictioanry."
+                "assigning colors to particular values in a dictionary."
             )
         fig = gantt(
             chart,

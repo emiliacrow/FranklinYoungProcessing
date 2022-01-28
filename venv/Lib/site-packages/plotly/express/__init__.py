@@ -34,6 +34,7 @@ from ._chart_types import (  # noqa: F401
     box,
     strip,
     histogram,
+    ecdf,
     scatter_matrix,
     parallel_coordinates,
     parallel_categories,
@@ -43,6 +44,7 @@ from ._chart_types import (  # noqa: F401
     pie,
     sunburst,
     treemap,
+    icicle,
     funnel,
     funnel_area,
     choropleth_mapbox,
@@ -59,7 +61,7 @@ from ._core import (  # noqa: F401
 
 from ._special_inputs import IdentityMap, Constant, Range  # noqa: F401
 
-from . import data, colors  # noqa: F401
+from . import data, colors, trendline_functions  # noqa: F401
 
 __all__ = [
     "scatter",
@@ -88,16 +90,19 @@ __all__ = [
     "box",
     "strip",
     "histogram",
+    "ecdf",
     "choropleth",
     "choropleth_mapbox",
     "pie",
     "sunburst",
     "treemap",
+    "icicle",
     "funnel",
     "funnel_area",
     "imshow",
     "data",
     "colors",
+    "trendline_functions",
     "set_mapbox_access_token",
     "get_trendline_results",
     "IdentityMap",

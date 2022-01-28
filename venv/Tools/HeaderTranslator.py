@@ -29,9 +29,9 @@ class HeaderTranslator():
                             'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
 
-                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity'],
+                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue'],
                             'UnitOfIssue':['UnitOfIssue', 'UOI', 'uoi','unit_of_issue','unit of issue'],
-                            'UnitOfMeasure':['UnitOfMeasure','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD'],
+                            'UnitOfMeasure':['UnitOfMeasure','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
                             'IsHazardous':['IsHazardous','Is Hazardous','Hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
                             'LeadTime':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
