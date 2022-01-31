@@ -15,7 +15,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class ProcessProductAssetObject(BasicProcessObject):
-    req_fields = ['FyProductNumber','AssetPath', 'AssetType']
+    req_fields = ['FyProductNumber','ManufacturerName','AssetPath', 'AssetType']
 
     sup_fields = []
     att_fields = []
@@ -29,13 +29,6 @@ class ProcessProductAssetObject(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
-
-        # this needs to change
-
-        self.vendor_name = self.vendor_name_selection()
-
-        self.vendor_name = self.vendor_name.replace(',','')
-        self.vendor_name = self.vendor_name.replace(' ','_')
 
 
     def define_new(self):
@@ -144,6 +137,11 @@ class ProcessProductAssetObject(BasicProcessObject):
         # iterate assets
         fy_product_number = row['FyProductNumber']
         asset_path = row['AssetPath']
+        manufacturer_name = row['ManufacturerName']
+
+        manufacturer_name = manufacturer_name.replace(',', '')
+        manufacturer_name = manufacturer_name.replace(' ', '_')
+
         if 'http' in asset_path:
             # asset path is a url to fetch
             # this is the name of the file as pulled from the url
@@ -184,7 +182,7 @@ class ProcessProductAssetObject(BasicProcessObject):
         if 'FranklinYoungDefaultImage' in whole_path:
             s3_name = 'FranklinYoungDefaultImage/' + object_name
         else:
-            s3_name = self.vendor_name + '/' + object_name
+            s3_name = manufacturer_name + '/' + object_name
 
         # we check if the documents
         if 'CurrentAssetPath' in row:
