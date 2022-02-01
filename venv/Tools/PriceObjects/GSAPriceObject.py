@@ -241,4 +241,5 @@ class GSAPrice(BasicProcessObject):
     def trigger_ingest_cleanup(self):
         self.obIngester.ingest_gsa_product_price_cleanup()
 
+
 ## end ##

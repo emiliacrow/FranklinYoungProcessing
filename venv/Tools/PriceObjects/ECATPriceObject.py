@@ -8,17 +8,17 @@ import xlrd
 
 from Tools.BasicProcess import BasicProcessObject
 
-
 class ECATPrice(BasicProcessObject):
-    req_fields = ['FyProductNumber','FyPartNumber','OnContract', 'ECATApprovedListPrice',
+    req_fields = ['FyProductNumber','VendorPartNumber','OnContract', 'ECATApprovedListPrice',
                   'ECATApprovedPercent', 'MfcDiscountPercent', 'ECATContractModificationNumber', 'ECATApprovedPriceDate','ECATPricingApproved']
-
     sup_fields = []
     att_fields = []
-    gen_fields = []
+    gen_fields = ['ContractedManufacturerPartNumber']
+
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'ECAT Price Ingestion'
+
 
     def batch_preprocessing(self):
         self.remove_private_headers()
@@ -26,6 +26,7 @@ class ECATPrice(BasicProcessObject):
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
         self.define_new()
+
 
     def batch_process_vendor(self):
         # there should only be one vendor, really.
@@ -60,22 +61,15 @@ class ECATPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_ecat_price_lookup = self.obDal.get_ecat_price_lookup()
 
-        match_headers = ['FyProductNumber','FyPartNumber','OnContract', 'ECATApprovedListPrice',
+        match_headers = ['FyProductNumber','VendorPartNumber','OnContract', 'ECATApprovedListPrice',
                          'ECATApprovedPercent', 'MfcDiscountPercent', 'ECATContractModificationNumber','ECATApprovedPriceDate','ECATPricingApproved']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
 
-        if 'Filter' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='Filter')
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='ProductPriceId')
-        if 'BaseProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns='BaseProductPriceId')
-
         # match all products on FyProdNum
         self.df_update_products = self.df_product.merge(self.df_base_price_lookup,
-                                                         how='left', on=['FyProductNumber','FyPartNumber'])
+                                                         how='left', on=['FyProductNumber','VendorPartNumber'])
         # all products that matched on FyProdNum
         self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
@@ -87,7 +81,7 @@ class ECATPrice(BasicProcessObject):
             # this could end up empty
             self.df_ecat_price_lookup['Filter'] = 'Pass'
             self.df_update_products = self.df_update_products.drop(columns='Filter')
-            self.df_update_products = pandas.DataFrame.merge(self.df_update_products, self.df_ecat_price_lookup,
+            self.df_update_products = self.df_update_products.merge(self.df_ecat_price_lookup,
                                                              how='left', on=match_headers)
 
             # this does not seem to be matching correctly in the above
@@ -125,22 +119,13 @@ class ECATPrice(BasicProcessObject):
             self.obReporter.update_report('Fail','This product price failed filtering')
             return False
 
-    def trigger_ingest_cleanup(self):
-        self.obIngester.ingest_ecat_product_price_cleanup()
 
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
+
         for colName, row in df_line_product.iterrows():
             if self.filter_check_in(row) == False:
-                return False, df_collect_product_base_data
-
-            if 'Filter' in row:
-                if row['Filter'] == 'Pass':
-                    self.obReporter.update_report('Fail','This product needs to be ingested')
-                    return True, df_collect_product_base_data
-            else:
-                self.obReporter.update_report('Fail','This product needs to be ingested')
                 return False, df_collect_product_base_data
 
             df_collect_product_base_data = self.process_oncontract(df_collect_product_base_data, row)
@@ -153,6 +138,7 @@ class ECATPrice(BasicProcessObject):
 
         return success, return_df_line_product
 
+
     def process_oncontract(self, df_collect_product_base_data, row):
         if ('OnContract' not in row):
             df_collect_product_base_data['OnContract'] = [1]
@@ -164,27 +150,43 @@ class ECATPrice(BasicProcessObject):
 
         return df_collect_product_base_data
 
+
     def process_pricing(self, df_line_product):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            if 'ContractedManufacturerPartNumber' in row:
+                contract_manu_number = row['ContractedManufacturerPartNumber']
+
+                if 'db_ContractedManufacturerPartNumber' in row and contract_manu_number == '':
+                    db_contract_manu_number = row['db_ContractedManufacturerPartNumber']
+                    contract_manu_number = db_contract_manu_number
+                    return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+
+            elif 'db_ContractedManufacturerPartNumber' in row:
+                contract_manu_number = db_contract_manu_number
+                return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+            else:
+                return_df_line_product['ContractedManufacturerPartNumber'] = ''
+
             if 'ECATBasePrice' not in row:
                 approved_list_price = float(row['ECATApprovedListPrice'])
                 approved_percent = float(row['ECATApprovedPercent'])
                 ecat_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
+
                 return_df_line_product['ECATBasePrice'] = ecat_base_price
             else:
                 ecat_base_price = float(row['ECATBasePrice'])
                 return_df_line_product['ECATBasePrice'] = ecat_base_price
 
-            if 'ECATSellPrice' not in row:
-                return_df_line_product['ECATSellPrice'] = ecat_base_price
+            # if sell price missing we need to create it
 
             if 'MfcPrice' not in row:
                 mfc_precent = float(row['MfcDiscountPercent'])
                 return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
 
         return success, return_df_line_product
+
 
     def ecat_product_price(self, df_line_product):
         success = True
@@ -196,29 +198,42 @@ class ECATPrice(BasicProcessObject):
 
             contract_number = 'SPE2DE-21-D-0014'
             contract_mod_number = row['ECATContractModificationNumber']
-
             is_pricing_approved = row['ECATPricingApproved']
+
             try:
                 approved_price_date = int(row['ECATApprovedPriceDate'])
                 approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
             except ValueError:
                 approved_price_date = str(row['ECATApprovedPriceDate'])
 
-            ecat_base_price = row['ECATBasePrice']
-            ecat_sell_price = row['ECATSellPrice']
+            contract_manu_number = row['ContractedManufacturerPartNumber']
 
+            if 'ECATApprovedBasePrice' in row:
+                approved_base_price = row['ECATApprovedBasePrice']
+            else:
+                approved_base_price = ''
+
+            approved_sell_price = row['ECATApprovedSellPrice']
             approved_list_price = row['ECATApprovedListPrice']
             approved_percent = row['ECATApprovedPercent']
+
+            ecat_base_price = row['ECATBasePrice']
+            ecat_sell_price = row['ECATSellPrice']
 
             mfc_precent = row['MfcDiscountPercent']
             mfc_price = row['MfcPrice']
 
+        self.obIngester.ecat_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
+                                               approved_sell_price, approved_list_price, contract_manu_number,
+                                               contract_number, contract_mod_number, is_pricing_approved,
+                                               approved_price_date, approved_percent, ecat_base_price, ecat_sell_price,
+                                               mfc_precent, mfc_price)
 
-        self.obIngester.ecat_product_price_cap(self.is_last, base_product_price_id, fy_product_number, on_contract, approved_list_price, contract_number, contract_mod_number,
-                                                             is_pricing_approved, approved_price_date, approved_percent,
-                                                             ecat_base_price, ecat_sell_price, mfc_precent, mfc_price)
         return success, return_df_line_product
 
+
+    def trigger_ingest_cleanup(self):
+        self.obIngester.ingest_ecat_product_price_cleanup()
 
 
 ## end ##
