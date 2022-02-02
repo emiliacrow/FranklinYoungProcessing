@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 class ECATPrice(BasicProcessObject):
     req_fields = ['FyProductNumber','VendorPartNumber','OnContract', 'ECATApprovedListPrice',
-                  'ECATApprovedPercent', 'MfcDiscountPercent', 'ECATContractModificationNumber', 'ECATApprovedPriceDate','ECATPricingApproved']
+                  'ECATMaxMarkup', 'ECATContractModificationNumber', 'ECATApprovedPriceDate','ECATPricingApproved']
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']
@@ -62,7 +62,7 @@ class ECATPrice(BasicProcessObject):
         self.df_ecat_price_lookup = self.obDal.get_ecat_price_lookup()
 
         match_headers = ['FyProductNumber','VendorPartNumber','OnContract', 'ECATApprovedListPrice',
-                         'ECATApprovedPercent', 'MfcDiscountPercent', 'ECATContractModificationNumber','ECATApprovedPriceDate','ECATPricingApproved']
+                        'ECATContractModificationNumber','ECATApprovedPriceDate','ECATPricingApproved']
 
         # simple first
         self.df_base_price_lookup['Filter'] = 'Update'
@@ -171,7 +171,6 @@ class ECATPrice(BasicProcessObject):
 
             if 'ECATBasePrice' not in row:
                 approved_list_price = float(row['ECATApprovedListPrice'])
-                approved_percent = float(row['ECATApprovedPercent'])
                 ecat_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
 
                 return_df_line_product['ECATBasePrice'] = ecat_base_price
@@ -180,10 +179,14 @@ class ECATPrice(BasicProcessObject):
                 return_df_line_product['ECATBasePrice'] = ecat_base_price
 
             # if sell price missing we need to create it
+            # follow DB for columns to include
+            # FyCost(notlandedcost) * ECATMaxMarkup(1.13) = ECATSellPrice
+            #
 
-            if 'MfcPrice' not in row:
-                mfc_precent = float(row['MfcDiscountPercent'])
-                return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
+
+
+
+
 
         return success, return_df_line_product
 
@@ -215,19 +218,16 @@ class ECATPrice(BasicProcessObject):
 
             approved_sell_price = row['ECATApprovedSellPrice']
             approved_list_price = row['ECATApprovedListPrice']
-            approved_percent = row['ECATApprovedPercent']
 
             ecat_base_price = row['ECATBasePrice']
             ecat_sell_price = row['ECATSellPrice']
 
-            mfc_precent = row['MfcDiscountPercent']
-            mfc_price = row['MfcPrice']
+            max_markup = row['ECATMaxMarkup']
 
         self.obIngester.ecat_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, approved_percent, ecat_base_price, ecat_sell_price,
-                                               mfc_precent, mfc_price)
+                                               approved_price_date, ecat_base_price, ecat_sell_price,max_markup)
 
         return success, return_df_line_product
 

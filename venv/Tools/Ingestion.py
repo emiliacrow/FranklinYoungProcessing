@@ -663,23 +663,20 @@ class IngestionObject:
     def ecat_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice,
-                               newMFCPercent, newMFCPrice):
+                               newECATApprovedPriceDate, newECATBasePrice, newECATSellPrice, newECATMaxMarkup):
         if (len(self.product_collector) > self.load_limit):
             self.product_collector.append(
                 (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice,
-                               newMFCPercent, newMFCPrice))
+                               newECATApprovedPriceDate, newECATBasePrice, newECATSellPrice, newECATMaxMarkup))
             self.obDal.ecat_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
             self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newApprovedPercent, newECATBasePrice, newECATSellPrice,
-                               newMFCPercent, newMFCPrice))
+                               newECATApprovedPriceDate, newECATBasePrice, newECATSellPrice, newECATMaxMarkup))
 
     def ingest_ecat_product_price_cleanup(self):
         if self.product_collector != []:
@@ -821,12 +818,12 @@ class IngestionObject:
 
     def set_update_asset(self, product_id, update_asset):
         if (len(self.product_update_asset_collector) > self.load_limit):
-            self.product_update_asset_collector.append((product_id, update_image))
+            self.product_update_asset_collector.append((product_id, update_asset))
             self.obDal.set_update_asset(self.product_update_asset_collector)
             self.product_update_asset_collector = []
 
         else:
-            self.product_update_asset_collector.append((product_id, update_image))
+            self.product_update_asset_collector.append((product_id, update_asset))
 
     def set_update_asset_cleanup(self):
         if self.product_update_asset_collector != []:

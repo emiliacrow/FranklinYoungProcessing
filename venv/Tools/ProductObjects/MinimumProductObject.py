@@ -197,26 +197,55 @@ class MinimumProduct(BasicProcessObject):
     def batch_process_lead_time(self):
         self.df_lead_times = self.obDal.get_lead_times()
 
+        # adjust lead times to only handle lead times
+        # convert to number of days
+
         if 'LeadTime' in self.df_product.columns:
             df_attribute = self.df_product[['LeadTime']]
             df_attribute = df_attribute.drop_duplicates(subset=['LeadTime'])
             lst_ids = []
             for colName, row in df_attribute.iterrows():
                 lead_time = row['LeadTime']
-                if lead_time in self.df_lead_times['LeadTime'].tolist():
+                success, lead_time = self.float_check(lead_time, 'lead time')
+                if success:
+                    lead_time = int(lead_time)
                     new_lead_time_id = self.df_lead_times.loc[
                         (self.df_lead_times['LeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
 
-                else:
+                elif lead_time != '':
+                    if 'day' in lead_time:
+                        lead_time = int(lead_time.rpartition('day')[0])
+
+                    elif 'week' in lead_time:
+                        lead_time = int(lead_time.rpartition('week')[0]) * 7
+
+                    elif 'month' in lead_time:
+                        lead_time = int(lead_time.rpartition('month')[0]) * 30
+
+                    elif 'year' in lead_time:
+                        lead_time = int(lead_time.rpartition('year')[0]) * 365
+
+                    else:
+                        new_lead_time_id = 2
+                        continue
+
+
                     if 'LeadTimeExpedited' in row:
                         expedited_lead_time = row['LeadTimeExpedited']
                     else:
                         expedited_lead_time = lead_time
 
-                    if lead_time != '' and ('hour' in lead_time or 'day' in lead_time or 'week' in lead_time or 'month' in lead_time or 'year' in lead_time):
-                        new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
+
+                    if lead_time in self.df_lead_times['LeadTime'].tolist():
+                        new_lead_time_id = self.df_lead_times.loc[
+                            (self.df_lead_times['LeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
+
                     else:
-                        new_lead_time_id = 2
+                        new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
+
+                else:
+                    new_lead_time_id = 2
+
 
                 lst_ids.append(new_lead_time_id)
 
