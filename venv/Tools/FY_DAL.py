@@ -405,7 +405,7 @@ class DalObject:
 
     def get_ecat_price_lookup(self):
         proc_name = 'sequoia.get_ECATPrice_lookup'
-        column_names = ['FyProductNumber', 'VendorPartNumber', 'OnContract', 'db_ContractedManufacturerPartNumber', 'ECATApprovedListPrice',
+        column_names = ['FyProductNumber', 'VendorPartNumber', 'FyCost', 'OnContract', 'db_max_markup','ECATApprovedListPrice', 'db_ContractedManufacturerPartNumber',
                         'ECATContractModificationNumber', 'ECATApprovedPriceDate', 'ECATPricingApproved']
         df_ecat_price_lookup = self.get_lookup(proc_name, column_names)
         return df_ecat_price_lookup

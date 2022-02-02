@@ -660,23 +660,22 @@ class IngestionObject:
         return success
 
 
-    def ecat_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
+    def ecat_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATBasePrice, newECATSellPrice, newECATMaxMarkup):
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup):
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append(
-                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATBasePrice, newECATSellPrice, newECATMaxMarkup))
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
             self.obDal.ecat_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATBasePrice, newECATSellPrice, newECATMaxMarkup))
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
 
     def ingest_ecat_product_price_cleanup(self):
         if self.product_collector != []:
