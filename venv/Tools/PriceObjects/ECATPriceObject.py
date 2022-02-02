@@ -65,28 +65,28 @@ class ECATPrice(BasicProcessObject):
                         'ECATContractModificationNumber','ECATApprovedPriceDate','ECATPricingApproved']
 
         # simple first
-        self.df_base_price_lookup['Filter'] = 'Update'
+        self.df_base_price_lookup['Filter'] = 'Pass'
 
         # match all products on FyProdNum
         self.df_update_products = self.df_product.merge(self.df_base_price_lookup,
                                                          how='left', on=['FyProductNumber','VendorPartNumber'])
         # all products that matched on FyProdNum
-        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
+        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'Fail'
 
-        self.df_product = self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update')]
-        self.df_update_products = self.df_update_products.loc[(self.df_update_products['Filter'] == 'Update')]
+        self.df_product = self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass')]
+        self.df_update_products = self.df_update_products.loc[(self.df_update_products['Filter'] == 'Pass')]
 
         if len(self.df_update_products.index) != 0:
             # this step is going to require a test against the pricing in the contract price table
             # this could end up empty
-            self.df_ecat_price_lookup['Filter'] = 'Pass'
+            self.df_ecat_price_lookup['Filter'] = 'Update'
             self.df_update_products = self.df_update_products.drop(columns='Filter')
             self.df_update_products = self.df_update_products.merge(self.df_ecat_price_lookup,
                                                              how='left', on=match_headers)
 
             # this does not seem to be matching correctly in the above
             # I suspect this has to do with the numbers being strings?
-            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'Update'
+            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Pass'
 
             self.df_product = self.df_product.append(self.df_update_products)
 
@@ -109,8 +109,11 @@ class ECATPrice(BasicProcessObject):
 
     def filter_check_in(self, row):
         if 'Filter' in row:
+            if row['Filter'] == 'Pass':
+                self.obReporter.update_report('Pass','This contract price is a new')
+                return True
             if row['Filter'] == 'Update':
-                self.obReporter.update_report('Pass','This product price is an update')
+                self.obReporter.update_report('Pass','This contract price is an update')
                 return True
             else:
                 self.obReporter.update_report('Alert','This product must be ingested in product')
@@ -173,13 +176,13 @@ class ECATPrice(BasicProcessObject):
                 ecat_sell_price = float(row['ECATSellPrice'])
                 return_df_line_product['ECATSellPrice'] = ecat_sell_price
 
-            elif 'FyCost' in row:
-                fy_cost = float(row['FyCost'])
-                max_markup = row['ECATMaxMarkup']
+            elif 'db_fy_cost' in row:
+                fy_cost = float(row['db_fy_cost'])
+                max_markup = float(row['ECATMaxMarkup'])
                 ecat_sell_price = round((fy_cost*max_markup),2)
                 return_df_line_product['ECATSellPrice'] = ecat_sell_price
             else:
-                self.obReporter.update_report('Fail', 'Check for FyCost(db)  or ECATSellPrice')
+                self.obReporter.update_report('Fail', 'Check for db_fy_cost  or ECATSellPrice')
                 return False, return_df_line_product
 
         return success, return_df_line_product
