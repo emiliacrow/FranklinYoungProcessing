@@ -9,6 +9,7 @@ import pandas
 import requests
 
 from PIL import Image
+from PIL import UnidentifiedImageError
 
 from Tools.FY_DAL import S3Object
 from Tools.BasicProcess import BasicProcessObject
@@ -242,7 +243,6 @@ class ProcessProductAssetObject(BasicProcessObject):
             image_width, image_height = current_image.size
         except UnidentifiedImageError:
             image_width, image_height = 0, 0
-
 
         return image_width, image_height
 
