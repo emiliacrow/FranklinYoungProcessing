@@ -47,7 +47,13 @@ class HeaderTranslator():
                             'LandedCostMarkupPercent_FYList':['LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FyList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
-                            'OnContract':['OnContract','GSAOnContract','VAOnContract','ECATOnContract','HTMEOnContract','FEDMALLOnContract','On Contract','GSA On Contract','VA On Contract','ECAT On Contract','HTME On Contract','FEDMALL On Contract'],
+                            'OnContract':['OnContract', 'On Contract'],
+
+                            'ECATOnContract':['ECATOnContract', 'ECAT On Contract', 'ECAT On Contract'],
+                            'HTMEOnContract':['HTMEOnContract', 'HTME On Contract', 'HTME On Contract'],
+                            'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],
+                            'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
+
                             'IsDiscontinued':['IsDiscontinued','Discontinued','is discontinued','Is Discontinued'],
 
 # GSA

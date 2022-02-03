@@ -149,16 +149,16 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         # should we cascade the update toggles?
 
-        if (ecat_contract != -1) or (ecat_approved != -1):
+        if (ecat_contract != -1 or ecat_approved != -1):
             self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved)
 
-        if (htme_contract != -1) or (htme_approved != -1):
+        if (htme_contract != -1 or htme_approved != -1):
             self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved)
 
-        if (gsa_contract != -1) or (gsa_approved != -1):
+        if (gsa_contract != -1 or gsa_approved != -1):
             self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved)
 
-        if (va_contract != -1) or (va_approved != -1):
+        if (va_contract != -1 or va_approved != -1):
             self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved)
 
 
