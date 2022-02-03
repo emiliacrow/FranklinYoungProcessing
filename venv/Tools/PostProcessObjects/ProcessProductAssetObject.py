@@ -237,8 +237,13 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def get_image_size(self, image_path):
-        current_image = Image.open(image_path)
-        image_width, image_height = current_image.size
+        try:
+            current_image = Image.open(image_path)
+            image_width, image_height = current_image.size
+        except UnidentifiedImageError:
+            image_width, image_height = 0, 0
+
+
         return image_width, image_height
 
 
