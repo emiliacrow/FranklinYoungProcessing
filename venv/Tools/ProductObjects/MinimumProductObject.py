@@ -212,8 +212,19 @@ class MinimumProduct(BasicProcessObject):
                 success, lead_time = self.float_check(lead_time, 'lead time')
                 if success:
                     lead_time = int(lead_time)
-                    new_lead_time_id = self.df_lead_times.loc[
-                        (self.df_lead_times['LeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
+                    try:
+                        new_lead_time_id = self.df_lead_times.loc[
+                            (self.df_lead_times['LeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
+                    except IndexError:
+                        if 'LeadTimeExpedited' in row:
+                            success, expedited_lead_time = self.float_check(row['LeadTimeExpedited'], 'Lead Time Expedited')
+                            if not success:
+                                new_lead_time_id = 2
+                                continue
+
+                        else:
+                            expedited_lead_time = lead_time
+                        new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
 
                 elif lead_time != '':
                     if 'day' in lead_time:
