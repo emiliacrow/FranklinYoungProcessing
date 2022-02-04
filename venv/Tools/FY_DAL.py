@@ -198,9 +198,9 @@ class DalObject:
         return df_manufacturer_lookup
 
 
-    def vendor_cap(self, newVendorName, newVendorCode, newBrandName=''):
+    def vendor_cap(self, newVendorCode, newVendorName, newBrandName=''):
         proc_name = 'sequoia.Vendor_capture_wrap'
-        proc_args = (newVendorName, newBrandName, newVendorCode)
+        proc_args = (newBrandName, newVendorCode, newVendorName)
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 

@@ -438,8 +438,8 @@ class IngestionObject:
             return -1
 
     # vendor funtions
-    def ingest_vendor(self, vendor_name, vendor_code):
-        return_id = self.obDal.vendor_cap(vendor_name, vendor_code)
+    def ingest_vendor(self, vendor_code, vendor_name):
+        return_id = self.obDal.vendor_cap(vendor_code, vendor_name)
         return return_id
 
     def ingest_vendors(self, df_vendors):
@@ -453,7 +453,7 @@ class IngestionObject:
             vendor_name = vendor_name.strip().lower()
             vendor_code = str(row['VendorCode'])
 
-            return_id = self.ingest_vendor(vendor_name,vendor_code)
+            return_id = self.ingest_vendor(vendor_code, vendor_name)
             ingested_set.append([return_id,vendor_name,vendor_code])
 
             p_bar += 1
@@ -481,7 +481,7 @@ class IngestionObject:
             return 0
 
         if (vendor_name != '') and (vendor_code != ''):
-            ven_id = self.obDal.vendor_cap(vendor_name, vendor_code)
+            ven_id = self.obDal.vendor_cap(vendor_code, vendor_name)
             return ven_id
         else:
             return -1

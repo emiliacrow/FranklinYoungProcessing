@@ -58,7 +58,6 @@ def test_ven_man(obDal):
     get_id = obDal.manufacturer_cap('New Manufacturer', 1)
     print(get_id)
     # tests lowest level insert
-    get_id = obDal.vendor_cap('New Vendor 17','vencode17', 1)
     print(get_id)
 
 
