@@ -405,7 +405,7 @@ class DalObject:
 
     def get_ecat_price_lookup(self):
         proc_name = 'sequoia.get_ECATPrice_lookup'
-        column_names = ['FyProductNumber', 'VendorPartNumber', 'OnContract', 'ECATApprovedListPrice', 'db_ContractedManufacturerPartNumber',
+        column_names = ['FyProductNumber', 'VendorPartNumber', 'ECATOnContract', 'ECATApprovedListPrice', 'db_ContractedManufacturerPartNumber',
                         'ECATContractModificationNumber', 'ECATApprovedPriceDate', 'ECATPricingApproved']
         df_ecat_price_lookup = self.get_lookup(proc_name, column_names)
         return df_ecat_price_lookup
@@ -427,7 +427,7 @@ class DalObject:
 
     def get_gsa_price_lookup(self):
         proc_name = 'sequoia.get_GSAPrice_lookup'
-        column_names = ['FyProductNumber','VendorPartNumber','OnContract','db_ContractedManufacturerPartNumber', 'GSAApprovedListPrice',
+        column_names = ['FyProductNumber','VendorPartNumber','GSAOnContract','db_ContractedManufacturerPartNumber', 'GSAApprovedListPrice',
                          'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
         df_gsa_price_lookup = self.get_lookup(proc_name,column_names)
         return df_gsa_price_lookup
@@ -442,7 +442,7 @@ class DalObject:
 
     def get_htme_price_lookup(self):
         proc_name = 'sequoia.get_HTMEPrice_lookup'
-        column_names = ['FyProductNumber', 'FyPartNumber', 'OnContract', 'HTMEApprovedListPrice',
+        column_names = ['FyProductNumber', 'FyPartNumber', 'HTMEOnContract', 'HTMEApprovedListPrice',
                         'HTMEApprovedPercent', 'MfcDiscountPercent', 'HTMEContractModificationNumber',
                         'HTMEApprovedPriceDate', 'HTMEPricingApproved']
         df_htme_price_lookup = self.get_lookup(proc_name, column_names)
@@ -458,7 +458,7 @@ class DalObject:
 
     def get_va_price_lookup(self):
         proc_name = 'sequoia.get_VAPrice_lookup'
-        column_names = ['FyProductNumber','VendorPartNumber','OnContract','db_ContractedManufacturerPartNumber', 'VAApprovedListPrice',
+        column_names = ['FyProductNumber','VendorPartNumber','VAOnContract','db_ContractedManufacturerPartNumber', 'VAApprovedListPrice',
                          'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup

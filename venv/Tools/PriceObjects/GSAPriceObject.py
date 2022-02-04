@@ -61,7 +61,7 @@ class GSAPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_gsa_price_lookup = self.obDal.get_gsa_price_lookup()
 
-        match_headers = ['FyProductNumber','VendorPartNumber','OnContract', 'GSAApprovedListPrice',
+        match_headers = ['FyProductNumber','VendorPartNumber','GSAOnContract', 'GSAApprovedListPrice',
                          'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
 
         # simple first
@@ -140,13 +140,13 @@ class GSAPrice(BasicProcessObject):
 
 
     def process_oncontract(self, df_collect_product_base_data, row):
-        if ('OnContract' not in row):
-            df_collect_product_base_data['OnContract'] = [0]
+        if ('GSAOnContract' not in row):
+            df_collect_product_base_data['GSAOnContract'] = [0]
             self.obReporter.update_report('Alert', 'OnContract was assigned')
-        elif str(row['OnContract']) == 'N':
-            df_collect_product_base_data['OnContract'] = [0]
-        elif str(row['OnContract']) == 'Y':
-            df_collect_product_base_data['OnContract'] = [1]
+        elif str(row['GSAOnContract']) == 'N':
+            df_collect_product_base_data['GSAOnContract'] = [0]
+        elif str(row['GSAOnContract']) == 'Y':
+            df_collect_product_base_data['GSAOnContract'] = [1]
 
         return df_collect_product_base_data
 
@@ -197,7 +197,7 @@ class GSAPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            on_contract = row['OnContract']
+            on_contract = row['GSAOnContract']
 
             contract_number = 'GS-07F-0636W'
             contract_mod_number = row['GSAContractModificationNumber']

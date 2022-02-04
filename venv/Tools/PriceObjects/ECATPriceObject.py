@@ -9,7 +9,7 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 class ECATPrice(BasicProcessObject):
-    req_fields = ['FyProductNumber','VendorPartNumber','OnContract', 'ECATApprovedListPrice',
+    req_fields = ['FyProductNumber','VendorPartNumber','ECATOnContract', 'ECATApprovedListPrice',
                   'ECATMaxMarkup', 'ECATContractModificationNumber', 'ECATApprovedPriceDate','ECATPricingApproved']
     sup_fields = []
     att_fields = []
@@ -61,7 +61,7 @@ class ECATPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_ecat_price_lookup = self.obDal.get_ecat_price_lookup()
 
-        match_headers = ['FyProductNumber','VendorPartNumber','OnContract', 'ECATApprovedListPrice',
+        match_headers = ['FyProductNumber','VendorPartNumber','ECATOnContract', 'ECATApprovedListPrice',
                         'ECATContractModificationNumber','ECATApprovedPriceDate','ECATPricingApproved']
 
         # simple first
@@ -143,13 +143,13 @@ class ECATPrice(BasicProcessObject):
 
 
     def process_oncontract(self, df_collect_product_base_data, row):
-        if ('OnContract' not in row):
-            df_collect_product_base_data['OnContract'] = [1]
+        if ('ECATOnContract' not in row):
+            df_collect_product_base_data['ECATOnContract'] = [1]
             self.obReporter.update_report('Alert', 'OnContract was assigned')
-        elif str(row['OnContract']) == 'N':
-            df_collect_product_base_data['OnContract'] = [0]
-        elif str(row['OnContract']) == 'Y':
-            df_collect_product_base_data['OnContract'] = [1]
+        elif str(row['ECATOnContract']) == 'N':
+            df_collect_product_base_data['ECATOnContract'] = [0]
+        elif str(row['ECATOnContract']) == 'Y':
+            df_collect_product_base_data['ECATOnContract'] = [1]
 
         return df_collect_product_base_data
 
@@ -194,7 +194,7 @@ class ECATPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            on_contract = row['OnContract']
+            on_contract = row['ECATOnContract']
 
             contract_number = 'SPE2DE-21-D-0014'
             contract_mod_number = row['ECATContractModificationNumber']

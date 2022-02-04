@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class HTMEPrice(BasicProcessObject):
-    req_fields = ['FyProductNumber','FyPartNumber','OnContract', 'HTMEApprovedListPrice',
+    req_fields = ['FyProductNumber','FyPartNumber','HTMEOnContract', 'HTMEApprovedListPrice',
                   'HTMEApprovedPercent', 'MfcDiscountPercent', 'HTMEContractModificationNumber', 'HTMEApprovedPriceDate','HTMEPricingApproved']
 
     sup_fields = []
@@ -59,7 +59,7 @@ class HTMEPrice(BasicProcessObject):
         self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
         self.df_htme_price_lookup = self.obDal.get_htme_price_lookup()
 
-        match_headers = ['FyProductNumber','FyPartNumber','OnContract', 'HTMEApprovedListPrice',
+        match_headers = ['FyProductNumber','FyPartNumber','HTMEOnContract', 'HTMEApprovedListPrice',
                          'HTMEApprovedPercent', 'MfcDiscountPercent', 'HTMEContractModificationNumber','HTMEApprovedPriceDate','HTMEPricingApproved']
 
         # simple first
@@ -153,13 +153,13 @@ class HTMEPrice(BasicProcessObject):
         return success, return_df_line_product
 
     def process_oncontract(self, df_collect_product_base_data, row):
-        if ('OnContract' not in row):
-            df_collect_product_base_data['OnContract'] = [1]
+        if ('HTMEOnContract' not in row):
+            df_collect_product_base_data['HTMEOnContract'] = [1]
             self.obReporter.update_report('Alert', 'OnContract was assigned')
-        elif str(row['OnContract']) == 'N':
-            df_collect_product_base_data['OnContract'] = [0]
-        elif str(row['OnContract']) == 'Y':
-            df_collect_product_base_data['OnContract'] = [1]
+        elif str(row['HTMEOnContract']) == 'N':
+            df_collect_product_base_data['HTMEOnContract'] = [0]
+        elif str(row['HTMEOnContract']) == 'Y':
+            df_collect_product_base_data['HTMEOnContract'] = [1]
 
         return df_collect_product_base_data
 
@@ -191,7 +191,7 @@ class HTMEPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            on_contract = row['OnContract']
+            on_contract = row['HTMEOnContract']
 
             contract_number = 'SPE2DE-21-D-0014'
             contract_mod_number = row['HTMEContractModificationNumber']
