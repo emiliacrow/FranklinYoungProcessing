@@ -282,11 +282,11 @@ class IngestionObject:
         df_manufacturer_lookup = self.obDal.get_manufacturer_lookup()
         return df_manufacturer_lookup
 
-    def manual_ingest_manufacturer(self, atmp_sup = '', atmp_man = ''):
+    def manual_ingest_manufacturer(self, atmp_sup = '', atmp_man = '',lst_manufacturer_names=[]):
         lst_req_fields = [['SupplierName',45,'This is the ugly version of the name<br>like "thermo electron (karlsruhe) gmbh"', atmp_sup,'required'],
                           ['ManufacturerName',45,'This is the standardized name<br>like "THERMO ELECTRON"', atmp_man,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields, title='Manufacturer entry')
+        obTextBox = TextBoxObject(lst_req_fields, title='Manufacturer entry',lst_for_dropdown=lst_manufacturer_names)
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 
@@ -466,11 +466,11 @@ class IngestionObject:
         df_vendor_lookup = self.obDal.get_vendor_lookup()
         return df_vendor_lookup
 
-    def manual_ingest_vendor(self, atmp_name = '', atmp_code = ''):
+    def manual_ingest_vendor(self, atmp_name = '', atmp_code = '',lst_vendor_names=[]):
         lst_req_fields = [['VendorName', 45, 'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"', atmp_name,'required'],
                           ['VendorCode', 45, 'This is the not so pretty name<br>like "Consolidated Ster"', atmp_code,'required']]
 
-        obTextBox = TextBoxObject(lst_req_fields, title='Vendor entry')
+        obTextBox = TextBoxObject(lst_req_fields, title='Vendor entry',lst_for_dropdown=lst_vendor_names)
         obTextBox.exec()
         entered_values = obTextBox.getReturnSet()
 

@@ -537,7 +537,12 @@ class Pathways():
                 return True, 'Loaded a new Hazard Code with id: {0}'.format(haz_id)
 
         elif table_to_load == 'Manufacturer':
-            man_id = self.obIngester.manual_ingest_manufacturer()
+            df_manufacturers = self.obDal.get_manufacturer_lookup()
+
+            manufacturer_name_list = df_manufacturers["ManufacturerName"].tolist()
+            manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+
+            man_id = self.obIngester.manual_ingest_manufacturer(lst_manufacturer_names=manufacturer_name_list)
             if (man_id == 0):
                 return True, 'Canceled by user action'
             elif (man_id == -1):
@@ -573,7 +578,12 @@ class Pathways():
                 return True, 'Loaded a new UNSPSC with id: {0}'.format(unspsc_id)
 
         elif table_to_load == 'Vendor':
-            ven_id = self.obIngester.manual_ingest_vendor()
+            df_vendors = self.obDal.get_vendor_lookup()
+
+            vendor_name_list = df_vendors["VendorName"].tolist()
+            vendor_name_list = list(dict.fromkeys(vendor_name_list))
+
+            ven_id = self.obIngester.manual_ingest_vendor(lst_vendor_names=vendor_name_list)
             if (ven_id == 0):
                 return True, 'Canceled by user action'
             elif (ven_id == -1):

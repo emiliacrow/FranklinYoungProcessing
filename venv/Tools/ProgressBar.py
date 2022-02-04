@@ -222,45 +222,75 @@ class JoinSelectionDialog(QDialog):
 
 
 class TextBoxObject(QDialog):
-    def __init__(self, lst_input_reqs, parent=None, icon = 'duck', title='Please enter text.'):
+    def __init__(self, lst_input_reqs, parent=None, icon = 'duck', title='Please enter text.', lst_for_dropdown = []):
         super().__init__(parent)
         self.return_textbox = []
         self.lst_output_req = {}
+        self.req_pos = 0
 
         self.set_icon = set_icon
         self.fy_icon = self.set_icon(icon)
         self.setWindowIcon(QIcon(os.getcwd()+self.fy_icon))
 
         self.setWindowTitle(title)
-        self.setGeometry(100, 300, 0, 0)
+        self.setGeometry(100, 300, 700, 100)
         self.layout = QGridLayout()
 
-        # button to show the above entered text
-        self.accept_button = QPushButton('Send data', self)
-        self.accept_button.setToolTip('This will send the data to the database.')
-        # connect button to function on_click
-        self.accept_button.clicked.connect(self.on_click)
-        self.layout.addWidget(self.accept_button, 0, 1)
+        self.title_label = QLabel(title)
+        self.layout.addWidget(self.title_label, self.req_pos, 1, 1, 2)
 
-        # button to show the above entered text
-        self.best_guess_button = QPushButton('See best matches', self)
-        self.best_guess_button.setToolTip('This doesn\'t do anything yet.')
-        # connect button to function on_click
-        self.best_guess_button.clicked.connect(self.best_guesses)
-        self.layout.addWidget(self.best_guess_button, 0, 2)
+        self.req_pos += 1
+
+        if lst_for_dropdown != []:
+            # second left-most catgegory label
+            self.current_dropdown_label = QLabel('Current Values')
+            self.layout.addWidget(self.current_dropdown_label, self.req_pos, 0)
+
+            # second right big drop down
+            self.current_dropdown = QComboBox()
+            self.layout.addWidget(self.current_dropdown, self.req_pos, 1, 1, 2)
+
+            # button to show the above entered text
+            self.take_drop_button = QPushButton('Select Dropdown', self)
+            self.take_drop_button.setToolTip('This assigns the value in the dropdown.')
+            # connect button to function on_click
+            self.take_drop_button.clicked.connect(self.take_drop)
+            # blah.blah(blah,ltr position, tpb position)
+            self.layout.addWidget(self.take_drop_button, self.req_pos, 3)
+
+            self.set_dropdown(lst_for_dropdown)
+            self.req_pos += 1
 
         self.addInit(lst_input_reqs)
+
+
+        # button to show the above entered text
+        self.create_button = QPushButton('Create New Entry', self)
+        self.create_button.setToolTip('This will create a new record in the database.')
+        # connect button to function on_click
+        self.create_button.clicked.connect(self.on_click)
+        self.layout.addWidget(self.create_button, self.req_pos-1, 3)
+
+
 
         self.setLayout(self.layout)
         self.show()
 
+
+    def set_dropdown(self,lst_for_dropdown):
+        lst_for_dropdown.sort()
+        self.current_dropdown.clear()
+        self.current_dropdown.addItems(lst_for_dropdown)
+        completer1 = QCompleter(lst_for_dropdown)
+        self.current_dropdown.setCompleter(completer1)
+
+
     def addInit(self,lst_input_reqs):
-        pos = 1
         for each_input_req in lst_input_reqs:
             #self.layout.addWidget(self.base_data_button, 1, column_pos)
             req_label = QLabel(each_input_req[0])
             req_label.setToolTip(each_input_req[2])
-            self.layout.addWidget(req_label, pos, 0)
+            self.layout.addWidget(req_label, self.req_pos, 0)
 
             # edit text box
             text_test = QLineEdit(self)
@@ -268,11 +298,11 @@ class TextBoxObject(QDialog):
             text_test.setText(each_input_req[3])
             if len(each_input_req) == 5:
                 text_test.setPlaceholderText(each_input_req[4])
-            self.layout.addWidget(text_test, pos, 1, 1, 2)
+            self.layout.addWidget(text_test, self.req_pos, 1, 1, 2)
 
             self.return_textbox.append([each_input_req[0], text_test])
 
-            pos += 1
+            self.req_pos += 1
 
 
     def on_click(self):
@@ -281,8 +311,12 @@ class TextBoxObject(QDialog):
 
         self.accept()
 
-    def best_guesses(self):
-        print('This does nothing right now')
+    def take_drop(self):
+        selected_drop = str(self.current_dropdown.currentText())
+        for each_text_entry in self.return_textbox:
+            self.lst_output_req[each_text_entry[0]] = selected_drop
+
+        self.accept()
 
     def getReturnSet(self):
         return self.lst_output_req

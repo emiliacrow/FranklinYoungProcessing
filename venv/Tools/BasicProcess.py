@@ -475,7 +475,10 @@ class BasicProcessObject:
                 df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
                 return True, df_collect_product_base_data
             else:
-                new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=supplier)
+                manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
+                manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+
+                new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=supplier, lst_manufacturer_names=manufacturer_name_list)
                 self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
                 # this needs to return the prefix so it can be used
 
@@ -506,7 +509,10 @@ class BasicProcessObject:
                 return True, df_collect_product_base_data
 
         else:
-            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer)
+            manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
+            manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+
+            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer, lst_manufacturer_names=manufacturer_name_list)
             self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
             # this needs to return the prefix so it can be used
 
