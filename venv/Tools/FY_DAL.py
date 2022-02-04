@@ -154,6 +154,13 @@ class DalObject:
 
         result_df = pandas.DataFrame(data=result_set,columns = column_names,dtype=str)
         self.close_connection()
+
+        if 'ManufacturerPartNumber' in result_df.columns:
+            result_df['ManufacturerPartNumber'] = result_df['ManufacturerPartNumber'].str.upper()
+
+        if 'VendorPartNumber' in result_df.columns:
+            result_df['VendorPartNumber'] = result_df['VendorPartNumber'].str.upper()
+
         return(result_df)
 
 

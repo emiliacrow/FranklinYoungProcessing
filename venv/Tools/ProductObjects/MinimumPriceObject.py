@@ -32,6 +32,10 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product_price_lookup = self.obDal.get_product_price_lookup()
         self.df_product_lookup['ManufacturerPartNumber'].astype(str)
 
+
+        self.df_product_lookup['ManufacturerPartNumber'] = self.df_product_lookup['ManufacturerPartNumber'].str.upper()
+        self.df_product_lookup['VendorPartNumber'] = self.df_product_lookup['VendorPartNumber'].str.upper()
+
         self.df_product_lookup['Filter'] = 'Update'
 
         if 'FyCatalogNumber' in self.df_product.columns:

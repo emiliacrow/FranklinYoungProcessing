@@ -51,6 +51,7 @@ class BigCommerceRTLObject(BasicProcessObject):
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
+
                 if row['Filter'] == 'Fail' and not self.full_run:
                     self.obReporter.update_report('Alert','No change')
                     return False, df_collect_product_base_data
@@ -65,6 +66,7 @@ class BigCommerceRTLObject(BasicProcessObject):
     def process_changes(self, df_collect_product_base_data):
         
         for colName, row in df_collect_product_base_data.iterrows():
+            print(row)
             product_id = row['ProductId']
 
             price_id = row['ProductPriceId']
