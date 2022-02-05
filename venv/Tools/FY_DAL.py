@@ -224,6 +224,13 @@ class DalObject:
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
+    def get_product_category(self):
+        proc_name = 'sequoia.get_product_category'
+        column_names = ['FyCatalogNumber','Category','CategoryId']
+        df_category_lookup = self.get_lookup(proc_name,column_names)
+        return df_category_lookup
+
+
     def get_category_names(self):
         proc_name = 'sequoia.get_category_names'
         column_names = ['CategoryId','CategoryName','Category']

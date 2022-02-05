@@ -123,31 +123,36 @@ class MinimumProduct(BasicProcessObject):
 
     def batch_process_category(self):
         # this needs to be handled better
-        df_attribute = self.df_product[['Category']]
-        df_attribute = df_attribute.drop_duplicates(subset=['Category'])
-        lst_ids = []
-        for colName, row in df_attribute.iterrows():
-            category = str(row['Category']).strip()
-            category_name = (category.rpartition('/')[2]).strip()
+        if 'Category' in self.df_product.columns:
+            df_attribute = self.df_product[['Category']]
+            df_attribute = df_attribute.drop_duplicates(subset=['Category'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                category = str(row['Category']).strip()
+                category_name = (category.rpartition('/')[2]).strip()
 
-            if category_name in self.df_category_names['CategoryName'].values:
-                new_category_id = self.df_category_names.loc[
-                    (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
+                if category_name in self.df_category_names['CategoryName'].values:
+                    new_category_id = self.df_category_names.loc[
+                        (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
 
-            elif category in self.df_category_names['Category'].values:
-                new_category_id = self.df_category_names.loc[
-                    (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
-            else:
-                # this might be causing a slow down
-                # review this to see if it's working right, it should be
-                new_category_id = self.obDal.category_cap(category_name, category)
+                elif category in self.df_category_names['Category'].values:
+                    new_category_id = self.df_category_names.loc[
+                        (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
+                else:
+                    # this might be causing a slow down
+                    # review this to see if it's working right, it should be
+                    new_category_id = self.obDal.category_cap(category_name, category)
 
-            lst_ids.append(new_category_id)
+                lst_ids.append(new_category_id)
 
-        df_attribute['CategoryId'] = lst_ids
+            df_attribute['CategoryId'] = lst_ids
 
-        self.df_product = self.df_product.merge(df_attribute,
-                                                 how='left', on=['Category'])
+            self.df_product = self.df_product.merge(df_attribute,
+                                                     how='left', on=['Category'])
+        else:
+            self.df_fill_category = self.obDal.get_product_category()
+            self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['FyCatalogNumber'])
+
 
 
     def batch_process_country(self):
@@ -518,7 +523,7 @@ class MinimumProduct(BasicProcessObject):
 
 class UpdateMinimumProduct(MinimumProduct):
     req_fields = ['ShortDescription', 'ManufacturerPartNumber',
-                                'CountryOfOrigin', 'ManufacturerName','Category']
+                                'CountryOfOrigin', 'ManufacturerName','FyCatalogNumber']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
