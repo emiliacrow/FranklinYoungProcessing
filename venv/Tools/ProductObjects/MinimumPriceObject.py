@@ -156,11 +156,6 @@ class MinimumProductPrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','Can\'t identify product number')
                 return success, df_collect_product_base_data
 
-            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
-            if success == False:
-                self.obReporter.update_report('Fail','Failed at pricing processing')
-                return success, df_collect_product_base_data
-
             if ('ProductTaxClass' not in row):
                 df_collect_product_base_data['ProductTaxClass'] = 'Default Tax Class'
 

@@ -19,13 +19,11 @@ class ProductAgniKaiObject(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        vendor_filter = self.vendor_name_selection()
-
-        self.df_product_price_lookup = self.obDal.get_product_action_review_lookup(vendor_filter)
         self.define_new()
         return self.df_product
 
     def define_new(self):
+        self.df_product_price_lookup = self.obDal.get_product_action_review_lookup()
         # simple first
         self.df_product['Filter X'] = 'Update'
         self.df_product_price_lookup['Filter Y'] = 'Update'
@@ -42,9 +40,11 @@ class ProductAgniKaiObject(BasicProcessObject):
         # names columns in new dataframe
         self.df_matched_product.rename(columns = {'FyProductNumber':'number','index':'FyProductNumber'}, inplace = 1)
 
+        # assign duplicate marker
         self.df_matched_product['is_duplicated'] = 'Y'
         self.df_matched_product = self.df_matched_product.loc[(self.df_matched_product['number'] > 1),['FyProductNumber','is_duplicated']]
 
+        # merge the duplicate mark back in
         self.df_product = self.df_product.merge(self.df_matched_product, how='left', on='FyProductNumber')
 
         self.df_product.loc[(self.df_product['Filter X'] == 'Update') & (self.df_product['Filter Y'] == 'Update'), 'Filter'] = 'Product Update'
