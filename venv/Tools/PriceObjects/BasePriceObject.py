@@ -128,6 +128,7 @@ class BasePrice(BasicProcessObject):
             if success:
                 df_collect_product_base_data['IsVisible'] = [return_val]
             else:
+                self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                 df_collect_product_base_data['IsVisible'] = [0]
 
 

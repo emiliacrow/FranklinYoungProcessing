@@ -342,6 +342,7 @@ class MinimumProduct(BasicProcessObject):
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
+                    self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                     df_collect_product_base_data[each_bool] = [0]
 
         return_df_line_product = self.minimum_product(df_collect_product_base_data)
@@ -405,6 +406,7 @@ class MinimumProduct(BasicProcessObject):
             if success:
                 df_collect_product_base_data[each_bool] = [return_val]
             else:
+                self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                 df_collect_product_base_data[each_bool] = [0]
 
 
