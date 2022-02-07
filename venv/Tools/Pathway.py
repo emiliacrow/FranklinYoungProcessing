@@ -147,14 +147,8 @@ class Pathways():
             elif file_action_selected == 'Product Action Review':
                 self.df_product = self.obFileFinder.read_xlsx()
 
-                self.obYNBox = YesNoDialog('Include discon?')
-                self.obYNBox.initUI('Include discontinues dialog.', 'Create outputs for discontinues?')
-                if self.obYNBox.yes_selected == True:
-                    self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected, True)
-                else:
-                    self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected)
+                self.obAgniKai = ProductAgniKaiObject(self.df_product, self.user, self.password, is_testing, file_action_selected)
 
-                self.obYNBox.close()
                 self.success, self.message = self.obAgniKai.begin_process()
                 self.df_product = self.obAgniKai.get_df()
                 # perform split and create files
