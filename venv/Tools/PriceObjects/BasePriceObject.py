@@ -124,7 +124,13 @@ class BasePrice(BasicProcessObject):
             if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
-            df_collect_product_base_data = self.process_visibility(df_collect_product_base_data, row)
+            for each_bool in ['IsVisible']:
+                success, return_val = self.process_boolean(row, each_bool)
+                if success:
+                    df_collect_product_base_data[each_bool] = [return_val]
+                else:
+                    return success, df_collect_product_base_data
+
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
@@ -428,17 +434,6 @@ class BasePrice(BasicProcessObject):
             self.obReporter.update_report('Alert', 'Basic pricing was loaded')
             return True, df_collect_product_base_data
 
-
-    def process_visibility(self, df_collect_product_base_data, row):
-        if ('IsVisible' not in row):
-            df_collect_product_base_data['IsVisible'] = [0]
-            self.obReporter.update_report('Alert','IsVisible was assigned')
-        elif str(row['IsVisible']) == 'N':
-            df_collect_product_base_data['IsVisible'] = [0]
-        elif str(row['IsVisible']) == 'Y':
-            df_collect_product_base_data['IsVisible'] = [1]
-
-        return df_collect_product_base_data
 
     def base_price(self, df_line_product):
         va_product_price_id = -1
