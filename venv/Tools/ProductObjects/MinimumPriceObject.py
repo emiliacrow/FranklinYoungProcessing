@@ -160,8 +160,16 @@ class MinimumProductPrice(BasicProcessObject):
             if success == False:
                 self.obReporter.update_report('Fail','Failed at pricing processing')
                 return success, df_collect_product_base_data
-            df_collect_product_base_data = self.process_discontinued(df_collect_product_base_data, row)
 
+            if ('ProductTaxClass' not in row):
+                df_collect_product_base_data['ProductTaxClass'] = 'Default Tax Class'
+
+            for each_bool in ['IsDiscontinued','AllowPurchases']:
+                success, return_val = self.process_boolean(row, each_bool)
+                if success:
+                    df_collect_product_base_data[each_bool] = [return_val]
+                else:
+                    return success, df_collect_product_base_data
 
         try:
             success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
@@ -248,33 +256,6 @@ class MinimumProductPrice(BasicProcessObject):
             return False, df_collect_product_base_data
 
         return True, df_collect_product_base_data
-
-    def process_pricing(self, df_collect_product_base_data, row):
-        if ('AllowPurchases' not in row):
-            df_collect_product_base_data['AllowPurchases'] = [0]
-            self.obReporter.update_report('Alert','AllowPurchases was assigned')
-        elif str(row['AllowPurchases']) == 'N':
-            df_collect_product_base_data['AllowPurchases'] = [0]
-        elif str(row['AllowPurchases']) == 'Y':
-            df_collect_product_base_data['AllowPurchases'] = [1]
-
-        if ('ProductTaxClass' not in row):
-            df_collect_product_base_data['ProductTaxClass'] = 'Default Tax Class'
-
-        return True, df_collect_product_base_data
-
-
-    def process_discontinued(self, df_collect_product_base_data, row):
-        if ('IsDiscontinued' not in row):
-            df_collect_product_base_data['IsDiscontinued'] = [0]
-            self.obReporter.update_report('Alert','IsDiscontinued was assigned')
-        elif str(row['IsDiscontinued']) == 'N':
-            df_collect_product_base_data['IsDiscontinued'] = [0]
-        elif str(row['IsDiscontinued']) == 'Y':
-            df_collect_product_base_data['IsDiscontinued'] = [1]
-
-        return df_collect_product_base_data
-
 
     def minimum_product_price(self,df_line_product):
         for colName, row in df_line_product.iterrows():

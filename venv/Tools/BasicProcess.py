@@ -297,14 +297,26 @@ class BasicProcessObject:
         self.obReporter.report_no_process()
         return False, df_line_product
 
-    def process_boolean(self, df_collect_product_base_data, row, isCol):
-        success = False
-        if self.obValidator.validate_is_bool(row[isCol]):
-            success = True
-        else:
-            self.obReporter.update_report('Fail',isCol + ' value out of range')
+    def process_boolean(self, row, isCol):
+        try:
+            test_val = row[isCol]
+        except KeyError:
+            self.obReporter.update_report('Alert','{0} missing'.format(isCol))
+            return False, isCol
 
-        return success, df_collect_product_base_data
+        try:
+            test_val = int(test_val)
+        except ValueError:
+            if test_val.lower() in ['n','no']:
+                test_val = 1
+            elif test_val.lower() in ['y','yes']:
+                test_val = 0
+
+        if test_val not in [0, 1]:
+            self.obReporter.update_report('Alert', 'Review {0}'.format(isCol))
+            return False, test_val
+
+        return True, test_val
 
     def process_attribute_data(self,df_line_product):
         df_collect_ids = df_line_product.copy()

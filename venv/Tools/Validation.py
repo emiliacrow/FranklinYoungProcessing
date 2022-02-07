@@ -37,12 +37,6 @@ class Validator:
 
         return return_val
 
-    def validate_is_bool(self,isVal):
-        return_val = False
-        if (int(isVal) == 0) or (int(isVal) == 1):
-            return_val = True
-        return return_val
-
     def clean_part_number(self,str_to_clean, leave_gap = False):
         pattern = '(\-|\.|,|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
         if leave_gap:

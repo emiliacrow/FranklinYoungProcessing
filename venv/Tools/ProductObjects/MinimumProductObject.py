@@ -344,64 +344,13 @@ class MinimumProduct(BasicProcessObject):
                 self.obReporter.update_report('Fail','Failed in process recommended storage')
                 return False, df_collect_product_base_data
 
-            if 'IsControlled' in row:
-                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
-                                                                             'IsControlled')
-                if success == False:
-                    self.obReporter.update_report('Fail','IsControlled failed boolean evaluation')
-                    return success, df_collect_product_base_data
-            else:
-                df_collect_product_base_data['IsControlled'] = [is_controlled]
 
-            if 'IsDisposable' in row:
-                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
-                                                                             'IsDisposable')
-                if success == False:
-                    self.obReporter.update_report('Fail','IsDisposable failed boolean evaluation')
-                    return success, df_collect_product_base_data
-            else:
-                df_collect_product_base_data['IsDisposable'] = [is_disposible]
-
-            if 'IsGreen' in row:
-                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsGreen')
-                if success == False:
-                    self.obReporter.update_report('Fail','IsGreen failed boolean evaluation')
-                    return success, df_collect_product_base_data
-            else:
-                df_collect_product_base_data['IsGreen'] = [is_green]
-
-            if 'IsLatexFree' in row:
-                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row,
-                                                                             'IsLatexFree')
-                if success == False:
-                    self.obReporter.update_report('Fail','IsLatexFree failed boolean evaluation')
-                    return success, df_collect_product_base_data
-            else:
-                df_collect_product_base_data['IsLatexFree'] = [is_latex_free]
-
-            if 'IsRX' in row:
-                success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsRX')
-                if success == False:
-                    self.obReporter.update_report('Fail','IsRX failed boolean evaluation')
-                    return success, df_collect_product_base_data
-            else:
-                df_collect_product_base_data['IsRX'] = [is_rx]
-
-            if 'IsHazardous' in row:
-                if str(row['IsHazardous']) == 'N':
-                    df_collect_product_base_data['IsHazardous'] = [0]
-                elif str(row['IsHazardous']) == 'Y':
-                    df_collect_product_base_data['IsHazardous'] = [1]
+            for each_bool in ['IsControlled', 'IsDisposable', 'IsGreen', 'IsLatexFree','IsRX','IsHazardous','IsFreeShipping','IsColdChain']:
+                success, return_val = self.process_boolean(row, each_bool)
+                if success:
+                    df_collect_product_base_data[each_bool] = [return_val]
                 else:
-                    success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsHazardous')
-                    if success == False:
-                        self.obReporter.update_report('Fail','IsHazardous failed boolean evaluation')
-                        return success, df_collect_product_base_data
-
-            else:
-                df_collect_product_base_data['IsHazardous'] = [0]
-                self.obReporter.update_report('Alert', 'IsDiscontinued was assigned')
-
+                    return success, df_collect_product_base_data
 
         return_df_line_product = self.minimum_product(df_collect_product_base_data)
 
@@ -458,16 +407,6 @@ class MinimumProduct(BasicProcessObject):
 
         if ('ShippingCode' in row):
             shipping_code = row['ShippingCode']
-
-        if 'IsFreeShipping' in row:
-            success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsFreeShipping')
-            if success:
-                is_free_shipping = row['IsFreeShipping']
-
-        if 'IsColdChain' in row:
-            success, df_collect_product_base_data = self.process_boolean(df_collect_product_base_data, row, 'IsColdChain')
-            if success:
-                is_cold_chain = row['IsColdChain']
 
 
         # todo: This needs to pull in the begining and check a DF here
