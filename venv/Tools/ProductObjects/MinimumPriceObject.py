@@ -169,7 +169,7 @@ class MinimumProductPrice(BasicProcessObject):
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
-                    return success, df_collect_product_base_data
+                    df_collect_product_base_data[each_bool] = [0]
 
         try:
             success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)

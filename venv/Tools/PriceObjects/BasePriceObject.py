@@ -124,12 +124,11 @@ class BasePrice(BasicProcessObject):
             if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
-            for each_bool in ['IsVisible']:
-                success, return_val = self.process_boolean(row, each_bool)
-                if success:
-                    df_collect_product_base_data[each_bool] = [return_val]
-                else:
-                    return success, df_collect_product_base_data
+            success, return_val = self.process_boolean(row, 'IsVisible')
+            if success:
+                df_collect_product_base_data['IsVisible'] = [return_val]
+            else:
+                df_collect_product_base_data['IsVisible'] = [0]
 
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)

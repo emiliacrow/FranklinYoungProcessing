@@ -133,7 +133,7 @@ class GSAPrice(BasicProcessObject):
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
-                    return success, df_collect_product_base_data
+                    df_collect_product_base_data[each_bool] = [0]
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:

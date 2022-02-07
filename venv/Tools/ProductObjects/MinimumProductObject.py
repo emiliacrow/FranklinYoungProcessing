@@ -297,13 +297,6 @@ class MinimumProduct(BasicProcessObject):
 
 
     def process_product_line(self, df_line_product):
-        is_controlled = 0
-        is_disposible = 0
-        is_green = 0
-        is_latex_free = 0
-        is_rx = 0
-        is_hazardous = 0
-
         success = True
         df_collect_product_base_data = df_line_product.copy()
         df_line_product = self.process_attribute_data(df_collect_product_base_data)
@@ -344,13 +337,12 @@ class MinimumProduct(BasicProcessObject):
                 self.obReporter.update_report('Fail','Failed in process recommended storage')
                 return False, df_collect_product_base_data
 
-
             for each_bool in ['IsControlled', 'IsDisposable', 'IsGreen', 'IsLatexFree','IsRX','IsHazardous','IsFreeShipping','IsColdChain']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
-                    return success, df_collect_product_base_data
+                    df_collect_product_base_data[each_bool] = [0]
 
         return_df_line_product = self.minimum_product(df_collect_product_base_data)
 
@@ -407,6 +399,13 @@ class MinimumProduct(BasicProcessObject):
 
         if ('ShippingCode' in row):
             shipping_code = row['ShippingCode']
+
+        for each_bool in ['IsFreeShipping','IsColdChain']:
+            success, return_val = self.process_boolean(row, each_bool)
+            if success:
+                df_collect_product_base_data[each_bool] = [return_val]
+            else:
+                df_collect_product_base_data[each_bool] = [0]
 
 
         # todo: This needs to pull in the begining and check a DF here
