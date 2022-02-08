@@ -102,6 +102,11 @@ class FileFinder():
 
         self.obProgressBar.close()
 
+        if 'ManufacturerPartNumber' in excel_dataframe.columns:
+            excel_dataframe['ManufacturerPartNumber'] = excel_dataframe['ManufacturerPartNumber'].str.upper()
+        if 'VendorPartNumber' in excel_dataframe.columns:
+            excel_dataframe['VendorPartNumber'] = excel_dataframe['VendorPartNumber'].str.upper()
+
         return excel_dataframe
 
 

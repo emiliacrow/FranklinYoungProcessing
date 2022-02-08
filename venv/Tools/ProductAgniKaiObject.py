@@ -29,40 +29,40 @@ class ProductAgniKaiObject(BasicProcessObject):
         # match on everything
         self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber'])
 
+        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update in Base Price'
+        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
+
         # set aside the good matches
         self.df_full_matched_product = self.df_product[(self.df_product['Filter'] == 'Ready')]
-        self.df_full_matched_product.loc[(self.df_full_matched_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update in Base Price'
-        self.df_full_matched_product.loc[(self.df_full_matched_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
+        # these columns would just be junk anyway
+        self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['FyProductNumber','VendorPartNumber','BaseProductPriceId'])
+        self.df_product_price_lookup['Filter'] = 'Partial'
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','BaseProductPriceId'])
-
-        # these columns would just be junk anyway
-        self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['FyProductNumber','VendorPartNumber','BaseProductPriceId'])
-        self.df_product_price_lookup['Filter'] = 'Partial'
 
 
         # step 2
         # match on everything
         self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['FyCatalogNumber', 'ManufacturerPartNumber'])
 
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Update in Product Price'
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
+
         # set aside the good matches
         self.df_partial_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')]
-        self.df_partial_matched_product.loc[(self.df_partial_matched_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Update in Product Price'
-        self.df_partial_matched_product.loc[(self.df_partial_matched_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
-
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
-        self.df_product['Filter'] = 'Partial'
+        self.df_product['Filter'] = 'New'
+
 
         if len(self.df_full_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_full_matched_product)
 
         if len(self.df_partial_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_partial_matched_product)
-
 
 
         # counts FyProductNumber occurance as series
@@ -82,7 +82,6 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.df_product = self.df_product.merge(self.df_matched_product, how='left', on='FyProductNumber')
 
         self.df_product.loc[(self.df_product['is_duplicated'] == 'Y'), 'Filter'] = 'Possible Duplicate'
-
 
         self.df_product = self.df_product.drop(columns = ['is_duplicated'])
 
