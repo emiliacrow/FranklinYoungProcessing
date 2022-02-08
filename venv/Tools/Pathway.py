@@ -820,6 +820,7 @@ class Pathways():
         return False, 'Process not built.'
 
     def contract_pathway(self, is_testing, contract_selected):
+        b_full_run = False
         all_pathways = ['Update Toggles','Process Product Assets']
 
         self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+contract_selected, path = self.start_path)
