@@ -456,9 +456,8 @@ class DalObject:
 
     def get_htme_price_lookup(self):
         proc_name = 'sequoia.get_HTMEPrice_lookup'
-        column_names = ['FyProductNumber', 'FyPartNumber', 'HTMEOnContract', 'HTMEApprovedListPrice',
-                        'HTMEApprovedPercent', 'MfcDiscountPercent', 'HTMEContractModificationNumber',
-                        'HTMEApprovedPriceDate', 'HTMEPricingApproved']
+        column_names = ['FyProductNumber', 'VendorPartNumber', 'HTMEOnContract', 'ECATApprovedListPrice', 'db_ContractedManufacturerPartNumber',
+                        'HTMEContractModificationNumber', 'HTMEApprovedPriceDate', 'HTMEPricingApproved']
         df_htme_price_lookup = self.get_lookup(proc_name, column_names)
         return df_htme_price_lookup
 

@@ -705,14 +705,22 @@ class IngestionObject:
             self.obDal.gsa_product_price_cap(self.product_collector)
 
 
-    def htme_product_price_cap(self, is_last, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice):
+    def htme_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
+                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup):
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append(
-                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice))
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
+                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup))
             self.obDal.htme_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved, newHTMEApprovedPriceDate, newApprovedPercent, newHTMEBasePrice, newHTMESellPrice, newMFCPercent, newMFCPrice))
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
+                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup))
 
     def ingest_htme_product_price_cleanup(self):
         if self.product_collector != []:
