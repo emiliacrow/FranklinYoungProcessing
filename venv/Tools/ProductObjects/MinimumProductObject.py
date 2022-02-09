@@ -49,6 +49,8 @@ class MinimumProduct(BasicProcessObject):
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
+                           'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
+                           'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter'}

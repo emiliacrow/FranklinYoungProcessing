@@ -27,8 +27,9 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def remove_private_headers(self):
-        private_headers = {'ProductId_y','ProductId_x',
+        private_headers = {'ProductId','ProductId_y','ProductId_x',
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
+                           'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter'}
@@ -66,6 +67,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])
+
 
     def filter_check_in(self, row):
         filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
