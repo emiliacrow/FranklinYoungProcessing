@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['FyProductNumber', 'FyCost']
+    req_fields = ['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber', 'FyCost']
     sup_fields = []
     att_fields = []
     gen_fields = []
@@ -24,73 +24,7 @@ class BasePrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        # define new, update, non-update
-        self.batch_process_vendor()
         self.define_new()
-
-
-    def batch_process_vendor(self):
-        # there should only be one vendor, really.
-        if 'VendorName' not in self.df_product.columns:
-            vendor_name = self.vendor_name_selection()
-            self.df_product['VendorName'] = vendor_name
-
-        df_attribute = self.df_product[['VendorName']]
-        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
-        lst_ids = []
-        if 'VendorId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'VendorId')
-
-        for colName, row in df_attribute.iterrows():
-            vendor_name = row['VendorName'].upper()
-            if vendor_name in self.df_vendor_translator['VendorCode'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
-            elif vendor_name in self.df_vendor_translator['VendorName'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
-            else:
-                new_vendor_id = -1
-
-            lst_ids.append(new_vendor_id)
-
-        df_attribute['VendorId'] = lst_ids
-        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup_by_vendor_id(lst_ids[0])
-
-        self.df_product = self.df_product.merge(df_attribute,
-                                                 how='left', on=['VendorName'])
-
-
-    def define_new(self):
-        match_headers = ['FyProductNumber','ProductPriceId']
-
-        # simple first
-        self.df_base_price_lookup['Filter'] = 'Update'
-        self.df_base_price_check_in = self.df_base_price_lookup[['FyProductNumber','ProductPriceId','Filter']]
-
-        # match all products on FyProdNum
-        self.df_update_products = self.df_product.merge(self.df_base_price_check_in,
-                                                 how='left', on='FyProductNumber')
-
-        # all products that matched on FyProdNum
-        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
-
-        self.df_product = self.df_update_products[(self.df_update_products['Filter'] != 'Update')]
-
-        self.df_update_products = self.df_update_products[(self.df_update_products['Filter'] == 'Update')]
-
-
-        if len(self.df_update_products.index) != 0:
-            # this could end up empty
-            self.df_base_price_lookup['Filter'] = 'Update'
-            self.df_update_products = self.df_update_products.drop(columns='Filter')
-            self.df_update_products = self.df_update_products.merge(self.df_base_price_lookup, how='left', on=match_headers)
-
-            # this does not seem to be matching correctly in the above
-            # I suspect this has to do with the numbers being strings?
-            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'New'
-
-            self.df_product = self.df_product.append(self.df_update_products)
 
 
     def remove_private_headers(self):
@@ -107,13 +41,28 @@ class BasePrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Fail':
-                self.obReporter.update_report('Fail', 'This product must be ingested in product price')
-                return False
-        else:
-            self.obReporter.update_report('Fail', 'This product must be ingested in product price')
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+
+        if row['Filter'] == 'New' and self.full_process:
+            self.obReporter.update_report('Alert', 'Passed filtering as new product')
             return False
+
+        elif row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
+            return False
+
+        elif row['Filter'] == 'Ready' or row['Filter'] == 'Update_in_Base_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+            return True
+
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            return False
+
+        else:
+            self.obReporter.update_report('Fail', 'Failed filtering')
+            return False
+
 
 
     def process_product_line(self, df_line_product):
@@ -542,15 +491,7 @@ class UpdateBasePrice(BasePrice):
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
 
-    def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Fail':
-                self.obReporter.update_report('Fail', 'This product must be ingested in product price')
-                return False
-        else:
-            self.obReporter.update_report('Fail', 'This product must be ingested in product price')
-            return False
-        return True
+
 
 
 

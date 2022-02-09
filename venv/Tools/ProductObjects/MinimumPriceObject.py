@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['VendorPartNumber','ManufacturerPartNumber','FyProductNumber']
+    req_fields = ['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -26,61 +26,6 @@ class MinimumProductPrice(BasicProcessObject):
         self.define_new()
 
 
-    def define_new(self):
-        # these are the df's for assigning data.
-        self.df_product_lookup = self.obDal.get_product_lookup()
-        self.df_product_price_lookup = self.obDal.get_product_price_lookup()
-        self.df_product_lookup['ManufacturerPartNumber'].astype(str)
-
-        self.df_product_lookup['Filter'] = 'Update'
-
-        if 'FyCatalogNumber' in self.df_product.columns:
-            self.df_product = self.df_product.merge(self.df_product_lookup,
-                                                            how='left',
-                                                            on=['FyCatalogNumber', 'ManufacturerPartNumber'])
-        else:
-            self.df_product = self.df_product.merge(self.df_product_lookup,
-                                                            how='left', on=['ManufacturerPartNumber'])
-
-        if 'Filter' not in self.df_product.columns:
-            self.df_product['Filter'] = 'Fail'
-        else:
-            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
-
-
-        # split the data for a moment
-        self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
-        self.df_product = self.df_product[(self.df_product['Filter'] != 'Update')]
-
-        if len(self.df_update_product.index) != 0:
-            self.df_product_price_lookup['Filter'] = 'Update'
-            # this section evaluates if these have product data loaded
-            # drop some columns to ease processing
-            if 'Filter' in self.df_update_product.columns:
-                self.df_update_product = self.df_update_product.drop(columns=['Filter'])
-
-            # this gets the productId again
-            if 'VendorPartNumber' in self.df_update_product.columns:
-                self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
-                                                             how='left', on=['FyProductNumber','VendorPartNumber'])
-            else:
-                self.df_update_product = self.df_update_product.merge(self.df_product_price_lookup,
-                                                             how='left', on=['FyProductNumber'])
-
-            self.df_update_product.loc[(self.df_update_product['Filter'] != 'Update'), 'Filter'] = 'New'
-
-            if 'ProductId_x' in self.df_update_product.columns:
-                self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
-                self.df_update_product = self.df_update_product.drop(columns=['ProductId_x'])
-                self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
-            # recombine with product
-
-        if len(self.df_product.index)==0:
-            self.df_product = self.df_update_product.copy()
-        else:
-            self.df_product = self.df_product.append(self.df_update_product)
-
-
     def remove_private_headers(self):
         private_headers = {'ProductId_y','ProductId_x',
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
@@ -91,6 +36,7 @@ class MinimumProductPrice(BasicProcessObject):
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
+
 
     def batch_process_vendor(self):
         if 'VendorName' not in self.df_product.columns:
@@ -122,19 +68,25 @@ class MinimumProductPrice(BasicProcessObject):
                                                  how='left', on=['VendorName'])
 
     def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Update':
-                self.obReporter.update_report('Alert','This product price is an update')
-                return False
-            elif row['Filter'] == 'New':
-                self.obReporter.update_report('Pass','This product price is new')
-                return True
-            else:
-                self.obReporter.update_report('Alert','This product must be ingested in product')
-                return False
-        else:
-            self.obReporter.update_report('Fail','This product price failed filtering')
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+
+        if row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'Passed filtering as new product')
             return False
+
+        elif row['Filter'] == 'Ready' or row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price' or row['Filter'] == 'Update_in_Base_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+            return True
+
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            return False
+
+        else:
+            self.obReporter.update_report('Fail', 'Failed filtering')
+            return False
+
+
 
     def process_product_line(self, df_line_product):
         success = True
@@ -287,29 +239,6 @@ class UpdateMinimumProductPrice(MinimumProductPrice):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Update Minimum Product Price'
         self.full_process = full_process
-
-
-    def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Update':
-                self.obReporter.update_report('Pass','This product price is an update')
-                return True
-            elif row['Filter'] == 'New':
-                if self.full_process:
-                    self.obReporter.update_report('Alert','This was a new product price')
-                    return True
-                else:
-                    self.obReporter.update_report('Alert','This product price is new')
-                    return False
-
-            else:
-                self.obReporter.update_report('Alert','This product must be ingested in product')
-                return False
-        else:
-            self.obReporter.update_report('Fail','This product price failed filtering')
-            return False
-
-
 
 
 

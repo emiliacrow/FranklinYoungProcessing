@@ -10,11 +10,11 @@ from Tools.BasicProcess import BasicProcessObject
 
 # keep this
 class MinimumProduct(BasicProcessObject):
-    req_fields = ['ShortDescription', 'ManufacturerPartNumber',
-                                'CountryOfOrigin', 'ManufacturerName','Category']
+    req_fields = ['FyCatalogNumber', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
+                  'ShortDescription', 'CountryOfOrigin', 'ManufacturerName', 'Category']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
-    gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
+    gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix',
                                 'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
                                 'ExpectedLeadTimeId']
 
@@ -89,36 +89,24 @@ class MinimumProduct(BasicProcessObject):
                                                  how='left', on=['VendorName'])
 
 
-    def define_new(self):
-        self.df_loaded_product = self.obDal.get_product_lookup()
-        self.df_loaded_product['Filter'] = 'Update'
-        self.df_loaded_product['ManufacturerPartNumber'].astype(str)
-
-        # this is the only place we don't need product id
-        self.df_loaded_product.drop(columns=['ProductId'])
-
-        if 'FyCatalogNumber' in self.df_product:
-            self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
-
-        else:
-            self.df_product = self.df_product.merge(self.df_loaded_product,how='left',on=['ManufacturerPartNumber'])
-
-        if 'Filter' not in self.df_product.columns:
-            self.df_product['Filter'] = 'Fail'
-        else:
-            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'New'
-
-
     def filter_check_in(self, row):
-        if row['Filter'] == 'Update':
-            self.obReporter.update_report('Alert', 'This is a product update')
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+
+        if row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'Passed filtering as a new product')
+            return True
+
+        elif row['Filter'] == 'Ready' or row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price' or row['Filter'] == 'Update_in_Base_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return False
-        elif row['Filter'] == 'New':
-            self.obReporter.update_report('Alert', 'This is a new product')
-            return True
+
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            return False
+
         else:
-            self.obReporter.update_report('Pass', 'This product is new')
-            return True
+            self.obReporter.update_report('Fail', 'Failed filtering')
+            return False
 
 
     def batch_process_category(self):
@@ -476,15 +464,30 @@ class UpdateMinimumProduct(MinimumProduct):
         self.quick_country = {}
         self.full_process = full_process
 
+
     def filter_check_in(self, row):
-        if row['Filter'] == 'Update':
-            self.obReporter.update_report('Pass', 'This product can be updated')
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+
+        if row['Filter'] == 'New':
+            if self.full_process:
+                self.obReporter.update_report('Alert', 'Passed filtering as a new product')
+                return True
+            else:
+                self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
+                return False
+
+        elif row['Filter'] == 'Ready' or row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price' or row['Filter'] == 'Update_in_Base_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
-        elif (row['Filter'] == 'New') and self.full_process:
-            self.obReporter.update_report('Alert', 'This was a new product')
-            return True
-        else:
-            self.obReporter.update_report('Alert', 'This product must be loaded')
+
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
             return False
+
+        else:
+            self.obReporter.update_report('Fail', 'Failed filtering')
+            return False
+
+
 
 ## end ##

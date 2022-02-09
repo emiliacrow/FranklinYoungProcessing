@@ -9,8 +9,9 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 class ECATPrice(BasicProcessObject):
-    req_fields = ['FyProductNumber','VendorPartNumber','ECATOnContract', 'ECATApprovedListPrice',
-                  'ECATMaxMarkup', 'ECATContractModificationNumber', 'ECATApprovedPriceDate','ECATPricingApproved']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber',
+                  'ECATOnContract', 'ECATApprovedListPrice', 'ECATMaxMarkup', 'ECATContractModificationNumber',
+                  'ECATApprovedPriceDate','ECATPricingApproved']
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']
@@ -22,75 +23,7 @@ class ECATPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        # define new, update, non-update
-        if 'VendorId' not in self.df_product.columns:
-            self.batch_process_vendor()
         self.define_new()
-
-
-    def batch_process_vendor(self):
-        # there should only be one vendor, really.
-        if 'VendorName' not in self.df_product.columns:
-            vendor_name = self.vendor_name_selection()
-            self.df_product['VendorName'] = vendor_name
-
-        df_attribute = self.df_product[['VendorName']]
-        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
-        lst_ids = []
-
-        for colName, row in df_attribute.iterrows():
-            vendor_name = row['VendorName'].upper()
-            if vendor_name in self.df_vendor_translator['VendorCode'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
-            elif vendor_name in self.df_vendor_translator['VendorName'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
-            else:
-                new_vendor_id = -1
-
-            lst_ids.append(new_vendor_id)
-
-        df_attribute['VendorId'] = lst_ids
-
-        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
-                                                 how='left', on=['VendorName'])
-
-
-    def define_new(self):
-        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup()
-        self.df_ecat_price_lookup = self.obDal.get_ecat_price_lookup()
-
-        match_headers = ['FyProductNumber','VendorPartNumber','ECATOnContract', 'ECATApprovedListPrice',
-                        'ECATContractModificationNumber','ECATApprovedPriceDate','ECATPricingApproved']
-
-        # simple first
-        self.df_base_price_lookup['Filter'] = 'Pass'
-
-        # match all products on FyProdNum
-        self.df_update_products = self.df_product.merge(self.df_base_price_lookup,
-                                                         how='left', on=['FyProductNumber','VendorPartNumber'])
-        # all products that matched on FyProdNum
-        self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass'), 'Filter'] = 'Fail'
-
-        self.df_product = self.df_update_products.loc[(self.df_update_products['Filter'] != 'Pass')]
-        self.df_update_products = self.df_update_products.loc[(self.df_update_products['Filter'] == 'Pass')]
-
-        if len(self.df_update_products.index) != 0:
-            # this step is going to require a test against the pricing in the contract price table
-            # this could end up empty
-            self.df_ecat_price_lookup['Filter'] = 'Update'
-            self.df_update_products = self.df_update_products.drop(columns='Filter')
-            self.df_update_products = self.df_update_products.merge(self.df_ecat_price_lookup,
-                                                             how='left', on=match_headers)
-
-            # this does not seem to be matching correctly in the above
-            # I suspect this has to do with the numbers being strings?
-            self.df_update_products.loc[(self.df_update_products['Filter'] != 'Update'), 'Filter'] = 'Pass'
-
-            self.df_product = self.df_product.append(self.df_update_products)
-
-            # this shouldn't always be 0
 
 
     def remove_private_headers(self):
@@ -108,18 +41,26 @@ class ECATPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Pass':
-                self.obReporter.update_report('Pass','This contract price is a new')
-                return True
-            if row['Filter'] == 'Update':
-                self.obReporter.update_report('Pass','This contract price is an update')
-                return True
-            else:
-                self.obReporter.update_report('Alert','This product must be ingested in product')
-                return False
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+
+        if row['Filter'] == 'New' and self.full_process:
+            self.obReporter.update_report('Alert', 'Passed filtering as new product')
+            return False
+
+        elif row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
+            return False
+
+        elif row['Filter'] == 'Ready' or row['Filter'] == 'Update_in_Base_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+            return True
+
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            return False
+
         else:
-            self.obReporter.update_report('Fail','This product price failed filtering')
+            self.obReporter.update_report('Fail', 'Failed filtering')
             return False
 
 
