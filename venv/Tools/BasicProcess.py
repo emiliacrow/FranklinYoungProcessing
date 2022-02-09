@@ -409,9 +409,9 @@ class BasicProcessObject:
         manufacturer_product_id = str(row['ManufacturerPartNumber'])
 
         b_override = False
-        if 'FyProductNumberOverride' in row:
-            if row['FyProductNumberOverride'] == '1' or row['FyProductNumberOverride'] == 1:
-                b_override = True
+        success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
+        if success and return_val == 1:
+            b_override = True
 
         if 'FyManufacturerPrefix' in row:
             new_prefix = str(row['FyManufacturerPrefix'])
