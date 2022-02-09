@@ -27,13 +27,14 @@ class ProductAgniKaiObject(BasicProcessObject):
         self.df_product_price_lookup['Filter'] = 'Ready'
 
         # match on everything
-        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber'])
+        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
 
-        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update in Base Price'
+        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update_in_Base_Price'
         self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
 
         # set aside the good matches
         self.df_full_matched_product = self.df_product[(self.df_product['Filter'] == 'Ready')]
+
         # these columns would just be junk anyway
         self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['FyProductNumber','VendorPartNumber','BaseProductPriceId'])
         self.df_product_price_lookup['Filter'] = 'Partial'
@@ -47,7 +48,7 @@ class ProductAgniKaiObject(BasicProcessObject):
         # match on everything
         self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['FyCatalogNumber', 'ManufacturerPartNumber'])
 
-        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Update in Product Price'
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Update_in_Product_Price'
         self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
 
         # set aside the good matches

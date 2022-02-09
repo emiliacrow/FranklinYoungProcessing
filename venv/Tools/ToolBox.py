@@ -102,10 +102,9 @@ class FileFinder():
 
         self.obProgressBar.close()
 
-        if 'ManufacturerPartNumber' in excel_dataframe.columns:
-            excel_dataframe['ManufacturerPartNumber'] = excel_dataframe['ManufacturerPartNumber'].str.upper()
-        if 'VendorPartNumber' in excel_dataframe.columns:
-            excel_dataframe['VendorPartNumber'] = excel_dataframe['VendorPartNumber'].str.upper()
+        for each_capped_header in ['FyCatalogNumber', 'FyProductNumber', 'ManufacturerPartNumber', 'VendorPartNumber']:
+            if each_capped_header in excel_dataframe.columns:
+                excel_dataframe[each_capped_header] = excel_dataframe[each_capped_header].str.upper()
 
         return excel_dataframe
 
