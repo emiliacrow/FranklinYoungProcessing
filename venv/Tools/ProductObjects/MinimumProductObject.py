@@ -312,9 +312,6 @@ class MinimumProduct(BasicProcessObject):
                 self.obReporter.update_report('Fail','No category assigned.')
                 return False, df_collect_product_base_data
 
-            # generate part number information
-            success, df_collect_product_base_data = self.process_manufacturer(df_collect_product_base_data, row)
-
             if ('ShippingInstructionsId' not in row):
                 success, df_collect_product_base_data = self.process_shipping(df_collect_product_base_data, row)
                 if success == False:
