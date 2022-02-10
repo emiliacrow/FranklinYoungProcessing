@@ -131,15 +131,23 @@ class BasicProcessObject:
 
 
         # step 2
-        # match on everything
         self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['FyCatalogNumber', 'ManufacturerPartNumber'])
-
 
         # set aside the good matches
         self.df_partial_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')]
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
+        self.df_product = self.df_product.drop(columns = ['Filter'])
+
+
+        # step 3
+        self.df_product_price_lookup['Filter'] = 'Manufacturer Part Match'
+        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['ManufacturerPartNumber'])
+
+        self.df_manu_matched_product = self.df_product[(self.df_product['Filter'] == 'Manufacturer Part Match')]
+
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'Manufacturer Part Match')]
         self.df_product['Filter'] = 'New'
 
 
@@ -148,6 +156,10 @@ class BasicProcessObject:
 
         if len(self.df_partial_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_partial_matched_product)
+
+        if len(self.df_manu_matched_product.index) > 0:
+            self.df_product = self.df_product.append(self.df_manu_matched_product)
+
 
         self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update_in_Base_Price'
         self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
