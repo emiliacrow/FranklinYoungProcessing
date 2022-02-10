@@ -123,7 +123,7 @@ class BasicProcessObject:
 
         # these columns would just be junk anyway
         self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['FyProductNumber','VendorPartNumber','BaseProductPriceId'])
-        self.df_product_price_lookup['Filter'] = 'Update_in_Base_Price'
+        self.df_product_price_lookup['Filter'] = 'Partial'
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
@@ -136,10 +136,10 @@ class BasicProcessObject:
 
 
         # set aside the good matches
-        self.df_partial_matched_product = self.df_product[(self.df_product['Filter'] == 'Update_in_Base_Price')]
+        self.df_partial_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')]
 
         # prep next step data
-        self.df_product = self.df_product[(self.df_product['Filter'] != 'Update_in_Base_Price')]
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
         self.df_product['Filter'] = 'New'
 
 
@@ -149,15 +149,14 @@ class BasicProcessObject:
         if len(self.df_partial_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_partial_matched_product)
 
-
-        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Update_in_Product_Price'
-        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
-
         self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update_in_Base_Price'
         self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
 
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Partial'
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
+
         # it seems that this needs better returns for review
-        # this could be
+        # perhaps pull the
         # counts FyProductNumber occurance as series
         self.srs_matched_product = self.df_product.loc[:,'FyProductNumber'].value_counts()
 
