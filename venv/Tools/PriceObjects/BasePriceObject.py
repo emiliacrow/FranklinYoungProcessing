@@ -1,6 +1,6 @@
 # CreatedBy: Emilia Crow
 # CreateDate: 20210602
-# Updated: 20210805
+# Updated: 20220209
 # CreateFor: Franklin Young International
 
 import pandas
@@ -56,6 +56,7 @@ class BasePrice(BasicProcessObject):
             return True
 
         elif row['Filter'] == 'Possible Duplicate':
+            # here it may fail because they are duplicates
             self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
             return False
 

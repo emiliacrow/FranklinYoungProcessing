@@ -1,6 +1,6 @@
 # CreatedBy: Emilia Crow
 # CreateDate: 20210527
-# Updated: 20210804
+# Updated: 20220210
 # CreateFor: Franklin Young International
 
 
@@ -9,8 +9,8 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProduct(BasicProcessObject):
-    req_fields = ['FyProductNumber']
-    sup_fields = ['FyCatalogNumber','ManufacturerPartNumber']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber']
+    sup_fields = []
     att_fields = ['Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = []
     def __init__(self,df_product, user, password, is_testing):
@@ -33,57 +33,6 @@ class FillProduct(BasicProcessObject):
         if 'Precision' in self.df_product.columns:
             self.batch_process_attribute('Precision')
 
-
-    def define_new(self):
-        # these are the df's for assigning data.
-        self.df_product_lookup = self.obDal.get_product_lookup()
-        self.df_product_full_lookup = self.obDal.get_product_fill_lookup()
-
-        self.df_product_lookup['Filter'] = 'Update'
-        # match all products on FyProdNum and Manufacturer part, clearly
-        if 'ManufacturerPartNumber' in self.df_product.columns:
-            self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
-                                                            how='left',
-                                                            on=['FyCatalogNumber', 'ManufacturerPartNumber'])
-        else:
-            self.df_product = pandas.DataFrame.merge(self.df_product, self.df_product_lookup,
-                                                            how='left', on=['FyCatalogNumber'])
-
-        # we assign a label to the products that are haven't been loaded through product yet
-        if 'Filter' not in self.df_product.columns:
-            self.df_product['Filter'] = 'Fail'
-        else:
-            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
-
-        # split the data for a moment
-        self.df_update_product = self.df_product[(self.df_product['Filter'] == 'Update')]
-        self.df_product = self.df_product[(self.df_product['Filter'] != 'Update')]
-
-        if len(self.df_update_product.index) != 0:
-            self.df_product_full_lookup['Filter'] = 'Update'
-            # this section evaluates if these have product data loaded
-            # drop some columns to ease processing
-            if 'Filter' in self.df_update_product.columns:
-                self.df_update_product = self.df_update_product.drop(columns=['Filter'])
-
-            # this gets the productId
-            self.df_update_product = pandas.DataFrame.merge(self.df_update_product, self.df_product_full_lookup,
-                                                             how='left', on=['FyProductNumber'])
-
-            self.df_update_product.loc[(self.df_update_product['Filter'] != 'Update'), 'Filter'] = 'New'
-
-            if 'ProductId_x' in self.df_update_product.columns:
-                self.df_update_product['ProductId'] = self.df_update_product[['ProductId_x']]
-                self.df_update_product = self.df_update_product.drop(columns=['ProductId_x'])
-                self.df_update_product = self.df_update_product.drop(columns=['ProductId_y'])
-
-            if 'ProductPriceId_x' in self.df_update_product.columns:
-                self.df_update_product['ProductPriceId'] = self.df_update_product[['ProductPriceId_x']]
-                self.df_update_product = self.df_update_product.drop(columns=['ProductPriceId_x'])
-                self.df_update_product = self.df_update_product.drop(columns=['ProductPriceId_y'])
-
-            # recombine with product
-            self.df_product = self.df_product.append(self.df_update_product)
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -116,19 +65,24 @@ class FillProduct(BasicProcessObject):
                                                               how='left', on=[attribute])
 
     def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Update':
-                self.obReporter.update_report('Pass', 'This product price is an update')
-                return True
-            elif row['Filter'] == 'New':
-                self.obReporter.update_report('Alert', 'This product price is new')
-                return False
-            else:
-                self.obReporter.update_report('Alert', 'This product must be ingested in product')
-                return False
-        else:
-            self.obReporter.update_report('Fail', 'This product price failed filtering')
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+
+        if row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'Passed filtering as new product')
             return False
+
+        elif row['Filter'] == 'Ready' or row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price' or row['Filter'] == 'Update_in_Base_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+            return True
+
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            return False
+
+        else:
+            self.obReporter.update_report('Fail', 'Failed filtering')
+            return False
+
 
     def process_product_line(self, df_line_product):
         df_collect_product_base_data = df_line_product.copy()
@@ -147,23 +101,6 @@ class FillProduct(BasicProcessObject):
                 df_collect_product_base_data['ProductId'] = [product_id]
 
             self.process_image(row, product_id)
-
-# this can be uncommented to consume categories
-#            if 'Category' in row:
-#                category = row['Category']
-#                category_name = category.rpartition('/')[2]
-#                try:
-#                    category_id = self.df_category_names.loc[
-#                        (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
-#                except IndexError:
-#                    category_name = category.rpartition('/')[2]
-#                    category_id = self.obDal.category_cap(category_name, category)
-#                    self.df_category_names.append([category_id,category_name,category])
-#
-#                category_insert = self.obIngester.ingest_product_category(product_id, category_id)
-
-
-            # we should separate the ones that require pre-processing steps from those that don't
 
             fy_product_Notes = self.process_fy_notes(row)
             nato_stock_number = self.process_nsn(row)
@@ -381,26 +318,11 @@ class FillProduct(BasicProcessObject):
 
 
 class UpdateFillProduct(FillProduct):
-    req_fields = ['FyProductNumber']
-    sup_fields = ['FyCatalogNumber','ManufacturerPartNumber']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber']
+    sup_fields = []
     att_fields = ['Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = []
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Update Product Fill'
-
-    def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Update':
-                self.obReporter.update_report('Pass', 'This product price is an update')
-                return True
-            elif row['Filter'] == 'New':
-                self.obReporter.update_report('Alert', 'This product price is new')
-                return False
-            else:
-                self.obReporter.update_report('Alert', 'This product must be ingested in product')
-                return False
-        else:
-            self.obReporter.update_report('Fail', 'This product price failed filtering')
-            return False

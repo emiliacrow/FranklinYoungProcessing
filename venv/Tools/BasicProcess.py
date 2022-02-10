@@ -1,6 +1,6 @@
 # CreatedBy: Emilia Crow
 # CreateDate: 20210526
-# Updated: 20210813
+# Updated: 20220209
 # CreateFor: Franklin Young International
 
 
@@ -154,7 +154,8 @@ class BasicProcessObject:
         if len(self.df_partial_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_partial_matched_product)
 
-
+        # it seems that this needs better returns for review
+        # this could be
         # counts FyProductNumber occurance as series
         self.srs_matched_product = self.df_product.loc[:,'FyProductNumber'].value_counts()
 

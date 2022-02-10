@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProductPrice(BasicProcessObject):
-    req_fields = ['FyProductNumber']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber']
     att_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
                           'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
                           'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
@@ -24,8 +24,6 @@ class FillProductPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        # ident product price id
-        self.batch_process_vendor()
         self.define_new()
         # this is here to consume values that may be more alike than different
         # for example, recommended storage might have a lot of 'keep this darn thing cold'
@@ -35,53 +33,30 @@ class FillProductPrice(BasicProcessObject):
 
         return self.df_product
 
-    def batch_process_vendor(self):
-        # there should only be one vendor, really.
-        if 'VendorName' not in self.df_product.columns:
-            vendor_name = self.vendor_name_selection()
-            self.df_product['VendorName'] = vendor_name
 
-        df_attribute = self.df_product[['VendorName']]
-        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
-        lst_ids = []
-        if 'VendorId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = 'VendorId')
+    def filter_check_in(self, row):
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
 
-        for colName, row in df_attribute.iterrows():
-            vendor_name = row['VendorName'].upper()
-            if vendor_name in self.df_vendor_translator['VendorCode'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
-            elif vendor_name in self.df_vendor_translator['VendorName'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
-            else:
-                new_vendor_id = -1
+        if row['Filter'] == 'New' and self.full_process:
+            self.obReporter.update_report('Alert', 'Passed filtering as new product')
+            return False
 
-            lst_ids.append(new_vendor_id)
+        elif row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
+            return False
 
-        df_attribute['VendorId'] = lst_ids
-        self.df_base_price_lookup = self.obDal.get_base_product_price_lookup_by_vendor_id(lst_ids[0])
+        elif row['Filter'] == 'Ready' or row['Filter'] == 'Update_in_Base_Price':
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+            return True
 
-        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
-                                                 how='left', on=['VendorName'])
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            return False
 
-
-    def define_new(self):
-        match_headers = ['FyProductNumber','ProductPriceId','Vendor List Price', 'Discount', 'Fy Cost', 'Fixed Shipping Cost', 'LandedCostMarkupPercent_FYSell']
-
-        # simple first
-        self.df_base_price_lookup['Filter'] = 'Update'
-        self.df_base_price_check_in = self.df_base_price_lookup[['FyProductNumber','ProductPriceId','Filter']]
-
-        # match all products on FyProdNum
-        self.df_product = self.df_product.merge(self.df_base_price_check_in,
-                                                 how='left', on='FyProductNumber')
-        # all products that matched on FyProdNum
-        if 'Filter' not in self.df_product.columns:
-            self.df_product['Filter'] = 'Fail'
         else:
-            self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+            self.obReporter.update_report('Fail', 'Failed filtering')
+            return False
+
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -114,19 +89,6 @@ class FillProductPrice(BasicProcessObject):
 
             self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                               how='left', on=[attribute])
-
-
-    def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Update':
-                self.obReporter.update_report('Pass','This product price is an update')
-                return True
-            else:
-                self.obReporter.update_report('Alert','This product must be ingested in product')
-                return False
-        else:
-            self.obReporter.update_report('Fail','This product price failed filtering')
-            return False
 
 
     def process_product_line(self, df_line_product):
@@ -491,7 +453,7 @@ class FillProductPrice(BasicProcessObject):
 
 
 class UpdateFillProductPrice(FillProductPrice):
-    req_fields = ['FyProductNumber','VendorName']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber']
     att_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
                           'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
                           'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
@@ -504,14 +466,3 @@ class UpdateFillProductPrice(FillProductPrice):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Update Product Price Fill'
 
-    def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Update':
-                self.obReporter.update_report('Pass','This product price is an update')
-                return True
-            else:
-                self.obReporter.update_report('Alert','This product must be ingested in product')
-                return False
-        else:
-            self.obReporter.update_report('Fail','This product price failed filtering')
-            return False
