@@ -335,7 +335,27 @@ class FileProcessor(BasicProcessObject):
         self.success = True
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            success, df_collect_attribute_data = self.process_manufacturer(df_collect_attribute_data, row)
+            success, df_collect_attribute_data, manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
+
+            if not success:
+                return success, df_collect_attribute_data
+
+            if 'UnitOfIssue' in row:
+                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
+            else:
+                return False, df_collect_attribute_data
+
+            b_override = False
+            success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
+            if success and return_val == 1:
+                b_override = True
+
+            manufacturer_part_number = str(row['ManufacturerPartNumber'])
+
+            fy_catalog_number, fy_product_number = self.build_part_number(row, manufacturer_part_number, manufacturer_prefix, unit_of_issue, b_override)
+
+            df_collect_attribute_data['FyCatalogNumber'] = [fy_catalog_number]
+            df_collect_attribute_data['FyProductNumber'] = [fy_product_number]
 
         return True, df_collect_attribute_data
 

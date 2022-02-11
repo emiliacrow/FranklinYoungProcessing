@@ -160,12 +160,13 @@ class BasicProcessObject:
         if len(self.df_manu_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_manu_matched_product)
 
+        if 'BaseProductPriceId' in self.df_product.columns:
+            self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update_in_Base_Price'
+            self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
 
-        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update_in_Base_Price'
-        self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
-
-        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Partial'
-        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Partial'
+            self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
 
         # it seems that this needs better returns for review
         # perhaps pull the
@@ -417,95 +418,38 @@ class BasicProcessObject:
 
         return df_collect_ids
 
+
     def process_manufacturer(self, df_collect_product_base_data, row):
         manufacturer = row['ManufacturerName']
         manufacturer = manufacturer.strip().replace('  ',' ')
-        manufacturer_product_id = str(row['ManufacturerPartNumber'])
 
-        b_override = False
-        success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
-        if success and return_val == 1:
-            b_override = True
+        if 'UnitOfIssue' in row:
+            unit_of_issue = self.normalize_units(row['UnitOfIssue'])
 
-        if 'FyManufacturerPrefix' in row:
-            new_prefix = str(row['FyManufacturerPrefix'])
+        else:
+            unit_of_issue = 'EA'
+            df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
+            self.obReporter.default_uoi_report()
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
-            fy_product_number = fy_catalog_number
 
-            if 'UnitOfIssue' in row:
-                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
-                if unit_of_issue != 'EA':
-                    if fy_catalog_number[:-2] == unit_of_issue:
-                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
-                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
-            else:
-                df_collect_product_base_data['UnitOfIssue'] = ['EA']
-                self.obReporter.default_uoi_report()
-
-            if 'FyPartNumber' not in row:
-                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
-            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
-            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-            df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-            return True, df_collect_product_base_data
-
-        elif 'ManufacturerId' in row:
+        if 'ManufacturerId' in row:
             new_manufacturer_id = row['ManufacturerId']
             new_prefix = self.df_manufacturer_translator.loc[
                 (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
-
-            fy_product_number = fy_catalog_number
-
-            if 'UnitOfIssue' in row:
-                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
-                if unit_of_issue != 'EA':
-                    if fy_catalog_number[:-2] == unit_of_issue:
-                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
-                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
-            else:
-                df_collect_product_base_data['UnitOfIssue'] = ['EA']
-                self.obReporter.default_uoi_report()
-
-            if 'FyPartNumber' not in row:
-                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
-            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
-            df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-            df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-            return True, df_collect_product_base_data
+
+            return True, df_collect_product_base_data, new_prefix
 
         if (manufacturer.lower() in self.df_manufacturer_translator['SupplierName'].values):
             new_manufacturer_id, new_prefix = self.df_manufacturer_translator.loc[
                 (self.df_manufacturer_translator['SupplierName'] == manufacturer.lower()), ['ManufacturerId',
                                                                                     'FyManufacturerPrefix']].values[0]
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
-
-            fy_product_number = fy_catalog_number
-
-            if 'UnitOfIssue' in row:
-                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
-                if unit_of_issue != 'EA':
-                    if fy_catalog_number[:-2] == unit_of_issue:
-                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
-                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
-            else:
-                df_collect_product_base_data['UnitOfIssue'] = ['EA']
-                self.obReporter.default_uoi_report()
-
-            if 'FyPartNumber' not in row:
-                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
-            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-            df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-            return True, df_collect_product_base_data
+
+            return True, df_collect_product_base_data, new_prefix
 
         elif (manufacturer.upper() in self.df_manufacturer_translator['ManufacturerName'].unique()):
             new_manufacturer_id, new_prefix = self.df_manufacturer_translator.loc[
@@ -513,29 +457,11 @@ class BasicProcessObject:
                                                                                         'FyManufacturerPrefix']].values[
                 0]
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
-
-            fy_product_number = fy_catalog_number
-
-            if 'UnitOfIssue' in row:
-                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
-                if unit_of_issue != 'EA':
-                    if fy_catalog_number[:-2] == unit_of_issue:
-                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
-                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
-            else:
-                df_collect_product_base_data['UnitOfIssue'] = ['EA']
-                self.obReporter.default_uoi_report()
-
-
-            if 'FyPartNumber' not in row:
-                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
-            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-            df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-            return True, df_collect_product_base_data
+
+            return True, df_collect_product_base_data, new_prefix
+
 
         elif 'SupplierName' in row:
             supplier = row['SupplierName'].lower()
@@ -545,28 +471,10 @@ class BasicProcessObject:
                                                                                         'FyManufacturerPrefix']].values[
                     0]
 
-                fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
-
-                fy_product_number = fy_catalog_number
-                if 'UnitOfIssue' in row:
-                    unit_of_issue = self.normalize_units(row['UnitOfIssue'])
-                    if unit_of_issue != 'EA':
-                        if fy_catalog_number[:-2] == unit_of_issue:
-                            self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
-                        fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-                        df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
-
-                else:
-                    df_collect_product_base_data['UnitOfIssue'] = ['EA']
-                    self.obReporter.default_uoi_report()
-
-                if 'FyPartNumber' not in row:
-                    df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
-                df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-                df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-                return True, df_collect_product_base_data
+
+                return True, df_collect_product_base_data, new_prefix
             else:
                 manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
                 manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
@@ -578,28 +486,10 @@ class BasicProcessObject:
                 new_prefix = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
 
-                fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
-
-                fy_product_number = fy_catalog_number
-
-                if 'UnitOfIssue' in row:
-                    unit_of_issue = self.normalize_units(row['UnitOfIssue'])
-                    if unit_of_issue != 'EA':
-                        if fy_catalog_number[:-2] == unit_of_issue:
-                            self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
-                        fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-                        df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
-                else:
-                    df_collect_product_base_data['UnitOfIssue'] = ['EA']
-                    self.obReporter.default_uoi_report()
-
-                if 'FyPartNumber' not in row:
-                    df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
-                df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-                df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-                return True, df_collect_product_base_data
+
+                return True, df_collect_product_base_data, new_prefix
 
         else:
             manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
@@ -612,28 +502,28 @@ class BasicProcessObject:
             new_prefix = self.df_manufacturer_translator.loc[
                 (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
 
-            fy_catalog_number = self.make_fy_catalog_number(new_prefix, manufacturer_product_id, b_override)
-
-            fy_product_number = fy_catalog_number
-
-            if 'UnitOfIssue' in row:
-                unit_of_issue = self.normalize_units(row['UnitOfIssue'])
-                if unit_of_issue != 'EA':
-                    if fy_catalog_number[:-2] == unit_of_issue:
-                        self.obReporter.update_report('Alert','Please check for duplicate units in FyProductNumber')
-                    fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-                    df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
-            else:
-                df_collect_product_base_data['UnitOfIssue'] = ['EA']
-                self.obReporter.default_uoi_report()
-
-            if 'FyPartNumber' not in row:
-                df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
-            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-            df_collect_product_base_data['FyCatalogNumber'] = [fy_catalog_number]
-            return True, df_collect_product_base_data
+
+            return True, df_collect_product_base_data, new_prefix
+
+
+    def build_part_number(self, row, manufacturer_part_number, manufacturer_prefix, unit_of_issue, b_override):
+
+        fy_catalog_number = self.make_fy_catalog_number(manufacturer_prefix, manufacturer_part_number, b_override)
+        fy_product_number = fy_catalog_number
+
+        if unit_of_issue != 'EA':
+            if fy_catalog_number[:-2] == unit_of_issue:
+                self.obReporter.update_report('Alert', 'Please check for duplicate units in FyProductNumber')
+            fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+
+        if 'FyPartNumber' not in row:
+            fy_part_number = [fy_product_number]
+        else:
+            fy_part_number = row['FyPartNumber']
+
+        return fy_catalog_number, fy_product_number
 
 
     def make_fy_catalog_number(self,prefix, manufacturer_part_number, b_override = False):
@@ -648,11 +538,13 @@ class BasicProcessObject:
 
         return FY_catalog_number
 
+
     def line_viability(self,df_product_line):
         # line viability checks
         line_headers = set(list(df_product_line.columns))
         required_headers = set(self.req_fields)
         return required_headers.issubset(line_headers)
+
 
     def report_missing_data(self, df_line_product):
         line_headers = set(list(df_line_product.columns))
