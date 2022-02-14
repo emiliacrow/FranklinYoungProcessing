@@ -68,15 +68,14 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])
 
-
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Base Pricing','Update-product','Update-vendor']
 
         if row['Filter'] == 'New':
-            self.obReporter.update_report('Alert', 'Passed filtering as new product')
+            self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return False
 
-        elif row['Filter'] == 'Ready' or row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price' or row['Filter'] == 'Update_in_Base_Price':
+        elif row['Filter'] in ['Ready', 'Partial', 'Update-product', 'Update-vendor', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
@@ -87,6 +86,7 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             self.obReporter.update_report('Fail', 'Failed filtering')
             return False
+
 
 
 
@@ -105,7 +105,7 @@ class MinimumProductPrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','Failed at vendor identification')
                 return success, df_collect_product_base_data
 
-            success, df_collect_product_base_data = self.identify_fy_product_number(df_collect_product_base_data, row)
+            success, df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
             if success == False:
                 self.obReporter.update_report('Fail','Can\'t identify product number')
                 return success, df_collect_product_base_data
@@ -121,11 +121,8 @@ class MinimumProductPrice(BasicProcessObject):
                     self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                     df_collect_product_base_data[each_bool] = [0]
 
-        try:
-            success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
-        except KeyError:
-            self.obReporter.update_report('Fail','Failed in send to DB: KeyError')
-            return False, df_collect_product_base_data
+
+        success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
 
         if success:
             self.obReporter.price_report(success)
@@ -136,7 +133,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
-    def identify_fy_product_number(self, df_collect_product_base_data, row):
+    def identify_units(self, df_collect_product_base_data, row):
         if ('Conv Factor/QTY UOM' not in row):
             df_collect_product_base_data['Conv Factor/QTY UOM'] = [1]
 
@@ -166,36 +163,8 @@ class MinimumProductPrice(BasicProcessObject):
 
         df_collect_product_base_data['UnitOfMeasureSymbolId'] = [unit_of_measure_symbol_id]
 
-
-        if 'FyCatalogNumber' in row:
-            fy_catalog_number = df_collect_product_base_data.at[row.name,'FyCatalogNumber']
-        else:
-            self.obReporter.update_report('Fail','Missing catalog number')
-            return False, df_collect_product_base_data
-
-        if ('FyProductNumber' not in row):
-            if unit_of_issue != 'EA':
-                fy_product_number = fy_catalog_number + ' ' + unit_of_issue
-                df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
-            else:
-                fy_product_number = fy_catalog_number
-                df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
-
-        elif (row['FyProductNumber'] == fy_catalog_number + ' ' + unit_of_issue) or (row['FyProductNumber'] == fy_catalog_number):
-            fy_product_number = row['FyProductNumber']
-            df_collect_product_base_data['FyProductNumber'] = [fy_product_number]
-        else:
-            self.obReporter.update_report('Fail','Check FyCatalog and Product numbers for problems')
-            return False, df_collect_product_base_data
-
-        if ('FyPartNumber' not in row):
-            df_collect_product_base_data['FyPartNumber'] = [fy_product_number]
-
-        if ('VendorPartNumber' not in row):
-            self.obReporter.update_report('Fail','VendorPartNumber was missing; srsly, how did this happen?!')
-            return False, df_collect_product_base_data
-
         return True, df_collect_product_base_data
+
 
     def process_vendor(self, df_collect_product_base_data, row):
         if 'VendorId' not in row:
@@ -208,6 +177,7 @@ class MinimumProductPrice(BasicProcessObject):
         return True, df_collect_product_base_data
 
     def minimum_product_price(self,df_line_product):
+        print(df_line_product.columns)
         for colName, row in df_line_product.iterrows():
             fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']

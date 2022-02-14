@@ -64,14 +64,15 @@ class FillProduct(BasicProcessObject):
             self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                               how='left', on=[attribute])
 
+
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update', 'Base Pricing','Update-product','Update-vendor']
 
         if row['Filter'] == 'New':
-            self.obReporter.update_report('Alert', 'Passed filtering as new product')
+            self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return False
 
-        elif row['Filter'] == 'Ready' or row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price' or row['Filter'] == 'Update_in_Base_Price':
+        elif row['Filter'] in ['Ready', 'Partial', 'Update', 'Update-product', 'Update-vendor', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
@@ -82,6 +83,7 @@ class FillProduct(BasicProcessObject):
         else:
             self.obReporter.update_report('Fail', 'Failed filtering')
             return False
+
 
 
     def process_product_line(self, df_line_product):

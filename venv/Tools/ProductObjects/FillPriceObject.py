@@ -35,19 +35,19 @@ class FillProductPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update', 'Base Pricing','Update-product','Update-vendor']
 
-        if row['Filter'] == 'New' and self.full_process:
-            self.obReporter.update_report('Alert', 'Passed filtering as new product')
+        if row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return False
 
-        elif row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price':
-            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
-            return False
-
-        elif row['Filter'] == 'Ready' or row['Filter'] == 'Update_in_Base_Price':
+        elif row['Filter'] in ['Ready', 'Update', 'Update-product', 'Update-vendor', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
+
+        elif row['Filter'] ==  'Partial':
+            self.obReporter.update_report('Alert', 'Passed filtering as Partial product')
+            return False
 
         elif row['Filter'] == 'Possible Duplicate':
             self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
@@ -56,6 +56,7 @@ class FillProductPrice(BasicProcessObject):
         else:
             self.obReporter.update_report('Fail', 'Failed filtering')
             return False
+
 
 
     def remove_private_headers(self):

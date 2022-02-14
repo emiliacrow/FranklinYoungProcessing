@@ -209,7 +209,7 @@ class Pathways():
         # split the data based on the values in the column
         for each_value in split_values:
             # break layer
-            file_name = each_value.replace(' ', '_')
+            file_name = str(each_value).replace(' ', '_')
             file_name = file_name.replace('.', '_')
             file_name = file_name.replace(',', '_')
             file_name = file_name.replace('\\', '')

@@ -111,62 +111,102 @@ class BasicProcessObject:
 
 
     def define_new(self):
-        # step 1
-        self.df_product_price_lookup = self.obDal.get_product_action_review_lookup()
-        self.df_product_price_lookup['Filter'] = 'Ready'
+        """
+          M C P V : types of product ids
+        1 X X X X : These are called ready (unless they need pricing in which case Update-BasePrice)
+        2 X X X O : these are from a different vendor, Update-productprice
+        3 X X O X : these are a different size, Update-productprice
+        4 X X O O : these are likely missing vendor info, Update-productprice
+        5 X O     : These are likely overrides
+        6 O X     : These are manufacturer name updates
+        7 O O     : new
+        """
+        # get product look up
+        self.df_product_agni_kai_lookup = self.obDal.get_product_action_review_lookup()
+        # for final step
+        self.df_product_agni_kai_lookup_copy = self.df_product_agni_kai_lookup.copy()
+
+
+        # set the full look up
+        self.df_full_product_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['BaseProductPriceId'] != 'Load Pricing')]
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['BaseProductPriceId'] == 'Load Pricing')]
+
+        # first round filtering
+        self.df_full_product_lookup['Filter'] = 'Ready'
 
         # match on everything
-        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
+        self.df_product = self.df_product.merge(self.df_full_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
 
         # set aside the good matches
         self.df_full_matched_product = self.df_product[(self.df_product['Filter'] == 'Ready')]
-
-        # these columns would just be junk anyway
-        self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['FyProductNumber','VendorPartNumber','BaseProductPriceId'])
-        self.df_product_price_lookup['Filter'] = 'Partial'
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','BaseProductPriceId'])
 
 
-        # step 2
-        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['FyCatalogNumber', 'ManufacturerPartNumber'])
+        # set the partial look up
+        self.df_pricing_product_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] != 'Load Product Price')]
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] == 'Load Product Price')]
+
+        # round 2
+        self.df_pricing_product_lookup = self.df_pricing_product_lookup.drop(columns = ['BaseProductPriceId'])
+        self.df_pricing_product_lookup['Filter'] = 'Base Pricing'
+        self.df_product = self.df_product.merge(self.df_pricing_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
 
         # set aside the good matches
-        self.df_partial_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')]
+        self.df_pricing_matched_product = self.df_product[(self.df_product['Filter'] == 'Base Pricing')]
 
         # prep next step data
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'Base Pricing')]
+        self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId'])
+
+
+        # round 3
+        self.df_product_agni_kai_lookup['Filter'] = 'Partial'
+        self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
+
+        self.df_manu_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')]
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
-        self.df_product = self.df_product.drop(columns = ['Filter'])
 
-
-        # step 3
-        self.df_product_price_lookup['Filter'] = 'Manufacturer Part Match'
-        self.df_product = self.df_product.merge(self.df_product_price_lookup, how='left',on=['ManufacturerPartNumber'])
-
-        self.df_manu_matched_product = self.df_product[(self.df_product['Filter'] == 'Manufacturer Part Match')]
-
-        self.df_product = self.df_product[(self.df_product['Filter'] != 'Manufacturer Part Match')]
         self.df_product['Filter'] = 'New'
+
+
+        self.df_manu_matched_product.loc[(self.df_manu_matched_product['VendorPartNumber_y'] == self.df_manu_matched_product['VendorPartNumber_x']), 'Filter'] = 'Update-vendor'
+        self.df_manu_matched_product.loc[(self.df_manu_matched_product['FyProductNumber_y'] == self.df_manu_matched_product['FyProductNumber_x']), 'Filter'] = 'Update-product'
+
+        self.df_manu_matched_product['VendorPartNumber'] = self.df_manu_matched_product['VendorPartNumber_x']
+        self.df_manu_matched_product['FyProductNumber'] = self.df_manu_matched_product['FyProductNumber_x']
+        self.df_manu_matched_product = self.df_manu_matched_product.drop(columns = ['VendorPartNumber_x','FyProductNumber_x'])
+
+
+        self.df_vendor_matched_product = self.df_manu_matched_product[(self.df_manu_matched_product['Filter'] == 'Update-vendor')]
+        self.df_manu_matched_product = self.df_manu_matched_product[(self.df_manu_matched_product['Filter'] != 'Update-vendor')]
+
+        self.df_fy_prod_matched_product = self.df_manu_matched_product[(self.df_manu_matched_product['Filter'] == 'Update-product')]
+        self.df_manu_matched_product = self.df_manu_matched_product[(self.df_manu_matched_product['Filter'] != 'Update-product')]
+
+
+        self.df_product['VendorPartNumber'] = self.df_product['VendorPartNumber_x']
+        self.df_product['FyProductNumber'] = self.df_product['FyProductNumber_x']
+        self.df_product = self.df_product.drop(columns = ['VendorPartNumber_x','FyProductNumber_x'])
 
 
         if len(self.df_full_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_full_matched_product)
 
-        if len(self.df_partial_matched_product.index) > 0:
-            self.df_product = self.df_product.append(self.df_partial_matched_product)
+        if len(self.df_pricing_matched_product.index) > 0:
+            self.df_product = self.df_product.append(self.df_pricing_matched_product)
 
         if len(self.df_manu_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_manu_matched_product)
 
-        if 'BaseProductPriceId' in self.df_product.columns:
-            self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'Filter'] = 'Update_in_Base_Price'
-            self.df_product.loc[(self.df_product['BaseProductPriceId'] == 'Load Pricing'), 'BaseProductPriceId'] = ''
+        if len(self.df_vendor_matched_product.index) > 0:
+            self.df_product = self.df_product.append(self.df_vendor_matched_product)
 
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Partial'
-            self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'ProductPriceId'] = ''
+        if len(self.df_fy_prod_matched_product.index) > 0:
+            self.df_product = self.df_product.append(self.df_fy_prod_matched_product)
+
 
         # it seems that this needs better returns for review
         # perhaps pull the
@@ -189,6 +229,35 @@ class BasicProcessObject:
         self.df_product.loc[(self.df_product['is_duplicated'] == 'Y'), 'Filter'] = 'Possible Duplicate'
 
         self.df_product = self.df_product.drop(columns = ['is_duplicated'])
+
+        # here we are going to match everything called new to the existing manufcaturer parts
+        # this is to indicate the difference between the ingestable new products and updatable products
+
+        self.df_new_products = self.df_product[(self.df_product['Filter'] == 'New')]
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'New')]
+
+
+        # to dataframe
+        self.df_manufacturer_product = self.df_product_agni_kai_lookup_copy[['ManufacturerPartNumber','ProductId']]
+        self.df_manufacturer_product = self.df_manufacturer_product.drop_duplicates()
+
+        self.df_manufacturer_product['Filter'] = 'Partial'
+        self.df_new_products = self.df_new_products.drop(columns = ['Filter','ProductId'])
+
+        # this is just to mark which ones are updatable
+        self.df_new_products = self.df_new_products.merge(self.df_manufacturer_product, how='left',on=['ManufacturerPartNumber'])
+
+        self.df_update_products = self.df_new_products[(self.df_new_products['Filter'] == 'Partial')]
+        self.df_new_products = self.df_new_products[(self.df_new_products['Filter'] != 'Partial')]
+
+        self.df_new_products['Filter'] = 'New'
+
+
+        if len(self.df_new_products.index) > 0:
+            self.df_product = self.df_product.append(self.df_new_products)
+
+        if len(self.df_update_products.index) > 0:
+            self.df_product = self.df_product.append(self.df_update_products)
 
 
     def begin_process(self):

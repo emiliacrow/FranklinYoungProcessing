@@ -41,17 +41,17 @@ class ECATPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Base Pricing','Update-product','Update-vendor']
 
-        if row['Filter'] == 'New' and self.full_process:
-            self.obReporter.update_report('Alert', 'Passed filtering as new product')
+        if row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
             return False
 
-        elif row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price':
+        elif row['Filter'] in ['Partial', 'Update-product', 'Update-vendor', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as partial product')
             return False
 
-        elif row['Filter'] == 'Ready' or row['Filter'] == 'Update_in_Base_Price':
+        elif row['Filter'] == 'Ready':
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
