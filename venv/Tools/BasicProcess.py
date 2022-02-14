@@ -171,27 +171,6 @@ class BasicProcessObject:
 
         self.df_product['Filter'] = 'New'
 
-
-        self.df_manu_matched_product.loc[(self.df_manu_matched_product['VendorPartNumber_y'] == self.df_manu_matched_product['VendorPartNumber_x']), 'Filter'] = 'Update-vendor'
-        self.df_manu_matched_product.loc[(self.df_manu_matched_product['FyProductNumber_y'] == self.df_manu_matched_product['FyProductNumber_x']), 'Filter'] = 'Update-product'
-
-        self.df_manu_matched_product['VendorPartNumber'] = self.df_manu_matched_product['VendorPartNumber_x']
-        self.df_manu_matched_product['FyProductNumber'] = self.df_manu_matched_product['FyProductNumber_x']
-        self.df_manu_matched_product = self.df_manu_matched_product.drop(columns = ['VendorPartNumber_x','FyProductNumber_x'])
-
-
-        self.df_vendor_matched_product = self.df_manu_matched_product[(self.df_manu_matched_product['Filter'] == 'Update-vendor')]
-        self.df_manu_matched_product = self.df_manu_matched_product[(self.df_manu_matched_product['Filter'] != 'Update-vendor')]
-
-        self.df_fy_prod_matched_product = self.df_manu_matched_product[(self.df_manu_matched_product['Filter'] == 'Update-product')]
-        self.df_manu_matched_product = self.df_manu_matched_product[(self.df_manu_matched_product['Filter'] != 'Update-product')]
-
-
-        self.df_product['VendorPartNumber'] = self.df_product['VendorPartNumber_x']
-        self.df_product['FyProductNumber'] = self.df_product['FyProductNumber_x']
-        self.df_product = self.df_product.drop(columns = ['VendorPartNumber_x','FyProductNumber_x'])
-
-
         if len(self.df_full_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_full_matched_product)
 
@@ -201,11 +180,14 @@ class BasicProcessObject:
         if len(self.df_manu_matched_product.index) > 0:
             self.df_product = self.df_product.append(self.df_manu_matched_product)
 
-        if len(self.df_vendor_matched_product.index) > 0:
-            self.df_product = self.df_product.append(self.df_vendor_matched_product)
 
-        if len(self.df_fy_prod_matched_product.index) > 0:
-            self.df_product = self.df_product.append(self.df_fy_prod_matched_product)
+        if 'VendorPartNumber_x' in self.df_product.columns:
+            self.df_product['VendorPartNumber'] = self.df_product['VendorPartNumber_x']
+            self.df_product = self.df_product.drop(columns = ['VendorPartNumber_x'])
+
+        if 'FyProductNumber_x' in self.df_product.columns:
+            self.df_product['FyProductNumber'] = self.df_product['FyProductNumber_x']
+            self.df_product = self.df_product.drop(columns = ['FyProductNumber_x'])
 
 
         # it seems that this needs better returns for review
@@ -238,7 +220,7 @@ class BasicProcessObject:
 
 
         # to dataframe
-        self.df_manufacturer_product = self.df_product_agni_kai_lookup_copy[['ManufacturerPartNumber','ProductId']]
+        self.df_manufacturer_product = self.df_product_agni_kai_lookup_copy[['ManufacturerPartNumber','ProductId']].copy()
         self.df_manufacturer_product = self.df_manufacturer_product.drop_duplicates()
 
         self.df_manufacturer_product['Filter'] = 'Partial'
