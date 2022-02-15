@@ -166,7 +166,16 @@ class BasicProcessObject:
         self.df_product_agni_kai_lookup['Filter'] = 'Partial'
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
 
-        self.df_manu_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')]
+        self.df_manu_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')].copy()
+
+        if 'FyProductNumber_x' in self.df_manu_matched_product.columns:
+            self.df_manu_matched_product['FyProductNumber'] = self.df_manu_matched_product[['FyProductNumber_x']]
+            self.df_manu_matched_product = self.df_manu_matched_product.drop(columns = ['FyProductNumber_x'])
+
+        if 'VendorPartNumber_x' in self.df_manu_matched_product.columns:
+            self.df_manu_matched_product['VendorPartNumber'] = self.df_manu_matched_product[['VendorPartNumber_x']]
+            self.df_manu_matched_product = self.df_manu_matched_product.drop(columns = ['VendorPartNumber_x'])
+
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
 
         self.df_product['Filter'] = 'New'
@@ -181,11 +190,11 @@ class BasicProcessObject:
             self.df_product = self.df_product.append(self.df_manu_matched_product)
 
 
-        if 'VendorPartNumber_x' in self.df_product.columns:
+        if 'VendorPartNumber_x' in self.df_product.columns and 'VendorPartNumber' not in self.df_product.columns:
             self.df_product['VendorPartNumber'] = self.df_product['VendorPartNumber_x']
             self.df_product = self.df_product.drop(columns = ['VendorPartNumber_x'])
 
-        if 'FyProductNumber_x' in self.df_product.columns:
+        if 'FyProductNumber_x' in self.df_product.columns and 'FyProductNumber' not in self.df_product.columns:
             self.df_product['FyProductNumber'] = self.df_product['FyProductNumber_x']
             self.df_product = self.df_product.drop(columns = ['FyProductNumber_x'])
 
@@ -215,7 +224,7 @@ class BasicProcessObject:
         # here we are going to match everything called new to the existing manufcaturer parts
         # this is to indicate the difference between the ingestable new products and updatable products
 
-        self.df_new_products = self.df_product[(self.df_product['Filter'] == 'New')]
+        self.df_new_products = self.df_product[(self.df_product['Filter'] == 'New')].copy()
         self.df_product = self.df_product[(self.df_product['Filter'] != 'New')]
 
 
@@ -232,6 +241,14 @@ class BasicProcessObject:
         self.df_update_products = self.df_new_products[(self.df_new_products['Filter'] == 'Partial')]
         self.df_new_products = self.df_new_products[(self.df_new_products['Filter'] != 'Partial')]
 
+        if 'FyProductNumber_x' in self.df_update_products.columns:
+            self.df_update_products['FyProductNumber'] = self.df_update_products[['FyProductNumber_x']]
+            self.df_update_products = self.df_update_products.drop(columns=['FyProductNumber_x'])
+
+        if 'VendorPartNumber_x' in self.df_update_products.columns:
+            self.df_update_products['VendorPartNumber'] = self.df_update_products[['VendorPartNumber_x']]
+            self.df_update_products = self.df_update_products.drop(columns=['VendorPartNumber_x'])
+
         self.df_new_products['Filter'] = 'New'
 
 
@@ -240,6 +257,8 @@ class BasicProcessObject:
 
         if len(self.df_update_products.index) > 0:
             self.df_product = self.df_product.append(self.df_update_products)
+
+        self.df_product = self.df_product.reindex()
 
 
     def begin_process(self):
