@@ -177,7 +177,6 @@ class MinimumProductPrice(BasicProcessObject):
         return True, df_collect_product_base_data
 
     def minimum_product_price(self,df_line_product):
-        print(df_line_product.columns)
         for colName, row in df_line_product.iterrows():
             fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']

@@ -126,10 +126,13 @@ class BasicProcessObject:
         # for final step
         self.df_product_agni_kai_lookup_copy = self.df_product_agni_kai_lookup.copy()
 
+        if 'BaseProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = ['BaseProductPriceId'])
 
         # set the full look up
         self.df_full_product_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['BaseProductPriceId'] != 'Load Pricing')]
         self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['BaseProductPriceId'] == 'Load Pricing')]
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns = ['BaseProductPriceId'])
 
         # first round filtering
         self.df_full_product_lookup['Filter'] = 'Ready'
@@ -150,7 +153,7 @@ class BasicProcessObject:
         self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] == 'Load Product Price')]
 
         # round 2
-        self.df_pricing_product_lookup = self.df_pricing_product_lookup.drop(columns = ['BaseProductPriceId'])
+
         self.df_pricing_product_lookup['Filter'] = 'Base Pricing'
         self.df_product = self.df_product.merge(self.df_pricing_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
 
@@ -163,6 +166,9 @@ class BasicProcessObject:
 
 
         # round 3
+        if 'ProductPriceId' in self.df_product_agni_kai_lookup.columns:
+            self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns = ['ProductPriceId','FyProductNumber','VendorPartNumber'])
+
         self.df_product_agni_kai_lookup['Filter'] = 'Partial'
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
 
@@ -181,12 +187,15 @@ class BasicProcessObject:
         self.df_product['Filter'] = 'New'
 
         if len(self.df_full_matched_product.index) > 0:
+            self.df_full_matched_product = self.df_full_matched_product.drop_duplicates()
             self.df_product = self.df_product.append(self.df_full_matched_product)
 
         if len(self.df_pricing_matched_product.index) > 0:
+            self.df_pricing_matched_product = self.df_pricing_matched_product.drop_duplicates()
             self.df_product = self.df_product.append(self.df_pricing_matched_product)
 
         if len(self.df_manu_matched_product.index) > 0:
+            self.df_manu_matched_product = self.df_manu_matched_product.drop_duplicates()
             self.df_product = self.df_product.append(self.df_manu_matched_product)
 
 
