@@ -66,7 +66,6 @@ class BigCommerceRTLObject(BasicProcessObject):
     def process_changes(self, df_collect_product_base_data):
         
         for colName, row in df_collect_product_base_data.iterrows():
-            print(row)
             product_id = row['ProductId']
 
             price_id = row['ProductPriceId']

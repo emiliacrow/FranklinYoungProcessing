@@ -124,7 +124,8 @@ class FileFinder():
             self.out_file_path = split_name[0]+'_prcd_.xlsx'
             self.out_file_path = self.out_file_path.replace('_prcd_', '_' + bumper)
 
-        with pandas.ExcelWriter(self.out_file_path, mode='w') as writer:
+        with pandas.ExcelWriter(self.out_file_path, engine='openpyxl', mode='w') as writer:
+
             df_product.to_excel(writer,index=False)
 
         self.obProgressBar.close()
