@@ -16,7 +16,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                   'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved']
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product, user, password, is_testing,full_run=False):
+    def __init__(self,df_product, user, password, is_testing, full_run=False):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Toggle Lifter'
         self.full_run = full_run
@@ -66,10 +66,23 @@ class BigCommerceRTLObject(BasicProcessObject):
     def process_changes(self, df_collect_product_base_data):
         
         for colName, row in df_collect_product_base_data.iterrows():
-            product_id = row['ProductId']
+            try:
+                product_id = row['ProductId']
+            except KeyError:
+                self.obReporter.update_report('Alert','ProductId Missing')
+                return False, df_collect_product_base_data
 
-            price_id = row['ProductPriceId']
-            base_id = row['BaseProductPriceId']
+            try:
+                price_id = row['ProductPriceId']
+            except KeyError:
+                self.obReporter.update_report('Alert','ProductPriceId Missing')
+                return False, df_collect_product_base_data
+
+            try:
+                base_id = row['BaseProductPriceId']
+            except KeyError:
+                self.obReporter.update_report('Alert','ProductPriceId Missing')
+                return False, df_collect_product_base_data
 
             ecat_id = row['ECATProductPriceId']
             htme_id = row['HTMEProductPriceId']
