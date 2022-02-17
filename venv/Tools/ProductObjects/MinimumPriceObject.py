@@ -201,7 +201,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.obIngester.ingest_product_price_cleanup()
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
-    req_fields = ['VendorPartNumber','FyCatalogNumber','FyProductNumber']
+    req_fields = ['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []

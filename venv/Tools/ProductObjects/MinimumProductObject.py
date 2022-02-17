@@ -13,7 +13,7 @@ class MinimumProduct(BasicProcessObject):
     req_fields = ['FyCatalogNumber', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
                   'ShortDescription', 'CountryOfOrigin', 'ManufacturerName', 'Category']
     sup_fields = []
-    att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
+    att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision', 'LeadTime']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix',
                                 'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
                                 'ExpectedLeadTimeId']

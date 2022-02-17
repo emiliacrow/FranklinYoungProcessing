@@ -71,6 +71,48 @@ class DuckworthWindow(QWidget):
 
         self.setWindowIcon(QIcon(os.getcwd() + '\\venv\Assets\Duckworth2.png'))
         self.base_interval = 5000
+        
+        self.dct_mouse_tips = {'Assign FyPartNumbers':'For generating FyProduct Tracking numbers\nRequired: ManufacturerName, ManufacturerPartNumber, UnitOfIssue\nSupport: FyProductNumberOverride',
+                               'Category Training':'For improving category assignments\nRequired: Word1, Word2, Category, IsGood',
+                               'Category Assignment':'For assigning categories to products\nRequired: FyProductNumber, ManufacturerPartNumber, ShortDescription\nSupport: LongDescription, ProductDescription',
+                               'Category Picker':'--DEPRICATED--\nRequired: ManufacturerPartNumber, ShortDescription\nSupport: LongDescription, ProductDescription',
+                               'Extract Attributes':'Any of these: LongDescription, ShortDescription, ProductDescription\nSupport: LongDescription, ShortDescription, ProductDescription',
+                               'Unicode Correction':'Required: ProductName\nSupport: LongDescription, ShortDescription, ProductDescription,',
+                               'Generate Upload File':'--DEPRICATED--\nThis is a tool that was used to generate files to upload to BC then converted to make ingestion files',
+                               'File Appender Tool':'This tool combines files vertically',
+                               'File Merger Tool':'This tool can combine files vertically and horizontally',
+                               'File Splitter Tool':'This tool splits files vertically',
+                               'Load Image Files':'--DEPRICATED--\nThis tool is used to upload images to s3 in bulk sets',
+                               'Product Action Review':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
+
+                               '1-Minimum Product Ingestion(3 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber, ShortDescription, CountryOfOrigin, ManufacturerName, Category'
+                                                                      '\nSupport: VendorName, VendorCode, LeadTime, RecommendedStorage, Sterility, SurfaceTreatment, Precision',
+                               '2-Full Product Ingestion(5 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                                   '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass'
+                                                                   '\nAdd any attribute columns',
+                               '3-Fill Product Attributes(2 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                                   '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass',
+                               '4-Minimum Product Price(3 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
+                               '5-Base Pricing(1 step)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'GSA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'VA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'HTME Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
+                               'ECAT Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'FEDMALL Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
+
+                               '1-Update Minimum Product Data(3 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber, ShortDescription, CountryOfOrigin, ManufacturerName'
+                                                                      '\nSupport: VendorName, VendorCode, LeadTime, RecommendedStorage, Sterility, SurfaceTreatment, Precision',
+                               '1.5-Update Minimum Product Price Data(2 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               '2-Update Full Product(5 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               '3-Update Product Attributes(2 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               '4-Update Base Pricing(1 step)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'Update GSA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'Update VA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'Update HTME Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'Update ECAT Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
+                               'Update FEDMALL Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
+                               'Update Toggles':'Required: FyProductNumber, VendorPartNumber',
+                               'Process Product Assets':'Required: FyProductNumber, VendorPartNumber'}
 
         self.update_timer = QTimer()
         self.update_timer.setInterval(self.base_interval)
@@ -211,7 +253,16 @@ class DuckworthWindow(QWidget):
 
         self.file_action_dropdown = QComboBox()
         self.file_action_dropdown.addItems(self.file_action_options)
+        self.file_action_dropdown.currentIndexChanged.connect(self.file_mousetip_control)
         self.layout.addWidget(self.file_action_dropdown, 2, column_pos)
+
+    def file_mousetip_control(self):
+        option = self.file_action_dropdown.currentText()
+        try:
+            option_tip_text = self.dct_mouse_tips[option]
+        except KeyError:
+            option_tip_text = 'For processing files.'
+        self.process_file_button.setToolTip(option_tip_text)
 
     def file_process_kickoff(self):
         file_action_selected = str(self.file_action_dropdown.currentText())
@@ -246,7 +297,16 @@ class DuckworthWindow(QWidget):
 
         self.basedata_dropdown = QComboBox()
         self.basedata_dropdown.addItems(self.base_data_tables)
+        self.basedata_dropdown.currentIndexChanged.connect(self.base_mousetip_control)
         self.layout.addWidget(self.basedata_dropdown, 2, column_pos)
+
+    def base_mousetip_control(self):
+        option = self.basedata_dropdown.currentText()
+        try:
+            option_tip_text = self.dct_mouse_tips[option]
+        except KeyError:
+            option_tip_text = 'Provides manual entry of data into the database.'
+        self.base_data_button.setToolTip(option_tip_text)
 
     def base_data_kickoff(self):
         table_selected = str(self.basedata_dropdown.currentText())
@@ -267,6 +327,7 @@ class DuckworthWindow(QWidget):
 
         self.completion_alert('Ingest '+table_selected+' data', message)
 
+
     def ingestion_buttons(self,column_pos):
         self.ingestion_options = ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing', 'HTME Pricing',
                                   'ECAT Pricing', 'FEDMALL Pricing']
@@ -282,7 +343,16 @@ class DuckworthWindow(QWidget):
 
         self.ingestion_action_dropdown = QComboBox()
         self.ingestion_action_dropdown.addItems(self.ingestion_options)
+        self.ingestion_action_dropdown.currentIndexChanged.connect(self.ingest_mousetip_control)
         self.layout.addWidget(self.ingestion_action_dropdown, 2, column_pos)
+
+    def ingest_mousetip_control(self):
+        option = self.ingestion_action_dropdown.currentText()
+        try:
+            option_tip_text = self.dct_mouse_tips[option]
+        except KeyError:
+            option_tip_text = 'For bulk ingestion of product data files.'
+        self.ingest_data_button.setToolTip(option_tip_text)
 
     def ingest_data_kickoff(self):
         ingestion_action_selected = str(self.ingestion_action_dropdown.currentText())
@@ -318,7 +388,16 @@ class DuckworthWindow(QWidget):
 
         self.update_action_dropdown = QComboBox()
         self.update_action_dropdown.addItems(self.update_data_options)
+        self.update_action_dropdown.currentIndexChanged.connect(self.update_mousetip_control)
         self.layout.addWidget(self.update_action_dropdown, 2, column_pos)
+
+    def update_mousetip_control(self):
+        option = self.update_action_dropdown.currentText()
+        try:
+            option_tip_text = self.dct_mouse_tips[option]
+        except KeyError:
+            option_tip_text = 'For bulk updates of product data.'
+        self.update_data_button.setToolTip(option_tip_text)
 
     def update_data_kickoff(self):
         update_action_selected = str(self.update_action_dropdown.currentText())
@@ -354,7 +433,16 @@ class DuckworthWindow(QWidget):
 
         self.contract_dropdown = QComboBox()
         self.contract_dropdown.addItems(self.contract_options)
+        self.contract_dropdown.currentIndexChanged.connect(self.contract_mousetip_control)
         self.layout.addWidget(self.contract_dropdown, 2, column_pos)
+
+    def contract_mousetip_control(self):
+        option = self.contract_dropdown.currentText()
+        try:
+            option_tip_text = self.dct_mouse_tips[option]
+        except KeyError:
+            option_tip_text = 'For setting product visibilty.'
+        self.contract_button.setToolTip(option_tip_text)
 
     def contract_kickoff(self):
         contract_selected = str(self.contract_dropdown.currentText())
