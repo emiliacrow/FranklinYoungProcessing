@@ -277,12 +277,14 @@ class BasePrice(BasicProcessObject):
             mus_success, markup_sell = self.row_check(row, 'db_MarkUp_sell')
             if mus_success:
                 mus_success, markup_sell = self.float_check(markup_sell, 'db_MarkUp_sell')
+                self.obReporter.update_report('Alert', 'db_MarkUp_sell from database used for markup')
                 df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
 
         if not mul_success or markup_list <= 1:
             mul_success, markup_list = self.row_check(row, 'db_MarkUp_list')
             if mul_success:
                 mul_success, markup_list = self.float_check(markup_list, 'db_MarkUp_list')
+                self.obReporter.update_report('Alert', 'db_MarkUp_list from database used for markup')
                 df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
 
 
