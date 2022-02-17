@@ -25,6 +25,7 @@ class BasePrice(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
+        self.collect_markups()
 
 
     def remove_private_headers(self):
@@ -38,6 +39,17 @@ class BasePrice(BasicProcessObject):
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
+
+
+    def collect_markups(self):
+        # here we will collect the markups and provide if possible.
+        self.df_markup_lookup = self.obDal.get_base_product_price_lookup()
+
+        product_headers = set(self.df_product.columns)
+        markup_headers = set(self.df_markup_lookup.columns)
+        match_headers = list(product_headers.intersection(markup_headers))
+
+        self.df_product = self.df_product.merge(self.df_markup_lookup,how='left',on=match_headers)
 
 
     def filter_check_in(self, row):
@@ -260,6 +272,20 @@ class BasePrice(BasicProcessObject):
             mul_success, markup_list = self.float_check(markup_list, 'LandedCostMarkupPercent_FYList')
             df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
 
+
+        if not mus_success or markup_sell <= 1:
+            mus_success, markup_sell = self.row_check(row, 'db_MarkUp_sell')
+            if mus_success:
+                mus_success, markup_sell = self.float_check(markup_sell, 'db_MarkUp_sell')
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+
+        if not mul_success or markup_list <= 1:
+            mul_success, markup_list = self.row_check(row, 'db_MarkUp_list')
+            if mul_success:
+                mul_success, markup_list = self.float_check(markup_list, 'db_MarkUp_list')
+                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+
+
         if mus_success and not mul_success:
             success, fy_list_price = self.row_check(row, 'Retail Price')
             if success:
@@ -320,8 +346,6 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['Sell Price'] = [fy_sell_price]
                 df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [round(float(fy_sell_price / fy_landed_cost), 2)]
                 return True, df_collect_product_base_data
-
-        # up to here, we're good
 
 
         elif not mus_success and mul_success:

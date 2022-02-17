@@ -709,11 +709,14 @@ class DalObject:
         df_base_price_lookup = self.get_lookup(proc_name,column_names,vendor_id)
         return df_base_price_lookup
 
+
     def get_base_product_price_lookup(self):
         proc_name = 'sequoia.get_BasePrice_lookup'
-        column_names = ['FyProductNumber','VendorPartNumber','ProductPriceId','BaseProductPriceId','db_fy_cost']
+        column_names = ['ProductId', 'ManufacturerPartNumber', 'FyCatalogNumber', 'ProductPriceId', 'FyProductNumber',
+                        'VendorPartNumber', 'BaseProductPriceId', 'db_Discount', 'db_MarkUp_sell', 'db_MarkUp_list']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
+
 
     def get_category_match_desc(self, new_description):
         proc_name = 'gardener.get_category_match_description'
