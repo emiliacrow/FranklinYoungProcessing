@@ -91,26 +91,67 @@ class DuckworthWindow(QWidget):
                                                                    '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass'
                                                                    '\nAdd any attribute columns',
                                '3-Fill Product Attributes(2 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
-                                                                   '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass',
-                               '4-Minimum Product Price(3 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
-                               '5-Base Pricing(1 step)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'GSA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'VA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'HTME Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
-                               'ECAT Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'FEDMALL Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
+                                                                    '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass'
+                                                                    '\nAdd any attribute columns',
+                               '4-Minimum Product Price(3 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                                    '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass'
+                                                                    '\nAdd any attribute columns',
+                               '5-Base Pricing(1 step)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber, FyCost'
+                                                        '\nSupport: IsVisible, ECommerceDiscount, MfcDiscountPercent, VendorListPrice, Discount,'
+                                                        '\nEstimated Freight, Landed Cost, LandedCostMarkupPercent_FYSell, LandedCostMarkupPercent_FYList,'
+                                                        '\nSell Price(FySellPrice), Retail Price(FyListPrice), DateCatalogReceived, CatalogProvidedBy',
+
+                               'GSA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber,'
+                                                    '\nGSAOnContract, GSAApprovedListPrice, GSAApprovedPercent, MfcDiscountPercent,'
+                                                    '\nGSAContractModificationNumber, GSA_Sin, GSAApprovedPriceDate, GSAPricingApproved',
+                               'VA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                    '\nVAOnContract, VAApprovedListPrice, VAApprovedPercent, MfcDiscountPercent,'
+                                                    '\nVAContractModificationNumber, VA_Sin, VAApprovedPriceDate, VAPricingApproved',
+                               'HTME Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                    '\nHTMEOnContract, HTMEApprovedListPrice, HTMEMaxMarkup, HTMEContractModificationNumber,'
+                                                    '\nHTMEApprovedPriceDate, HTMEPricingApproved',
+                               'ECAT Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                    '\nECATOnContract, ECATApprovedListPrice, ECATMaxMarkup, ECATContractModificationNumber,'
+                                                    '\nECATApprovedPriceDate, ECATPricingApproved',
+                               'FEDMALL Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                    '\nThis might be filled in the future',
 
                                '1-Update Minimum Product Data(3 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber, ShortDescription, CountryOfOrigin, ManufacturerName'
                                                                       '\nSupport: VendorName, VendorCode, LeadTime, RecommendedStorage, Sterility, SurfaceTreatment, Precision',
-                               '1.5-Update Minimum Product Price Data(2 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               '2-Update Full Product(5 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               '3-Update Product Attributes(2 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               '4-Update Base Pricing(1 step)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'Update GSA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'Update VA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'Update HTME Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'Update ECAT Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber', 
-                               'Update FEDMALL Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
+                               '1.5-Update Minimum Product Price Data(2 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                                    '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass'
+                                                                    '\nAdd any attribute columns',
+
+                               '2-Update Full Product(5 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                                   '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass'
+                                                                   '\nAdd any attribute columns',
+                               '3-Update Product Attributes(2 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                                   '\nSupport: FyPartNumber, UnitOfMeasure, UnitOfIssue, Quantity, VendorName, VendorCode, IsDiscontinued, AllowPurchases, ProductTaxClass'
+                                                                   '\nAdd any attribute columns',
+                               '4-Update Base Pricing(1 step)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber, FyCost'
+                                                        '\nSupport: IsVisible, ECommerceDiscount, MfcDiscountPercent, VendorListPrice, Discount,'
+                                                        '\nEstimated Freight, Landed Cost, LandedCostMarkupPercent_FYSell, LandedCostMarkupPercent_FYList,'
+                                                        '\nSell Price(FySellPrice), Retail Price(FyListPrice), DateCatalogReceived, CatalogProvidedBy',
+
+                               'Update GSA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber,'
+                                                    '\nGSAOnContract, GSAApprovedListPrice, GSAApprovedPercent, MfcDiscountPercent,'
+                                                    '\nGSAContractModificationNumber, GSA_Sin, GSAApprovedPriceDate, GSAPricingApproved',
+
+                               'Update VA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                    '\nVAOnContract, VAApprovedListPrice, VAApprovedPercent, MfcDiscountPercent,'
+                                                    '\nVAContractModificationNumber, VA_Sin, VAApprovedPriceDate, VAPricingApproved',
+
+                               'Update HTME Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                    '\nHTMEOnContract, HTMEApprovedListPrice, HTMEMaxMarkup, HTMEContractModificationNumber,'
+                                                    '\nHTMEApprovedPriceDate, HTMEPricingApproved',
+
+                               'Update ECAT Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                    '\nECATOnContract, ECATApprovedListPrice, ECATMaxMarkup, ECATContractModificationNumber,'
+                                                    '\nECATApprovedPriceDate, ECATPricingApproved',
+
+                               'Update FEDMALL Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber'
+                                                    '\nThis might be filled in the future',
+
                                'Update Toggles':'Required: FyProductNumber, VendorPartNumber',
                                'Process Product Assets':'Required: FyProductNumber, VendorPartNumber'}
 
