@@ -267,6 +267,8 @@ class BasicProcessObject:
         if len(self.df_update_products.index) > 0:
             self.df_product = self.df_product.append(self.df_update_products)
 
+        self.df_product.loc[(self.df_product['db_IsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued.'
+
         self.df_product = self.df_product.reindex()
 
 

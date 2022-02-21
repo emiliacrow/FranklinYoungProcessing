@@ -108,6 +108,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
             asset_type = row['AssetType']
 
+            # document is the catch all.
             if asset_type in ['Document','SafetyDataSheet','Certificate','Brochure','Warranty','Image']:
                 success, df_collect_product_base_data = self.process_document(row, df_collect_product_base_data, asset_type)
             elif asset_type == 'Video':
