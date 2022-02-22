@@ -267,7 +267,7 @@ class BasicProcessObject:
         if len(self.df_update_products.index) > 0:
             self.df_product = self.df_product.append(self.df_update_products)
 
-        self.df_product.loc[(self.df_product['db_IsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued.'
+        self.df_product.loc[(self.df_product['db_IsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued'
 
         self.df_product = self.df_product.reindex()
 
@@ -377,9 +377,6 @@ class BasicProcessObject:
             # this removes all columns with all nan
             df_line_product = df_line_product.dropna(axis=1,how='all')
 
-            if p_bar >= len(self.df_product.index)-1:
-                self.is_last = True
-
             if self.line_viability(df_line_product):
                 self.ready_report(df_line_product)
                 self.obReporter.report_line_viability(True)
@@ -390,9 +387,6 @@ class BasicProcessObject:
             else:
                 self.obReporter.report_line_viability(False)
                 success, return_df_line_product = self.report_missing_data(df_line_product)
-
-            if self.is_last:
-                self.trigger_ingest_cleanup()
 
             # appends all the product objects into a list
             report_set = self.obReporter.get_report()
@@ -420,6 +414,8 @@ class BasicProcessObject:
 
             p_bar+=1
             self.obProgressBarWindow.update_bar(p_bar)
+
+        self.trigger_ingest_cleanup()
 
         self.set_progress_bar(10,'Appending data...')
         self.obProgressBarWindow.update_unknown()
