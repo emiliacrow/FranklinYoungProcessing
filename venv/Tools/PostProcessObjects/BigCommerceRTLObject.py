@@ -91,27 +91,8 @@ class BigCommerceRTLObject(BasicProcessObject):
 
             fy_product_number = row['FyProductNumber']
             vendor_part_number = row['VendorPartNumber']
-            
-            price_toggle = -1
-            data_toggle = -1
-            if 'BCPriceUpdateToggle' in row:
-                price_toggle = row['BCPriceUpdateToggle']
-            if 'BCDataUpdateToggle' in row:
-                data_toggle = row['BCDataUpdateToggle']
 
-            is_discontinued = -1
-            allow_purchases = -1
-            
-            if 'IsDiscontinued' in row:
-                is_discontinued = row['IsDiscontinued']
-            if 'AllowPurchases' in row:
-                allow_purchases = row['AllowPurchases']
-            
-            is_visible = -1
-            update_image = -1
             update_asset = -1
-            if 'IsVisible' in row:
-                is_visible = row['IsVisible']
 
             if 'UpdateAssets' in row:
                 update_asset = row['UpdateAssets']
@@ -147,6 +128,45 @@ class BigCommerceRTLObject(BasicProcessObject):
                     va_contract = row['VAOnContract']
                 if 'VAPricingApproved' in row:
                     va_approved = row['VAPricingApproved']
+
+            if (ecat_approved == 1) or (htme_approved == 1) or (gsa_approved == 1) or (va_approved == 1):
+                price_toggle = 1
+                is_discontinued = 0
+                allow_purchases = 1
+                is_visible = 1
+
+                data_toggle = -1
+                if 'BCDataUpdateToggle' in row:
+                    data_toggle = row['BCDataUpdateToggle']
+
+                if (update_asset != -1):
+                    data_toggle = 1
+
+            elif (update_asset != -1):
+                price_toggle = 1
+                data_toggle = 1
+                is_discontinued = 0
+                allow_purchases = 1
+                is_visible = 1
+
+            else:
+                price_toggle = -1
+                data_toggle = -1
+                if 'BCPriceUpdateToggle' in row:
+                    price_toggle = row['BCPriceUpdateToggle']
+                if 'BCDataUpdateToggle' in row:
+                    data_toggle = row['BCDataUpdateToggle']
+
+                is_discontinued = -1
+                allow_purchases = -1
+                is_visible = -1
+
+                if 'IsDiscontinued' in row:
+                    is_discontinued = row['IsDiscontinued']
+                if 'AllowPurchases' in row:
+                    allow_purchases = row['AllowPurchases']
+                if 'IsVisible' in row:
+                    is_visible = row['IsVisible']
 
 
         if (price_toggle != -1 or data_toggle != -1):
