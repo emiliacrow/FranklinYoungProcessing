@@ -38,7 +38,7 @@ class Validator:
         return return_val
 
     def clean_part_number(self,str_to_clean, leave_gap = False):
-        pattern = '(\-|\.|,|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
+        pattern = '(\-|\.|`|,|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
         if leave_gap:
             str_to_clean = re.sub(pattern, ' ', str_to_clean)
         else:

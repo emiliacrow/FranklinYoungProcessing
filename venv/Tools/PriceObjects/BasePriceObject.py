@@ -92,11 +92,27 @@ class BasePrice(BasicProcessObject):
                 self.obReporter.update_report('Alert', '{0} was set to 0'.format('IsVisible'))
                 df_collect_product_base_data['IsVisible'] = [0]
 
-
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
                 self.obReporter.update_report('Fail','Failed to identify product price id')
                 return success, df_collect_product_base_data
+
+            success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+            if success:
+                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+
+            success, allow_purchases = self.process_boolean(row, 'AllowPurchases')
+            if success:
+                df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
+
+
+            if (is_discontinued != -1 or allow_purchases != -1):
+                price_id = row['ProductPriceId']
+                fy_product_number = row['FyProductNumber']
+
+                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, 1, 1)
+                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, 1, -1)
+
 
         success, df_line_product = self.base_price(df_collect_product_base_data)
         return success, df_line_product

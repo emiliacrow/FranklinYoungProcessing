@@ -128,6 +128,8 @@ class BasicProcessObject:
 
         if 'BaseProductPriceId' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns = ['BaseProductPriceId'])
+        if 'db_IsDiscontinued' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = ['db_IsDiscontinued'])
 
         # set the full look up
         self.df_full_product_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['BaseProductPriceId'] != 'Load Pricing')]

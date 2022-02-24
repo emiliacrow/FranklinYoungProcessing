@@ -178,10 +178,9 @@ class BigCommerceRTLObject(BasicProcessObject):
         if (is_visible != -1):
             self.obIngester.set_is_visible(base_id, is_visible)
 
+
         if (update_asset != -1):
             self.obIngester.set_update_asset(product_id, update_asset)
-
-        # should we cascade the update toggles?
 
         if (ecat_contract != -1 or ecat_approved != -1):
             self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved)
