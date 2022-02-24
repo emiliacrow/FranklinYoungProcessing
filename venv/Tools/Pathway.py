@@ -838,7 +838,7 @@ class Pathways():
         if contract_selected == 'Update Toggles':
 
             self.obYNBox = YesNoDialog('Process regardless of change?')
-            self.obYNBox.initUI('Toggle dialog.', 'Would you like to process all products regardless of change?')
+            self.obYNBox.initUI('Toggle dialog.', 'Would you like to update products regardless of change?\n\nThis sets BC toggles to update for all products included.\n')
             if self.obYNBox.yes_selected == True:
                 b_full_run = True
 

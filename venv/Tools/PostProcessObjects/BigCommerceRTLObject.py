@@ -93,79 +93,161 @@ class BigCommerceRTLObject(BasicProcessObject):
             vendor_part_number = row['VendorPartNumber']
 
             update_asset = -1
-            if 'UpdateAssets' in row:
-                update_asset = row['UpdateAssets']
+
+            success, update_asset = self.process_boolean(row, 'UpdateAssets')
+            if success:
+                df_collect_product_base_data['UpdateAssets'] = [update_asset]
+            else:
+                update_asset = -1
+
 
             ecat_contract = -1
             ecat_approved = -1
             if row['ECATProductPriceId'] != -1:
-                if 'ECATOnContract' in row:
-                    ecat_contract = row['ECATOnContract']
-                if 'ECATPricingApproved' in row:
-                    ecat_approved = row['ECATPricingApproved']
+                success, ecat_contract = self.process_boolean(row, 'ECATOnContract')
+                if success:
+                    df_collect_product_base_data['ECATOnContract'] = [ecat_contract]
+                else:
+                    ecat_contract = -1
+
+                success, ecat_approved = self.process_boolean(row, 'ECATPricingApproved')
+                if success:
+                    df_collect_product_base_data['ECATPricingApproved'] = [ecat_approved]
+                else:
+                    ecat_approved = -1
+
                 
             htme_contract = -1
             htme_approved = -1
             if row['HTMEProductPriceId'] != -1:
-                if 'HTMETOnContract' in row:
-                    htme_contract = row['HTMETOnContract']
-                if 'HTMEPricingApproved' in row:
-                    htme_approved = row['HTMEPricingApproved']
+                success, htme_contract = self.process_boolean(row, 'HTMETOnContract')
+                if success:
+                    df_collect_product_base_data['HTMETOnContract'] = [htme_contract]
+                else:
+                    htme_contract = -1
+
+                success, htme_approved = self.process_boolean(row, 'HTMEPricingApproved')
+                if success:
+                    df_collect_product_base_data['HTMEPricingApproved'] = [htme_approved]
+                else:
+                    htme_approved = -1
+
                 
             gsa_contract = -1
             gsa_approved = -1
             if row['GSAProductPriceId'] != -1:
-                if 'GSAOnContract' in row:
-                    gsa_contract = row['GSAOnContract']
-                if 'GSAPricingApproved' in row:
-                    gsa_approved = row['GSAPricingApproved']
+                success, gsa_contract = self.process_boolean(row, 'GSAOnContract')
+                if success:
+                    df_collect_product_base_data['GSAOnContract'] = [gsa_contract]
+                else:
+                    gsa_contract = -1
+
+                success, gsa_approved = self.process_boolean(row, 'GSAPricingApproved')
+                if success:
+                    df_collect_product_base_data['GSAPricingApproved'] = [gsa_approved]
+                else:
+                    gsa_approved = -1
+
                 
             va_contract = -1
             va_approved = -1
             if row['VAProductPriceId'] != -1:
-                if 'VAOnContract' in row:
-                    va_contract = row['VAOnContract']
-                if 'VAPricingApproved' in row:
-                    va_approved = row['VAPricingApproved']
+                success, va_contract = self.process_boolean(row, 'VAOnContract')
+                if success:
+                    df_collect_product_base_data['VAOnContract'] = [va_contract]
+                else:
+                    va_contract = -1
+
+                success, va_approved = self.process_boolean(row, 'VAPricingApproved')
+                if success:
+                    df_collect_product_base_data['VAPricingApproved'] = [va_approved]
+                else:
+                    va_approved = -1
+
 
             if (ecat_approved == 1) or (htme_approved == 1) or (gsa_approved == 1) or (va_approved == 1):
                 price_toggle = 1
+                df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
+
                 is_discontinued = 0
+                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+
                 allow_purchases = 1
+                df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
+
                 is_visible = 1
+                df_collect_product_base_data['IsVisible'] = [is_visible]
 
                 data_toggle = -1
-                if 'BCDataUpdateToggle' in row:
-                    data_toggle = row['BCDataUpdateToggle']
-
                 if (update_asset != -1):
                     data_toggle = 1
+                    df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+
+                else:
+                    success, data_toggle = self.process_boolean(row, 'BCDataUpdateToggle')
+                    if success:
+                        df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+                    else:
+                        data_toggle = -1
+
 
             elif (update_asset != -1):
                 price_toggle = 1
+                df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
+
                 data_toggle = 1
+                df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+
                 is_discontinued = 0
+                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+
                 allow_purchases = 1
+                df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
+
                 is_visible = 1
+                df_collect_product_base_data['IsVisible'] = [is_visible]
+
 
             else:
-                price_toggle = -1
-                data_toggle = -1
-                if 'BCPriceUpdateToggle' in row:
-                    price_toggle = row['BCPriceUpdateToggle']
-                if 'BCDataUpdateToggle' in row:
-                    data_toggle = row['BCDataUpdateToggle']
+                success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
+                if success:
+                    df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
+                else:
+                    price_toggle = -1
+
+                success, data_toggle = self.process_boolean(row, 'BCDataUpdateToggle')
+                if success:
+                    df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+                else:
+                    data_toggle = -1
 
                 is_discontinued = -1
-                allow_purchases = -1
-                is_visible = -1
+                success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+                if success:
+                    df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+                else:
+                    is_discontinued = -1
 
-                if 'IsDiscontinued' in row:
-                    is_discontinued = row['IsDiscontinued']
-                if 'AllowPurchases' in row:
-                    allow_purchases = row['AllowPurchases']
-                if 'IsVisible' in row:
-                    is_visible = row['IsVisible']
+                allow_purchases = -1
+                success, allow_purchases = self.process_boolean(row, 'AllowPurchases')
+                if success:
+                    df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
+                else:
+                    allow_purchases = -1
+
+                is_visible = -1
+                success, is_visible = self.process_boolean(row, 'IsVisible')
+                if success:
+                    df_collect_product_base_data['IsVisible'] = [is_visible]
+                else:
+                    is_visible = -1
+
+        if self.full_run:
+            price_toggle = 1
+            df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
+
+            data_toggle = 1
+            df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
 
 
         if (price_toggle != -1 or data_toggle != -1):
