@@ -110,7 +110,7 @@ class BasePrice(BasicProcessObject):
                 price_id = row['ProductPriceId']
                 fy_product_number = row['FyProductNumber']
 
-                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, 1, 1)
+                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, 0, 1)
                 self.obIngester.set_bc_update_toggles(price_id, fy_product_number, 1, -1)
 
 

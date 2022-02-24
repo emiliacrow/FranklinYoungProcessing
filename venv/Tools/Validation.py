@@ -46,6 +46,11 @@ class Validator:
         str_to_clean = str_to_clean.strip()
         return str_to_clean
 
+    def bc_image_name(self,image_name):
+        pattern = '(\.500\.500\_\_\d*)'
+        image_name = re.sub(pattern, '', image_name)
+        return image_name
+
     def clean_description(self,description):
         pattern = ''
         description = re.sub(pattern, '', description)
