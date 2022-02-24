@@ -263,6 +263,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def attempt_dl_file(self):
+        pass
 
 
     def process_document(self, row, df_collect_product_base_data, asset_type):
