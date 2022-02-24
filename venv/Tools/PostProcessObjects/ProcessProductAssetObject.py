@@ -143,6 +143,8 @@ class ProcessProductAssetObject(BasicProcessObject):
         manufacturer_name = manufacturer_name.replace(',', '')
         manufacturer_name = manufacturer_name.replace(' ', '_')
 
+        images_from_file = []
+
         if '|' in asset_path:
             lst_asset_path = asset_path.split('|')
             for each_asset_path in lst_asset_path:
@@ -152,7 +154,6 @@ class ProcessProductAssetObject(BasicProcessObject):
                 temp_path = 'temp_asset_files\\'+asset_file_name
                 # This is the true path to the file
                 whole_path = str(os.getcwd())+'\\'+temp_path
-                df_return_product['WholeFilePath'] = [whole_path]
 
                 asset_url = each_asset_path.partition('Product Image URL: ')[2].partition(',')[0]
 
@@ -160,8 +161,8 @@ class ProcessProductAssetObject(BasicProcessObject):
 
                 if os.path.exists(whole_path):
                     object_name = whole_path.rpartition('\\')[2]
-                    self.obReporter.update_report('Alert','This was previously scraped')
                 else:
+
                     # Make http request for remote file data
                     asset_data = requests.get(asset_url)
 
@@ -170,9 +171,11 @@ class ProcessProductAssetObject(BasicProcessObject):
                         with open(temp_path, 'wb')as file:
                             file.write(asset_data.content)
                         object_name = whole_path.rpartition('\\')[2]
-                        df_return_product['AssetObjectName'] = [object_name]
                     else:
-                        self.obReporter.update_report('Fail','An image url didn\'t work.')
+                        continue
+
+
+                images_from_file.append([whole_path,object_name,image_caption])
 
 
         else:
@@ -182,7 +185,6 @@ class ProcessProductAssetObject(BasicProcessObject):
             temp_path = 'temp_asset_files\\' + asset_file_name
             # This is the true path to the file
             whole_path = str(os.getcwd()) + '\\' + temp_path
-            df_return_product['WholeFilePath'] = [whole_path]
 
             asset_url = each_asset_path.partition('Product Image URL: ')[2].partition(',')[0]
 
@@ -206,64 +208,32 @@ class ProcessProductAssetObject(BasicProcessObject):
                     self.obReporter.update_report('Fail', 'This url doesn\'t work.')
                     return False, df_return_product
 
+            images_from_file.append([whole_path,object_name,image_caption])
 
 
-        s3_name = manufacturer_name + '/' + object_name
-
-        # we check if the documents
-        if 'CurrentAssetPath' in row:
-            current_asset_path = row['CurrentAssetPath']
-            if current_asset_path == whole_path and asset_type != 'Image' and asset_type != 'Video':
-                self.obReporter.update_report('Fail', 'This asset already exists.')
-                return False, df_return_product
-            else:
-                self.obReporter.update_report('Alert', 'This product asset was overwritten.')
-
-
-        # this puts the object into s3
-        # only send to s3 if it doesn't already exist
-        if asset_type == 'Image':
-            if s3_name not in self.lst_image_objects:
-                self.obS3.put_file(whole_path, s3_name, bucket)
-                self.lst_image_objects.append(s3_name)
-
-        elif s3_name not in self.lst_document_objects:
-            self.obS3.put_file(whole_path, s3_name, bucket)
-            self.lst_document_objects.append(s3_name)
+        if len(images_from_file) <= 0:
+            return False, df_return_product
 
         product_id = row['ProductId']
         asset_type = row['AssetType']
 
-        success, document_preference = self.row_check(row,'AssetPreference')
-        if success:
-            success, document_preference = self.float_check(document_preference, 'AssetPreference')
-            if success:
-                document_preference = int(document_preference)
-            else:
-                document_preference = 0
-                self.obReporter.update_report('Alert','AssetPreference must be a number')
-        else:
-            document_preference = 0
-            self.obReporter.update_report('Alert','AssetPreference set to 0')
+        for each_image_set in images_from_file:
+            whole_path = each_image_set[0]
+            object_name = each_image_set[1]
+            image_caption = each_image_set[2]
+            s3_name = manufacturer_name + '/' + object_name
 
-        if asset_type != 'Image':
-            self.obIngester.set_productdocument_cap(product_id, s3_name, object_name, asset_type,
-                                                    document_preference)
+            # this puts the object into s3
+            # only send to s3 if it doesn't already exist
+            if s3_name not in self.lst_image_objects:
+                self.obS3.put_file(whole_path, s3_name, bucket)
+                self.lst_image_objects.append(s3_name)
 
-        else:
-            caption = ''
-            if 'ImageCaption' in row:
-                caption = row['ImageCaption']
             image_width, image_height = self.get_image_size(whole_path)
 
-            self.obIngester.set_productimage(product_id, s3_name, object_name, document_preference, caption, image_width, image_height)
-
+            self.obIngester.set_productimage(product_id, s3_name, object_name, 0, image_caption, image_width, image_height)
 
         return True, df_return_product
-
-
-    def attempt_dl_file(self):
-        pass
 
 
     def process_document(self, row, df_collect_product_base_data, asset_type):

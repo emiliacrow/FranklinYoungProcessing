@@ -81,7 +81,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             try:
                 base_id = row['BaseProductPriceId']
             except KeyError:
-                self.obReporter.update_report('Alert','ProductPriceId Missing')
+                self.obReporter.update_report('Alert','BaseProductPriceId Missing')
                 return False, df_collect_product_base_data
 
             ecat_id = row['ECATProductPriceId']
@@ -93,7 +93,6 @@ class BigCommerceRTLObject(BasicProcessObject):
             vendor_part_number = row['VendorPartNumber']
 
             update_asset = -1
-
             if 'UpdateAssets' in row:
                 update_asset = row['UpdateAssets']
 
