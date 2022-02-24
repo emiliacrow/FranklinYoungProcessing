@@ -469,9 +469,9 @@ class BasicProcessObject:
             test_val = int(test_val)
         except ValueError:
             if test_val.lower() in ['n','no']:
-                test_val = 1
-            elif test_val.lower() in ['y','yes']:
                 test_val = 0
+            elif test_val.lower() in ['y','yes']:
+                test_val = 1
 
         if test_val not in [0, 1]:
             self.obReporter.update_report('Alert', 'Review {0}'.format(isCol))
