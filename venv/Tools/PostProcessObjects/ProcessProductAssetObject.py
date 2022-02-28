@@ -186,9 +186,9 @@ class ProcessProductAssetObject(BasicProcessObject):
             # This is the true path to the file
             whole_path = str(os.getcwd()) + '\\' + temp_path
 
-            asset_url = each_asset_path.partition('Product Image URL: ')[2].partition(',')[0]
+            asset_url = asset_path.partition('Product Image URL: ')[2].partition(',')[0]
 
-            image_caption = each_asset_path.partition('Product Image Description: ')[2].partition(',')[0]
+            image_caption = asset_path.partition('Product Image Description: ')[2].partition(',')[0]
 
             if os.path.exists(whole_path):
                 object_name = whole_path.rpartition('\\')[2]
@@ -220,6 +220,8 @@ class ProcessProductAssetObject(BasicProcessObject):
         for each_image_set in images_from_file:
             whole_path = each_image_set[0]
             object_name = each_image_set[1]
+            if object_name == '':
+                continue
             image_caption = each_image_set[2]
             s3_name = manufacturer_name + '/' + object_name
 
