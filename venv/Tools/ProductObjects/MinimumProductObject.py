@@ -346,7 +346,11 @@ class MinimumProduct(BasicProcessObject):
 
 
     def process_long_desc(self, df_collect_product_base_data, row):
-        short_desc = str(row['ShortDescription'])
+        try:
+            short_desc = str(row['ShortDescription'])
+        except KeyError:
+            short_desc = ''
+            df_collect_product_base_data['ShortDescription'] = [short_desc]
 
         if 'ProductName' not in row:
             if len(short_desc) > 40:
@@ -457,8 +461,8 @@ class MinimumProduct(BasicProcessObject):
 
 
 class UpdateMinimumProduct(MinimumProduct):
-    req_fields = ['ShortDescription', 'ManufacturerPartNumber',
-                                'CountryOfOrigin', 'ManufacturerName','FyCatalogNumber']
+    req_fields = ['FyCatalogNumber', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
+                  'CountryOfOrigin', 'ManufacturerName']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
