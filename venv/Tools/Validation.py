@@ -22,6 +22,16 @@ class Validator:
 
         return True
 
+    def review_product_number(self, product_number):
+        test_number = product_number[:4]+product_number[5:]
+        test_number = test_number.replace(' ','')
+        pattern = '(\W)'
+        match = re.search(pattern, test_number)
+        if match:
+            return False
+
+        return True
+
     def run_cleaning(self, in_phrase):
         out_phrase = in_phrase
 
@@ -38,6 +48,15 @@ class Validator:
         return return_val
 
     def clean_part_number(self,str_to_clean, leave_gap = False):
+        pattern = '(\W)'
+        if leave_gap:
+            str_to_clean = re.sub(pattern, ' ', str_to_clean)
+        else:
+            str_to_clean = re.sub(pattern, '', str_to_clean)
+        str_to_clean = str_to_clean.strip()
+        return str_to_clean
+
+    def clean_country_name(self,str_to_clean, leave_gap = False):
         pattern = '(\-|\.|`|,|/|\+|\&|\_|\s|\"|\'|#|=|\$|\\\\|\(|\))'
         if leave_gap:
             str_to_clean = re.sub(pattern, ' ', str_to_clean)

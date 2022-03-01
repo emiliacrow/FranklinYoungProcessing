@@ -139,7 +139,7 @@ class CategoryProcessor(BasicProcessObject):
             description = description.replace('  ',' ')
             description = description.lower()
 
-            description = self.obValidator.clean_part_number(description, leave_gap = True)
+            description = self.obValidator.clean_country_name(description, leave_gap = True)
 
             lst_description = description.split()
             lst_description = list(dict.fromkeys(lst_description))

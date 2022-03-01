@@ -110,6 +110,13 @@ class MinimumProductPrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','Can\'t identify product number')
                 return success, df_collect_product_base_data
 
+
+            fy_product_number = row['FyProductNumber']
+            b_pass_number_check = self.obValidator.review_product_number(fy_product_number)
+            if not b_pass_number_check:
+                self.obReporter.update_report('Alert', 'Your product number contains outlawed characters')
+                return False, df_collect_product_base_data
+
             if ('ProductTaxClass' not in row):
                 df_collect_product_base_data['ProductTaxClass'] = 'Default Tax Class'
 

@@ -157,7 +157,7 @@ class MinimumProduct(BasicProcessObject):
             lst_ids = []
             for colName, row in df_attribute.iterrows():
                 country = row['CountryOfOrigin']
-                country = self.obValidator.clean_part_number(country)
+                country = self.obValidator.clean_country_name(country)
                 country = country.upper()
                 if (len(country) == 2):
                     if country in self.df_country_translator['CountryCode'].tolist():
@@ -340,6 +340,13 @@ class MinimumProduct(BasicProcessObject):
                     self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                     df_collect_product_base_data[each_bool] = [0]
 
+            fy_catalog_number = row['FyCatalogNumber']
+            b_pass_number_check = self.obValidator.review_product_number(fy_catalog_number)
+            if not b_pass_number_check:
+                self.obReporter.update_report('Alert', 'Your catalog number contains outlawed characters')
+                return False, df_collect_product_base_data
+
+
         return_df_line_product = self.minimum_product(df_collect_product_base_data)
 
         return True, return_df_line_product
@@ -418,6 +425,7 @@ class MinimumProduct(BasicProcessObject):
             df_collect_product_base_data['ShippingInstructionsId'] = 1
 
         return True, df_collect_product_base_data
+
 
     def minimum_product(self,df_line_product):
         # here all processing and checks have been done
