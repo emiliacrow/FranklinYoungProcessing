@@ -19,15 +19,7 @@ class ProductAgniKaiObject(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
-        # 'ManufacturerPartNumber', 'db_IsProductNumberOverride'
-        self.df_override_lookup = self.obDal.get_overrides()
-        self.identify_overrides()
         return self.df_product
-
-
-    def identify_overrides(self):
-        self.df_product = self.df_product.merge(self.df_override_lookup, how='left', on=['ManufacturerPartNumber'])
-
 
 
     def remove_private_headers(self):

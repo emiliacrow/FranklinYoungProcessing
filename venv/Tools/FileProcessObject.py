@@ -60,6 +60,12 @@ class FileProcessor(BasicProcessObject):
         if len(overlap) >= 1:
             self.is_viable = True
 
+    def batch_preprocessing(self):
+        if self.proc_to_run == 'Assign FyPartNumbers':
+            # 'ManufacturerPartNumber', 'db_IsProductNumberOverride'
+            self.df_override_lookup = self.obDal.get_overrides()
+            self.df_product = self.df_product.merge(self.df_override_lookup, how='left',
+                                                        on=['ManufacturerPartNumber'])
 
     def process_product_line(self, df_line_product):
         self.success = True
