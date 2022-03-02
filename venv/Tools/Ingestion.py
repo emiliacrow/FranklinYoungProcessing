@@ -556,16 +556,6 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.set_discon_product_price(self.product_collector)
 
-    def get_product_id_by_fy_catalog_number(self, fy_catalog_number):
-        return_id = -1
-        return_id = self.obDal.get_product_id_by_fy_catalog_number(fy_catalog_number)
-        return return_id
-
-    def get_product_id_by_manufacturer_part_number(self, manufacturer_part_number):
-        return_id = -1
-        return_id = self.obDal.get_product_id_by_manufacturer_part_number(manufacturer_part_number)
-        return return_id
-
 
     def fill_product(self, is_last, ProductId, FYProductNotes='', NatoStockNumber='', ModelNumber='', RequiredSampleSize='', NumberOfChannels='', GTIN='', SterilityId=-1, SurfaceTreatmentId=-1, PrecisionId=-1, ProductSEOId=-1, ComponentSetId=-1, FSCCodeId=-1, HazardousCodeId=-1, UNSPSCId=-1, NAICSCodeId=-1, NationalDrugCodeId=-1, ProductWarrantyId=-1, SpeciesId=-1):
         if (len(self.product_collector) > self.load_limit):

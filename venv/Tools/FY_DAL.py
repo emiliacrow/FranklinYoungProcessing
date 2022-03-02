@@ -587,18 +587,6 @@ class DalObject:
         runner.start()
 
 
-    def get_product_id_by_fy_catalog_number(self,newFYCatalogNumber):
-        proc_name = 'sequoia.get_Product_id_by_fy_catalog_number'
-        proc_args = (newFYCatalogNumber,)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
-
-    def get_product_id_by_manufacturer_part_number(self,newManufacturerPartNumber):
-        proc_name = 'sequoia.get_Product_id_by_manufacturer_part_number'
-        proc_args = (newManufacturerPartNumber,)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
-
     def get_product_price_lookup(self):
         proc_name = 'sequoia.get_ProductPrice_lookup'
         column_names = ['ProductId','ProductPriceId','FyProductNumber','VendorPartNumber']
