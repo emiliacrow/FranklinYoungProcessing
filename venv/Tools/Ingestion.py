@@ -520,10 +520,10 @@ class IngestionObject:
         return ingested_set
 
 
-    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0, newIsHazardous=0):
+    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0, newIsHazardous=0):
         # if this is the last to join, or if the size has hit the limit, send a runner
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
+            self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription,
                                                newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
@@ -532,7 +532,7 @@ class IngestionObject:
             self.obDal.min_product_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newProductName, newShortDescription,
+            self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription,
                                                newLongDescription, newECommerceLongDescription,
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
@@ -643,10 +643,6 @@ class IngestionObject:
 
     def get_product_price_id_by_fy_part_number(self,fy_part_number):
         success = self.obDal.get_product_price_id_by_fy_part_number(fy_part_number)
-        return success
-
-    def get_product_price_id_by_vendor_part_number(self,vendor_part_number):
-        success = self.obDal.get_product_price_id_by_vendor_part_number(vendor_part_number)
         return success
 
 

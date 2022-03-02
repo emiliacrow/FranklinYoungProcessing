@@ -434,6 +434,12 @@ class MinimumProduct(BasicProcessObject):
 
             fy_catalog_number = row['FyCatalogNumber']
             manufacturer_part_number = row['ManufacturerPartNumber']
+
+            b_override = 0
+            success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
+            if success and return_val == 1:
+                b_override = 1
+
             product_name = row['ProductName']
             short_desc = row['ShortDescription']
 
@@ -456,7 +462,7 @@ class MinimumProduct(BasicProcessObject):
             is_rx = row['IsRX']
             is_hazardous = row['IsHazardous']
 
-        self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_part_number, product_name, short_desc,
+        self.obIngester.ingest_product(self.is_last, fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id, is_controlled, is_disposible,

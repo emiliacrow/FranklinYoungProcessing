@@ -587,12 +587,6 @@ class DalObject:
         runner.start()
 
 
-    def get_product_price_lookup(self):
-        proc_name = 'sequoia.get_ProductPrice_lookup'
-        column_names = ['ProductId','ProductPriceId','FyProductNumber','VendorPartNumber']
-        df_product_lookup = self.get_lookup(proc_name,column_names)
-        return df_product_lookup
-
     def get_product_action_review_lookup(self):
         proc_name = 'sequoia.get_ProductActionReview_lookup'
         column_names = ['ProductId', 'ManufacturerPartNumber', 'FyCatalogNumber', 'ProductPriceId','FyProductNumber','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued']
@@ -605,11 +599,6 @@ class DalObject:
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 
-    def get_product_lookup(self):
-        proc_name = 'sequoia.get_Product_lookup'
-        column_names = ['ProductId','FyCatalogNumber','ManufacturerPartNumber']
-        df_product_lookup = self.get_lookup(proc_name,column_names)
-        return df_product_lookup
 
     def get_discon_products(self):
         proc_name = 'sequoia.get_discon_products_lookup'
@@ -685,11 +674,6 @@ class DalObject:
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
-    def get_product_price_id_by_vendor_part_number(self,vendor_part_number):
-        proc_name = 'sequoia.get_ProductPrice_id_by_VendorPartNumber'
-        proc_args = (vendor_part_number,)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
 
     def get_base_product_price_lookup_by_vendor_id(self, vendor_id):
         proc_name = 'sequoia.get_BasePrice_lookup_vendor_id'
@@ -713,6 +697,11 @@ class DalObject:
         df_category_match = self.get_lookup(proc_name, column_names, proc_args)
         return df_category_match
 
+    def get_overrides(self):
+        proc_name = 'sequoia.get_override_lookup'
+        column_names = ['ManufacturerPartNumber', 'db_IsProductNumberOverride']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
 
     def productdocument_cap(self, lst_productdocuments):
         proc_name = 'sequoia.ProductDocument_capture'
