@@ -356,6 +356,12 @@ class FileProcessor(BasicProcessObject):
             if success and return_val == 1:
                 b_override = True
 
+            if not b_override:
+                success, return_val = self.process_boolean(row, 'db_IsProductNumberOverride')
+                if success and return_val == 1:
+                    b_override = True
+                    df_collect_attribute_data['FyProductNumberOverride'] = [return_val]
+
             manufacturer_part_number = str(row['ManufacturerPartNumber'])
 
             fy_catalog_number, fy_product_number = self.build_part_number(row, manufacturer_part_number, manufacturer_prefix, unit_of_issue, b_override)
