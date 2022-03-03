@@ -487,10 +487,6 @@ class IngestionObject:
             return -1
 
 
-    def ingest_uoi(self, unit_of_issue_id, count, unit_of_measure_id):
-        return_id = self.obDal.unit_of_issue_cap(unit_of_issue_id, count, unit_of_measure_id)
-        return return_id
-
     def ingest_uoi_by_symbol(self, unit_of_issue, count, unit_of_measure):
         return_id = -1
         unit_of_issue_id = self.ingest_uoi_symbol(unit_of_issue)
@@ -637,13 +633,6 @@ class IngestionObject:
             self.obDal.base_price_cap(self.product_collector)
 
 
-    def get_product_price_id_by_fy_product_number(self,fy_product_number):
-        success = self.obDal.get_product_price_id_by_fy_product_number(fy_product_number)
-        return success
-
-    def get_product_price_id_by_fy_part_number(self,fy_part_number):
-        success = self.obDal.get_product_price_id_by_fy_part_number(fy_part_number)
-        return success
 
 
     def ecat_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract,

@@ -251,13 +251,6 @@ class DalObject:
         return return_id
 
 
-    def product_category_cap(self,newProductId,newParentCategoryId):
-        proc_name = 'sequoia.ProductCategory_capture_wrap'
-        proc_args = (newProductId,newParentCategoryId)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
-
-
     def client_cap(self,newClientname,newClientdesc=''):
         proc_name = 'sequoia.Client_capture_wrap'
         proc_args = (newClientdesc,newClientname)
@@ -541,13 +534,6 @@ class DalObject:
         return return_id
 
 
-    def unit_of_issue_cap(self,newUnitOfIssueSymbolId,newunitcount,newUnitOfMeasureSymbolId):
-        proc_name = 'sequoia.UnitOfIssue_capture_wrap'
-        proc_args = (newunitcount,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
-
-
     def get_unit_of_issue_symbol_lookup(self):
         proc_name = 'sequoia.get_UnitOfIssueSymbol_lookup'
         column_names = ['UnitOfIssueSymbolId','UnitOfIssueSymbol']
@@ -634,52 +620,12 @@ class DalObject:
         runner.start()
 
 
-    def max_product_price_cap(self,newFYCatalogNumber,newAmountPriceBreakLevel1,newAmountPriceBreakLevel2,newAmountPriceBreakLevel3,newQuantityPriceBreakLevel1,newQuantityPriceBreakLevel2,newQuantityPriceBreakLevel3,newVendorListPrice,newAllowPurchases,newFYPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueId,newUPC='',newVolume=-1,newWeight=-1,newSize='',newLength=-1,newVariantDesc='',newMinumumFlowTime='',newProfile='',newThicknessId=-1,newHeightId=-1,newDepthId=-1,newWidthId=-1,newCapacityId=-1,newTankCapacityId=-1,newVolumeUnitId=-1,newWeightUnitId=-1,newLengthUnitId=-1,newDimensionsId=-1,newInteriorDimensionsId=-1,newExteriorDimensionsId=-1,newMaterialId=-1,newColorId=-1,newSpeedId=-1,newTubeId=-1,newWeightRangeId=-1,newTemperatureRangeId=-1,newWavelengthId=-1,newWattageId=-1,newVoltageId=-1,newAmperageId=-1,newOuterDiameterId=-1,newInnerDiameterId=-1,newDiameterId=-1,newToleranceId=-1,newAccuracyId=-1,newMassId=-1,newApertureSizeId=-1,newApparelSizeId=-1,newParticleSizeId=-1,newPoreSizeId=-1):
-        proc_name = 'sequoia.MinimumProductPrice_capture_wrap'
-        proc_args = (newFYCatalogNumber,newAllowPurchases,newFYPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueId)
-        return_product_price_id = self.id_cap(proc_name, proc_args)
-
-        proc_name = 'sequoia.ProductPrice_fill_wrap'
-        proc_args = (
-        newProductPriceId, newUPC, newVolume, newWeight, newSize, newLength, newVariantDesc, newMinumumFlowTime,
-        newProfile, newAmountPriceBreakLevel1,newAmountPriceBreakLevel2,newAmountPriceBreakLevel3,
-        newQuantityPriceBreakLevel1, newQuantityPriceBreakLevel2, newQuantityPriceBreakLevel3,
-        newThicknessId, newHeightId, newDepthId, newWidthId, newCapacityId, newTankCapacityId,
-        newVolumeUnitId, newWeightUnitId, newLengthUnitId, newDimensionsId, newInteriorDimensionsId,
-        newExteriorDimensionsId, newMaterialId, newColorId, newSpeedId, newTubeId, newWeightRangeId,
-        newTemperatureRangeId, newWavelengthId, newWattageId, newVoltageId, newAmperageId, newOuterDiameterId,
-        newInnerDiameterId, newDiameterId, newToleranceId, newAccuracyId, newMassId, newApertureSizeId,
-        newApparelSizeId, newParticleSizeId, newPoreSizeId)
-        success = self.id_cap(proc_name, proc_args)
-
-        return success
-
     def base_price_cap(self, lst_base_product_price):
         proc_name = 'sequoia.BaseProductPrice_capture'
         proc_statement = 'CALL `sequoia`.`BaseProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_base_product_price)
         runner.start()
-
-
-    def get_product_price_id_by_fy_product_number(self,fy_product_number):
-        proc_name = 'sequoia.get_ProductPrice_id_by_FYProductNumber'
-        proc_args = (fy_product_number,)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
-
-    def get_product_price_id_by_fy_part_number(self,fy_part_number):
-        proc_name = 'sequoia.get_ProductPrice_id_by_FYPartNumber'
-        proc_args = (fy_part_number,)
-        return_id = self.id_cap(proc_name, proc_args)
-        return return_id
-
-
-    def get_base_product_price_lookup_by_vendor_id(self, vendor_id):
-        proc_name = 'sequoia.get_BasePrice_lookup_vendor_id'
-        column_names = ['FyProductNumber','ProductPriceId','db_VendorListPrice','db_Discount','db_shipping_cost','db_MarkUp_sell','db_MarkUp_list','db_ECommerceDiscount']
-        df_base_price_lookup = self.get_lookup(proc_name,column_names,vendor_id)
-        return df_base_price_lookup
 
 
     def get_base_product_price_lookup(self):
@@ -697,11 +643,13 @@ class DalObject:
         df_category_match = self.get_lookup(proc_name, column_names, proc_args)
         return df_category_match
 
+
     def get_overrides(self):
         proc_name = 'sequoia.get_override_lookup'
         column_names = ['ManufacturerPartNumber', 'db_IsProductNumberOverride']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
+
 
     def productdocument_cap(self, lst_productdocuments):
         proc_name = 'sequoia.ProductDocument_capture'
