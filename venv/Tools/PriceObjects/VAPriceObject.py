@@ -120,7 +120,7 @@ class VAPrice(BasicProcessObject):
 
             if 'VASellPrice' not in row:
                 iff_fee_percent = 0.995
-                va_sell_price = va_base_price/iff_fee_percent
+                va_sell_price = round(va_base_price/iff_fee_percent, 2)
                 return_df_line_product['GSASellPrice'] = va_sell_price
 
             if 'MfcPrice' not in row:
