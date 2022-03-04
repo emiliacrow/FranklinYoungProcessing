@@ -126,7 +126,10 @@ class MinimumProductPrice(BasicProcessObject):
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
                     self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
-                    df_collect_product_base_data[each_bool] = [0]
+                    if each_bool == 'AllowPurchases':
+                        df_collect_product_base_data[each_bool] = [1]
+                    else:
+                        df_collect_product_base_data[each_bool] = [0]
 
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)

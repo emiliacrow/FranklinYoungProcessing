@@ -437,7 +437,13 @@ class BasePrice(BasicProcessObject):
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             date_catalog_received = datetime.datetime.now()
-            is_visible = row['IsVisible']
+
+            success, return_val = self.process_boolean(row, 'IsVisible')
+            if success:
+                df_collect_product_base_data['IsVisible'] = [return_val]
+            else:
+                self.obReporter.update_report('Alert', '{0} was set to 1'.format('IsVisible'))
+                df_collect_product_base_data['IsVisible'] = [1]
 
             if 'VAProductPriceId' in row:
                 va_product_price_id = row['VAProductPriceId']
