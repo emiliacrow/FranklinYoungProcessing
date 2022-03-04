@@ -34,6 +34,7 @@ class HeaderTranslator():
                             'UnitOfMeasure':['UnitOfMeasure','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
                             'IsHazardous':['IsHazardous','Is Hazardous','Hazardous','is_hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
+                            'IsVisible':['IsVisible','Is Visible','is_visible','is visible'],
                             'LeadTime':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
                             'LeadTimeExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
 
