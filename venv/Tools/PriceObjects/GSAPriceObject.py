@@ -167,11 +167,11 @@ class GSAPrice(BasicProcessObject):
 
             sin = row['GSA_Sin']
 
-            if (is_discontinued != -1 or allow_purchases != -1):
-                price_id = row['ProductPriceId']
+            #if (is_discontinued != -1 or allow_purchases != -1):
+            #    price_id = row['ProductPriceId']
 
-                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
-                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, 1, -1)
+                #self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
+                #self.obIngester.set_bc_update_toggles(price_id, fy_product_number, 1, -1)
 
         self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,

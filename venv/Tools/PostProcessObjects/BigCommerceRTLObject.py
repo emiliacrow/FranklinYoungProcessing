@@ -257,7 +257,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
 
         if (is_visible != -1):
-            self.obIngester.set_is_visible(base_id, is_visible)
+            self.obIngester.set_is_visible(fy_product_number, base_id, is_visible)
 
 
         if (update_asset != -1):
