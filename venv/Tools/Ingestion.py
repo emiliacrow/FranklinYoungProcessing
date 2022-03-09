@@ -784,14 +784,14 @@ class IngestionObject:
             self.obDal.set_discon(self.product_discon_collector)
 
 
-    def set_is_visible(self,fy_product_number, base_id, is_visible):
+    def set_is_visible(self, base_id, is_visible):
         if (len(self.product_is_visible_collector) > self.load_limit):
-            self.product_is_visible_collector.append((fy_product_number, base_id, is_visible))
+            self.product_is_visible_collector.append((base_id, is_visible))
             self.obDal.set_is_visible(self.product_is_visible_collector)
             self.product_is_visible_collector = []
 
         else:
-            self.product_is_visible_collector.append((fy_product_number, base_id, is_visible))
+            self.product_is_visible_collector.append((base_id, is_visible))
 
     def set_is_visible_cleanup(self):
         if self.product_is_visible_collector != []:

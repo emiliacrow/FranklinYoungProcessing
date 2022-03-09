@@ -109,13 +109,13 @@ class GSAPrice(BasicProcessObject):
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
             if 'GSABasePrice' not in row:
-                approved_list_price = float(row['GSAApprovedListPrice'])
+                approved_list_price = round(float(row['GSAApprovedListPrice']), 2)
                 approved_percent = float(row['GSAApprovedPercent'])
                 gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
 
                 return_df_line_product['GSABasePrice'] = gsa_base_price
             else:
-                gsa_base_price = float(row['GSABasePrice'])
+                gsa_base_price = round(float(row['GSABasePrice']), 2)
                 return_df_line_product['GSABasePrice'] = gsa_base_price
 
             if 'GSASellPrice' not in row:
@@ -151,12 +151,12 @@ class GSAPrice(BasicProcessObject):
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
             if 'GSAApprovedBasePrice' in row:
-                approved_base_price = row['GSAApprovedBasePrice']
+                approved_base_price = round(float(row['GSAApprovedBasePrice']),2)
             else:
                 approved_base_price = ''
 
-            approved_sell_price = row['GSAApprovedSellPrice']
-            approved_list_price = row['GSAApprovedListPrice']
+            approved_sell_price = round(float(row['GSAApprovedSellPrice']),2)
+            approved_list_price = round(float(row['GSAApprovedListPrice']),2)
             approved_percent = row['GSAApprovedPercent']
 
             gsa_base_price = row['GSABasePrice']
@@ -167,11 +167,11 @@ class GSAPrice(BasicProcessObject):
 
             sin = row['GSA_Sin']
 
-            #if (is_discontinued != -1 or allow_purchases != -1):
-            #    price_id = row['ProductPriceId']
-
-                #self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
-                #self.obIngester.set_bc_update_toggles(price_id, fy_product_number, 1, -1)
+        print(fy_product_number, on_contract, approved_base_price,
+                                              approved_sell_price, approved_list_price, contract_manu_number,
+                                              contract_number, contract_mod_number, is_pricing_approved,
+                                              approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
+                                              mfc_precent, mfc_price, sin)
 
         self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
