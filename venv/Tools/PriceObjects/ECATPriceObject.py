@@ -147,14 +147,14 @@ class ECATPrice(BasicProcessObject):
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
             if 'ECATApprovedBasePrice' in row:
-                approved_base_price = row['ECATApprovedBasePrice']
+                approved_base_price = round(float(row['ECATApprovedBasePrice']), 2)
             else:
                 approved_base_price = ''
 
-            approved_sell_price = row['ECATApprovedSellPrice']
-            approved_list_price = row['ECATApprovedListPrice']
+            approved_sell_price = round(float(row['ECATApprovedSellPrice']), 2)
+            approved_list_price = round(float(row['ECATApprovedListPrice']), 2)
 
-            ecat_sell_price = row['ECATSellPrice']
+            ecat_sell_price = round(float(row['ECATSellPrice']), 2)
             max_markup = row['ECATMaxMarkup']
 
         self.obIngester.ecat_product_price_cap(base_product_price_id, fy_product_number, on_contract,

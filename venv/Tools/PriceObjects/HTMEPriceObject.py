@@ -147,14 +147,14 @@ class HTMEPrice(BasicProcessObject):
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
             if 'HTMEApprovedBasePrice' in row:
-                approved_base_price = row['HTMEApprovedBasePrice']
+                approved_base_price = round(float(row['HTMEApprovedBasePrice']), 2)
             else:
                 approved_base_price = ''
 
-            approved_sell_price = row['HTMEApprovedSellPrice']
-            approved_list_price = row['HTMEApprovedListPrice']
+            approved_sell_price = round(float(row['HTMEApprovedSellPrice']), 2)
+            approved_list_price = round(float(row['HTMEApprovedListPrice']), 2)
 
-            htme_sell_price = row['HTMESellPrice']
+            htme_sell_price = round(float(row['HTMESellPrice']), 2)
             max_markup = row['HTMEMaxMarkup']
 
         self.obIngester.htme_product_price_cap(base_product_price_id, fy_product_number, on_contract,

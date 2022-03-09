@@ -109,13 +109,13 @@ class VAPrice(BasicProcessObject):
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
             if 'VABasePrice' not in row:
-                approved_list_price = float(row['VAApprovedListPrice'])
+                approved_list_price = round(float(row['VAApprovedListPrice']), 2)
                 approved_percent = float(row['VAApprovedPercent'])
                 va_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
 
                 return_df_line_product['VABasePrice'] = va_base_price
             else:
-                va_base_price = float(row['VABasePrice'])
+                va_base_price = round(float(row['VABasePrice']), 2)
                 return_df_line_product['VABasePrice'] = va_base_price
 
             if 'VASellPrice' not in row:

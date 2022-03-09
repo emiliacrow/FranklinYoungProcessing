@@ -167,12 +167,6 @@ class GSAPrice(BasicProcessObject):
 
             sin = row['GSA_Sin']
 
-        print(fy_product_number, on_contract, approved_base_price,
-                                              approved_sell_price, approved_list_price, contract_manu_number,
-                                              contract_number, contract_mod_number, is_pricing_approved,
-                                              approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
-                                              mfc_precent, mfc_price, sin)
-
         self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
