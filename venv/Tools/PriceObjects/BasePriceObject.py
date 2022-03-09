@@ -105,7 +105,6 @@ class BasePrice(BasicProcessObject):
             if success:
                 df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
 
-
         success, df_line_product = self.base_price(df_collect_product_base_data)
         return success, df_line_product
 
@@ -196,7 +195,7 @@ class BasePrice(BasicProcessObject):
         if success == False or fy_cost == 0:
             # fail if it's negative
             self.obReporter.update_report('Fail', 'Please check that FyCost is a positive number')
-            return success, df_collect_product_base_data
+            return False, df_collect_product_base_data
 
 
         # try to get vendor list price from the file
