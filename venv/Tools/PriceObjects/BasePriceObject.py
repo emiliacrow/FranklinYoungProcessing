@@ -106,14 +106,6 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
 
 
-            if (is_discontinued != -1 or allow_purchases != -1):
-                price_id = row['ProductPriceId']
-                fy_product_number = row['FyProductNumber']
-
-                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
-                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, 1, -1)
-
-
         success, df_line_product = self.base_price(df_collect_product_base_data)
         return success, df_line_product
 
