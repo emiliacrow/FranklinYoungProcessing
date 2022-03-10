@@ -194,6 +194,7 @@ class BasePrice(BasicProcessObject):
         success, fy_cost = self.float_check(fy_cost,'FyCost')
         if success == False or fy_cost == 0:
             # fail if it's negative
+            # we could allow these to get through in some way
             self.obReporter.update_report('Fail', 'Please check that FyCost is a positive number')
             return False, df_collect_product_base_data
 
