@@ -340,11 +340,17 @@ class MinimumProduct(BasicProcessObject):
                     self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                     df_collect_product_base_data[each_bool] = [0]
 
+            b_override = False
+            success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
+            if success and return_val == 1:
+                b_override = True
+
             fy_catalog_number = row['FyCatalogNumber']
             b_pass_number_check = self.obValidator.review_product_number(fy_catalog_number)
             if not b_pass_number_check:
                 self.obReporter.update_report('Alert', 'Your catalog number contains outlawed characters')
-                return False, df_collect_product_base_data
+                if not b_override:
+                    return False, df_collect_product_base_data
 
 
         return_df_line_product = self.minimum_product(df_collect_product_base_data)
