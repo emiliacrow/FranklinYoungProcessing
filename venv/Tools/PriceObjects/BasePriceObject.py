@@ -525,8 +525,6 @@ class BasePrice(BasicProcessObject):
 
     def trigger_ingest_cleanup(self):
         self.obIngester.ingest_base_price_cleanup()
-        self.obIngester.set_is_discon_allow_purchase_cleanup()
-        self.obIngester.set_bc_update_toggles_cleanup()
 
 
 
