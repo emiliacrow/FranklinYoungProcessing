@@ -109,23 +109,27 @@ class GSAPrice(BasicProcessObject):
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
             if 'GSABasePrice' not in row:
-                approved_list_price = round(float(row['GSAApprovedListPrice']), 2)
+                approved_list_price = float(row['GSAApprovedListPrice'])
                 approved_percent = float(row['GSAApprovedPercent'])
-                gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
+                gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),4)
+                self.obReporter.update_report('Alert','GSABasePrice was calculated')
 
                 return_df_line_product['GSABasePrice'] = gsa_base_price
             else:
-                gsa_base_price = round(float(row['GSABasePrice']), 2)
+                gsa_base_price = round(float(row['GSABasePrice']), 4)
                 return_df_line_product['GSABasePrice'] = gsa_base_price
+                self.obReporter.update_report('Alert','GSABasePrice was rounded to 4')
 
             if 'GSASellPrice' not in row:
                 iff_fee_percent = 0.9925
                 gsa_sell_price = round(gsa_base_price/iff_fee_percent, 2)
                 return_df_line_product['GSASellPrice'] = gsa_sell_price
+                self.obReporter.update_report('Alert','GSASellPrice was calculated')
 
             if 'MfcPrice' not in row:
                 mfc_precent = float(row['MfcDiscountPercent'])
                 return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
+                self.obReporter.update_report('Alert','MfcPrice was calculated')
 
         return success, return_df_line_product
 
@@ -151,13 +155,13 @@ class GSAPrice(BasicProcessObject):
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
             if 'GSAApprovedBasePrice' in row:
-                approved_base_price = round(float(row['GSAApprovedBasePrice']),2)
+                approved_base_price = float(row['GSAApprovedBasePrice'])
             else:
                 approved_base_price = ''
 
-            approved_sell_price = round(float(row['GSAApprovedSellPrice']),2)
-            approved_list_price = round(float(row['GSAApprovedListPrice']),2)
-            approved_percent = row['GSAApprovedPercent']
+            approved_sell_price = float(row['GSAApprovedSellPrice'])
+            approved_list_price = float(row['GSAApprovedListPrice'])
+            approved_percent = float(row['GSAApprovedPercent'])
 
             gsa_base_price = row['GSABasePrice']
             gsa_sell_price = row['GSASellPrice']
@@ -166,6 +170,7 @@ class GSAPrice(BasicProcessObject):
             mfc_price = row['MfcPrice']
 
             sin = row['GSA_Sin']
+
 
         self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
