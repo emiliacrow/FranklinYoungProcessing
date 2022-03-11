@@ -12,6 +12,8 @@ import pymysql
 import threading
 import subprocess
 
+
+from pymysql.err import OperationalError
 from sqlalchemy import create_engine
 
 class S3Object:
@@ -758,14 +760,35 @@ class DataRunner(threading.Thread):
     def run(self):
         print('Runner report start: ' + self.proc_name)
         obCursor = self.connection.cursor()
+        fail_retries = []
 
+        count = 0
         for each_item in self.lst_data:
-            obCursor.callproc(self.proc_name, args = each_item)
-
+            count += 1
+            print('Runner count: {0}'.format(count))
+            try:
+                obCursor.callproc(self.proc_name, args = each_item)
+            except OperationalError:
+                fail_retries.append(each_item)
+                print('Wait fail count: {0}'.format(len(fail_retries)))
         #obCursor.executemany(self.proc_statement, self.lst_data)
+
+        drops = 0
+        count = 0
+        print('Retry count: {0}'.format(len(fail_retries)))
+        for each_item in fail_retries:
+            count += 1
+            print('Runner count: {0}'.format(count))
+            try:
+                obCursor.callproc(self.proc_name, args = each_item)
+            except OperationalError:
+                drops += 1
+                print('Wait fail count: {0}'.format(drops))
+
 
         self.connection.commit()
         self.connection.close()
+
         print('Runner report end: ' + self.proc_name)
 
 
