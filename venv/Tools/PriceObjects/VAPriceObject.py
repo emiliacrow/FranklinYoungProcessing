@@ -109,23 +109,27 @@ class VAPrice(BasicProcessObject):
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
             if 'VABasePrice' not in row:
-                approved_list_price = round(float(row['VAApprovedListPrice']), 2)
+                approved_list_price = float(row['VAApprovedListPrice'])
                 approved_percent = float(row['VAApprovedPercent'])
-                va_base_price = round(approved_list_price-(approved_list_price*approved_percent),2)
+                va_base_price = round(approved_list_price-(approved_list_price*approved_percent),4)
+                self.obReporter.update_report('Alert','VABasePrice was calculated')
 
                 return_df_line_product['VABasePrice'] = va_base_price
             else:
-                va_base_price = round(float(row['VABasePrice']), 2)
+                va_base_price = round(float(row['VABasePrice']), 4)
                 return_df_line_product['VABasePrice'] = va_base_price
+                self.obReporter.update_report('Alert','VABasePrice was rounded to 4')
 
             if 'VASellPrice' not in row:
                 iff_fee_percent = 0.995
                 va_sell_price = round(va_base_price/iff_fee_percent, 2)
-                return_df_line_product['GSASellPrice'] = va_sell_price
+                return_df_line_product['VASellPrice'] = va_sell_price
+                self.obReporter.update_report('Alert','VASellPrice was calculated')
 
             if 'MfcPrice' not in row:
                 mfc_precent = float(row['MfcDiscountPercent'])
                 return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
+                self.obReporter.update_report('Alert','MfcPrice was calculated')
 
         return success, return_df_line_product
 
@@ -136,7 +140,7 @@ class VAPrice(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            on_contract = row['OnContract']
+            on_contract = row['VAOnContract']
 
             contract_number = 'VA797H-16-D-0024/SPE2D1-16-D-0019'
             contract_mod_number = row['VAContractModificationNumber']
@@ -151,13 +155,13 @@ class VAPrice(BasicProcessObject):
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
             if 'VAApprovedBasePrice' in row:
-                approved_base_price = row['VAApprovedBasePrice']
+                approved_base_price = float(row['VAApprovedBasePrice'])
             else:
                 approved_base_price = ''
 
-            approved_sell_price = row['VAApprovedSellPrice']
-            approved_list_price = row['VAApprovedListPrice']
-            approved_percent = row['VAApprovedPercent']
+            approved_sell_price = float(row['VAApprovedSellPrice'])
+            approved_list_price = float(row['VAApprovedListPrice'])
+            approved_percent = float(row['VAApprovedPercent'])
 
             va_base_price = row['VABasePrice']
             va_sell_price = row['VASellPrice']
