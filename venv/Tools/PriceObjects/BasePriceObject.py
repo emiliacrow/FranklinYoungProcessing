@@ -20,7 +20,7 @@ class BasePrice(BasicProcessObject):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Base Product Price'
         self.lindas_increase = 0.25
-        self.fallback_margin = 0.15
+        self.fallback_margin = 0.95
 
     def batch_preprocessing(self):
         self.remove_private_headers()
