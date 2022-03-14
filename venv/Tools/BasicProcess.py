@@ -140,7 +140,7 @@ class BasicProcessObject:
         self.df_full_product_lookup['Filter'] = 'Ready'
 
         # match on everything
-        self.df_product = self.df_product.merge(self.df_full_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
+        self.df_product = self.df_product.merge(self.df_full_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
 
         # set aside the good matches
         self.df_full_matched_product = self.df_product[(self.df_product['Filter'] == 'Ready')]
@@ -157,7 +157,7 @@ class BasicProcessObject:
         # round 2
 
         self.df_pricing_product_lookup['Filter'] = 'Base Pricing'
-        self.df_product = self.df_product.merge(self.df_pricing_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
+        self.df_product = self.df_product.merge(self.df_pricing_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
 
         # set aside the good matches
         self.df_pricing_matched_product = self.df_product[(self.df_product['Filter'] == 'Base Pricing')]
@@ -172,7 +172,7 @@ class BasicProcessObject:
             self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns = ['ProductPriceId','FyProductNumber','VendorPartNumber'])
 
         self.df_product_agni_kai_lookup['Filter'] = 'Partial'
-        self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
+        self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber'])
 
         self.df_manu_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')].copy()
 
@@ -239,15 +239,15 @@ class BasicProcessObject:
         self.df_product = self.df_product[(self.df_product['Filter'] != 'New')]
 
 
-        # to dataframe
-        self.df_manufacturer_product = self.df_product_agni_kai_lookup_copy[['ManufacturerPartNumber','ProductId']].copy()
+        # setting required columns to a dataframe
+        self.df_manufacturer_product = self.df_product_agni_kai_lookup_copy[['ManufacturerName','ManufacturerPartNumber','ProductId']].copy()
         self.df_manufacturer_product = self.df_manufacturer_product.drop_duplicates()
 
         self.df_manufacturer_product['Filter'] = 'Partial'
         self.df_new_products = self.df_new_products.drop(columns = ['Filter','ProductId'])
 
         # this is just to mark which ones are updatable
-        self.df_new_products = self.df_new_products.merge(self.df_manufacturer_product, how='left',on=['ManufacturerPartNumber'])
+        self.df_new_products = self.df_new_products.merge(self.df_manufacturer_product, how='left',on=['ManufacturerName','ManufacturerPartNumber'])
 
         self.df_update_products = self.df_new_products[(self.df_new_products['Filter'] == 'Partial')]
         self.df_new_products = self.df_new_products[(self.df_new_products['Filter'] != 'Partial')]
@@ -264,10 +264,10 @@ class BasicProcessObject:
 
 
         if len(self.df_new_products.index) > 0:
-            self.df_product = self.df_product.append(self.df_new_products)
+            self.df_product = pandas.concat([self.df_product,self.df_new_products], ignore_index=True)
 
         if len(self.df_update_products.index) > 0:
-            self.df_product = self.df_product.append(self.df_update_products)
+            self.df_product = pandas.concat([self.df_product,self.df_update_products], ignore_index=True)
 
         self.df_product.loc[(self.df_product['db_IsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued'
 

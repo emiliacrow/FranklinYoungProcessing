@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber', 'FyCost']
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorPartNumber', 'FyCost']
     sup_fields = []
     att_fields = []
     gen_fields = []

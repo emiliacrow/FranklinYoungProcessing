@@ -6,7 +6,7 @@
 from Tools.BasicProcess import BasicProcessObject
 
 class ProductAgniKaiObject(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorPartNumber']
     sup_fields = []
     att_fields = []
     gen_fields = []

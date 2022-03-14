@@ -9,7 +9,7 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 class VAPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber',
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorPartNumber',
                   'VAOnContract', 'VAApprovedListPrice', 'VAApprovedPercent', 'MfcDiscountPercent',
                   'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved']
     sup_fields = []

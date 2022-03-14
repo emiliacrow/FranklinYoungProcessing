@@ -9,7 +9,7 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber',
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorPartNumber',
                   'GSAOnContract', 'GSAApprovedListPrice', 'GSAApprovedPercent', 'MfcDiscountPercent',
                   'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
     sup_fields = []

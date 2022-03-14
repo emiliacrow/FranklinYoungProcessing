@@ -9,7 +9,7 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 class ECATPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber',
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorPartNumber',
                   'ECATOnContract', 'ECATApprovedListPrice', 'ECATMaxMarkup', 'ECATContractModificationNumber',
                   'ECATApprovedPriceDate','ECATPricingApproved']
     sup_fields = []

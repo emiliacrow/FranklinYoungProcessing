@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 # keep this
 class MinimumProduct(BasicProcessObject):
-    req_fields = ['FyCatalogNumber', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
                   'ShortDescription', 'CountryOfOrigin', 'ManufacturerName', 'Category']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
@@ -481,8 +481,8 @@ class MinimumProduct(BasicProcessObject):
 
 
 class UpdateMinimumProduct(MinimumProduct):
-    req_fields = ['FyCatalogNumber', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
-                  'CountryOfOrigin', 'ManufacturerName']
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
+                  'CountryOfOrigin']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',

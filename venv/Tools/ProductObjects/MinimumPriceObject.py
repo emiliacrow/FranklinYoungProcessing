@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorPartNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -219,7 +219,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.obIngester.ingest_product_price_cleanup()
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
-    req_fields = ['FyCatalogNumber','ManufacturerPartNumber','FyProductNumber','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorPartNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []

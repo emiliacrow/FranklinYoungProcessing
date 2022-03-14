@@ -9,7 +9,7 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 class HTMEPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber',
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorPartNumber',
                   'HTMEOnContract', 'HTMEApprovedListPrice', 'HTMEMaxMarkup', 'HTMEContractModificationNumber',
                   'HTMEApprovedPriceDate','HTMEPricingApproved']
     sup_fields = []

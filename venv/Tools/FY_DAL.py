@@ -576,8 +576,8 @@ class DalObject:
 
 
     def get_product_action_review_lookup(self):
-        proc_name = 'sequoia.get_ProductActionReview_lookup'
-        column_names = ['ProductId', 'ManufacturerPartNumber', 'FyCatalogNumber', 'ProductPriceId','FyProductNumber','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued']
+        proc_name = 'sequoia.get_ProductActionReview2_lookup'
+        column_names = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber', 'ProductPriceId','FyProductNumber','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued']
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 
