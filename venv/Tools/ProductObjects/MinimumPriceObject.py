@@ -192,10 +192,13 @@ class MinimumProductPrice(BasicProcessObject):
         return True, df_collect_product_base_data
 
     def minimum_product_price(self,df_line_product):
+        fy_part_number = ''
         for colName, row in df_line_product.iterrows():
             fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']
-            fy_part_number = row['FyPartNumber']
+            if 'FyPartNumber' in row:
+                fy_part_number = row['FyPartNumber']
+
             product_tax_class = row['ProductTaxClass']
             vendor_part_number = row['VendorPartNumber']
             is_discontinued = row['IsDiscontinued']
