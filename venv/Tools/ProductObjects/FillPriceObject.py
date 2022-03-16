@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FillProductPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerPartNumber','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName', 'VendorPartNumber']
     att_fields = ['Accuracy', 'Amperage', 'ApertureSize', 'ApparelSize', 'Capacity', 'Color', 'Component',
                           'Depth', 'Diameter', 'Dimensions', 'ExteriorDimensions', 'Height', 'InnerDiameter',
                           'InteriorDimensions', 'Mass', 'Material', 'OuterDiameter', 'ParticleSize', 'PoreSize',
@@ -35,18 +35,18 @@ class FillProductPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update', 'Base Pricing','Update-product','Update-vendor']
+        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
 
         if row['Filter'] == 'New':
             self.obReporter.update_report('Alert', 'Passed filtering as a new product')
-            return False
-
-        elif row['Filter'] in ['Ready', 'Update', 'Update-product', 'Update-vendor', 'Base Pricing']:
-            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
-        elif row['Filter'] ==  'Partial':
-            self.obReporter.update_report('Alert', 'Passed filtering as Partial product')
+        elif row['Filter'] in ['ConfigurationChanges','Partial','PartNumberOverride', 'VendorPartNumberChange', 'Base Pricing','Update-product','Update-vendor']:
+            self.obReporter.update_report('Alert', 'Passed filtering as new configuration')
+            return True
+
+        elif row['Filter'] == 'Ready':
+            self.obReporter.update_report('Alert', 'Passed filtering as ready')
             return False
 
         elif row['Filter'] == 'Possible Duplicate':
@@ -56,7 +56,6 @@ class FillProductPrice(BasicProcessObject):
         else:
             self.obReporter.update_report('Fail', 'Failed filtering')
             return False
-
 
 
     def remove_private_headers(self):

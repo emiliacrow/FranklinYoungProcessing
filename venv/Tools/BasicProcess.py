@@ -140,14 +140,14 @@ class BasicProcessObject:
         self.df_full_product_lookup['Filter'] = 'Ready'
 
         # match on everything
-        self.df_product = self.df_product.merge(self.df_full_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
+        self.df_product = self.df_product.merge(self.df_full_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
 
         # set aside the good matches
         self.df_full_matched_product = self.df_product[(self.df_product['Filter'] == 'Ready')]
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
-        self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','BaseProductPriceId'])
+        self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'])
 
 
         # set the partial look up
@@ -157,19 +157,19 @@ class BasicProcessObject:
         # round 2
 
         self.df_pricing_product_lookup['Filter'] = 'Base Pricing'
-        self.df_product = self.df_product.merge(self.df_pricing_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorPartNumber'])
+        self.df_product = self.df_product.merge(self.df_pricing_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
 
         # set aside the good matches
         self.df_pricing_matched_product = self.df_product[(self.df_product['Filter'] == 'Base Pricing')]
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Base Pricing')]
-        self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId'])
+        self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','db_IsDiscontinued'])
 
 
         # round 3
         if 'ProductPriceId' in self.df_product_agni_kai_lookup.columns:
-            self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns = ['ProductPriceId','FyProductNumber','VendorPartNumber'])
+            self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns = ['ProductPriceId','FyProductNumber','VendorPartNumber','VendorName'])
 
         self.df_product_agni_kai_lookup['Filter'] = 'Partial'
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber'])
@@ -190,15 +190,15 @@ class BasicProcessObject:
 
         if len(self.df_full_matched_product.index) > 0:
             self.df_full_matched_product = self.df_full_matched_product.drop_duplicates()
-            self.df_product = self.df_product.append(self.df_full_matched_product)
+            self.df_product = pandas.concat([self.df_product,self.df_full_matched_product], ignore_index = True)
 
         if len(self.df_pricing_matched_product.index) > 0:
             self.df_pricing_matched_product = self.df_pricing_matched_product.drop_duplicates()
-            self.df_product = self.df_product.append(self.df_pricing_matched_product)
+            self.df_product = pandas.concat([self.df_product,self.df_pricing_matched_product], ignore_index = True)
 
         if len(self.df_manu_matched_product.index) > 0:
             self.df_manu_matched_product = self.df_manu_matched_product.drop_duplicates()
-            self.df_product = self.df_product.append(self.df_manu_matched_product)
+            self.df_product = pandas.concat([self.df_product,self.df_manu_matched_product], ignore_index = True)
 
 
         if 'VendorPartNumber_x' in self.df_product.columns and 'VendorPartNumber' not in self.df_product.columns:
@@ -216,6 +216,7 @@ class BasicProcessObject:
         self.srs_matched_product = self.df_product.loc[:,'FyProductNumber'].value_counts()
 
         self.srs_matched_product.rename_axis()
+
         # sets series to dataframe
         self.df_matched_product = self.srs_matched_product.to_frame().reset_index()
         # names columns in new dataframe
@@ -264,15 +265,81 @@ class BasicProcessObject:
 
 
         if len(self.df_new_products.index) > 0:
-            self.df_product = pandas.concat([self.df_product,self.df_new_products], ignore_index=True)
+            self.df_product = pandas.concat([self.df_product, self.df_new_products], ignore_index=True)
 
         if len(self.df_update_products.index) > 0:
-            self.df_product = pandas.concat([self.df_product,self.df_update_products], ignore_index=True)
+            self.partials_cleanup()
 
         self.df_product.loc[(self.df_product['db_IsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued'
 
         self.df_product = self.df_product.reindex()
 
+    def partials_cleanup(self):
+        # further partial processing to identify the 5 cases.
+        self.df_update_products = self.df_update_products.merge(self.df_product_agni_kai_lookup_copy, how='left', on=['ProductId','ManufacturerName','FyCatalogNumber'])
+
+        case_1 = ( (self.df_update_products['VendorName_x'] == self.df_update_products['VendorName_y'] ) &
+                  (self.df_update_products['VendorPartNumber_x'] != self.df_update_products['VendorPartNumber_y']) &
+                  (self.df_update_products['ManufacturerPartNumber_x'] == self.df_update_products['ManufacturerPartNumber_y']) &
+                  (self.df_update_products['FyProductNumber_x'] == self.df_update_products['FyProductNumber_y']))
+
+        case_2 = ((self.df_update_products['VendorName_x'] != self.df_update_products['VendorName_y']) &
+                  (self.df_update_products['VendorPartNumber_x'] != self.df_update_products['VendorPartNumber_y']) &
+                  (self.df_update_products['ManufacturerPartNumber_x'] == self.df_update_products['ManufacturerPartNumber_y']) &
+                  (self.df_update_products['FyProductNumber_x'] == self.df_update_products['FyProductNumber_y']))
+
+        case_3 = ((self.df_update_products['VendorName_x'] == self.df_update_products['VendorName_y']) &
+                  (self.df_update_products['VendorPartNumber_x'] != self.df_update_products['VendorPartNumber_y']) &
+                  (self.df_update_products['ManufacturerPartNumber_x'] != self.df_update_products['ManufacturerPartNumber_y']) &
+                  (self.df_update_products['FyProductNumber_x'] == self.df_update_products['FyProductNumber_y']))
+
+        case_4 = ((self.df_update_products['VendorName_x'] == self.df_update_products['VendorName_y']) &
+                  (self.df_update_products['VendorPartNumber_x'] == self.df_update_products['VendorPartNumber_y']) &
+                  (self.df_update_products['ManufacturerPartNumber_x'] == self.df_update_products['ManufacturerPartNumber_y']) &
+                  (self.df_update_products['FyProductNumber_x'] != self.df_update_products['FyProductNumber_y']))
+
+        case_5 = ((self.df_update_products['VendorName_x'] != self.df_update_products['VendorName_y']) &
+                  (self.df_update_products['VendorPartNumber_x'] != self.df_update_products['VendorPartNumber_y']) &
+                  (self.df_update_products['ManufacturerPartNumber_x'] == self.df_update_products['ManufacturerPartNumber_y']) &
+                  (self.df_update_products['FyProductNumber_x'] != self.df_update_products['FyProductNumber_y']))
+
+
+        conditions = [case_1,case_2,case_3,case_4,case_5]
+        choices = ['VendorPartNumberChange','Partial','PartNumberOverride','ConfigurationChanges','Partial']
+
+        self.df_update_products['Filter'] = np.select(conditions, choices, default='Partial')
+
+        # we will have to make assignments of more values _x, _y as we identify the partial type
+
+
+        if 'ManufacturerPartNumber_x' in self.df_update_products.columns:
+            self.df_update_products['ManufacturerPartNumber'] = self.df_update_products[['ManufacturerPartNumber_x']]
+            self.df_update_products = self.df_update_products.drop(columns=['ManufacturerPartNumber_x'])
+
+        if 'VendorPartNumber_x' in self.df_update_products.columns:
+            self.df_update_products['VendorPartNumber'] = self.df_update_products[['VendorPartNumber_x']]
+            self.df_update_products = self.df_update_products.drop(columns=['VendorPartNumber_x'])
+
+        if 'VendorName_x' in self.df_update_products.columns:
+            self.df_update_products['VendorName'] = self.df_update_products[['VendorName_x']]
+            self.df_update_products = self.df_update_products.drop(columns=['VendorName_x'])
+
+        if 'FyProductNumber_x' in self.df_update_products.columns:
+            self.df_update_products['FyProductNumber'] = self.df_update_products[['FyProductNumber_x']]
+            self.df_update_products = self.df_update_products.drop(columns=['FyProductNumber_x'])
+
+        if 'ProductPriceId_x' in self.df_update_products.columns:
+            self.df_update_products['ProductPriceId'] = self.df_update_products[['ProductPriceId_x']]
+            self.df_update_products = self.df_update_products.drop(columns=['ProductPriceId_x'])
+
+        if 'BaseProductPriceId_x' in self.df_update_products.columns:
+            self.df_update_products['BaseProductPriceId'] = self.df_update_products[['BaseProductPriceId_x']]
+            self.df_update_products = self.df_update_products.drop(columns=['BaseProductPriceId_x'])
+
+        print(list(self.df_update_products.columns))
+        print(list(self.df_product.columns))
+
+        self.df_product = pandas.concat([self.df_product, self.df_update_products], ignore_index=True)
 
     def begin_process(self):
         self.success = False

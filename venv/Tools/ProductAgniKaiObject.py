@@ -6,7 +6,7 @@
 from Tools.BasicProcess import BasicProcessObject
 
 class ProductAgniKaiObject(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorName','VendorPartNumber']
     sup_fields = []
     att_fields = []
     gen_fields = []
@@ -27,8 +27,8 @@ class ProductAgniKaiObject(BasicProcessObject):
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'is_duplicated','is_duplicated_x','Iis_duplicated_y',
-                           'Report','Filter'}
+                           'is_duplicated','is_duplicated_x','is_duplicated_y',
+                           'db_IsProductNumberOverride','Report','Filter'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:

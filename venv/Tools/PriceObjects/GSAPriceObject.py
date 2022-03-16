@@ -9,7 +9,7 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorPartNumber',
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorName','VendorPartNumber',
                   'GSAOnContract', 'GSAApprovedListPrice', 'GSAApprovedPercent', 'MfcDiscountPercent',
                   'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
     sup_fields = []
@@ -41,13 +41,13 @@ class GSAPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Base Pricing','Update-product','Update-vendor']
+        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
 
         if row['Filter'] == 'New':
             self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
             return False
 
-        elif row['Filter'] in ['Partial', 'Update-product', 'Update-vendor', 'Base Pricing']:
+        elif row['Filter'] in ['Partial', 'Update-product', 'Update-vendor', 'ConfigurationChanges','PartNumberOverride', 'Base Pricing','VendorPartNumberChange']:
             self.obReporter.update_report('Alert', 'Passed filtering as partial product')
             return False
 

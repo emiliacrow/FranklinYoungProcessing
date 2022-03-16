@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorPartNumber', 'FyCost']
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber', 'FyCost']
     sup_fields = []
     att_fields = []
     gen_fields = []
@@ -53,17 +53,17 @@ class BasePrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Base Pricing','Update-product','Update-vendor']
+        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
 
         if row['Filter'] == 'New':
             self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
             return False
 
-        elif row['Filter'] in ['Partial', 'Update-product', 'Update-vendor']:
+        elif row['Filter'] in ['Partial', 'Update-product', 'Update-vendor','ConfigurationChanges','VendorPartNumberChange']:
             self.obReporter.update_report('Alert', 'Passed filtering as partial product')
             return False
 
-        elif row['Filter'] in ['Ready', 'Base Pricing']:
+        elif row['Filter'] in ['Ready', 'PartNumberOverride', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 

@@ -9,7 +9,7 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 class HTMEPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorPartNumber',
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber',
                   'HTMEOnContract', 'HTMEApprovedListPrice', 'HTMEMaxMarkup', 'HTMEContractModificationNumber',
                   'HTMEApprovedPriceDate','HTMEPricingApproved']
     sup_fields = []
@@ -41,17 +41,17 @@ class HTMEPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Update_in_Product_Price', 'Update_in_Base_Price']
+        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
 
-        if row['Filter'] == 'New' and self.full_process:
-            self.obReporter.update_report('Alert', 'Passed filtering as new product')
+        if row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
             return False
 
-        elif row['Filter'] == 'Partial' or row['Filter'] == 'Update_in_Product_Price':
+        elif row['Filter'] in ['Partial', 'Update-product', 'Update-vendor', 'ConfigurationChanges','PartNumberOverride', 'Base Pricing','VendorPartNumberChange']:
             self.obReporter.update_report('Alert', 'Passed filtering as partial product')
             return False
 
-        elif row['Filter'] == 'Ready' or row['Filter'] == 'Update_in_Base_Price':
+        elif row['Filter'] == 'Ready':
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
@@ -62,6 +62,7 @@ class HTMEPrice(BasicProcessObject):
         else:
             self.obReporter.update_report('Fail', 'Failed filtering')
             return False
+
 
 
     def process_product_line(self, df_line_product):

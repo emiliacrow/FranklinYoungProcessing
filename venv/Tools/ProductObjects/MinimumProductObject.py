@@ -10,8 +10,8 @@ from Tools.BasicProcess import BasicProcessObject
 
 # keep this
 class MinimumProduct(BasicProcessObject):
-    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
-                  'ShortDescription', 'CountryOfOrigin', 'ManufacturerName', 'Category']
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName', 'VendorPartNumber',
+                  'ShortDescription', 'CountryOfOrigin', 'Category']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix',
@@ -53,7 +53,7 @@ class MinimumProduct(BasicProcessObject):
                            'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'Report','Filter'}
+                           'db_IsProductNumberOverride','Report','Filter'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
@@ -92,14 +92,14 @@ class MinimumProduct(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Base Pricing','Update-product','Update-vendor']
+        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
 
         if row['Filter'] == 'New':
             self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return True
 
-        if row['Filter'] in ['Partial', 'Base Pricing','Update-product','Update-vendor']:
-            self.obReporter.update_report('Alert', 'Passed filtering as new-update')
+        elif row['Filter'] in ['ConfigurationChanges','Partial','PartNumberOverride', 'VendorPartNumberChange', 'Base Pricing','Update-product','Update-vendor']:
+            self.obReporter.update_report('Alert', 'Passed filtering as new configuration')
             return True
 
         elif row['Filter'] == 'Ready':
@@ -481,7 +481,7 @@ class MinimumProduct(BasicProcessObject):
 
 
 class UpdateMinimumProduct(MinimumProduct):
-    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorPartNumber',
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber',
                   'CountryOfOrigin']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']

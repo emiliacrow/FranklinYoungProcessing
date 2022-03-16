@@ -9,7 +9,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -69,13 +69,13 @@ class MinimumProductPrice(BasicProcessObject):
                                                  how='left', on=['VendorName'])
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Base Pricing','Update-product','Update-vendor']
+        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
 
         if row['Filter'] == 'New':
             self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return False
 
-        elif row['Filter'] in ['Ready', 'Partial', 'Update-product', 'Update-vendor', 'Base Pricing']:
+        elif row['Filter'] in ['Ready', 'Partial', 'ConfigurationChanges', 'PartNumberOverride','Update-product', 'Update-vendor', 'Base Pricing','VendorPartNumberChange']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
@@ -219,7 +219,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.obIngester.ingest_product_price_cleanup()
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
-    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
