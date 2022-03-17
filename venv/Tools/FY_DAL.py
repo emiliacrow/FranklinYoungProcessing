@@ -766,6 +766,7 @@ class DataRunner(threading.Thread):
         for each_item in self.lst_data:
             count += 1
             print('Runner count: {0}'.format(count))
+            obCursor.callproc(self.proc_name, args = each_item)
             try:
                 obCursor.callproc(self.proc_name, args = each_item)
             except OperationalError:
