@@ -69,15 +69,13 @@ class MinimumProductPrice(BasicProcessObject):
                                                  how='left', on=['VendorName'])
 
     def filter_check_in(self, row):
-        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
-
-        print(row)
+        filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
 
         if row['Filter'] == 'New':
             self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return False
 
-        elif row['Filter'] in ['Ready', 'Partial', 'ConfigurationChanges', 'PartNumberOverride','Update-product', 'Update-vendor', 'Base Pricing','VendorPartNumberChange']:
+        elif row['Filter'] in ['Ready', 'Partial', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 

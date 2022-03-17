@@ -92,13 +92,13 @@ class MinimumProduct(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
+        filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
 
         if row['Filter'] == 'New':
             self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return True
 
-        elif row['Filter'] in ['ConfigurationChanges','Partial','PartNumberOverride', 'VendorPartNumberChange', 'Base Pricing','Update-product','Update-vendor']:
+        elif row['Filter'] in ['Partial', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as new configuration')
             return True
 
@@ -497,7 +497,7 @@ class UpdateMinimumProduct(MinimumProduct):
 
 
     def filter_check_in(self, row):
-        filter_options = ['New', 'Ready', 'Partial', 'Possible Duplicate', 'Base Pricing','Update-product','Update-vendor']
+        filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
 
         if row['Filter'] == 'New':
             if self.full_process:
@@ -507,7 +507,7 @@ class UpdateMinimumProduct(MinimumProduct):
                 self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
                 return False
 
-        elif row['Filter'] in ['Ready', 'Partial', 'Update-product', 'Update-vendor', 'Base Pricing']:
+        elif row['Filter'] in ['Ready', 'Partial','Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
@@ -518,6 +518,7 @@ class UpdateMinimumProduct(MinimumProduct):
         else:
             self.obReporter.update_report('Fail', 'Failed filtering')
             return False
+
 
 
 ## end ##

@@ -41,13 +41,13 @@ class HTMEPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['Base Pricing', 'ConfigurationChanges', 'New', 'PartNumberOverride', 'Partial', 'Possible Duplicate', 'Ready', 'Update-product', 'Update-vendor', 'VendorPartNumberChange']
+        filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
 
         if row['Filter'] == 'New':
             self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
             return False
 
-        elif row['Filter'] in ['Partial', 'Update-product', 'Update-vendor', 'ConfigurationChanges','PartNumberOverride', 'Base Pricing','VendorPartNumberChange']:
+        elif row['Filter'] in ['Partial', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as partial product')
             return False
 
@@ -62,7 +62,6 @@ class HTMEPrice(BasicProcessObject):
         else:
             self.obReporter.update_report('Fail', 'Failed filtering')
             return False
-
 
 
     def process_product_line(self, df_line_product):
