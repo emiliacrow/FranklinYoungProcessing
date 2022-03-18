@@ -63,6 +63,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         return success, return_df_line_product
 
+
     def process_changes(self, df_collect_product_base_data):
         
         for colName, row in df_collect_product_base_data.iterrows():
@@ -258,7 +259,6 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         if (is_visible != -1):
             self.obIngester.set_is_visible(base_id, is_visible)
-
 
         if (update_asset != -1):
             self.obIngester.set_update_asset(product_id, update_asset)

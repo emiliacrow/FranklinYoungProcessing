@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber', 'FyCost']
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber', 'FyCost', 'DateCatalogReceived']
     sup_fields = []
     att_fields = []
     gen_fields = []
@@ -158,7 +158,6 @@ class BasePrice(BasicProcessObject):
             df_collect_product_base_data['ECommerceDiscount'] = [0]
 
         return df_collect_product_base_data
-
 
 
     def process_ecom_discount(self, df_collect_product_base_data, row):
@@ -428,8 +427,6 @@ class BasePrice(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            date_catalog_received = datetime.datetime.now()
-
             success, is_visible = self.process_boolean(row, 'IsVisible')
             if success:
                 df_collect_product_base_data['IsVisible'] = [is_visible]
