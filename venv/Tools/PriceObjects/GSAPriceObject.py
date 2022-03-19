@@ -101,8 +101,7 @@ class GSAPrice(BasicProcessObject):
                     if contract_manu_number == '':
                         db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
                         return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
-                    self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
-
+                        self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
 
             elif 'db_ContractedManufacturerPartNumber' in row:
                 db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])

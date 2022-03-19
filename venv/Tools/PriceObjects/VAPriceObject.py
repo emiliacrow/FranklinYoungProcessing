@@ -90,6 +90,7 @@ class VAPrice(BasicProcessObject):
         return success, return_df_line_product
 
 
+
     def process_pricing(self, df_line_product):
         success = True
         return_df_line_product = df_line_product.copy()
@@ -97,13 +98,16 @@ class VAPrice(BasicProcessObject):
             if 'ContractedManufacturerPartNumber' in row:
                 contract_manu_number = str(row['ContractedManufacturerPartNumber'])
 
-                if 'db_ContractedManufacturerPartNumber' in row and contract_manu_number == '':
-                    db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
-                    return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                if 'db_ContractedManufacturerPartNumber' in row:
+                    if contract_manu_number == '':
+                        db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
+                        return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                        self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
 
             elif 'db_ContractedManufacturerPartNumber' in row:
                 db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
                 return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
