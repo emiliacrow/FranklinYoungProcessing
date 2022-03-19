@@ -95,18 +95,22 @@ class GSAPrice(BasicProcessObject):
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             if 'ContractedManufacturerPartNumber' in row:
-                contract_manu_number = row['ContractedManufacturerPartNumber']
+                contract_manu_number = str(row['ContractedManufacturerPartNumber'])
 
-                if 'db_ContractedManufacturerPartNumber' in row and contract_manu_number == '':
-                    db_contract_manu_number = row['db_ContractedManufacturerPartNumber']
-                    contract_manu_number = db_contract_manu_number
-                    return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                if 'db_ContractedManufacturerPartNumber' in row:
+                    if contract_manu_number == '':
+                        db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
+                        return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                    self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
+
 
             elif 'db_ContractedManufacturerPartNumber' in row:
-                contract_manu_number = db_contract_manu_number
+                db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
                 return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
+
 
             if 'GSABasePrice' not in row:
                 approved_list_price = float(row['GSAApprovedListPrice'])
