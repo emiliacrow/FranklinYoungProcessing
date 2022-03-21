@@ -202,8 +202,6 @@ class BasicProcessObject:
 
         if len(self.df_pricing_matched_product.index) > 0:
             self.df_pricing_matched_product = self.df_pricing_matched_product.drop_duplicates()
-            print('2',self.df_pricing_matched_product.columns)
-            print('2',self.df_pricing_matched_product)
             self.df_product = pandas.concat([self.df_product,self.df_pricing_matched_product], ignore_index = True)
 
         if len(self.df_man_ven_matched_products.index) > 0:
@@ -262,8 +260,8 @@ class BasicProcessObject:
 
         # here we are going to match everything called new to the existing manufcaturer parts
         # this is to indicate the difference between the ingestable new products and updatable products
-
-        self.df_product.loc[(self.df_product['db_IsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued'
+        if 'db_IsDiscontinued' in self.df_product.columns:
+            self.df_product.loc[(self.df_product['db_IsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued'
 
 
     def eval_cases(self):
