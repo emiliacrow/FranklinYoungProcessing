@@ -414,8 +414,8 @@ class DalObject:
 
     def get_ecat_price_lookup(self):
         proc_name = 'sequoia.get_ECATPrice_lookup'
-        column_names = ['FyProductNumber', 'VendorPartNumber', 'ECATOnContract', 'ECATApprovedListPrice', 'db_ContractedManufacturerPartNumber',
-                        'ECATContractModificationNumber', 'ECATApprovedPriceDate', 'ECATPricingApproved']
+        column_names = ['ManufacturerName','ManufacturerPartNumber','FyCatalogNumber', 'FyProductNumber', 'VendorName',
+                        'VendorPartNumber', 'db_FyCost']
         df_ecat_price_lookup = self.get_lookup(proc_name, column_names)
         return df_ecat_price_lookup
 
@@ -728,7 +728,7 @@ class DalObject:
 
     def set_gsa_toggles(self, lst_gsa_toggles):
         proc_name = 'sequoia.set_gsa_toggles'
-        proc_statement = 'CALL `sequoia`.`set_ecat_toggles`(%s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`set_gsa_toggles`(%s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_toggles)
         runner.start()

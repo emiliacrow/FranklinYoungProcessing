@@ -24,6 +24,14 @@ class ECATPrice(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
+        if 'FySellPrice' not in self.df_product.columns:
+            self.get_fy_sell_price()
+
+
+    def get_fy_sell_price(self):
+        self.ecat_price_lookup = self.obDal.get_ecat_price_lookup()
+        merge_heads = ['FyCatalogNumber', 'FyProductNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'VendorName', 'VendorPartNumber']
+        self.df_product = self.df_product.merge(self.ecat_price_lookup, how= 'left', on = merge_heads)
 
 
     def remove_private_headers(self):
@@ -91,7 +99,6 @@ class ECATPrice(BasicProcessObject):
         return success, return_df_line_product
 
 
-
     def process_pricing(self, df_line_product):
         success = True
         return_df_line_product = df_line_product.copy()
@@ -114,13 +121,16 @@ class ECATPrice(BasicProcessObject):
                 ecat_sell_price = float(row['ECATSellPrice'])
                 return_df_line_product['ECATSellPrice'] = ecat_sell_price
 
-            elif 'db_fy_cost' in row:
-                fy_cost = float(row['db_fy_cost'])
+            elif 'db_FyCost' in row:
+                fy_cost = float(row['db_FyCost'])
+                print(fy_cost)
                 max_markup = float(row['ECATMaxMarkup'])
+                print(max_markup)
                 ecat_sell_price = round((fy_cost*max_markup),2)
+                print(ecat_sell_price)
                 return_df_line_product['ECATSellPrice'] = ecat_sell_price
             else:
-                self.obReporter.update_report('Fail', 'Check for db_fy_cost  or ECATSellPrice')
+                self.obReporter.update_report('Fail', 'Check for db_FyCost  or ECATSellPrice')
                 return False, return_df_line_product
 
         return success, return_df_line_product
@@ -146,13 +156,8 @@ class ECATPrice(BasicProcessObject):
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
-            if 'ECATApprovedBasePrice' in row:
-                approved_base_price = round(float(row['ECATApprovedBasePrice']), 2)
-            else:
-                approved_base_price = ''
-
-            approved_sell_price = round(float(row['ECATApprovedSellPrice']), 2)
-            approved_list_price = round(float(row['ECATApprovedListPrice']), 2)
+            approved_sell_price = float(row['ECATApprovedSellPrice'])
+            approved_list_price = float(row['ECATApprovedListPrice'])
 
             ecat_sell_price = round(float(row['ECATSellPrice']), 2)
             max_markup = row['ECATMaxMarkup']
