@@ -30,8 +30,6 @@ class BigCommerceRTLObject(BasicProcessObject):
         # this should just try to gather the ID's of the relevant tables
         # and if don't get then they fail
         self.df_current_toggles = self.obDal.get_toggles()
-        ['ProductId','ProductPriceId','BaseProductPriceId','ECATProductPriceId','HTMEProductPriceId',
-                        'GSAProductPriceId','VAProductPriceId','FyProductNumber','VendorPartNumber']
         self.df_top_toggles = self.df_current_toggles.drop_duplicates(subset = ['FyProductNumber'])
         self.df_top_toggles = self.df_top_toggles.drop(columns=['ProductId','ProductPriceId','BaseProductPriceId',
                                                                 'ECATProductPriceId','HTMEProductPriceId',
@@ -114,10 +112,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
             fy_product_number = row['FyProductNumber']
 
-            vendor_part_number = str(row['VendorPartNumber_y'])
-            if vendor_part_number == '':
-                vendor_part_number = str(row['VendorPartNumber_x'])
-
+            vendor_part_number = str(row['VendorPartNumber_x'])
 
             update_asset = -1
             success, update_asset = self.process_boolean(row, 'UpdateAssets')
