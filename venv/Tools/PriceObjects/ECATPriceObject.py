@@ -123,11 +123,8 @@ class ECATPrice(BasicProcessObject):
 
             elif 'db_FyCost' in row:
                 fy_cost = float(row['db_FyCost'])
-                print(fy_cost)
                 max_markup = float(row['ECATMaxMarkup'])
-                print(max_markup)
                 ecat_sell_price = round((fy_cost*max_markup),2)
-                print(ecat_sell_price)
                 return_df_line_product['ECATSellPrice'] = ecat_sell_price
             else:
                 self.obReporter.update_report('Fail', 'Check for db_FyCost  or ECATSellPrice')
