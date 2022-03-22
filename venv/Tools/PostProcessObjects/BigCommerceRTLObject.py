@@ -4,12 +4,13 @@
 # CreateFor: Franklin Young International
 
 import pandas
+import numpy as np
 
 from Tools.BasicProcess import BasicProcessObject
 
 
 class BigCommerceRTLObject(BasicProcessObject):
-    req_fields = ['FyProductNumber','VendorPartNumber']
+    req_fields = ['FyProductNumber']
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible',
                   'UpdateImages','ECATOnContract','ECATPricingApproved','HTMETOnContract','HTMEPricingApproved',
@@ -29,10 +30,31 @@ class BigCommerceRTLObject(BasicProcessObject):
         # this should just try to gather the ID's of the relevant tables
         # and if don't get then they fail
         self.df_current_toggles = self.obDal.get_toggles()
+        ['ProductId','ProductPriceId','BaseProductPriceId','ECATProductPriceId','HTMEProductPriceId',
+                        'GSAProductPriceId','VAProductPriceId','FyProductNumber','VendorPartNumber']
+        self.df_top_toggles = self.df_current_toggles.drop_duplicates(subset = ['FyProductNumber'])
+        self.df_top_toggles = self.df_top_toggles.drop(columns=['ProductId','ProductPriceId','BaseProductPriceId',
+                                                                'ECATProductPriceId','HTMEProductPriceId',
+                                                                'GSAProductPriceId','VAProductPriceId'])
+
         match_headers = ['FyProductNumber','VendorPartNumber']
         self.df_current_toggles['Filter'] = 'Update'
         self.df_product = self.df_product.merge(self.df_current_toggles, how='left', on=match_headers)
         self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+
+        match_headers = ['FyProductNumber']
+        self.df_product = self.df_product.merge(self.df_top_toggles, how='left', on=match_headers)
+
+        # identify the top product
+        top_product_match = ((self.df_product['VendorPartNumber_x'] == self.df_product['VendorPartNumber_y']))
+        conditions = [top_product_match]
+        choices = ['Y']
+        self.df_product['IsTopProduct'] = np.select(conditions, choices, default='N')
+
+        self.df_product = self.df_product.sort_values(by=['FyProductNumber','IsTopProduct'], ascending= False)
+
+        # self.df_product = self.df_product.drop_duplicates(subset = ['FyProductNumber','VendorPartNumber_y'])
+
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -91,10 +113,13 @@ class BigCommerceRTLObject(BasicProcessObject):
             va_id = row['VAProductPriceId']
 
             fy_product_number = row['FyProductNumber']
-            vendor_part_number = row['VendorPartNumber']
+
+            vendor_part_number = str(row['VendorPartNumber_y'])
+            if vendor_part_number == '':
+                vendor_part_number = str(row['VendorPartNumber_x'])
+
 
             update_asset = -1
-
             success, update_asset = self.process_boolean(row, 'UpdateAssets')
             if success:
                 df_collect_product_base_data['UpdateAssets'] = [update_asset]
@@ -250,9 +275,12 @@ class BigCommerceRTLObject(BasicProcessObject):
             data_toggle = 1
             df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
 
+        # at this point we've evaluated all the data
 
         if (price_toggle != -1 or data_toggle != -1):
-            self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
+
+            if str(row['IsTopProduct']) == 'Y':
+                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
 
         if (is_discontinued != -1 or allow_purchases != -1):
             self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)

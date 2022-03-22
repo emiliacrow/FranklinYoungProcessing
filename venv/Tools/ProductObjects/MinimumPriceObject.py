@@ -68,6 +68,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                  how='left', on=['VendorName'])
 
+
     def filter_check_in(self, row):
         filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
 
@@ -86,8 +87,6 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             self.obReporter.update_report('Fail', 'Failed filtering')
             return False
-
-
 
 
     def process_product_line(self, df_line_product):
@@ -209,7 +208,7 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_measure_symbol_id = row['UnitOfMeasureSymbolId']
             unit_of_issue_quantity = row['Conv Factor/QTY UOM']
 
-        self.obIngester.ingest_product_price(self.is_last, fy_product_number, allow_purchases, fy_part_number,
+        self.obIngester.ingest_product_price(fy_product_number, allow_purchases, fy_part_number,
                                              product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
                                              unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
 

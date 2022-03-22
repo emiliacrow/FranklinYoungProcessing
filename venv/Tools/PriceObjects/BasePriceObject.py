@@ -97,14 +97,6 @@ class BasePrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','Failed to identify product price id')
                 return success, df_collect_product_base_data
 
-            success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
-            if success:
-                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
-
-            success, allow_purchases = self.process_boolean(row, 'AllowPurchases')
-            if success:
-                df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
-
         success, df_line_product = self.base_price(df_collect_product_base_data)
         return success, df_line_product
 
@@ -137,12 +129,14 @@ class BasePrice(BasicProcessObject):
         self.obReporter.update_report('Alert', 'Sell Price was calculated with fallback margin')
         return fy_sell_price
 
+
     def set_markup_sell(self, fy_landed_cost, fy_sell_price):
         try:
             markup_sell = round(float(fy_sell_price / fy_landed_cost), 2)
         except ZeroDivisionError:
             markup_sell = 0
         return markup_sell
+
 
     def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
         fy_sell_price = round(fy_landed_cost * markup_sell, 2)
@@ -393,7 +387,6 @@ class BasePrice(BasicProcessObject):
 
             product_price_id = row['ProductPriceId']
 
-
         if fy_landed_cost >= fy_sell_price and fy_sell_price != 0:
             self.obReporter.update_report('Fail','Margin was zero')
             return False, df_line_product
@@ -403,7 +396,7 @@ class BasePrice(BasicProcessObject):
             return False, df_line_product
 
 
-        self.obIngester.ingest_base_price(self.is_last, vendor_list_price, fy_discount_percent, fy_cost,
+        self.obIngester.ingest_base_price(vendor_list_price, fy_discount_percent, fy_cost,
                                                           estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price,
                                                           markup_percent_fy_list, fy_list_price, ecommerce_discount,

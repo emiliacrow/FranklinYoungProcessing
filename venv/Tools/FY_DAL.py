@@ -675,7 +675,6 @@ class DalObject:
         return df_current_assets
 
 
-
     def get_toggles(self):
         proc_name = 'sequoia.get_Toggles'
         column_names = ['ProductId','ProductPriceId','BaseProductPriceId','ECATProductPriceId','HTMEProductPriceId',
@@ -690,6 +689,7 @@ class DalObject:
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)
         runner.start()
+
 
     def set_discon(self, lst_discon_toggles):
         proc_name = 'sequoia.set_is_discon_allow_purchase'

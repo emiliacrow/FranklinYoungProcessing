@@ -516,7 +516,7 @@ class IngestionObject:
         return ingested_set
 
 
-    def ingest_product(self, is_last, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0, newIsHazardous=0):
+    def ingest_product(self, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0, newIsHazardous=0):
         # if this is the last to join, or if the size has hit the limit, send a runner
         if (len(self.product_collector) > self.load_limit):
             self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription,
@@ -589,7 +589,7 @@ class IngestionObject:
         return return_id
 
 
-    def ingest_product_price(self, is_last, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity):
+    def ingest_product_price(self, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity):
         if (len(self.product_collector) > self.load_limit):
             self.product_collector.append((newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity))
             self.obDal.min_product_price_cap(self.product_collector)
@@ -615,10 +615,9 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.product_price_fill(self.product_collector)
 
-    def ingest_base_price(self, is_last, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId=-1, newGSAProductPriceId=-1, newHTMEProductPriceId=-1, newECATProductPriceId=-1, newFEDMALLProductPriceId=-1):
+    def ingest_base_price(self, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId=-1, newGSAProductPriceId=-1, newHTMEProductPriceId=-1, newECATProductPriceId=-1, newFEDMALLProductPriceId=-1):
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append(
-                (vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
+            self.product_collector.append((vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                  markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
                  is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
                  newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId,
