@@ -146,24 +146,14 @@ class BasicProcessObject:
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
-        for row in self.df_product.iterrows():
-            print(row)
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'])
 
-        for row in self.df_product.iterrows():
-            print(row)
 
         # round 2
         self.df_product_agni_kai_lookup['Filter'] = 'Base Pricing'
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
 
-        for row in self.df_product.iterrows():
-            print(row)
-
         self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Partial'
-
-        for row in self.df_product.iterrows():
-            print(row)
 
         # set aside the good matches
         self.df_pricing_matched_product = self.df_product[(self.df_product['Filter'] == 'Base Pricing')]
@@ -173,6 +163,7 @@ class BasicProcessObject:
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
 
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','db_IsDiscontinued'])
+
 
         # round 3
         self.df_product_agni_kai_lookup_copy['Filter'] = 'Partial'
