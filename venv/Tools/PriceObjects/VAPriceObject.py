@@ -90,7 +90,6 @@ class VAPrice(BasicProcessObject):
         return success, return_df_line_product
 
 
-
     def process_pricing(self, df_line_product):
         success = True
         return_df_line_product = df_line_product.copy()
