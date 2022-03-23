@@ -774,7 +774,9 @@ class DataRunner(threading.Thread):
             except OperationalError:
                 fail_retries.append(each_item)
                 print('Wait fail count: {0}'.format(len(fail_retries)))
-        obCursor.executemany(self.proc_statement, self.lst_data)
+
+        # this is for executing many in the DB which can be faster
+        # obCursor.executemany(self.proc_statement, self.lst_data)
 
         drops = 0
         count = 0
