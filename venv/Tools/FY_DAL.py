@@ -459,7 +459,7 @@ class DalObject:
 
     def va_product_price_cap(self, lst_va_product_price):
         proc_name = 'sequoia.VAProductPrice_capture'
-        proc_statement = 'CALL `sequoia`.`VAProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`VAProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_product_price)
         runner.start()

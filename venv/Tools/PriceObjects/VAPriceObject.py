@@ -110,6 +110,7 @@ class VAPrice(BasicProcessObject):
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
+
             if 'VABasePrice' not in row:
                 approved_list_price = float(row['VAApprovedListPrice'])
                 approved_percent = float(row['VAApprovedPercent'])
@@ -173,12 +174,6 @@ class VAPrice(BasicProcessObject):
 
             sin = row['VA_Sin']
 
-
-        print(base_product_price_id, fy_product_number, on_contract, approved_base_price,
-                                             approved_sell_price, approved_list_price, contract_manu_number,
-                                             contract_number, contract_mod_number, is_pricing_approved,
-                                             approved_price_date, approved_percent, va_base_price, va_sell_price,
-                                             mfc_precent, mfc_price, sin)
 
         self.obIngester.va_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
