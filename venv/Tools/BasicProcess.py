@@ -141,29 +141,37 @@ class BasicProcessObject:
 
         # match on everything
         self.df_product = self.df_product.merge(self.df_full_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
-
         # set aside the good matches
         self.df_full_matched_product = self.df_product[(self.df_product['Filter'] == 'Ready')]
 
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
+        for row in self.df_product.iterrows():
+            print(row)
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'])
 
-
-        # set the partial look up
-        self.df_pricing_product_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] != 'Load Product Price')]
-        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] == 'Load Product Price')]
+        for row in self.df_product.iterrows():
+            print(row)
 
         # round 2
+        self.df_product_agni_kai_lookup['Filter'] = 'Base Pricing'
+        self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
 
-        self.df_pricing_product_lookup['Filter'] = 'Base Pricing'
-        self.df_product = self.df_product.merge(self.df_pricing_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
+        for row in self.df_product.iterrows():
+            print(row)
+
+        self.df_product.loc[(self.df_product['ProductPriceId'] == 'Load Product Price'), 'Filter'] = 'Partial'
+
+        for row in self.df_product.iterrows():
+            print(row)
 
         # set aside the good matches
         self.df_pricing_matched_product = self.df_product[(self.df_product['Filter'] == 'Base Pricing')]
-
-        # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Base Pricing')]
+
+        self.df_partial_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')]
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
+
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','db_IsDiscontinued'])
 
         # round 3
@@ -203,6 +211,10 @@ class BasicProcessObject:
         if len(self.df_pricing_matched_product.index) > 0:
             self.df_pricing_matched_product = self.df_pricing_matched_product.drop_duplicates()
             self.df_product = pandas.concat([self.df_product,self.df_pricing_matched_product], ignore_index = True)
+
+        if len(self.df_partial_matched_product.index) > 0:
+            self.df_partial_matched_product = self.df_partial_matched_product.drop_duplicates()
+            self.df_product = pandas.concat([self.df_product,self.df_partial_matched_product], ignore_index = True)
 
         if len(self.df_man_ven_matched_products.index) > 0:
             self.df_man_ven_matched_products = self.df_man_ven_matched_products.drop_duplicates()
