@@ -113,6 +113,7 @@ class GSAPrice(BasicProcessObject):
 
             if 'GSABasePrice' not in row:
                 approved_list_price = float(row['GSAApprovedListPrice'])
+
                 approved_percent = float(row['GSAApprovedPercent'])
                 gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),4)
                 self.obReporter.update_report('Alert','GSABasePrice was calculated')

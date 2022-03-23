@@ -655,7 +655,7 @@ class DalObject:
 
     def productdocument_cap(self, lst_productdocuments):
         proc_name = 'sequoia.ProductDocument_capture'
-        proc_statement = 'CALL `sequoia`.`ProductDocument_capture`(%s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`ProductDocument_capture`(%s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productdocuments)
         runner.start()
@@ -667,6 +667,7 @@ class DalObject:
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_productvideo)
         runner.start()
+
 
     def get_current_assets(self):
         proc_name = 'sequoia.get_current_assets'
