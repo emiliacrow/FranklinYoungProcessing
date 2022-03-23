@@ -104,7 +104,7 @@ class FileFinder():
 
         for each_capped_header in ['FyCatalogNumber', 'FyProductNumber', 'ManufacturerName', 'VendorName', 'ManufacturerPartNumber', 'VendorPartNumber']:
             if each_capped_header in excel_dataframe.columns:
-                excel_dataframe[each_gapped_header] = excel_dataframe[each_gapped_header].str.strip()
+                excel_dataframe[each_capped_header] = excel_dataframe[each_capped_header].str.strip()
                 if each_capped_header in ['FyCatalogNumber', 'FyProductNumber', 'ManufacturerPartNumber', 'VendorPartNumber']:
                     excel_dataframe[each_capped_header] = excel_dataframe[each_capped_header].str.upper()
 
