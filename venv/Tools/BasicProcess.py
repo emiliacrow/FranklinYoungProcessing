@@ -735,18 +735,30 @@ class BasicProcessObject:
 
     def build_part_number(self, row, manufacturer_part_number, manufacturer_prefix, unit_of_issue, b_override):
 
-        fy_catalog_number = self.make_fy_catalog_number(manufacturer_prefix, manufacturer_part_number, b_override)
-        fy_product_number = fy_catalog_number
+        if 'FyCatalogNumber' not in row and 'FyCatalogNumber_y' not in row:
+            fy_catalog_number = self.make_fy_catalog_number(manufacturer_prefix, manufacturer_part_number, b_override)
 
-        if unit_of_issue != 'EA':
-            if fy_catalog_number[:-2] == unit_of_issue:
-                self.obReporter.update_report('Alert', 'Please check for duplicate units in FyProductNumber')
-            fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+        elif 'FyCatalogNumber' in row:
+            fy_catalog_number = row['FyCatalogNumber']
 
-        if 'FyPartNumber' not in row:
-            fy_part_number = [fy_product_number]
-        else:
-            fy_part_number = row['FyPartNumber']
+        elif 'FyCatalogNumber_y' in row:
+            fy_catalog_number = row['FyCatalogNumber_y']
+
+
+        if 'FyProductNumber' not in row and 'FyProductNumber_y' not in row :
+
+            fy_product_number = fy_catalog_number
+
+            if unit_of_issue != 'EA':
+                if fy_catalog_number[:-2] == unit_of_issue:
+                    self.obReporter.update_report('Alert', 'Please check for duplicate units in FyProductNumber')
+                fy_product_number = fy_catalog_number + ' ' + unit_of_issue
+
+        elif 'FyProductNumber' in row:
+            fy_product_number = row['FyProductNumber']
+
+        elif 'FyProductNumber_y' in row:
+            fy_product_number = row['FyProductNumber_y']
 
         return fy_catalog_number, fy_product_number
 

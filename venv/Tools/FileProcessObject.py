@@ -23,7 +23,7 @@ class FileProcessor(BasicProcessObject):
             self.sup_fields = ['LongDescription', 'ShortDescription','ProductDescription']
 
         if self.proc_to_run == 'Assign FyPartNumbers':
-            self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber']
+            self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber','UnitOfIssue']
             self.sup_fields = []
 
         if self.proc_to_run == 'Unicode Correction':
@@ -60,12 +60,20 @@ class FileProcessor(BasicProcessObject):
         if len(overlap) >= 1:
             self.is_viable = True
 
+
     def batch_preprocessing(self):
         if self.proc_to_run == 'Assign FyPartNumbers':
-            # 'ManufacturerPartNumber', 'db_IsProductNumberOverride'
+            # 'FyCatalogNumber', 'FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','db_IsProductNumberOverride'
             self.df_override_lookup = self.obDal.get_overrides()
-            self.df_product = self.df_product.merge(self.df_override_lookup, how='left',
-                                                        on=['ManufacturerPartNumber'])
+            self.df_basic_override_lookup = self.df_override_lookup[(self.df_override_lookup['UnitOfIssue'] == '')].copy()
+            match_set = ['ManufacturerName', 'ManufacturerPartNumber', 'UnitOfIssue']
+            self.df_product = self.df_product.merge(self.df_override_lookup, how='left', on = match_set)
+
+            if len(self.df_basic_override_lookup.index) > 0:
+                self.df_basic_override_lookup.drop(columns=['FyProductNumber','UnitOfIssue'])
+                match_set = ['ManufacturerName', 'ManufacturerPartNumber']
+                self.df_product = self.df_product.merge(self.df_basic_override_lookup, how='left', on=match_set)
+
 
     def process_product_line(self, df_line_product):
         self.success = True
@@ -352,12 +360,13 @@ class FileProcessor(BasicProcessObject):
                 return False, df_collect_attribute_data
 
             b_override = False
-            success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
+            success, return_val = self.process_boolean(row, 'db_IsProductNumberOverride')
             if success and return_val == 1:
                 b_override = True
+                df_collect_attribute_data['FyProductNumberOverride'] = [return_val]
 
             if not b_override:
-                success, return_val = self.process_boolean(row, 'db_IsProductNumberOverride')
+                success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
                 if success and return_val == 1:
                     b_override = True
                     df_collect_attribute_data['FyProductNumberOverride'] = [return_val]
@@ -368,6 +377,10 @@ class FileProcessor(BasicProcessObject):
 
             df_collect_attribute_data['FyCatalogNumber'] = [fy_catalog_number]
             df_collect_attribute_data['FyProductNumber'] = [fy_product_number]
+
+            for each_header in ['FyCatalogNumber_x','FyCatalogNumber_y','FyProductNumber_x','FyProductNumber_y']:
+                if each_header in df_collect_attribute_data.columns:
+                    df_collect_attribute_data = df_collect_attribute_data.drop(columns=[each_header])
 
         return True, df_collect_attribute_data
 

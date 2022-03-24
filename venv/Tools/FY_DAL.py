@@ -646,9 +646,16 @@ class DalObject:
         return df_category_match
 
 
-    def get_overrides(self):
+    def get_overrides_DEP(self):
         proc_name = 'sequoia.get_override_lookup'
         column_names = ['ManufacturerPartNumber', 'db_IsProductNumberOverride']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
+
+
+    def get_overrides(self):
+        proc_name = 'sequoia.get_override_lookup2'
+        column_names = ['FyCatalogNumber', 'FyProductNumber', 'ManufacturerName', 'ManufacturerPartNumber','UnitOfIssue','db_IsProductNumberOverride']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 
