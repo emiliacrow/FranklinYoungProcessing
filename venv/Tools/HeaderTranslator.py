@@ -15,7 +15,7 @@ class HeaderTranslator():
                             'SupplierName':['SupplierName','Supplier Name','supplier name','supplier_name'],
 
                             'VendorPartNumber':['VendorPartNumber','Vendor Part Number','primary_vendor_part_no','Thomas Item #','vendor_part_no'],
-                            'CountryOfOrigin':['CountryOfOrigin','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
+                            'CountryOfOrigin':['CountryOfOrigin','CountryCode','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
 
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber','manufacturer_part_no','Supplier Part # '],
                             'ContractedManufacturerPartNumber':['ContractedManufacturerPartNumber','Contracted Manufacturer Part Number','ContractedManufacturerNumber','Contracted Manufacturer Number','ContractedPartNumber','Contracted Part Number'],

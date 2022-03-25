@@ -776,7 +776,7 @@ class DataRunner(threading.Thread):
             count += 1
             print('Runner count: {0}'.format(count))
             # this value here for testing
-            #obCursor.callproc(self.proc_name, args = each_item)
+            # obCursor.callproc(self.proc_name, args = each_item)
             try:
                 obCursor.callproc(self.proc_name, args = each_item)
             except OperationalError:

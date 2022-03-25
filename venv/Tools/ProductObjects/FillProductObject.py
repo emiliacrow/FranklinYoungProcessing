@@ -108,7 +108,6 @@ class FillProduct(BasicProcessObject):
 
             self.process_image(row, product_id)
 
-            fy_product_Notes = self.process_fy_notes(row)
             nato_stock_number = self.process_nsn(row)
 
             model_number = self.process_model_number(row)
@@ -132,7 +131,7 @@ class FillProduct(BasicProcessObject):
             product_warranty_id = self.process_product_warranty(row)
             species_id = self.process_species(row)
 
-        self.obIngester.fill_product(self.is_last, product_id, fy_product_Notes, nato_stock_number, model_number,
+        self.obIngester.fill_product(product_id, nato_stock_number, model_number,
                                                required_sample_size, number_of_channels, GTIN, sterility_id,
                                                surface_treatment_id, precision_id, product_seo_id, component_set_id,
                                                FSC_code_id, hazardous_code_id, UNSPSC_id, NAICS_code_id,
@@ -142,13 +141,6 @@ class FillProduct(BasicProcessObject):
 
     def trigger_ingest_cleanup(self):
         self.obIngester.fill_product_cleanup()
-
-    def process_fy_notes(self, row):
-        fy_product_Notes = ''
-        if 'FyProductNotes' in row:
-            fy_product_Notes = row['FyProductNotes']
-
-        return fy_product_Notes
 
     def process_nsn(self, row):
         nato_stock_number = ''

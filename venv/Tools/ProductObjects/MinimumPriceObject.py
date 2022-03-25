@@ -192,11 +192,15 @@ class MinimumProductPrice(BasicProcessObject):
 
     def minimum_product_price(self,df_line_product):
         fy_part_number = ''
+        fy_product_notes = ''
         for colName, row in df_line_product.iterrows():
             fy_product_number = row['FyProductNumber']
             allow_purchases = row['AllowPurchases']
             if 'FyPartNumber' in row:
                 fy_part_number = row['FyPartNumber']
+
+            if 'FyProductNotes' in row:
+                fy_product_notes = row['FyProductNotes']
 
             product_tax_class = row['ProductTaxClass']
             vendor_part_number = row['VendorPartNumber']
@@ -210,12 +214,13 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.obIngester.ingest_product_price(fy_product_number, allow_purchases, fy_part_number,
                                              product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-                                             unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity)
+                                             unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
 
         return True, df_line_product
 
     def trigger_ingest_cleanup(self):
         self.obIngester.ingest_product_price_cleanup()
+
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
     req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
