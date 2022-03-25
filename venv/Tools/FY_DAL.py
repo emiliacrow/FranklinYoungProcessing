@@ -472,6 +472,14 @@ class DalObject:
         return df_base_price_lookup
 
 
+    def set_product_notes(self, lst_product_notes):
+        proc_name = 'sequoia.set_product_notes'
+        proc_statement = 'CALL `sequoia`.`set_product_notes`(%s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_notes)
+        runner.start()
+
+
     def oconus_product_cap(self,newShippingCostOconusECAT, newShippingCostDesc, newClientId, newProductPriceId):
         proc_name = 'sequoia.OconusProduct_capture_wrap'
         proc_args = (newShippingCostOconusECAT, newShippingCostDesc, newClientId, newProductPriceId)

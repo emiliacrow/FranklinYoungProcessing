@@ -27,6 +27,7 @@ class IngestionObject:
         self.product_discon_collector = []
         self.product_is_visible_collector = []
         self.product_update_image_collector = []
+        self.product_notes_collector = []
 
         self.product_ecat_toggle_collector = []
         self.product_htme_toggle_collector = []
@@ -712,6 +713,19 @@ class IngestionObject:
     def ingest_va_product_price_cleanup(self):
         if self.product_collector != []:
             self.obDal.va_product_price_cap(self.product_collector)
+
+
+    def set_product_notes(self,ProductPriceId, FyProductNotes):
+        if (len(self.product_notes_collector) > self.load_limit):
+            self.product_notes_collector.append((ProductPriceId, FyProductNotes))
+            self.obDal.set_product_notes(self.product_notes_collector)
+            self.product_notes_collector = []
+        else:
+            self.product_notes_collector.append((ProductPriceId, FyProductNotes))
+
+    def set_product_notes_cleanup(self):
+        if self.product_notes_collector != []:
+            self.obDal.set_product_notes(self.product_notes_collector)
 
 
     def set_productimage(self, product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height):

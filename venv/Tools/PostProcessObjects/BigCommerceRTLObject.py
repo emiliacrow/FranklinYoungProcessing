@@ -14,7 +14,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible',
                   'UpdateImages','ECATOnContract','ECATPricingApproved','HTMETOnContract','HTMEPricingApproved',
-                  'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved']
+                  'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved','FyProductNotes']
     att_fields = []
     gen_fields = []
     def __init__(self,df_product, user, password, is_testing, full_run=False):
@@ -270,6 +270,12 @@ class BigCommerceRTLObject(BasicProcessObject):
             data_toggle = 1
             df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
 
+        fy_product_notes = ''
+        if 'FyProductNotes' in row:
+            fy_product_notes = row['FyProductNotes']
+            fy_product_notes = fy_product_notes.replace('§','')
+
+
         # at this point we've evaluated all the data
 
         if (price_toggle != -1 or data_toggle != -1):
@@ -298,10 +304,15 @@ class BigCommerceRTLObject(BasicProcessObject):
         if (va_contract != -1 or va_approved != -1):
             self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved)
 
+        if (fy_product_notes != ''):
+            self.obIngester.set_product_notes(price_id, fy_product_notes)
+
 
         return True, df_collect_product_base_data
 
     def trigger_ingest_cleanup(self):
+        self.obIngester.set_product_notes_cleanup()
+
         self.obIngester.set_bc_update_toggles_cleanup()
         self.obIngester.set_is_discon_allow_purchase_cleanup()
         self.obIngester.set_is_visible_cleanup()

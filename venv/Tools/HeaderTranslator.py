@@ -50,6 +50,7 @@ class HeaderTranslator():
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
                             'OnContract':['OnContract', 'On Contract'],
+                            'FyProductNotes':['FyProductNotes', 'Fy Product Notes','ProductNotes','Product Notes','InternalProductNotes','Internal Product Notes'],
 
                             'ECATOnContract':['ECATOnContract', 'ECAT On Contract', 'ECAT On Contract'],
                             'HTMEOnContract':['HTMEOnContract', 'HTME On Contract', 'HTME On Contract'],
