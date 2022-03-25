@@ -299,8 +299,10 @@ class BasePrice(BasicProcessObject):
             return False, df_collect_product_base_data
         elif (db_mus_success and not mus_success) and (db_mul_success and not mul_success):
             self.obReporter.update_report('Alert', 'DB markups were used')
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [db_markup_sell]
-            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [db_markup_list]
+            markup_sell = db_markup_sell
+            markup_list = db_markup_list
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
 
         elif (db_mus_success and mus_success) and (db_mul_success and mul_success):
             if (markup_list != db_markup_list) or (markup_sell != db_markup_sell):
