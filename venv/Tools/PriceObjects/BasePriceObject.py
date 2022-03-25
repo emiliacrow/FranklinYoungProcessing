@@ -269,12 +269,20 @@ class BasePrice(BasicProcessObject):
             db_mus_success, db_markup_sell = self.float_check(db_markup_sell, 'db_MarkUp_sell')
             if db_markup_sell <= 0:
                 db_mus_success = False
+                self.obReporter.update_report('Alert','DB Markup Sell negative')
+            elif db_markup_sell <= 1:
+                db_mus_success = False
+                self.obReporter.update_report('Alert','DB Markup Sell too low')
 
         db_mul_success, db_markup_list = self.row_check(row, 'db_MarkUp_list')
         if db_mul_success:
             db_mul_success, db_markup_list = self.float_check(db_markup_list, 'db_MarkUp_list')
             if db_markup_list <= 0:
                 db_mul_success = False
+                self.obReporter.update_report('Alert','DB Markup List negative')
+            elif db_markup_list <= 1:
+                db_mul_success = False
+                self.obReporter.update_report('Alert','DB Markup List too low')
 
         # get the markups from the file
         mus_success, markup_sell = self.row_check(row, 'LandedCostMarkupPercent_FYSell')
@@ -282,6 +290,10 @@ class BasePrice(BasicProcessObject):
             mus_success, markup_sell = self.float_check(markup_sell, 'LandedCostMarkupPercent_FYSell')
             if markup_sell <= 0:
                 mus_success = False
+                self.obReporter.update_report('Alert','Markup Sell negative')
+            elif markup_sell <= 1:
+                mus_success = False
+                self.obReporter.update_report('Alert','Markup Sell too low')
             else:
                 df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
 
@@ -290,6 +302,10 @@ class BasePrice(BasicProcessObject):
             mul_success, markup_list = self.float_check(markup_list, 'LandedCostMarkupPercent_FYList')
             if markup_list <= 0:
                 mul_success = False
+                self.obReporter.update_report('Alert','Markup List negative')
+            elif markup_list <= 1:
+                mul_success = False
+                self.obReporter.update_report('Alert','Markup List too low')
             else:
                 df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
 
@@ -317,7 +333,6 @@ class BasePrice(BasicProcessObject):
             fy_product_notes = fy_product_notes.replace('§','')
 
             if (fy_product_notes != ''):
-
                 self.obIngester.set_product_notes(product_price_id, fy_product_notes)
 
         df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)
