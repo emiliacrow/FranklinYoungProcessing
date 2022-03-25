@@ -311,6 +311,15 @@ class BasePrice(BasicProcessObject):
         elif (not db_mus_success and mus_success) and (not db_mul_success and mul_success):
             self.obReporter.update_report('Alert', 'File markups were used')
 
+        if 'FyProductNotes' in row and 'ProductPriceId' in row:
+            fy_product_notes = row['FyProductNotes']
+            product_price_id = int(row['ProductPriceId'])
+            fy_product_notes = fy_product_notes.replace('§','')
+
+            if (fy_product_notes != ''):
+
+                self.obIngester.set_product_notes(product_price_id, fy_product_notes)
+
         df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)
         return True, df_collect_product_base_data
 
@@ -409,6 +418,7 @@ class BasePrice(BasicProcessObject):
         return success, df_line_product
 
     def trigger_ingest_cleanup(self):
+        self.obIngester.set_product_notes_cleanup()
         self.obIngester.ingest_base_price_cleanup()
 
 

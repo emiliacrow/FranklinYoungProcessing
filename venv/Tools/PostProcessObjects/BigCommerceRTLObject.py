@@ -311,8 +311,6 @@ class BigCommerceRTLObject(BasicProcessObject):
         return True, df_collect_product_base_data
 
     def trigger_ingest_cleanup(self):
-        self.obIngester.set_product_notes_cleanup()
-
         self.obIngester.set_bc_update_toggles_cleanup()
         self.obIngester.set_is_discon_allow_purchase_cleanup()
         self.obIngester.set_is_visible_cleanup()
@@ -321,5 +319,6 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.obIngester.set_htme_toggles_cleanup()
         self.obIngester.set_gsa_toggles_cleanup()
         self.obIngester.set_va_toggles_cleanup()
+        self.obIngester.set_product_notes_cleanup()
 
 ## end ##
