@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BigCommerceRTLObject(BasicProcessObject):
-    req_fields = ['FyProductNumber']
+    req_fields = ['FyProductNumber','VendorPartNumber']
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible',
                   'UpdateImages','ECATOnContract','ECATPricingApproved','HTMETOnContract','HTMEPricingApproved',
