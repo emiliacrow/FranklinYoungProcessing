@@ -49,6 +49,8 @@ class BigCommerceRTLObject(BasicProcessObject):
         choices = ['Y']
         self.df_product['IsTopProduct'] = np.select(conditions, choices, default='N')
 
+        self.df_product['VendorPartNumber'] = self.df_product['VendorPartNumber_x']
+
         self.df_product = self.df_product.sort_values(by=['FyProductNumber','IsTopProduct'], ascending= False)
 
         # self.df_product = self.df_product.drop_duplicates(subset = ['FyProductNumber','VendorPartNumber_y'])
