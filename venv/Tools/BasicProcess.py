@@ -124,6 +124,11 @@ class BasicProcessObject:
         # get product look up
         self.df_product_agni_kai_lookup = self.obDal.get_product_action_review_lookup()
         # for final step
+        self.df_product_notes = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['db_FyProductNotes']!= '')]
+        self.df_product_notes = self.df_product_notes.drop(columns=['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber',
+                        'FyProductNumber','VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued'])
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes'])
+
         self.df_product_agni_kai_lookup_copy = self.df_product_agni_kai_lookup.copy()
 
         if 'BaseProductPriceId' in self.df_product.columns:
@@ -233,7 +238,7 @@ class BasicProcessObject:
         self.df_product.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'], inplace= True)
 
         self.duplicate_logic()
-
+        self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
         self.df_product = self.df_product.reindex()
 
 
