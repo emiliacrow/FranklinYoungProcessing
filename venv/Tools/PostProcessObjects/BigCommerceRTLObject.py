@@ -279,7 +279,6 @@ class BigCommerceRTLObject(BasicProcessObject):
 
 
         # at this point we've evaluated all the data
-
         if (price_toggle != -1 or data_toggle != -1):
 
             if str(row['IsTopProduct']) == 'Y':

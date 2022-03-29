@@ -105,7 +105,7 @@ class HeaderTranslator():
                             'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
 
                             'DateCatalogReceived':['DateCatalogRecieved', 'DateCatalogReceived',
-                                                   'Date Catalog Recieved', 'date_catalog_received'],
+                                                   'Date Catalog Recieved', 'date_catalog_received','DateCatalogRcvd'],
 
                             'AllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?'],
                             'ProductTaxClass':['ProductTaxClass','Product Tax Class','Tax Class'],

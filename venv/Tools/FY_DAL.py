@@ -776,20 +776,20 @@ class DataRunner(threading.Thread):
 
     def run(self):
         print('Runner report start: ' + self.proc_name)
-        obCursor = self.connection.cursor()
         fail_retries = []
+        obCursor = self.connection.cursor()
 
         count = 0
         for each_item in self.lst_data:
             count += 1
             print('Runner count: {0}'.format(count))
             # this value here for testing
-            # obCursor.callproc(self.proc_name, args = each_item)
             try:
                 obCursor.callproc(self.proc_name, args = each_item)
             except OperationalError:
                 fail_retries.append(each_item)
                 print('Wait fail count: {0}'.format(len(fail_retries)))
+
 
         # this is for executing many in the DB which can be faster
         # obCursor.executemany(self.proc_statement, self.lst_data)
@@ -805,7 +805,6 @@ class DataRunner(threading.Thread):
             except OperationalError:
                 drops += 1
                 print('Wait fail count: {0}'.format(drops))
-
 
         self.connection.commit()
         self.connection.close()

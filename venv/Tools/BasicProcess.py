@@ -58,6 +58,7 @@ class BasicProcessObject:
                 self.message = alive
                 self.is_viable = False
 
+
     def header_viability(self):
         # if there are required headers we check if they're all there
         product_headers = set(self.lst_product_headers)

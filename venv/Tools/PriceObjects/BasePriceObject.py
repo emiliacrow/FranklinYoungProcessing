@@ -11,7 +11,8 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BasePrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber', 'FyCost', 'DateCatalogReceived']
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName',
+                  'VendorPartNumber', 'FyCost', 'DateCatalogReceived']
     sup_fields = []
     att_fields = []
     gen_fields = []
@@ -90,7 +91,7 @@ class BasePrice(BasicProcessObject):
                 df_collect_product_base_data['IsVisible'] = [return_val]
             else:
                 self.obReporter.update_report('Alert', '{0} was set to 0'.format('IsVisible'))
-                df_collect_product_base_data['IsVisible'] = [0]
+                df_collect_product_base_data['IsVisible'] = [1]
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
@@ -349,13 +350,7 @@ class BasePrice(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            success, is_visible = self.process_boolean(row, 'IsVisible')
-            if success:
-                df_collect_product_base_data['IsVisible'] = [is_visible]
-            else:
-                self.obReporter.update_report('Alert', '{0} was set to 1'.format('IsVisible'))
-                is_visible = 1
-                df_collect_product_base_data['IsVisible'] = [is_visible]
+            is_visible = row['IsVisible']
 
             if 'VAProductPriceId' in row:
                 va_product_price_id = row['VAProductPriceId']
