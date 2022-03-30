@@ -95,7 +95,6 @@ class BasePrice(BasicProcessObject):
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
-                self.obReporter.update_report('Fail','Failed to identify product price id')
                 return success, df_collect_product_base_data
 
         success, df_line_product = self.base_price(df_collect_product_base_data)

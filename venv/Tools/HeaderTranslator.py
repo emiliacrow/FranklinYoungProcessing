@@ -50,7 +50,7 @@ class HeaderTranslator():
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
                             'OnContract':['OnContract', 'On Contract'],
-                            'FyProductNotes':['FyProductNotes', 'Fy Product Notes','ProductNotes','Product Notes','InternalProductNotes','Internal Product Notes'],
+                            'FyProductNotes':['FyProductNotes', 'Fy Product Notes','ProductNotes','Product Notes','InternalProductNotes','Internal Product Notes','FYProductNotes','FY Product Notes'],
 
                             'ECATOnContract':['ECATOnContract', 'ECAT On Contract', 'ECAT On Contract'],
                             'HTMEOnContract':['HTMEOnContract', 'HTME On Contract', 'HTME On Contract'],
@@ -121,13 +121,14 @@ class HeaderTranslator():
         self.translator_dict = {}
         for correct_head in self.dct_headers:
             for origin_head in self.dct_headers[correct_head]:
-                self.translator_dict[origin_head] = correct_head
+                self.translator_dict[origin_head.lower()] = correct_head
 
 
     def translate_headers(self,lst_in_heads):
         lst_out_heads = []
         for each_header in lst_in_heads:
             clean_head = str(each_header).strip()
+            clean_head = clean_head.lower()
             if clean_head in self.translator_dict:
                 if self.translator_dict[clean_head] not in lst_out_heads:
                     lst_out_heads.append(self.translator_dict[clean_head])
@@ -139,3 +140,6 @@ class HeaderTranslator():
 
         return lst_out_heads
 
+
+
+## end ##
