@@ -239,6 +239,20 @@ class BasicProcessObject:
         self.df_product.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'], inplace= True)
 
         self.duplicate_logic()
+
+        if 'ProductId' not in self.df_product.columns and 'ProductId_y' in self.df_product.columns:
+            self.df_product['ProductId'] = self.df_product['ProductId_y']
+            self.df_product = self.df_product.drop(columns = ['ProductId_y'])
+
+        if 'ProductPriceId' not in self.df_product.columns and 'ProductPriceId_y' in self.df_product.columns:
+            self.df_product['ProductPriceId'] = self.df_product['ProductPriceId_y']
+            self.df_product = self.df_product.drop(columns=['ProductPriceId_y'])
+
+        if 'BaseProductPriceId' not in self.df_product.columns and 'BaseProductPriceId_y' in self.df_product.columns:
+            self.df_product['BaseProductPriceId'] = self.df_product['BaseProductPriceId_y']
+            self.df_product = self.df_product.drop(columns = ['BaseProductPriceId_y'])
+
+
         self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
         self.df_product = self.df_product.reindex()
 
