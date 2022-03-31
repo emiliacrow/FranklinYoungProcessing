@@ -63,7 +63,7 @@ class HeaderTranslator():
                             'GSAApprovedListPrice':['GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
                                                     'GSAApprovedFYListPrice'],
                             'GSAApprovedPercent':['GSAChannelDiscount', 'GSADiscount', 'GSA Channel Discount',
-                                                  'GSA Discount', 'gsa_channel_discount', 'GSA Approved Channel%'],
+                                                  'GSA Discount', 'gsa_channel_discount', 'GSA Approved Channel%','GSADiscountPercent'],
                             'GSABasePrice':['GSABasePrice', 'GSA Base Price'],
                             'GSASellPrice':['GSASellPrice', 'GSA Sell Price','current_gsa_price'],
                             'GSAContractModificationNumber':['GSAContractModificationNumber','GSAModificationNumber',
@@ -71,21 +71,21 @@ class HeaderTranslator():
                                                              'GSAContractModification', 'GSA Contract Modification'],
                             'GSAApprovedPriceDate':['GSAApprovedPriceDate', 'GSA Approved Price Date',
                                                     'GSA Approved Date'],
-                            'GSA_Sin':['GSA_Sin', 'GSA_SIN', 'GSA Sin', 'GSA SIN', 'GSASin'],
+                            'GSA_Sin':['GSA_Sin', 'GSA_SIN', 'GSA Sin', 'GSA SIN', 'GSASin','GSA Sin #'],
 # VA
                             'VAApprovedListPrice':['ChannelApprovedFYListPrice__value', 'ChannelApprovedFYListPrice',
                                                     'ApprovedFYListPrice'],
                             'VAApprovedPercent':['VAChannelDiscount', 'VADiscount', 'VA Channel Discount',
-                                                  'VA Discount', 'va_channel_discount', 'VA Approved Channel%'],
+                                                  'VA Discount', 'va_channel_discount', 'VA Approved Channel%','VADiscountPercent'],
                             'VABasePrice':['VABasePrice', 'VA Base Price'],
                             'VASellPrice':['VASellPrice', 'VA Sell Price'],
                             'VAContractModificationNumber':['VAContractModificationNumber',
                                                              'VA Contract Modification Number',
-                                                             'VAContractModification', 'VA Contract Modification'],
+                                                             'VAContractModification', 'VA Contract Modification','VAModificationNumber'],
                             'VAApprovedPriceDate':['VAApprovedPriceDate', 'VA Approved Price Date',
                                                     'VA Approved Date'],
 
-                            'VA_Sin':['VA_Sin','VA_SIN','VA Sin','VA SIN','VASin'],
+                            'VA_Sin':['VA_Sin','VA_SIN','VA Sin','VA SIN','VASin','VA Sin #'],
 # ECAT
                             'ECATApprovedListPrice':['ECATApprovedFYListPrice__value', 'ECATApprovedFYListPrice',
                                                    'ECATApprovedFYListPrice'],
@@ -101,7 +101,7 @@ class HeaderTranslator():
 
 
                             'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)',
-                                                  'approved MFC per'],
+                                                  'approved MFC per','VA_MFC_Discount','GSA_MFC_Discount'],
                             'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
 
                             'DateCatalogReceived':['DateCatalogRecieved', 'DateCatalogReceived',
