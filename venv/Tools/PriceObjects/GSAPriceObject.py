@@ -110,8 +110,6 @@ class GSAPrice(BasicProcessObject):
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
-            #
-
             if 'GSABasePrice' not in row:
                 approved_list_price = float(row['GSAApprovedListPrice'])
 
