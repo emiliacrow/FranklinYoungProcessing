@@ -275,7 +275,7 @@ class BigCommerceRTLObject(BasicProcessObject):
         fy_product_notes = ''
         if 'FyProductNotes' in row:
             fy_product_notes = row['FyProductNotes']
-            fy_product_notes = fy_product_notes.replace('§','')
+            fy_product_notes = fy_product_notes.replace(';',',')
 
 
         # at this point we've evaluated all the data
