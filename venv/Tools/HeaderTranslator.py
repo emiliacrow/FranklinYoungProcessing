@@ -138,3 +138,8 @@ class HeaderTranslator():
 
             else:
                 lst_out_heads.append(each_header)
+
+        return lst_out_heads
+
+
+## end ##
