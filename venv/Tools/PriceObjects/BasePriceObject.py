@@ -329,10 +329,11 @@ class BasePrice(BasicProcessObject):
 
         if 'FyProductNotes' in row and 'ProductPriceId' in row:
             fy_product_notes = row['FyProductNotes']
-            product_price_id = int(row['ProductPriceId'])
-            fy_product_notes = fy_product_notes.replace('§','')
-
             if (fy_product_notes != ''):
+                product_price_id = int(row['ProductPriceId'])
+                fy_product_notes = fy_product_notes.replace('NULL','')
+                fy_product_notes = fy_product_notes.replace(';','')
+
                 self.obIngester.set_product_notes(product_price_id, fy_product_notes)
 
         df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)

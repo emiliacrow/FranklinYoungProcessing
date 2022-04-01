@@ -201,6 +201,8 @@ class MinimumProductPrice(BasicProcessObject):
 
             if 'FyProductNotes' in row:
                 fy_product_notes = row['FyProductNotes']
+                fy_product_notes = fy_product_notes.replace('NULL','')
+                fy_product_notes = fy_product_notes.replace(';','')
 
             product_tax_class = row['ProductTaxClass']
             vendor_part_number = row['VendorPartNumber']

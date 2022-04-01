@@ -838,11 +838,12 @@ class Pathways():
         if contract_selected == 'Update Toggles':
 
             self.obYNBox = YesNoDialog('Process regardless of change?')
-            self.obYNBox.initUI('Toggle dialog.', 'Would you like to update products regardless of change?\n\nThis sets BC toggles to update for all products included.\n')
+            self.obYNBox.initUI('Toggle dialog.', 'Would you like to update products regardless of change?\n\nThis sets toggles regardless of change.\n')
             if self.obYNBox.yes_selected == True:
                 b_full_run = True
 
             self.obBCRTL = BC_RTL_Object(self.df_product, self.user, self.password, is_testing, full_run = b_full_run)
+            self.obBCRTL = BC_RTL_Object(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obBCRTL.begin_process()
             self.df_product = self.obBCRTL.get_df()
             self.obFileFinder.write_xlsx(self.df_product, 'BC_RTL')

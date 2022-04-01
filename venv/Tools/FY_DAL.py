@@ -157,6 +157,7 @@ class DalObject:
         result_df = pandas.DataFrame(data=result_set,columns = column_names,dtype=str)
         self.close_connection()
 
+
         if 'ManufacturerPartNumber' in result_df.columns:
             result_df['ManufacturerPartNumber'] = result_df['ManufacturerPartNumber'].str.upper()
 
@@ -706,6 +707,19 @@ class DalObject:
         df_toggles = self.get_lookup(proc_name,column_names)
         return df_toggles
 
+    def get_toggles_full(self):
+        proc_name = 'sequoia.get_Toggles2'
+        column_names = ['ProductId','ProductPriceId','BaseProductPriceId',
+                        'FyProductNumber', 'VendorPartNumber',
+                        'db_IsDiscontinued','db_AllowPurchases',
+                        'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
+                        'ECATProductPriceId', 'db_ECATOnContract', 'db_ECATPricingApproved',
+                        'HTMEProductPriceId', 'db_HTMEOnContract', 'db_HTMEPricingApproved',
+                        'GSAProductPriceId', 'db_GSAOnContract', 'db_GSAPricingApproved',
+                        'VAProductPriceId', 'db_VAOnContract', 'db_VAPricingApproved']
+        df_toggles = self.get_lookup(proc_name,column_names)
+        return df_toggles
+
 
     def set_bc_toggles(self, lst_bc_toggles):
         proc_name = 'sequoia.set_BC_toggles'
@@ -791,12 +805,12 @@ class DataRunner(threading.Thread):
             count += 1
             print('Runner count: {0}'.format(count))
             # this value here for testing
-            obCursor.callproc(self.proc_name, args=each_item)
-            #try:
-            #    obCursor.callproc(self.proc_name, args = each_item)
-            #except OperationalError:
-            #    fail_retries.append(each_item)
-            #    print('Wait fail count: {0}'.format(len(fail_retries)))
+            # obCursor.callproc(self.proc_name, args=each_item)
+            try:
+                obCursor.callproc(self.proc_name, args = each_item)
+            except OperationalError:
+                fail_retries.append(each_item)
+                print('Wait fail count: {0}'.format(len(fail_retries)))
 
 
         # this is for executing many in the DB which can be faster

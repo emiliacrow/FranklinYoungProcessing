@@ -13,7 +13,7 @@ class BigCommerceRTLObject(BasicProcessObject):
     req_fields = ['FyProductNumber','VendorPartNumber']
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible',
-                  'UpdateImages','ECATOnContract','ECATPricingApproved','HTMETOnContract','HTMEPricingApproved',
+                  'UpdateAssets','ECATOnContract','ECATPricingApproved','HTMETOnContract','HTMEPricingApproved',
                   'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved','FyProductNotes']
     att_fields = []
     gen_fields = []
@@ -27,13 +27,17 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.define_new()
 
     def define_new(self):
-        # this should just try to gather the ID's of the relevant tables
-        # and if don't get then they fail
-        self.df_current_toggles = self.obDal.get_toggles()
+        # toggle setup
+        self.df_current_toggles = self.obDal.get_toggles_full()
         self.df_top_toggles = self.df_current_toggles.drop_duplicates(subset = ['FyProductNumber'])
-        self.df_top_toggles = self.df_top_toggles.drop(columns=['ProductId','ProductPriceId','BaseProductPriceId',
-                                                                'ECATProductPriceId','HTMEProductPriceId',
-                                                                'GSAProductPriceId','VAProductPriceId'])
+        drop_values = ['ProductId','ProductPriceId','BaseProductPriceId',
+                       'db_IsDiscontinued','db_AllowPurchases',
+                       'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
+                       'ECATProductPriceId', 'db_ECATOnContract', 'db_ECATPricingApproved',
+                       'HTMEProductPriceId', 'db_HTMEOnContract', 'db_HTMEPricingApproved',
+                       'GSAProductPriceId', 'db_GSAOnContract', 'db_GSAPricingApproved',
+                       'VAProductPriceId', 'db_VAOnContract', 'db_VAPricingApproved']
+        self.df_top_toggles = self.df_top_toggles.drop(columns=drop_values)
 
         match_headers = ['FyProductNumber','VendorPartNumber']
         self.df_current_toggles['Filter'] = 'Update'
@@ -53,7 +57,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         self.df_product = self.df_product.sort_values(by=['FyProductNumber','IsTopProduct'], ascending= False)
 
-        # self.df_product = self.df_product.drop_duplicates(subset = ['FyProductNumber','VendorPartNumber_y'])
+        # self.df_product = self.df_product.drop_duplicates(subset = ['FyProductNumber','VendorPartNumber_y']
 
 
     def remove_private_headers(self):
@@ -74,8 +78,8 @@ class BigCommerceRTLObject(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             if 'Filter' in row:
 
-                if row['Filter'] == 'Fail' and not self.full_run:
-                    self.obReporter.update_report('Alert','No change')
+                if row['Filter'] == 'Fail':
+                    self.obReporter.update_report('Alert','Failed filtering')
                     return False, df_collect_product_base_data
             else:
                 self.obReporter.update_report('Alert','This product was processed anyway')
@@ -89,6 +93,7 @@ class BigCommerceRTLObject(BasicProcessObject):
     def process_changes(self, df_collect_product_base_data):
         
         for colName, row in df_collect_product_base_data.iterrows():
+            # these must exist
             try:
                 product_id = row['ProductId']
             except KeyError:
@@ -113,7 +118,6 @@ class BigCommerceRTLObject(BasicProcessObject):
             va_id = row['VAProductPriceId']
 
             fy_product_number = row['FyProductNumber']
-
             vendor_part_number = str(row['VendorPartNumber_x'])
 
             update_asset = -1
@@ -139,7 +143,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     ecat_approved = -1
 
-                
             htme_contract = -1
             htme_approved = -1
             if row['HTMEProductPriceId'] != -1:
@@ -155,7 +158,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     htme_approved = -1
 
-                
             gsa_contract = -1
             gsa_approved = -1
             if row['GSAProductPriceId'] != -1:
@@ -171,7 +173,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     gsa_approved = -1
 
-                
             va_contract = -1
             va_approved = -1
             if row['VAProductPriceId'] != -1:
@@ -188,7 +189,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                     va_approved = -1
 
 
-            if (ecat_approved == 1) or (htme_approved == 1) or (gsa_approved == 1) or (va_approved == 1):
+            if (ecat_approved == 1 and ecat_contract == 1) or (htme_approved == 1 and htme_contract == 1) or (gsa_approved == 1 and gsa_contract == 1) or (va_approved == 1 and va_contract == 1):
                 price_toggle = 1
                 df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
 
@@ -212,23 +213,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                         df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
                     else:
                         data_toggle = -1
-
-
-            elif (update_asset != -1):
-                price_toggle = 1
-                df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
-
-                data_toggle = 1
-                df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
-
-                is_discontinued = 0
-                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
-
-                allow_purchases = 1
-                df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
-
-                is_visible = 1
-                df_collect_product_base_data['IsVisible'] = [is_visible]
 
 
             else:
@@ -265,45 +249,100 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     is_visible = -1
 
-        if self.full_run:
-            price_toggle = 1
-            df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
-
-            data_toggle = 1
-            df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
 
         fy_product_notes = ''
         if 'FyProductNotes' in row:
             fy_product_notes = row['FyProductNotes']
+            fy_product_notes = fy_product_notes.replace('NULL','')
             fy_product_notes = fy_product_notes.replace(';',',')
-
 
         # at this point we've evaluated all the data
         if (price_toggle != -1 or data_toggle != -1):
-
+            # this needs to be better
             if str(row['IsTopProduct']) == 'Y':
-                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
+                db_price_toggle = int(row['db_BCPriceUpdateToggle'])
+                db_data_toggle = int(row['db_BCPriceUpdateToggle'])
+                if db_price_toggle != price_toggle or db_data_toggle != data_toggle:
+                    self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
+                elif self.full_run:
+                    self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
+                else:
+                    self.obReporter.update_report('Alert', 'No change to BC toggles')
 
         if (is_discontinued != -1 or allow_purchases != -1):
-            self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
+            db_is_discontinued = int(row['db_IsDiscontinued'])
+            db_allow_purchases = int(row['db_AllowPurchases'])
+            if str(row['IsTopProduct']) == 'Y':
+                if db_is_discontinued != is_discontinued or db_allow_purchases != allow_purchases:
+                    self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
+                elif self.full_run:
+                    self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
+                else:
+                    self.obReporter.update_report('Alert', 'No change to discon/purchase toggles')
+            else:
+                if db_is_discontinued != is_discontinued or db_allow_purchases != 0:
+                    allow_purchases = 0
+                    self.obReporter.update_report('Alert','Product is not top, AllowPurchase overridden')
+                    self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
+                elif self.full_run:
+                    allow_purchases = 0
+                    self.obReporter.update_report('Alert','Product is not top, AllowPurchase overridden')
+                    self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
+                else:
+                    self.obReporter.update_report('Alert', 'No change to discon/purchase toggles')
+
 
         if (is_visible != -1):
-            self.obIngester.set_is_visible(base_id, is_visible)
+            db_is_visible = int(row['db_IsVisible'])
+            if db_is_visible != is_visible:
+                self.obIngester.set_is_visible(base_id, is_visible)
+            elif self.full_run:
+                self.obIngester.set_is_visible(base_id, is_visible)
+            else:
+                self.obReporter.update_report('Alert', 'No change to is visible')
 
         if (update_asset != -1):
             self.obIngester.set_update_asset(product_id, update_asset)
 
         if (ecat_contract != -1 or ecat_approved != -1):
-            self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved)
+            db_ecat_contract = int(row['db_ECATOnContract'])
+            db_ecat_approved = int(row['db_ECATPricingApproved'])
+            if db_ecat_contract != ecat_contract or db_ecat_approved != ecat_approved:
+                self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved)
+            elif self.full_run:
+                self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved)
+            else:
+                self.obReporter.update_report('Alert', 'No change to ECAT toggles')
 
         if (htme_contract != -1 or htme_approved != -1):
-            self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved)
+            db_htme_contract = int(row['db_HTMEOnContract'])
+            db_htme_approved = int(row['db_HTMEPricingApproved'])
+            if db_htme_contract != htme_contract or db_htme_approved != htme_approved:
+                self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved)
+            elif self.full_run:
+                self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved)
+            else:
+                self.obReporter.update_report('Alert', 'No change to HTME toggles')
 
         if (gsa_contract != -1 or gsa_approved != -1):
-            self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved)
+            db_gsa_contract = int(row['db_GSAOnContract'])
+            db_gsa_approved = int(row['db_GSAPricingApproved'])
+            if db_gsa_contract != gsa_contract or db_gsa_approved != gsa_approved:
+                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved)
+            elif self.full_run:
+                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved)
+            else:
+                self.obReporter.update_report('Alert', 'No change to GSA toggles')
 
         if (va_contract != -1 or va_approved != -1):
-            self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved)
+            db_va_contract = int(row['db_VAOnContract'])
+            db_va_approved = int(row['db_VAPricingApproved'])
+            if db_va_contract != va_contract or db_va_approved != va_approved:
+                self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved)
+            elif self.full_run:
+                self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved)
+            else:
+                self.obReporter.update_report('Alert', 'No change to VA toggles')
 
         if (fy_product_notes != ''):
             self.obIngester.set_product_notes(price_id, fy_product_notes)
