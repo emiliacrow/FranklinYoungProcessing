@@ -214,9 +214,18 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_measure_symbol_id = row['UnitOfMeasureSymbolId']
             unit_of_issue_quantity = row['Conv Factor/QTY UOM']
 
-        self.obIngester.ingest_product_price(fy_product_number, allow_purchases, fy_part_number,
+        if str(row['Filter']) == 'Partial':
+            self.obIngester.insert_product_price(fy_product_number, allow_purchases, fy_part_number,
                                              product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
                                              unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
+
+        elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Base Pricing':
+            price_id = row['ProductPriceId']
+            self.obIngester.update_product_price(price_id, fy_product_number, allow_purchases, fy_part_number,
+                                             product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+                                             unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
+
+
 
         return True, df_line_product
 
