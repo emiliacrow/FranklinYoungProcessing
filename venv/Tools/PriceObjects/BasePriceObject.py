@@ -418,7 +418,7 @@ class BasePrice(BasicProcessObject):
 
 
         if str(row['Filter']) == 'Base Pricing':
-            self.obIngester.ingest_base_price(vendor_list_price, fy_discount_percent, fy_cost,
+            self.obIngester.insert_base_price(vendor_list_price, fy_discount_percent, fy_cost,
                                                           estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price,
                                                           markup_percent_fy_list, fy_list_price, ecommerce_discount,
@@ -439,7 +439,7 @@ class BasePrice(BasicProcessObject):
 
     def trigger_ingest_cleanup(self):
         self.obIngester.set_product_notes_cleanup()
-        self.obIngester.ingest_base_price_cleanup()
+        self.obIngester.insert_base_price_cleanup()
         self.obIngester.update_base_price_cleanup()
 
 
