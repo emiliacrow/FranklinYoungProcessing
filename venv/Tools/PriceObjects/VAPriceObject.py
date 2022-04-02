@@ -110,35 +110,18 @@ class VAPrice(BasicProcessObject):
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
-
-            if 'VABasePrice' not in row:
-                approved_list_price = float(row['VAApprovedListPrice'])
-                approved_percent = float(row['VAApprovedPercent'])
-                va_base_price = round(approved_list_price-(approved_list_price*approved_percent),4)
-                self.obReporter.update_report('Alert','VABasePrice was calculated')
-
-                return_df_line_product['VABasePrice'] = va_base_price
-            else:
-                va_base_price = round(float(row['VABasePrice']), 4)
-                return_df_line_product['VABasePrice'] = va_base_price
-                self.obReporter.update_report('Alert','VABasePrice was rounded to 4')
-
-            if 'VASellPrice' not in row:
-                iff_fee_percent = 0.995
-                va_sell_price = round(va_base_price/iff_fee_percent, 2)
-                return_df_line_product['VASellPrice'] = va_sell_price
-                self.obReporter.update_report('Alert','VASellPrice was calculated')
-
-            if 'MfcPrice' not in row:
+            if 'ApprovedMfcPrice' not in row:
+                approved_list_price = row['VAApprovedListPrice']
                 mfc_precent = float(row['MfcDiscountPercent'])
-                return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
-                self.obReporter.update_report('Alert','MfcPrice was calculated')
+                return_df_line_product['ApprovedMfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
+                self.obReporter.update_report('Alert','ApprovedMfcPrice was calculated')
 
         return success, return_df_line_product
 
 
     def va_product_price(self, df_line_product):
         success = True
+        va_product_price_id = -1
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             base_product_price_id = row['BaseProductPriceId']
@@ -166,25 +149,33 @@ class VAPrice(BasicProcessObject):
             approved_list_price = float(row['VAApprovedListPrice'])
             approved_percent = float(row['VAApprovedPercent'])
 
-            va_base_price = row['VABasePrice']
-            va_sell_price = row['VASellPrice']
-
-            mfc_precent = row['MfcDiscountPercent']
-            mfc_price = row['MfcPrice']
+            mfc_percent = row['MfcDiscountPercent']
+            mfc_approved_price = row['ApprovedMfcPrice']
 
             sin = row['VA_Sin']
 
+        if 'VAProductPriceId' in row:
+            va_product_price_id = int(row['VAProductPriceId'])
 
-        self.obIngester.va_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
+        if va_product_price_id == -1:
+            self.obIngester.va_product_price_insert(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
-                                             approved_price_date, approved_percent, va_base_price, va_sell_price,
-                                             mfc_precent, mfc_price, sin)
+                                             approved_price_date, approved_percent,
+                                             mfc_percent, mfc_approved_price, sin)
+        else:
+            product_price_id = int(row['ProductPriceId'])
+            self.obIngester.va_product_price_update(va_product_price_id, base_product_price_id, product_price_id, fy_product_number, on_contract, approved_base_price,
+                                             approved_sell_price, approved_list_price, contract_manu_number,
+                                             contract_number, contract_mod_number, is_pricing_approved,
+                                             approved_price_date, approved_percent,
+                                             mfc_percent, mfc_approved_price, sin)
 
         return success, return_df_line_product
 
 
     def trigger_ingest_cleanup(self):
-        self.obIngester.ingest_va_product_price_cleanup()
+        self.obIngester.va_product_price_insert_cleanup()
+        self.obIngester.va_product_price_update_cleanup()
 
 ## end ##

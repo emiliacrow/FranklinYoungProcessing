@@ -166,6 +166,7 @@ class BasicProcessObject:
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Base Pricing')]
 
         self.df_partial_matched_product = self.df_product[(self.df_product['Filter'] == 'Partial')]
+
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
 
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','db_IsDiscontinued'])
@@ -177,6 +178,9 @@ class BasicProcessObject:
 
         self.df_man_ven_matched_products = self.df_product[(self.df_product['Filter'] == 'Partial')].copy()
 
+        print(self.df_man_ven_matched_products.columns)
+        print(self.df_man_ven_matched_products)
+
         if len(self.df_man_ven_matched_products.index) > 0:
             self.man_ven_cleanup()
 
@@ -184,7 +188,6 @@ class BasicProcessObject:
         # but wait! there's more!
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')].copy()
 
-        self.df_product =self.x_y_cleaning(self.df_product)
         self.df_product = self.df_product.drop(columns=['Filter','ManufacturerName_y','FyProductNumber_y','VendorName_y','VendorPartNumber_y'])
 
 
@@ -244,7 +247,10 @@ class BasicProcessObject:
             self.df_product['ProductId'] = self.df_product['ProductId_y']
             self.df_product = self.df_product.drop(columns = ['ProductId_y'])
 
+        print(self.df_product.columns)
+        print(self.df_product)
         if 'ProductPriceId' not in self.df_product.columns and 'ProductPriceId_y' in self.df_product.columns:
+            print(self.df_product.columns)
             self.df_product['ProductPriceId'] = self.df_product['ProductPriceId_y']
             self.df_product = self.df_product.drop(columns=['ProductPriceId_y'])
 
@@ -360,8 +366,10 @@ class BasicProcessObject:
         self.df_man_ven_matched_products['Filter'] = np.select(conditions, choices, default='Partial')
 
         # we will have to make assignments of more values _x, _y as we identify the partial type
+        print(self.df_man_ven_matched_products.columns)
+        print(self.df_man_ven_matched_products)
 
-        self.df_man_ven_matched_products =self.x_y_cleaning(self.df_man_ven_matched_products)
+        self.df_man_ven_matched_products =self.man_ven_match_x_y_cleaning(self.df_man_ven_matched_products)
 
 
     def fy_cat_cleanup(self):
@@ -398,7 +406,8 @@ class BasicProcessObject:
 
         self.df_fy_cat_matched_products =self.x_y_cleaning(self.df_fy_cat_matched_products)
 
-
+    def man_ven_match_x_y_cleaning(self, df_to_clean):
+        return df_to_clean
 
     def x_y_cleaning(self, df_to_clean):
         if 'ManufacturerName_x' in df_to_clean.columns:
