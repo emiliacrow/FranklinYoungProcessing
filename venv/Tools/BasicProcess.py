@@ -132,6 +132,10 @@ class BasicProcessObject:
 
         self.df_product_agni_kai_lookup_copy = self.df_product_agni_kai_lookup.copy()
 
+        if 'ProductId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = ['ProductId'])
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns = ['ProductPriceId'])
         if 'BaseProductPriceId' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns = ['BaseProductPriceId'])
         if 'db_IsDiscontinued' in self.df_product.columns:

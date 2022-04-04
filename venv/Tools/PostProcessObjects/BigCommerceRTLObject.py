@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class BigCommerceRTLObject(BasicProcessObject):
-    req_fields = ['FyProductNumber','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible',
                   'UpdateAssets','ECATOnContract','ECATPricingApproved','HTMETOnContract','HTMEPricingApproved',
@@ -25,13 +25,19 @@ class BigCommerceRTLObject(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
+        self.assign_current_toggles()
 
-    def define_new(self):
+    def assign_current_toggles(self):
+        self.df_ready_products = self.df_product[(self.df_product['Filter'] == 'Ready')].copy()
+        self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
+
+        self.df_ready_products = self.df_ready_products.drop(columns=['Filter','db_IsDiscontinued'])
         # toggle setup
         self.df_current_toggles = self.obDal.get_toggles_full()
+
         self.df_top_toggles = self.df_current_toggles.drop_duplicates(subset = ['FyProductNumber'])
-        drop_values = ['ProductId','ProductPriceId','BaseProductPriceId',
-                       'db_IsDiscontinued','db_AllowPurchases',
+
+        drop_values = ['db_IsDiscontinued','db_AllowPurchases',
                        'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
                        'ECATProductPriceId', 'db_ECATOnContract', 'db_ECATPricingApproved',
                        'HTMEProductPriceId', 'db_HTMEOnContract', 'db_HTMEPricingApproved',
@@ -39,23 +45,22 @@ class BigCommerceRTLObject(BasicProcessObject):
                        'VAProductPriceId', 'db_VAOnContract', 'db_VAPricingApproved']
         self.df_top_toggles = self.df_top_toggles.drop(columns=drop_values)
 
-        match_headers = ['FyProductNumber','VendorPartNumber']
+        match_headers = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
         self.df_current_toggles['Filter'] = 'Update'
-        self.df_product = self.df_product.merge(self.df_current_toggles, how='left', on=match_headers)
-        self.df_product.loc[(self.df_product['Filter'] != 'Update'), 'Filter'] = 'Fail'
+        self.df_ready_products = self.df_ready_products.merge(self.df_current_toggles, how='left', on=match_headers)
 
-        match_headers = ['FyProductNumber']
-        self.df_product = self.df_product.merge(self.df_top_toggles, how='left', on=match_headers)
+        self.df_ready_products.loc[(self.df_ready_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
 
-        # identify the top product
-        top_product_match = ((self.df_product['VendorPartNumber_x'] == self.df_product['VendorPartNumber_y']))
-        conditions = [top_product_match]
-        choices = ['Y']
-        self.df_product['IsTopProduct'] = np.select(conditions, choices, default='N')
+        match_headers = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
+        self.df_top_toggles['IsTopProduct'] = 'Y'
 
-        self.df_product['VendorPartNumber'] = self.df_product['VendorPartNumber_x']
+        self.df_ready_products = self.df_ready_products.merge(self.df_top_toggles, how='left', on=match_headers)
 
-        self.df_product = self.df_product.sort_values(by=['FyProductNumber','IsTopProduct'], ascending= False)
+        self.df_ready_products.loc[(self.df_ready_products['IsTopProduct'] != 'Y'), 'IsTopProduct'] = 'N'
+
+        self.df_ready_products = self.df_ready_products.sort_values(by=['FyProductNumber','IsTopProduct'], ascending= False)
+
+        self.df_product = pandas.concat([self.df_product, self.df_ready_products], ignore_index = True)
 
         # self.df_product = self.df_product.drop_duplicates(subset = ['FyProductNumber','VendorPartNumber_y']
 
@@ -118,7 +123,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             va_id = row['VAProductPriceId']
 
             fy_product_number = row['FyProductNumber']
-            vendor_part_number = str(row['VendorPartNumber_x'])
+            vendor_part_number = str(row['VendorPartNumber'])
 
             update_asset = -1
             success, update_asset = self.process_boolean(row, 'UpdateAssets')
@@ -126,7 +131,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                 df_collect_product_base_data['UpdateAssets'] = [update_asset]
             else:
                 update_asset = -1
-
 
             ecat_contract = -1
             ecat_approved = -1

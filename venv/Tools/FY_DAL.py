@@ -744,9 +744,8 @@ class DalObject:
         return df_toggles
 
     def get_toggles_full(self):
-        proc_name = 'sequoia.get_Toggles2'
-        column_names = ['ProductId','ProductPriceId','BaseProductPriceId',
-                        'FyProductNumber', 'VendorPartNumber',
+        proc_name = 'sequoia.get_Toggles3'
+        column_names = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber',
                         'db_IsDiscontinued','db_AllowPurchases',
                         'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
                         'ECATProductPriceId', 'db_ECATOnContract', 'db_ECATPricingApproved',
