@@ -145,8 +145,8 @@ class MinimumProduct(BasicProcessObject):
                                                      how='left', on=['Category'])
         else:
             self.df_fill_category = self.obDal.get_product_category()
-            self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['FyCatalogNumber'])
-
+            self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['ProductId'])
+            del self.df_fill_category
 
 
     def batch_process_country(self):

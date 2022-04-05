@@ -228,8 +228,8 @@ class DalObject:
         return return_id
 
     def get_product_category(self):
-        proc_name = 'sequoia.get_product_category'
-        column_names = ['FyCatalogNumber','Category','CategoryId']
+        proc_name = 'sequoia.get_product_category2'
+        column_names = ['ProductId','CategoryId']
         df_category_lookup = self.get_lookup(proc_name,column_names)
         return df_category_lookup
 

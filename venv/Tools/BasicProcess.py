@@ -154,21 +154,23 @@ class BasicProcessObject:
         # set aside the good matches
         self.df_full_matched_product = self.df_product[(self.df_product['Filter'] == 'Ready')]
 
+        del self.df_full_product_lookup
+
         # prep next step data
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'])
 
-
         # round 2
         self.df_product_agni_kai_lookup['Filter'] = 'Base Pricing'
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
+
+        del self.df_product_agni_kai_lookup
 
         # set aside the good matches
         self.df_pricing_matched_product = self.df_product[(self.df_product['Filter'] == 'Base Pricing')]
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Base Pricing')]
 
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','db_IsDiscontinued'])
-
 
         # round 3
         self.df_product_agni_kai_lookup_copy['Filter'] = 'Partial'
@@ -196,6 +198,8 @@ class BasicProcessObject:
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup_copy, how='left',on=['FyCatalogNumber','ManufacturerName'])
         self.df_fy_cat_matched_products = self.df_product[(self.df_product['Filter'] == 'Partial')].copy()
 
+        del self.df_product_agni_kai_lookup_copy
+
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
 
         if len(self.df_fy_cat_matched_products.index) > 0:
@@ -214,24 +218,27 @@ class BasicProcessObject:
         self.df_product['Filter'] = 'New'
 
 
-
         if len(self.df_full_matched_product.index) > 0:
             self.df_full_matched_product = self.df_full_matched_product.drop_duplicates()
             self.df_product = pandas.concat([self.df_product,self.df_full_matched_product], ignore_index = True)
+            del self.df_full_matched_product
 
         if len(self.df_pricing_matched_product.index) > 0:
             self.df_pricing_matched_product = self.df_pricing_matched_product.drop_duplicates()
             self.df_product = pandas.concat([self.df_product,self.df_pricing_matched_product], ignore_index = True)
+            del self.df_pricing_matched_product
 
         if len(self.df_man_ven_matched_products.index) > 0:
             self.df_man_ven_matched_products = self.df_man_ven_matched_products.drop_duplicates()
             self.df_product = pandas.concat([self.df_product,self.df_man_ven_matched_products], ignore_index = True)
+            del self.df_man_ven_matched_products
 
         if len(self.df_fy_cat_matched_products.index) > 0:
             self.df_fy_cat_matched_products = self.df_fy_cat_matched_products.drop_duplicates()
             print('4',self.df_fy_cat_matched_products.columns)
             print('4',self.df_fy_cat_matched_products)
             self.df_product = pandas.concat([self.df_product,self.df_fy_cat_matched_products], ignore_index = True)
+            del self.df_fy_cat_matched_products
 
 
         if 'VendorPartNumber_x' in self.df_product.columns and 'VendorPartNumber' not in self.df_product.columns:
@@ -249,6 +256,7 @@ class BasicProcessObject:
 
         # self.duplicate_logic()
         self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
+        del self.df_product_notes
         self.df_product = self.df_product.reindex()
 
 
