@@ -480,7 +480,6 @@ class BasicProcessObject:
         drop_5 = ['ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorName_y','VendorPartNumber_x',
                       'VendorPartNumber_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_to_clean_case_5 = df_to_clean_case_5.drop(columns = drop_5)
-        print(df_to_clean_case_5.columns)
 
         if len(df_to_clean_case_6.index) > 0:
             #  matched on 'FyCatalogNumber','ManufacturerName'
@@ -493,7 +492,6 @@ class BasicProcessObject:
         drop_6 = ['ProductPriceId','BaseProductPriceId','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
                       'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_x','ManufacturerPartNumber_y']
         df_to_clean_case_6 = df_to_clean_case_6.drop(columns = drop_6)
-        print(df_to_clean_case_6.columns)
 
         if len(df_to_clean_case_7.index) > 0:
             # configuration change
@@ -506,7 +504,6 @@ class BasicProcessObject:
         drop_7 = ['ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
                       'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_to_clean_case_7 = df_to_clean_case_7.drop(columns = drop_7)
-        print(df_to_clean_case_7.columns)
 
         #  matched on 'FyCatalogNumber','ManufacturerName'
         if len(df_to_clean_case_8.index) > 0:
@@ -516,10 +513,9 @@ class BasicProcessObject:
             df_to_clean_case_8['VendorPartNumber'] = df_to_clean_case_8[['VendorPartNumber_x']]
             df_to_clean_case_8['FyProductNumber'] = df_to_clean_case_8[['FyProductNumber_x']]
 
-        drop_8 = ['ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
-                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y']
+        drop_8 = ['ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_to_clean_case_8 = df_to_clean_case_8.drop(columns = drop_8)
-        print(df_to_clean_case_8.columns)
 
         df_to_return = pandas.concat([df_to_clean_case_5,df_to_clean_case_6,df_to_clean_case_7,df_to_clean_case_8],ignore_index=True)
 
