@@ -332,13 +332,6 @@ class MinimumProduct(BasicProcessObject):
                 self.obReporter.update_report('Fail','Failed in process recommended storage')
                 return False, df_collect_product_base_data
 
-            for each_bool in ['IsControlled', 'IsDisposable', 'IsGreen', 'IsLatexFree','IsRX','IsHazardous','IsFreeShipping','IsColdChain']:
-                success, return_val = self.process_boolean(row, each_bool)
-                if success:
-                    df_collect_product_base_data[each_bool] = [return_val]
-                else:
-                    self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
-                    df_collect_product_base_data[each_bool] = [0]
 
             b_override = False
             success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
@@ -461,18 +454,19 @@ class MinimumProduct(BasicProcessObject):
             recommended_storage_id = row['RecommendedStorageId']
             expected_lead_time_id = row['ExpectedLeadTimeId']
 
-            is_controlled = row['IsControlled']
-            is_disposible = row['IsDisposable']
-            is_green = row['IsGreen']
-            is_latex_free = row['IsLatexFree']
-            is_rx = row['IsRX']
-            is_hazardous = row['IsHazardous']
 
-        self.obIngester.ingest_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
+        if str(row['Filter']) == 'New':
+            self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
-                                                 expected_lead_time_id, category_id, is_controlled, is_disposible,
-                                                 is_green, is_latex_free, is_rx, is_hazardous)
+                                                 expected_lead_time_id, category_id)
+
+        elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Partial' or str(row['Filter']) == 'Base Pricing':
+            product_id = row['ProductId']
+            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
+                                                 long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
+                                                 shipping_instructions_id, recommended_storage_id,
+                                                 expected_lead_time_id, category_id)
 
         return df_line_product
 

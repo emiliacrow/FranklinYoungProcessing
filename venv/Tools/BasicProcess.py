@@ -255,7 +255,9 @@ class BasicProcessObject:
         self.df_product.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'], inplace= True)
 
         # self.duplicate_logic()
-        self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
+        if 'ProductPriceId' in self.df_product.columns:
+            self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
+
         del self.df_product_notes
         self.df_product = self.df_product.reindex()
 

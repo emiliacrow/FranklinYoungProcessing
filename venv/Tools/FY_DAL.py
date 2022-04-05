@@ -580,14 +580,26 @@ class DalObject:
         return return_id
 
 
-    def min_product_cap(self, lst_product_price):
+    def min_product_cap(self, lst_product):
         proc_name = 'sequoia.MinimumProduct_capture'
-        proc_statement = 'CALL `sequoia`.`MinimumProduct_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
-                         '%s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`MinimumProduct_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
         runner.start()
 
+    def min_product_insert(self, lst_product):
+        proc_name = 'sequoia.MinimumProduct_insert'
+        proc_statement = 'CALL `sequoia`.`MinimumProduct_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
+        runner.start()
+
+    def min_product_update(self, lst_product):
+        proc_name = 'sequoia.MinimumProduct_update'
+        proc_statement = 'CALL `sequoia`.`MinimumProduct_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
+        runner.start()
 
     def product_fill(self,lst_product_price):
         proc_name = 'sequoia.Product_fill'

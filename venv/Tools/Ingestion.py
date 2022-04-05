@@ -518,6 +518,45 @@ class IngestionObject:
 
         return ingested_set
 
+    def insert_product(self, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId):
+        # if this is the last to join, or if the size has hit the limit, send a runner
+        if (len(self.product_insert_collector) > self.load_limit):
+            self.product_insert_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription,
+                                               newLongDescription, newECommerceLongDescription,
+                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
+                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
+
+            self.obDal.min_product_insert(self.product_insert_collector)
+            self.product_insert_collector = []
+        else:
+            self.product_insert_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription,
+                                               newLongDescription, newECommerceLongDescription,
+                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
+                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
+
+    def insert_product_cleanup(self):
+        if self.product_insert_collector != []:
+            self.obDal.min_product_insert(self.product_insert_collector)
+
+    def update_product(self, newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId):
+        # if this is the last to join, or if the size has hit the limit, send a runner
+        if (len(self.product_update_collector) > self.load_limit):
+            self.product_update_collector.append((newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription,
+                                               newLongDescription, newECommerceLongDescription,
+                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
+                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
+
+            self.obDal.min_product_update(self.product_update_collector)
+            self.product_update_collector = []
+        else:
+            self.product_update_collector.append((newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription,
+                                               newLongDescription, newECommerceLongDescription,
+                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
+                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
+
+    def update_product_cleanup(self):
+        if self.product_update_collector != []:
+            self.obDal.min_product_update(self.product_update_collector)
 
     def ingest_product(self, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0, newIsHazardous=0):
         # if this is the last to join, or if the size has hit the limit, send a runner
@@ -556,13 +595,13 @@ class IngestionObject:
             self.obDal.set_discon_product_price(self.product_collector)
 
 
-    def fill_product(self, ProductId, NatoStockNumber='', ModelNumber='', RequiredSampleSize='', NumberOfChannels='', GTIN='', SterilityId=-1, SurfaceTreatmentId=-1, PrecisionId=-1, ProductSEOId=-1, ComponentSetId=-1, FSCCodeId=-1, HazardousCodeId=-1, UNSPSCId=-1, NAICSCodeId=-1, NationalDrugCodeId=-1, ProductWarrantyId=-1, SpeciesId=-1):
+    def fill_product(self, ProductId, NatoStockNumber='', ModelNumber='', RequiredSampleSize='', NumberOfChannels='', GTIN='', SterilityId=-1, SurfaceTreatmentId=-1, PrecisionId=-1, ProductSEOId=-1, ComponentSetId=-1, FSCCodeId=-1, HazardousCodeId=-1, UNSPSCId=-1, NAICSCodeId=-1, NationalDrugCodeId=-1, ProductWarrantyId=-1, SpeciesId=-1, is_controlled=0, is_disposible=0, is_green=0, is_latex_free=0, is_rx=0, is_hazardous=0):
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append((ProductId, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId))
+            self.product_collector.append((ProductId, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId,is_controlled, is_disposible, is_green, is_latex_free, is_rx, is_hazardous))
             self.obDal.product_fill(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append((ProductId, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesId))
+            self.product_collector.append((ProductId, NatoStockNumber, ModelNumber, RequiredSampleSize, NumberOfChannels, GTIN, SterilityId, SurfaceTreatmentId, PrecisionId, ProductSEOId, ComponentSetId, FSCCodeId, HazardousCodeId, UNSPSCId, NAICSCodeId, NationalDrugCodeId, ProductWarrantyId, SpeciesIdis_controlled, is_disposible, is_green, is_latex_free, is_rx, is_hazardous))
 
     def fill_product_cleanup(self):
         if self.product_collector != []:

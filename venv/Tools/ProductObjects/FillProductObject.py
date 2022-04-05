@@ -106,6 +106,22 @@ class FillProduct(BasicProcessObject):
             else:
                 df_collect_product_base_data['ProductId'] = [product_id]
 
+            for each_bool in ['IsControlled', 'IsDisposable', 'IsGreen', 'IsLatexFree', 'IsRX', 'IsHazardous',
+                              'IsFreeShipping', 'IsColdChain']:
+                success, return_val = self.process_boolean(row, each_bool)
+                if success:
+                    df_collect_product_base_data[each_bool] = [return_val]
+                else:
+                    df_collect_product_base_data[each_bool] = [0]
+
+            # remove
+            is_controlled = row['IsControlled']
+            is_disposible = row['IsDisposable']
+            is_green = row['IsGreen']
+            is_latex_free = row['IsLatexFree']
+            is_rx = row['IsRX']
+            is_hazardous = row['IsHazardous']
+
             self.process_image(row, product_id)
 
             nato_stock_number = self.process_nsn(row)
@@ -131,11 +147,11 @@ class FillProduct(BasicProcessObject):
             product_warranty_id = self.process_product_warranty(row)
             species_id = self.process_species(row)
 
-        self.obIngester.fill_product(product_id, nato_stock_number, model_number,
-                                               required_sample_size, number_of_channels, GTIN, sterility_id,
-                                               surface_treatment_id, precision_id, product_seo_id, component_set_id,
-                                               FSC_code_id, hazardous_code_id, UNSPSC_id, NAICS_code_id,
-                                               national_drug_code_id, product_warranty_id, species_id)
+        self.obIngester.fill_product(product_id, nato_stock_number, model_number, required_sample_size,
+                                     number_of_channels, GTIN, sterility_id, surface_treatment_id, precision_id,
+                                     product_seo_id, component_set_id, FSC_code_id, hazardous_code_id, UNSPSC_id,
+                                     NAICS_code_id, national_drug_code_id, product_warranty_id, species_id,
+                                     is_controlled, is_disposible, is_green, is_latex_free, is_rx, is_hazardous)
 
         return True, df_collect_product_base_data
 
