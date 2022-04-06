@@ -126,11 +126,15 @@ class BasicProcessObject:
         self.df_product_agni_kai_lookup = self.obDal.get_product_action_review_lookup()
         # for final step
         self.df_product_notes = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['db_FyProductNotes']!= '')]
-        self.df_product_notes = self.df_product_notes.drop(columns=['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber',
-                        'FyProductNumber','VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued'])
+        drop_notes = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber','FyProductNumber',
+                      'VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued',
+                      'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
+        self.df_product_notes = self.df_product_notes.drop(columns=drop_notes)
         self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes'])
 
         self.df_product_agni_kai_lookup_copy = self.df_product_agni_kai_lookup.copy()
+        drop_copy = ['ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
+        self.df_product_agni_kai_lookup_copy = self.df_product_agni_kai_lookup_copy.drop(columns=drop_copy)
 
         if 'ProductId' in self.df_product.columns:
             self.df_product = self.df_product.drop(columns = ['ProductId'])
@@ -144,7 +148,7 @@ class BasicProcessObject:
         # set the full look up
         self.df_full_product_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['BaseProductPriceId'] != 'Load Pricing')]
         self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['BaseProductPriceId'] == 'Load Pricing')]
-        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns = ['BaseProductPriceId'])
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns = ['BaseProductPriceId','ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId'])
 
         # first round filtering
         self.df_full_product_lookup['Filter'] = 'Ready'

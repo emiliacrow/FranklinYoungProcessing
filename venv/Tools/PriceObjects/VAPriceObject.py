@@ -111,7 +111,7 @@ class VAPrice(BasicProcessObject):
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
             if 'ApprovedMfcPrice' not in row:
-                approved_list_price = row['VAApprovedListPrice']
+                approved_list_price = float(row['VAApprovedListPrice'])
                 mfc_precent = float(row['MfcDiscountPercent'])
                 return_df_line_product['ApprovedMfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
                 self.obReporter.update_report('Alert','ApprovedMfcPrice was calculated')

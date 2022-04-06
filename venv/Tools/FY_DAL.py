@@ -613,9 +613,10 @@ class DalObject:
 
 
     def get_product_action_review_lookup(self):
-        proc_name = 'sequoia.get_ProductActionReview3_lookup'
+        proc_name = 'sequoia.get_ProductActionReview4_lookup'
         column_names = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber', 'ProductPriceId',
-                        'FyProductNumber','VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued','db_FyProductNotes']
+                        'FyProductNumber','VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued','db_FyProductNotes',
+                        'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 
@@ -854,12 +855,12 @@ class DataRunner(threading.Thread):
             count += 1
             print('Runner count: {0}'.format(count))
             # this value here for testing
-            # obCursor.callproc(self.proc_name, args=each_item)
-            try:
-                obCursor.callproc(self.proc_name, args = each_item)
-            except OperationalError:
-                fail_retries.append(each_item)
-                print('Wait fail count: {0}'.format(len(fail_retries)))
+            obCursor.callproc(self.proc_name, args=each_item)
+            #try:
+            #    obCursor.callproc(self.proc_name, args = each_item)
+            #except OperationalError:
+            #    fail_retries.append(each_item)
+            #    print('Wait fail count: {0}'.format(len(fail_retries)))
 
 
         # this is for executing many in the DB which can be faster
