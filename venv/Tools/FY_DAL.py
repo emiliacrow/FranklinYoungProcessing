@@ -160,9 +160,11 @@ class DalObject:
 
         if 'ManufacturerPartNumber' in result_df.columns:
             result_df['ManufacturerPartNumber'] = result_df['ManufacturerPartNumber'].str.upper()
+            result_df['ManufacturerPartNumber'] = result_df['ManufacturerPartNumber'].str.strip()
 
         if 'VendorPartNumber' in result_df.columns:
             result_df['VendorPartNumber'] = result_df['VendorPartNumber'].str.upper()
+            result_df['VendorPartNumber'] = result_df['VendorPartNumber'].str.strip()
 
         return(result_df)
 
