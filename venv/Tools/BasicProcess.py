@@ -239,8 +239,6 @@ class BasicProcessObject:
 
         if len(self.df_fy_cat_matched_products.index) > 0:
             self.df_fy_cat_matched_products = self.df_fy_cat_matched_products.drop_duplicates()
-            print('4',self.df_fy_cat_matched_products.columns)
-            print('4',self.df_fy_cat_matched_products)
             self.df_product = pandas.concat([self.df_product,self.df_fy_cat_matched_products], ignore_index = True)
         del self.df_fy_cat_matched_products
 
@@ -257,7 +255,7 @@ class BasicProcessObject:
 
         self.df_product.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'], inplace= True)
 
-        self.duplicate_logic()
+        # self.duplicate_logic()
         if 'ProductPriceId' in self.df_product.columns:
             self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
 
@@ -532,13 +530,13 @@ class BasicProcessObject:
                       'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_to_clean_case_8 = df_to_clean_case_8.drop(columns = drop_8)
 
-        df_partials['ManufacturerName'] = df_partials[['ManufacturerName_x']]
+        df_partials['ManufacturerPartNumber'] = df_partials[['ManufacturerPartNumber_x']]
         df_partials['FyProductNumber'] = df_partials[['FyProductNumber_x']]
         df_partials['VendorName'] = df_partials[['VendorName_x']]
         df_partials['VendorPartNumber'] = df_partials[['VendorPartNumber_x']]
 
-        drop_p = ['ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
-                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y']
+        drop_p = ['ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_partials = df_partials.drop(columns = drop_p)
 
         df_to_return = pandas.concat([df_partials, df_to_clean_case_5,df_to_clean_case_6,df_to_clean_case_7,df_to_clean_case_8],ignore_index=True)
