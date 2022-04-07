@@ -855,12 +855,12 @@ class DataRunner(threading.Thread):
             count += 1
             print('Runner count: {0}'.format(count))
             # this value here for testing
-            obCursor.callproc(self.proc_name, args=each_item)
-            #try:
-            #    obCursor.callproc(self.proc_name, args = each_item)
-            #except OperationalError:
-            #    fail_retries.append(each_item)
-            #    print('Wait fail count: {0}'.format(len(fail_retries)))
+            #obCursor.callproc(self.proc_name, args=each_item)
+            try:
+                obCursor.callproc(self.proc_name, args = each_item)
+            except OperationalError:
+                fail_retries.append(each_item)
+                print('Wait fail count: {0}'.format(len(fail_retries)))
 
 
         # this is for executing many in the DB which can be faster
