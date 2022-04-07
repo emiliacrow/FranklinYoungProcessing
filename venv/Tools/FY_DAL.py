@@ -133,9 +133,10 @@ class DalObject:
     def is_path_clear(self, runner_limit):
         # this is ridiculous
         wait_counter = 0
-        while threading.active_count() > runner_limit:
+        runner_count = threading.active_count()
+        while runner_count > runner_limit:
             wait_counter +=1
-            print('Waiting on active threads: {0}/{1}'.format(str(threading.active_count()),runner_limit))
+            print('Waiting on active {0} threads, there must be less than {1} to run the next step.'.format(runner_count,runner_limit))
             time.sleep(1)
 
         return True
@@ -854,11 +855,11 @@ class DataRunner(threading.Thread):
         for each_item in self.lst_data:
             count += 1
             # this value here for testing
-            obCursor.callproc(self.proc_name, args=each_item)
-            #try:
-            #    obCursor.callproc(self.proc_name, args = each_item)
-            #except OperationalError:
-            #    fail_retries.append(each_item)
+            #obCursor.callproc(self.proc_name, args=each_item)
+            try:
+                obCursor.callproc(self.proc_name, args = each_item)
+            except OperationalError:
+                fail_retries.append(each_item)
 
 
         # this is for executing many in the DB which can be faster
