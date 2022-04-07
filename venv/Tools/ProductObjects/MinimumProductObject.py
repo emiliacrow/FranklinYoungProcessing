@@ -454,7 +454,6 @@ class MinimumProduct(BasicProcessObject):
             recommended_storage_id = row['RecommendedStorageId']
             expected_lead_time_id = row['ExpectedLeadTimeId']
 
-
         if str(row['Filter']) == 'New':
             self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
@@ -471,7 +470,8 @@ class MinimumProduct(BasicProcessObject):
         return df_line_product
 
     def trigger_ingest_cleanup(self):
-        self.obIngester.ingest_product_cleanup()
+        self.obIngester.insert_product_cleanup()
+        self.obIngester.update_product_cleanup()
 
 
 class UpdateMinimumProduct(MinimumProduct):
