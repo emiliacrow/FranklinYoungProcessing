@@ -183,7 +183,6 @@ class BasicProcessObject:
         self.df_man_ven_matched_products = self.df_product[(self.df_product['Filter'] == 'Partial')]
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
 
-
         if len(self.df_man_ven_matched_products.index) > 0:
             self.man_ven_cleanup()
 
@@ -326,11 +325,11 @@ class BasicProcessObject:
 
 
         self.df_product.loc[(self.df_product['Filter'] == 'Possible_Duplicate'), 'TakePriority'] = 'Z'
-        self.df_product.loc[(self.df_product['Filter'] == 'case_1'), 'TakePriority'] = 'V'
+        self.df_product.loc[(self.df_product['Filter'] == 'case_1'), 'TakePriority'] = 'C'
         self.df_product.loc[(self.df_product['Filter'] == 'case_4'), 'TakePriority'] = 'W'
 
-        self.df_product.loc[(self.df_product['Filter'] == 'New'), 'TakePriority'] = 'D'
-        self.df_product.loc[(self.df_product['Filter'] == 'Partial'), 'TakePriority'] = 'C'
+        self.df_product.loc[(self.df_product['Filter'] == 'New'), 'TakePriority'] = 'E'
+        self.df_product.loc[(self.df_product['Filter'] == 'Partial'), 'TakePriority'] = 'D'
         self.df_product.loc[(self.df_product['Filter'] == 'Base Pricing'), 'TakePriority'] = 'B'
         self.df_product.loc[(self.df_product['Filter'] == 'Ready'), 'TakePriority'] = 'A'
 

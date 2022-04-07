@@ -83,7 +83,7 @@ class DalObject:
 
     def ping_it(self, is_testing = True):
         self.set_testing(is_testing)
-        if self.is_path_clear():
+        if self.is_path_clear(1):
             try:
                 self.connection = pymysql.connect(host=self.__host, user=self.__uid, port=self.__port, passwd=self.__pwd,
                                                   db=self.dbname)
@@ -94,8 +94,8 @@ class DalObject:
                 return 'The server did not respond.'
 
 
-    def open_connection(self):
-        if self.is_path_clear():
+    def open_connection(self,runner_limit = 1):
+        if self.is_path_clear(runner_limit):
             self.connection = pymysql.connect(host=self.__host, user=self.__uid, port=self.__port, passwd=self.__pwd,
                                             db=self.dbname)
 
@@ -116,10 +116,10 @@ class DalObject:
         data.to_sql(name=table, con=engine, if_exists='append', index=False)
 
 
-    def id_cap(self,proc_name,proc_args):
+    def id_cap(self,proc_name,proc_args,runner_limit = 1):
         # this runs the capture step of each capture function
         cap_id = -1
-        self.open_connection()
+        self.open_connection(runner_limit)
         obCursor = self.connection.cursor()
         obCursor.callproc(proc_name,args=proc_args)
         for result in obCursor.fetchall():
@@ -130,12 +130,12 @@ class DalObject:
         self.close_connection()
         return cap_id
 
-    def is_path_clear(self):
+    def is_path_clear(self, runner_limit):
         # this is ridiculous
         wait_counter = 0
-        while threading.active_count() > 1:
+        while threading.active_count() > runner_limit:
             wait_counter +=1
-            print('Waiting: '+str(wait_counter))
+            print('Waiting on active threads: {0}/{1}'.format(str(threading.active_count()),runner_limit))
             time.sleep(1)
 
         return True
@@ -143,7 +143,7 @@ class DalObject:
     def get_lookup(self, proc_name, column_names,filter_val=None):
         # returns the full results of a query
         result_set = []
-        self.open_connection()
+        self.open_connection(runner_limit=1)
         cursor = self.connection.cursor()
         if filter_val:
             query_results = cursor.callproc(proc_name,args=(filter_val,))
@@ -470,14 +470,14 @@ class DalObject:
     def va_product_price_insert(self, lst_va_product_price):
         proc_name = 'sequoia.VAProductPrice_insert'
         proc_statement = 'CALL `sequoia`.`VAProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_product_price)
         runner.start()
 
     def va_product_price_update(self, lst_va_product_price):
         proc_name = 'sequoia.VAProductPrice_update'
         proc_statement = 'CALL `sequoia`.`VAProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_product_price)
         runner.start()
 
@@ -492,7 +492,7 @@ class DalObject:
     def set_product_notes(self, lst_product_notes):
         proc_name = 'sequoia.set_product_notes'
         proc_statement = 'CALL `sequoia`.`set_product_notes`(%s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_notes)
         runner.start()
 
@@ -592,14 +592,14 @@ class DalObject:
     def min_product_insert(self, lst_product):
         proc_name = 'sequoia.MinimumProduct_insert'
         proc_statement = 'CALL `sequoia`.`MinimumProduct_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
         runner.start()
 
     def min_product_update(self, lst_product):
         proc_name = 'sequoia.MinimumProduct_update'
         proc_statement = 'CALL `sequoia`.`MinimumProduct_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
         runner.start()
 
@@ -607,7 +607,7 @@ class DalObject:
         proc_name = 'sequoia.Product_fill'
         proc_statement = 'CALL `sequoia`.`Product_fill`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
                          '%s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
@@ -651,14 +651,14 @@ class DalObject:
     def min_product_price_insert(self,lst_product_price):
         proc_name = 'sequoia.MinimumProductPrice_insert'
         proc_statement = 'CALL `sequoia`.`MinimumProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
     def min_product_price_update(self,lst_product_price):
         proc_name = 'sequoia.MinimumProductPrice_update'
         proc_statement = 'CALL `sequoia`.`MinimumProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
@@ -685,7 +685,7 @@ class DalObject:
     def base_price_insert(self, lst_base_product_price):
         proc_name = 'sequoia.BaseProductPrice_insert'
         proc_statement = 'CALL `sequoia`.`BaseProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_base_product_price)
         runner.start()
 
@@ -693,7 +693,7 @@ class DalObject:
     def base_price_update(self, lst_base_product_price):
         proc_name = 'sequoia.BaseProductPrice_update'
         proc_statement = 'CALL `sequoia`.`BaseProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_base_product_price)
         runner.start()
 
@@ -853,14 +853,12 @@ class DataRunner(threading.Thread):
         count = 0
         for each_item in self.lst_data:
             count += 1
-            print('Runner count: {0}'.format(count))
             # this value here for testing
             #obCursor.callproc(self.proc_name, args=each_item)
             try:
                 obCursor.callproc(self.proc_name, args = each_item)
             except OperationalError:
                 fail_retries.append(each_item)
-                print('Wait fail count: {0}'.format(len(fail_retries)))
 
 
         # this is for executing many in the DB which can be faster
@@ -868,15 +866,15 @@ class DataRunner(threading.Thread):
 
         drops = 0
         count = 0
-        print('Retry count: {0}'.format(len(fail_retries)))
-        for each_item in fail_retries:
-            count += 1
-            print('Runner count: {0}'.format(count))
-            try:
-                obCursor.callproc(self.proc_name, args = each_item)
-            except OperationalError:
-                drops += 1
-                print('Wait fail count: {0}'.format(drops))
+        if len(fail_retries) > 0:
+            print('Retry count: {0}'.format(len(fail_retries)))
+            for each_item in fail_retries:
+                count += 1
+                try:
+                    obCursor.callproc(self.proc_name, args = each_item)
+                except OperationalError:
+                    drops += 1
+                    print('Wait fail count: {0}'.format(drops))
 
         self.connection.commit()
         self.connection.close()
