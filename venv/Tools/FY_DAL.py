@@ -94,7 +94,7 @@ class DalObject:
                 return 'The server did not respond.'
 
 
-    def open_connection(self,runner_limit = 1):
+    def open_connection(self, runner_limit = 2):
         if self.is_path_clear(runner_limit):
             self.connection = pymysql.connect(host=self.__host, user=self.__uid, port=self.__port, passwd=self.__pwd,
                                             db=self.dbname)
@@ -133,13 +133,13 @@ class DalObject:
     def is_path_clear(self, runner_limit):
         # this is ridiculous
         wait_counter = 0
-        runner_count = threading.active_count()
+        runner_count = len(threading.enumerate())
         while runner_count > runner_limit:
             wait_counter +=1
-            print('Waiting({0}) on active {1} threads, there must be less than {2} to run the next step.'.format(wait_counter,runner_count,runner_limit))
-            for each_thread in threading.enumerate():
-                print(each_thread.name)
+            if (wait_counter % 5) == 0:
+                print('Waiting({0}) on active {1} threads, there must be less than {2} to run the next step.'.format(wait_counter,runner_count,runner_limit))
             time.sleep(1)
+            runner_count = len(threading.enumerate())
 
         return True
 
@@ -421,14 +421,14 @@ class DalObject:
     def ecat_product_price_insert(self,lst_ecat_product_price):
         proc_name = 'sequoia.ECATProductPrice_insert'
         proc_statement = 'CALL `sequoia`.`ECATProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=1)
+        self.open_connection(runner_limit=2)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
         runner.start()
 
     def ecat_product_price_update(self,lst_ecat_product_price):
         proc_name = 'sequoia.ECATProductPrice_update'
         proc_statement = 'CALL `sequoia`.`ECATProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=1)
+        self.open_connection(runner_limit=2)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
         runner.start()
 
