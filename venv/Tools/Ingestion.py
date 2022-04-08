@@ -738,28 +738,72 @@ class IngestionObject:
             self.obDal.base_price_update(self.product_update_collector)
 
 
-
     def ecat_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
                                newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup):
         if (len(self.product_collector) > self.load_limit):
             self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
-                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
-                               newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+                                           newApprovedSellPrice, newApprovedListPrice,
+                                           newContractedManufacturerPartNumber,
+                                           newContractNumber, newContractModificatactionNumber,
+                                           newECATPricingApproved,
+                                           newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
             self.obDal.ecat_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
             self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
-                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
-                               newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+                                           newApprovedSellPrice, newApprovedListPrice,
+                                           newContractedManufacturerPartNumber,
+                                           newContractNumber, newContractModificatactionNumber,
+                                           newECATPricingApproved,
+                                           newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
 
     def ingest_ecat_product_price_cleanup(self):
         if self.product_collector != []:
             self.obDal.ecat_product_price_cap(self.product_collector)
 
+    def ecat_product_price_insert(self, newBaseProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup):
+        if (len(self.product_insert_collector) > self.load_limit):
+            self.product_insert_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+            self.obDal.ecat_product_price_insert(self.product_insert_collector)
+            self.product_insert_collector = []
+        else:
+            self.product_insert_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+
+    def insert_ecat_product_price_cleanup(self):
+        if self.product_insert_collector != []:
+            self.obDal.ecat_product_price_insert(self.product_insert_collector)
+
+    def ecat_product_price_update(self, newECATProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup):
+        if (len(self.product_update_collector) > self.load_limit):
+            self.product_update_collector.append((newECATProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+            self.obDal.ecat_product_price_update(self.product_update_collector)
+            self.product_update_collector = []
+        else:
+            self.product_update_collector.append((newECATProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
+                               newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                               newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+
+    def update_ecat_product_price_cleanup(self):
+        if self.product_update_collector != []:
+            self.obDal.ecat_product_price_update(self.product_update_collector)
 
     def fedmall_product_price_cap(self,newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate , newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice):
         return_id = self.obDal.fedmall_product_price_cap(newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice)
@@ -773,11 +817,15 @@ class IngestionObject:
                               newMFCPercent, newMFCPrice, newGSA_SIN):
         if (len(self.product_collector) > self.load_limit):
             self.product_collector.append(
-                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
+                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice,
+                 newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber,
+                 newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
             self.obDal.gsa_product_price_cap(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
+            self.product_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
+                                           newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                                           newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN))
 
     def ingest_gsa_product_price_cleanup(self):
         if self.product_collector != []:

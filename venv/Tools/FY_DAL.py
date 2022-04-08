@@ -416,6 +416,20 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
         runner.start()
 
+    def ecat_product_price_insert(self,lst_ecat_product_price):
+        proc_name = 'sequoia.ECATProductPrice_insert'
+        proc_statement = 'CALL `sequoia`.`ECATProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection(runner_limit=1)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
+        runner.start()
+
+    def ecat_product_price_update(self,lst_ecat_product_price):
+        proc_name = 'sequoia.ECATProductPrice_update'
+        proc_statement = 'CALL `sequoia`.`ECATProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection(runner_limit=1)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
+        runner.start()
+
     def get_ecat_price_lookup(self):
         proc_name = 'sequoia.get_ECATPrice_lookup'
         column_names = ['ManufacturerName','ManufacturerPartNumber','FyCatalogNumber', 'FyProductNumber', 'VendorName',
@@ -855,11 +869,11 @@ class DataRunner(threading.Thread):
         for each_item in self.lst_data:
             count += 1
             # this value here for testing
-            #obCursor.callproc(self.proc_name, args=each_item)
-            try:
-                obCursor.callproc(self.proc_name, args = each_item)
-            except OperationalError:
-                fail_retries.append(each_item)
+            obCursor.callproc(self.proc_name, args=each_item)
+            #try:
+            #    obCursor.callproc(self.proc_name, args = each_item)
+            #except OperationalError:
+            #    fail_retries.append(each_item)
 
 
         # this is for executing many in the DB which can be faster

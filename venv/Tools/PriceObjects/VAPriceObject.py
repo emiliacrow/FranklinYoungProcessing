@@ -121,9 +121,9 @@ class VAPrice(BasicProcessObject):
 
     def va_product_price(self, df_line_product):
         success = True
-        va_product_price_id = -1
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
             on_contract = row['VAOnContract']
@@ -154,8 +154,9 @@ class VAPrice(BasicProcessObject):
 
             sin = row['VA_Sin']
 
-        if 'VAProductPriceId' in row:
-            va_product_price_id = int(row['VAProductPriceId'])
+            va_product_price_id = -1
+            if 'VAProductPriceId' in row:
+                va_product_price_id = int(row['VAProductPriceId'])
 
         if va_product_price_id == -1:
             self.obIngester.va_product_price_insert(base_product_price_id, fy_product_number, on_contract, approved_base_price,
