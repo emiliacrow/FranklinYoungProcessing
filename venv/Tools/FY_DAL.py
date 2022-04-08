@@ -136,7 +136,9 @@ class DalObject:
         runner_count = threading.active_count()
         while runner_count > runner_limit:
             wait_counter +=1
-            print('Waiting on active {0} threads, there must be less than {1} to run the next step.'.format(runner_count,runner_limit))
+            print('Waiting({0}) on active {1} threads, there must be less than {2} to run the next step.'.format(wait_counter,runner_count,runner_limit))
+            for each_thread in threading.enumerate():
+                print(each_thread.name)
             time.sleep(1)
 
         return True
