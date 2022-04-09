@@ -27,8 +27,7 @@ class MinimumProduct(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.batch_process_vendor()
-        self.define_new()
+        self.define_new(b_match_vendor = True)
         self.batch_process_category()
 
         if 'RecommendedStorage' not in self.df_product.columns:
@@ -58,37 +57,6 @@ class MinimumProduct(BasicProcessObject):
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
-
-
-    def batch_process_vendor(self):
-        # there should only be one vendor, really.
-        if 'VendorName' not in self.df_product.columns:
-            vendor_name = self.vendor_name_selection()
-            self.df_product['VendorName'] = vendor_name
-
-        df_attribute = self.df_product[['VendorName']]
-        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
-        lst_ids = []
-        for colName, row in df_attribute.iterrows():
-            vendor_name = row['VendorName'].upper()
-            if vendor_name in self.df_vendor_translator['VendorCode'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
-            elif vendor_name in self.df_vendor_translator['VendorName'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
-            else:
-                vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
-                vendor_name_list = list(dict.fromkeys(vendor_name_list))
-
-                new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
-
-            lst_ids.append(new_vendor_id)
-
-        df_attribute['VendorId'] = lst_ids
-
-        self.df_product = self.df_product.merge(df_attribute,
-                                                 how='left', on=['VendorName'])
 
 
     def filter_check_in(self, row):

@@ -18,7 +18,7 @@ class ProductAgniKaiObject(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.define_new()
+        self.define_new(b_match_vendor = True)
 
 
     def remove_private_headers(self):

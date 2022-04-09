@@ -65,6 +65,15 @@ class Validator:
         str_to_clean = str_to_clean.strip()
         return str_to_clean
 
+    def clean_manufacturer_name(self,str_to_clean, leave_gap = False):
+        pattern = '(`|/|\+|\_|\"|\'|#|=|\$|\\\\|\(|\))'
+        if leave_gap:
+            str_to_clean = re.sub(pattern, ' ', str_to_clean)
+        else:
+            str_to_clean = re.sub(pattern, '', str_to_clean)
+        str_to_clean = str_to_clean.strip()
+        return str_to_clean
+
     def bc_image_name(self,image_name):
         pattern = '(\.500\.500\_\_\d*)'
         image_name = re.sub(pattern, '', image_name)

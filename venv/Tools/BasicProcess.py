@@ -111,7 +111,75 @@ class BasicProcessObject:
         self.obProgressBarWindow.set_anew(count_of_steps)
 
 
-    def define_new(self):
+    def batch_process_vendor(self):
+        print('Vendor matching')
+        df_attribute = self.df_product[['VendorName']]
+        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+        lst_ids = []
+        for colName, row in df_attribute.iterrows():
+            vendor_name = row['VendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+            else:
+                vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
+                vendor_name_list = list(dict.fromkeys(vendor_name_list))
+
+                new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
+
+            lst_ids.append(new_vendor_id)
+
+        df_attribute['VendorId'] = lst_ids
+
+        self.df_product = self.df_product.merge(df_attribute, how='left', on=['VendorName'])
+
+
+    def batch_process_manufacturer(self):
+        print('Manufacturer matching')
+        df_attribute = self.df_product[['ManufacturerName']]
+        df_attribute = df_attribute.drop_duplicates(subset=['ManufacturerName'])
+        lst_ids = []
+        lst_names = []
+        for colName, row in df_attribute.iterrows():
+            manufacturer_name = row['ManufacturerName'].upper()
+            manufacturer_name = self.obValidator.clean_manufacturer_name(manufacturer_name,True)
+            while '  ' in manufacturer_name:
+                manufacturer_name = manufacturer_name.replace('  ',' ')
+
+            new_manufacturer_name = manufacturer_name
+            if manufacturer_name.lower() in self.df_manufacturer_translator['SupplierName'].values:
+                new_manufacturer_id = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()),'ManufacturerId'].values[0]
+                new_manufacturer_name = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()),'ManufacturerName'].values[0]
+            elif manufacturer_name in self.df_manufacturer_translator['ManufacturerName'].values:
+                new_manufacturer_id = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name),'ManufacturerId'].values[0]
+            else:
+            #    manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
+            #    manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+            #    new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer_name.lower(), atmp_man=manufacturer_name, lst_manufacturer_names=manufacturer_name_list)
+                new_manufacturer_id = -1
+
+            lst_ids.append(new_manufacturer_id)
+            lst_names.append(new_manufacturer_name)
+
+        df_attribute['ManufacturerId'] = lst_ids
+        df_attribute['UpdateManufacturerName'] = lst_names
+
+        self.df_product = self.df_product.merge(df_attribute, how='left', on=['ManufacturerName'])
+
+        self.df_product['ManufacturerName'] = self.df_product[['UpdateManufacturerName']]
+
+
+    def define_new(self, b_match_vendor = False):
+        if b_match_vendor:
+            self.batch_process_vendor()
+            self.batch_process_manufacturer()
+        print('Agni Kai')
         """
           M C P V : types of product ids
         1 X X X X : These are called ready (unless they need pricing in which case Update-BasePrice)
@@ -154,6 +222,7 @@ class BasicProcessObject:
         self.df_full_product_lookup['Filter'] = 'Ready'
 
         # match on everything
+        print('Round 1')
         self.df_product = self.df_product.merge(self.df_full_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
         # set aside the good matches
         self.df_full_matched_product = self.df_product[(self.df_product['Filter'] == 'Ready')]
@@ -164,7 +233,7 @@ class BasicProcessObject:
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'])
 
-        # round 2
+        print('Round 2')
         self.df_product_agni_kai_lookup['Filter'] = 'Base Pricing'
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup, how='left',on=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'])
 
@@ -177,6 +246,7 @@ class BasicProcessObject:
         self.df_product = self.df_product.drop(columns = ['Filter','ProductId','ProductPriceId','db_IsDiscontinued'])
 
         # round 3
+        print('Round 3')
         self.df_product_agni_kai_lookup_copy['Filter'] = 'Partial'
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup_copy, how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
 
@@ -195,10 +265,13 @@ class BasicProcessObject:
         self.df_product['FyProductNumber'] = self.df_product[['FyProductNumber_x']]
 
         drop_columns = ['Filter','db_IsDiscontinued','ProductId','ProductPriceId','BaseProductPriceId',
+                        'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId',
                         'ManufacturerName_x', 'ManufacturerName_y','VendorName_x','VendorName_y',
                         'FyProductNumber_x','FyProductNumber_y','VendorPartNumber_x','VendorPartNumber_y']
         self.df_product = self.df_product.drop(columns=drop_columns)
 
+        print('Round 4')
+        # print(self.df_product.columns)
         self.df_product = self.df_product.merge(self.df_product_agni_kai_lookup_copy, how='left',on=['FyCatalogNumber','ManufacturerName'])
         self.df_fy_cat_matched_products = self.df_product[(self.df_product['Filter'] == 'Partial')]
 
@@ -209,6 +282,8 @@ class BasicProcessObject:
         if len(self.df_fy_cat_matched_products.index) > 0:
             self.fy_cat_cleanup()
 
+        # print('b',self.df_product.columns)
+
         self.df_product['ManufacturerPartNumber'] = self.df_product[['ManufacturerPartNumber_x']]
         self.df_product['VendorPartNumber'] = self.df_product[['VendorPartNumber_x']]
         self.df_product['VendorName'] = self.df_product[['VendorName_x']]
@@ -218,16 +293,17 @@ class BasicProcessObject:
                         'ManufacturerPartNumber_x', 'ManufacturerPartNumber_y','VendorName_x','VendorName_y',
                         'FyProductNumber_x','FyProductNumber_y','VendorPartNumber_x','VendorPartNumber_y']
         self.df_product = self.df_product.drop(columns=drop_columns)
+        # print('c',self.df_product.columns)
 
         self.df_product['Filter'] = 'New'
 
+        print('Collecting')
         if len(self.df_full_matched_product.index) > 0:
             self.df_full_matched_product = self.df_full_matched_product.drop_duplicates()
             self.df_product = pandas.concat([self.df_product,self.df_full_matched_product], ignore_index = True)
         del self.df_full_matched_product
 
         if len(self.df_pricing_matched_product.index) > 0:
-            print('1', self.df_pricing_matched_product)
             self.df_pricing_matched_product = self.df_pricing_matched_product.drop_duplicates()
             self.df_product = pandas.concat([self.df_product,self.df_pricing_matched_product], ignore_index = True)
         del self.df_pricing_matched_product
@@ -251,12 +327,12 @@ class BasicProcessObject:
             self.df_product['FyProductNumber'] = self.df_product['FyProductNumber_x']
             self.df_product = self.df_product.drop(columns = ['FyProductNumber_x'])
 
+        print('Finals')
         self.eval_cases()
 
-        self.df_product.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'], inplace= True)
-
-        # self.duplicate_logic()
+        self.duplicate_logic()
         if 'ProductPriceId' in self.df_product.columns:
+            print('Adding Notes')
             self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
 
         del self.df_product_notes
@@ -267,7 +343,16 @@ class BasicProcessObject:
         # it seems that this needs better returns for review
         # perhaps pull the
         # counts FyProductNumber occurance as series
-        self.srs_matched_product = self.df_product.loc[:,'FyProductNumber'].value_counts()
+        self.df_dupe_product = self.df_product.copy()
+
+        cur_headers = set(self.df_dupe_product.columns)
+        match_set = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName', 'VendorPartNumber']
+
+        matched_headers = list(cur_headers.difference(set(match_set)))
+        self.df_dupe_product = self.df_dupe_product.drop(columns=matched_headers)
+        self.df_dupe_product.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'], inplace= True)
+
+        self.srs_matched_product = self.df_dupe_product.loc[:, 'FyProductNumber'].value_counts()
 
         self.srs_matched_product.rename_axis()
 
@@ -365,6 +450,7 @@ class BasicProcessObject:
 
         # BAAAAAD manufacturer
         case_9 = ((self.df_man_ven_matched_products['ManufacturerName_x'] != self.df_man_ven_matched_products['ManufacturerName_y']) &
+                  (self.df_man_ven_matched_products['VendorName_x'] == self.df_man_ven_matched_products['VendorName_y'] ) &
                   (self.df_man_ven_matched_products['VendorPartNumber_x'] == self.df_man_ven_matched_products['VendorPartNumber_y']))
 
         conditions = [case_1,case_2,case_3,case_4,case_9]
@@ -468,8 +554,8 @@ class BasicProcessObject:
 
         if len(df_to_clean_case_9.index) > 0:
             # configuration change
-            df_to_clean_case_9['ManufacturerName'] = df_to_clean_case_9[['ManufacturerName_x']]
-            df_to_clean_case_9['DB_ManufacturerName'] = df_to_clean_case_9[['ManufacturerName_y']]
+            df_to_clean_case_9['ManufacturerName'] = df_to_clean_case_9[['ManufacturerName_y']]
+            df_to_clean_case_9['PossibleSupplierName'] = df_to_clean_case_9[['ManufacturerName_x']]
             df_to_clean_case_9['FyProductNumber'] = df_to_clean_case_9[['FyProductNumber_x']]
             df_to_clean_case_9['VendorName'] = df_to_clean_case_9[['VendorName_x']]
             df_to_clean_case_9['VendorPartNumber'] = df_to_clean_case_9[['VendorPartNumber_x']]
@@ -800,6 +886,88 @@ class BasicProcessObject:
             unit_of_issue = 'EA'
             df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
             self.obReporter.default_uoi_report()
+
+
+        if 'ManufacturerId' in row:
+            new_manufacturer_id = row['ManufacturerId']
+            new_prefix = self.df_manufacturer_translator.loc[
+                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
+
+            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+
+            return True, df_collect_product_base_data, new_prefix
+
+        if (manufacturer.lower() in self.df_manufacturer_translator['SupplierName'].values):
+            new_manufacturer_id, new_prefix = self.df_manufacturer_translator.loc[
+                (self.df_manufacturer_translator['SupplierName'] == manufacturer.lower()), ['ManufacturerId',
+                                                                                    'FyManufacturerPrefix']].values[0]
+
+            df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+
+            return True, df_collect_product_base_data, new_prefix
+
+        elif (manufacturer.upper() in self.df_manufacturer_translator['ManufacturerName'].unique()):
+            new_manufacturer_id, new_prefix = self.df_manufacturer_translator.loc[
+                (self.df_manufacturer_translator['ManufacturerName'] == manufacturer.upper()), ['ManufacturerId',
+                                                                                        'FyManufacturerPrefix']].values[
+                0]
+
+            df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+
+            return True, df_collect_product_base_data, new_prefix
+
+
+        elif 'SupplierName' in row:
+            supplier = row['SupplierName'].lower()
+            if (supplier in self.df_manufacturer_translator['SupplierName'].values):
+                new_manufacturer_id, new_prefix = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == supplier), ['ManufacturerId',
+                                                                                        'FyManufacturerPrefix']].values[
+                    0]
+
+                df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+                df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+
+                return True, df_collect_product_base_data, new_prefix
+            else:
+                manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
+                manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+
+                new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=supplier, lst_manufacturer_names=manufacturer_name_list)
+                self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
+                # this needs to return the prefix so it can be used
+
+                new_prefix = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
+
+                df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+                df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+
+                return True, df_collect_product_base_data, new_prefix
+
+        else:
+            manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
+            manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+
+            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer, lst_manufacturer_names=manufacturer_name_list)
+            self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
+            # this needs to return the prefix so it can be used
+
+            new_prefix = self.df_manufacturer_translator.loc[
+                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
+
+            df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+
+            return True, df_collect_product_base_data, new_prefix
+
+
+
+    def process_manufacturer_clean(self, df_collect_product_base_data, row):
+        manufacturer = row['ManufacturerName']
+        manufacturer = manufacturer.strip().replace('  ',' ')
 
 
         if 'ManufacturerId' in row:
