@@ -66,7 +66,7 @@ class Validator:
         return str_to_clean
 
     def clean_manufacturer_name(self,str_to_clean, leave_gap = False):
-        pattern = '(`|/|\+|\_|\"|\'|#|=|\$|\\\\|\(|\))'
+        pattern = '(`|\+|\_|\"|\'|#|=|\$|\\\\|\(|\))'
         if leave_gap:
             str_to_clean = re.sub(pattern, ' ', str_to_clean)
         else:
