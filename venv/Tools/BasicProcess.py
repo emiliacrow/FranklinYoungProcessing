@@ -159,10 +159,10 @@ class BasicProcessObject:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name),'ManufacturerId'].values[0]
             else:
-                #manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
-                #manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
-                #new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer_name.lower(), atmp_man=manufacturer_name, lst_manufacturer_names=manufacturer_name_list)
-                new_manufacturer_id = -1
+                manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
+                manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+                new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer_name.lower(), atmp_man=manufacturer_name, lst_manufacturer_names=manufacturer_name_list)
+                #new_manufacturer_id = -1
 
             lst_ids.append(new_manufacturer_id)
             lst_names.append(new_manufacturer_name)

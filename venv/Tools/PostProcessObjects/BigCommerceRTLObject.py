@@ -117,10 +117,18 @@ class BigCommerceRTLObject(BasicProcessObject):
                 self.obReporter.update_report('Alert','BaseProductPriceId Missing')
                 return False, df_collect_product_base_data
 
-            ecat_id = row['ECATProductPriceId']
-            htme_id = row['HTMEProductPriceId']
-            gsa_id = row['GSAProductPriceId']
-            va_id = row['VAProductPriceId']
+            ecat_id = -1
+            if 'ECATProductPriceId' in row:
+                ecat_id = row['ECATProductPriceId']
+            htme_id = -1
+            if 'HTMEProductPriceId' in row:
+                ecat_id = row['HTMEProductPriceId']
+            gsa_id = -1
+            if 'GSAProductPriceId' in row:
+                gsa_id = row['GSAProductPriceId']
+            va_id = -1
+            if 'VAProductPriceId' in row:
+                va_id = row['VAProductPriceId']
 
             fy_product_number = row['FyProductNumber']
             vendor_part_number = str(row['VendorPartNumber'])
