@@ -776,14 +776,14 @@ class DalObject:
         return df_toggles
 
     def get_toggles_full(self):
-        proc_name = 'sequoia.get_Toggles3'
+        proc_name = 'sequoia.get_Toggles4'
         column_names = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber',
                         'db_IsDiscontinued','db_AllowPurchases',
                         'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
-                        'ECATProductPriceId', 'db_ECATOnContract', 'db_ECATPricingApproved',
-                        'HTMEProductPriceId', 'db_HTMEOnContract', 'db_HTMEPricingApproved',
-                        'GSAProductPriceId', 'db_GSAOnContract', 'db_GSAPricingApproved',
-                        'VAProductPriceId', 'db_VAOnContract', 'db_VAPricingApproved']
+                        'db_ECATOnContract', 'db_ECATPricingApproved',
+                        'db_HTMEOnContract', 'db_HTMEPricingApproved',
+                        'db_GSAOnContract', 'db_GSAPricingApproved',
+                        'db_VAOnContract', 'db_VAPricingApproved']
         df_toggles = self.get_lookup(proc_name,column_names)
         return df_toggles
 
@@ -871,11 +871,11 @@ class DataRunner(threading.Thread):
         for each_item in self.lst_data:
             count += 1
             # this value here for testing
-            obCursor.callproc(self.proc_name, args=each_item)
-            #try:
-            #    obCursor.callproc(self.proc_name, args = each_item)
-            #except OperationalError:
-            #    fail_retries.append(each_item)
+            #obCursor.callproc(self.proc_name, args=each_item)
+            try:
+                obCursor.callproc(self.proc_name, args = each_item)
+            except OperationalError:
+                fail_retries.append(each_item)
 
 
         # this is for executing many in the DB which can be faster
