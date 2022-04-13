@@ -430,7 +430,7 @@ class BasicProcessObject:
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_4'), 'Alert'] = 'Configuration change-4'
         self.df_product.loc[(self.df_product['Filter'] == 'case_7'), 'Alert'] = 'Configuration change-7'
-        #self.df_product.loc[(self.df_product['Filter'] == 'case_7'), 'Filter'] = 'case_4'
+        self.df_product.loc[(self.df_product['Filter'] == 'case_7'), 'Filter'] = 'case_4'
         self.df_product.loc[(self.df_product['Filter'] == 'case_4'), 'Filter'] = 'ConfigurationChange'
 
 
@@ -439,7 +439,7 @@ class BasicProcessObject:
 
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_8'), 'Alert'] = 'New Vendor Existing product(step 1.5)'
-        #self.df_product.loc[(self.df_product['Filter'] == 'case_8'), 'Filter'] = 'Partial'
+        self.df_product.loc[(self.df_product['Filter'] == 'case_8'), 'Filter'] = 'Partial'
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'Alert'] = 'Verify your ManufacturerName'
 
