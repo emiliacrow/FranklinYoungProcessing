@@ -39,10 +39,10 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         drop_values = ['db_IsDiscontinued','db_AllowPurchases',
                        'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
-                       'ECATProductPriceId', 'db_ECATOnContract', 'db_ECATPricingApproved',
-                       'HTMEProductPriceId', 'db_HTMEOnContract', 'db_HTMEPricingApproved',
-                       'GSAProductPriceId', 'db_GSAOnContract', 'db_GSAPricingApproved',
-                       'VAProductPriceId', 'db_VAOnContract', 'db_VAPricingApproved']
+                       'db_ECATOnContract', 'db_ECATPricingApproved',
+                       'db_HTMEOnContract', 'db_HTMEPricingApproved',
+                       'db_GSAOnContract', 'db_GSAPricingApproved',
+                       'db_VAOnContract', 'db_VAPricingApproved']
         self.df_top_toggles = self.df_top_toggles.drop(columns=drop_values)
 
         match_headers = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
