@@ -316,24 +316,35 @@ class BasicProcessObject:
             try:
                 self.df_product = pandas.concat([self.df_product,self.df_full_matched_product], ignore_index = True)
             except pandas.errors.InvalidIndexError:
-                for each in self.df_full_matched_product.iterrows():
-                    print(each)
+                print('Invalid index error 2: this represents a bug')
 
         del self.df_full_matched_product
 
         if len(self.df_pricing_matched_product.index) > 0:
             self.df_pricing_matched_product = self.df_pricing_matched_product.drop_duplicates()
-            self.df_product = pandas.concat([self.df_product,self.df_pricing_matched_product], ignore_index = True)
+            try:
+                self.df_product = pandas.concat([self.df_product,self.df_pricing_matched_product], ignore_index = True)
+            except pandas.errors.InvalidIndexError:
+                print('Invalid index error 3: this represents a bug')
+
         del self.df_pricing_matched_product
 
         if len(self.df_man_ven_matched_products.index) > 0:
             self.df_man_ven_matched_products = self.df_man_ven_matched_products.drop_duplicates()
-            self.df_product = pandas.concat([self.df_product,self.df_man_ven_matched_products], ignore_index = True)
+            try:
+                self.df_product = pandas.concat([self.df_product,self.df_man_ven_matched_products], ignore_index = True)
+            except pandas.errors.InvalidIndexError:
+                print('Invalid index error 4: this represents a bug')
+
         del self.df_man_ven_matched_products
 
         if len(self.df_fy_cat_matched_products.index) > 0:
             self.df_fy_cat_matched_products = self.df_fy_cat_matched_products.drop_duplicates()
-            self.df_product = pandas.concat([self.df_product,self.df_fy_cat_matched_products], ignore_index = True)
+            try:
+                self.df_product = pandas.concat([self.df_product,self.df_fy_cat_matched_products], ignore_index = True)
+            except pandas.errors.InvalidIndexError:
+                print('Invalid index error 5: this represents a bug')
+
         del self.df_fy_cat_matched_products
 
 
@@ -846,7 +857,7 @@ class BasicProcessObject:
         try:
             self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
         except pandas.errors.InvalidIndexError:
-            print(self.collect_return_dfs)
+            print('Invalid index error 1: this represents a bug')
 
         if self.set_new_order:
             matched_header_set = set(self.out_column_headers).union(set(self.return_df_product.columns))
