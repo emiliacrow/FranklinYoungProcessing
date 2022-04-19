@@ -44,6 +44,8 @@ class MinimumProduct(BasicProcessObject):
         self.batch_process_country()
         self.batch_process_lead_time()
 
+        self.df_product.sort_values(by=['FyCatalogNumber'], inplace=True)
+
         return self.df_product
 
     def remove_private_headers(self):
@@ -187,7 +189,6 @@ class MinimumProduct(BasicProcessObject):
                             success, expedited_lead_time = self.float_check(row['LeadTimeExpedited'], 'Lead Time Expedited')
                             if not success:
                                 new_lead_time_id = 2
-                                continue
 
                         else:
                             expedited_lead_time = lead_time
@@ -208,7 +209,6 @@ class MinimumProduct(BasicProcessObject):
 
                     else:
                         new_lead_time_id = 2
-                        continue
 
 
                     if 'LeadTimeExpedited' in row:
@@ -264,6 +264,8 @@ class MinimumProduct(BasicProcessObject):
         df_line_product = self.process_attribute_data(df_collect_product_base_data)
         df_collect_product_base_data = df_line_product.copy()
 
+        previous_fy_catalog_number = '-1'
+
         # this is also stupid, but it gets the point across for testing purposes
         for colName, row in df_line_product.iterrows():
             if self.filter_check_in(row) == False:
@@ -313,8 +315,10 @@ class MinimumProduct(BasicProcessObject):
                 if not b_override:
                     return False, df_collect_product_base_data
 
+        if previous_fy_catalog_number != fy_catalog_number:
+            return_df_line_product = self.minimum_product(df_collect_product_base_data)
 
-        return_df_line_product = self.minimum_product(df_collect_product_base_data)
+        previous_fy_catalog_number = fy_catalog_number
 
         return True, return_df_line_product
 

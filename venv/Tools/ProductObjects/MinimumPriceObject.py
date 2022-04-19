@@ -24,6 +24,7 @@ class MinimumProductPrice(BasicProcessObject):
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
         self.define_new()
+        self.df_product.sort_values(by=['FyProductNumber'], inplace=True)
 
 
     def remove_private_headers(self):

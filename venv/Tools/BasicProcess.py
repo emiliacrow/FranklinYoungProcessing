@@ -176,9 +176,14 @@ class BasicProcessObject:
 
 
     def define_new(self, b_match_vendor = False):
+
+        if 'UpdateManufacturerName' in self.df_product.columns:
+            self.df_product = self.df_product.drop(columns=['UpdateManufacturerName'])
+
         if b_match_vendor:
             self.batch_process_vendor()
             self.batch_process_manufacturer()
+
         print('Agni Kai')
         """
           M C P V : types of product ids

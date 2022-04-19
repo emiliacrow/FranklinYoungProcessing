@@ -28,6 +28,8 @@ class BasePrice(BasicProcessObject):
         self.define_new()
         self.collect_markups()
 
+        self.df_product.sort_values(by=['FyProductNumber'], inplace=True)
+
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
