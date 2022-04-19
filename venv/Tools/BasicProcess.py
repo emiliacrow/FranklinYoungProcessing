@@ -234,14 +234,6 @@ class BasicProcessObject:
         merge_columns = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber']
         self.df_product, self.df_full_matched_product, self.df_full_product_lookup = self.merge_and_split(self.df_product, self.df_full_product_lookup, merge_columns)
 
-        print(self.df_product.columns)
-        print(self.df_product)
-        print(self.df_full_matched_product.columns)
-        print(self.df_full_matched_product)
-        print(self.df_full_product_lookup.columns)
-        print(self.df_full_product_lookup)
-
-
 
         # match all values, these are Base Price files
         print('Round 2')
