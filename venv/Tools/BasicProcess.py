@@ -176,9 +176,11 @@ class BasicProcessObject:
 
 
     def define_new(self, b_match_vendor = False):
-
-        if 'UpdateManufacturerName' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns=['UpdateManufacturerName'])
+        clear_headers = ['UpdateManufacturerName', 'ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'
+            ,'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes','TakePriority']
+        for each_header in clear_headers:
+            if each_header in self.df_product.columns:
+                self.df_product = self.df_product.drop(columns=[each_header])
 
         if b_match_vendor:
             self.batch_process_vendor()
@@ -205,14 +207,7 @@ class BasicProcessObject:
         self.df_product_notes = self.df_product_notes.drop(columns=drop_notes)
         self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes'])
 
-        if 'ProductId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = ['ProductId'])
-        if 'ProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = ['ProductPriceId'])
-        if 'BaseProductPriceId' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = ['BaseProductPriceId'])
-        if 'db_IsDiscontinued' in self.df_product.columns:
-            self.df_product = self.df_product.drop(columns = ['db_IsDiscontinued'])
+
 
         # LET'S BUILD!!
 
@@ -238,6 +233,15 @@ class BasicProcessObject:
         print('Round 1')
         merge_columns = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber']
         self.df_product, self.df_full_matched_product, self.df_full_product_lookup = self.merge_and_split(self.df_product, self.df_full_product_lookup, merge_columns)
+
+        print(self.df_product.columns)
+        print(self.df_product)
+        print(self.df_full_matched_product.columns)
+        print(self.df_full_matched_product)
+        print(self.df_full_product_lookup.columns)
+        print(self.df_full_product_lookup)
+
+
 
         # match all values, these are Base Price files
         print('Round 2')
@@ -309,7 +313,12 @@ class BasicProcessObject:
         print('Collecting')
         if len(self.df_full_matched_product.index) > 0:
             self.df_full_matched_product = self.df_full_matched_product.drop_duplicates()
-            self.df_product = pandas.concat([self.df_product,self.df_full_matched_product], ignore_index = True)
+            try:
+                self.df_product = pandas.concat([self.df_product,self.df_full_matched_product], ignore_index = True)
+            except pandas.errors.InvalidIndexError:
+                for each in self.df_full_matched_product.iterrows():
+                    print(each)
+
         del self.df_full_matched_product
 
         if len(self.df_pricing_matched_product.index) > 0:
@@ -834,7 +843,10 @@ class BasicProcessObject:
         self.obProgressBarWindow.update_unknown()
 
         # this uses df.append to combine all the df product objects together
-        self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
+        try:
+            self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
+        except pandas.errors.InvalidIndexError:
+            print(self.collect_return_dfs)
 
         if self.set_new_order:
             matched_header_set = set(self.out_column_headers).union(set(self.return_df_product.columns))
