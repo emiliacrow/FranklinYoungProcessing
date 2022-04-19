@@ -863,7 +863,7 @@ class DataRunner(threading.Thread):
         self.lst_data = lst_data
 
     def run(self):
-        print('Runner report start: ' + self.proc_name)
+        print('Runner {0} report start: {1}'.format(self.name,self.proc_name))
         fail_retries = []
         obCursor = self.connection.cursor()
 
@@ -897,7 +897,7 @@ class DataRunner(threading.Thread):
         self.connection.commit()
         self.connection.close()
 
-        print('Runner report end: ' + self.proc_name)
+        print('Runner {0} report end: {1}'.format(self.name, self.proc_name))
 
 
 def get_lookup(conx, proc_name, column_names,filter_val=None):
