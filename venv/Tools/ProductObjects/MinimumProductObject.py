@@ -189,7 +189,7 @@ class MinimumProduct(BasicProcessObject):
                         if 'LeadTimeExpedited' in row:
                             success, expedited_lead_time = self.float_check(row['LeadTimeExpedited'], 'Lead Time Expedited')
                             if not success:
-                                new_lead_time_id = 2
+                                new_lead_time_id = -1
 
                         else:
                             expedited_lead_time = lead_time
@@ -209,7 +209,7 @@ class MinimumProduct(BasicProcessObject):
                         lead_time = int(lead_time.rpartition('year')[0]) * 365
 
                     else:
-                        new_lead_time_id = 2
+                        new_lead_time_id = -1
 
 
                     if 'LeadTimeExpedited' in row:
@@ -226,7 +226,7 @@ class MinimumProduct(BasicProcessObject):
                         new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
 
                 else:
-                    new_lead_time_id = 2
+                    new_lead_time_id = -1
 
 
                 lst_ids.append(new_lead_time_id)
@@ -333,11 +333,7 @@ class MinimumProduct(BasicProcessObject):
             df_collect_product_base_data['ShortDescription'] = [short_desc]
 
         if 'ProductName' not in row:
-            if len(short_desc) > 40:
-                product_name  = short_desc[:40]
-            else:
-                product_name  = short_desc
-            df_collect_product_base_data['ProductName'] = [product_name]
+            df_collect_product_base_data['ProductName'] = ['']
 
         else:
             product_name = str(row['ProductName'])
@@ -449,8 +445,7 @@ class MinimumProduct(BasicProcessObject):
 
 
 class UpdateMinimumProduct(MinimumProduct):
-    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber',
-                  'CountryOfOrigin']
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
