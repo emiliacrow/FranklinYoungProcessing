@@ -345,7 +345,7 @@ class MinimumProduct(BasicProcessObject):
         if 'LongDescription' in row:
             long_desc = str(row['LongDescription'])
         else:
-            df_collect_product_base_data['LongDescription'] = ''
+            long_desc = ''
 
         if 'ECommerceLongDescription' in row:
             ec_long_desc = str(row['ECommerceLongDescription'])
