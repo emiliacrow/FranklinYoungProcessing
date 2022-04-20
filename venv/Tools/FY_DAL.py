@@ -871,13 +871,12 @@ class DataRunner(threading.Thread):
         for each_item in self.lst_data:
             count += 1
             # this value here for testing
-            # print(self.name, each_item)
-            # obCursor.callproc(self.proc_name, args=each_item)
+            #print(self.name, each_item)
+            #obCursor.callproc(self.proc_name, args=each_item)
             try:
                 obCursor.callproc(self.proc_name, args = each_item)
             except OperationalError:
                 fail_retries.append(each_item)
-
 
         # this is for executing many in the DB which can be faster
         # obCursor.executemany(self.proc_statement, self.lst_data)
@@ -885,6 +884,7 @@ class DataRunner(threading.Thread):
         drops = 0
         count = 0
         if len(fail_retries) > 0:
+            time.sleep(20)
             print('Retry count: {0}'.format(len(fail_retries)))
             for each_item in fail_retries:
                 count += 1
