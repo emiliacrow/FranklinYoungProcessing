@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 # keep this
 class MinimumProduct(BasicProcessObject):
     req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName', 'VendorPartNumber',
-                  'ShortDescription', 'CountryOfOrigin', 'Category']
+                  'ProductName', 'ShortDescription', 'CountryOfOrigin', 'Category']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix',
@@ -137,7 +137,7 @@ class MinimumProduct(BasicProcessObject):
                         lst_ids.append(new_country_of_origin_id)
                     elif country in ['XX','ZZ']:
                         # unknown
-                        lst_ids.append(259)
+                        lst_ids.append(-1)
                     else:
                         coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
                         lst_ids.append(coo_id)
@@ -160,7 +160,7 @@ class MinimumProduct(BasicProcessObject):
                         coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
                         lst_ids.append(coo_id)
                 else:
-                    lst_ids.append(259)
+                    lst_ids.append(-1)
 
             df_attribute['CountryOfOriginId'] = lst_ids
             self.df_product = self.df_product.merge(df_attribute,
