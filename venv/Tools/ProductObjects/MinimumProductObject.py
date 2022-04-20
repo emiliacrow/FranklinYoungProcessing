@@ -23,6 +23,7 @@ class MinimumProduct(BasicProcessObject):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Minimum Product'
         self.quick_country = {}
+        self.previous_fy_catalog_number = -1
 
 
     def batch_preprocessing(self):
@@ -264,7 +265,6 @@ class MinimumProduct(BasicProcessObject):
         df_line_product = self.process_attribute_data(df_collect_product_base_data)
         df_collect_product_base_data = df_line_product.copy()
 
-        previous_fy_catalog_number = '-1'
 
         # this is also stupid, but it gets the point across for testing purposes
         for colName, row in df_line_product.iterrows():
@@ -315,10 +315,12 @@ class MinimumProduct(BasicProcessObject):
                 if not b_override:
                     return False, df_collect_product_base_data
 
-        if previous_fy_catalog_number != fy_catalog_number:
+        if self.previous_fy_catalog_number != fy_catalog_number:
             return_df_line_product = self.minimum_product(df_collect_product_base_data)
+        else:
+            return False, df_collect_product_base_data
 
-        previous_fy_catalog_number = fy_catalog_number
+        self.previous_fy_catalog_number = fy_catalog_number
 
         return True, return_df_line_product
 
