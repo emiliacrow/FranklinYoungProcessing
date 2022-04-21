@@ -78,7 +78,7 @@ class MinimumProduct(BasicProcessObject):
             return False
 
         elif row['Filter'] == 'Possible Duplicate':
-            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            self.obReporter.update_report('Fail', 'Review product numbers for possible duplicates')
             return False
 
         else:
@@ -473,7 +473,7 @@ class UpdateMinimumProduct(MinimumProduct):
             return True
 
         elif row['Filter'] == 'Possible Duplicate':
-            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            self.obReporter.update_report('Fail', 'Review product numbers for possible duplicates')
             return False
 
         else:
