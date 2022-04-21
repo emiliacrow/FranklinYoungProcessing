@@ -218,5 +218,5 @@ if __name__ == '__main__':
     test_frame()
 
 
-
+## I just don't understand why things have to be so hard. ##
 ## end ##

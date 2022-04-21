@@ -9,7 +9,8 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class MinimumProductPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
+    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'
+        ,'Conv Factor/QTY UOM','UnitOfMeasure','UnitOfIssue']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -107,7 +108,7 @@ class MinimumProductPrice(BasicProcessObject):
 
             success, df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
             if success == False:
-                self.obReporter.update_report('Fail','Can\'t identify product number')
+                self.obReporter.update_report('Fail','Can\'t identify units')
                 return success, df_collect_product_base_data
 
             b_override = False
@@ -151,31 +152,39 @@ class MinimumProductPrice(BasicProcessObject):
 
     def identify_units(self, df_collect_product_base_data, row):
         if ('Conv Factor/QTY UOM' not in row):
-            df_collect_product_base_data['Conv Factor/QTY UOM'] = [1]
+            df_collect_product_base_data['Conv Factor/QTY UOM'] = [-1]
 
         if ('UnitOfMeasure' not in row):
-            unit_of_measure = 'EA'
+            unit_of_measure = ''
             df_collect_product_base_data['UnitOfMeasure'] = [unit_of_measure]
         else:
             unit_of_measure = self.normalize_units(row['UnitOfMeasure'])
             df_collect_product_base_data['UnitOfMeasure'] = [unit_of_measure]
 
-        unit_of_issue = 'EA'
+        unit_of_issue = ''
         if 'UnitOfIssue' in row:
             unit_of_issue = self.normalize_units(row['UnitOfIssue'])
             df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
 
-        try:
-            unit_of_issue_symbol_id = self.df_uois_lookup.loc[(self.df_uois_lookup['UnitOfIssueSymbol'] == unit_of_issue),'UnitOfIssueSymbolId'].values[0]
-        except IndexError:
-            unit_of_issue_symbol_id = self.obIngester.ingest_uoi_symbol(unit_of_issue)
+
+
+        if unit_of_issue == '':
+            unit_of_issue_symbol_id = -1
+        else:
+            try:
+                unit_of_issue_symbol_id = self.df_uois_lookup.loc[(self.df_uois_lookup['UnitOfIssueSymbol'] == unit_of_issue),'UnitOfIssueSymbolId'].values[0]
+            except IndexError:
+                unit_of_issue_symbol_id = self.obIngester.ingest_uoi_symbol(unit_of_issue)
 
         df_collect_product_base_data['UnitOfIssueSymbolId'] = [unit_of_issue_symbol_id]
 
-        try:
-            unit_of_measure_symbol_id = self.df_uois_lookup.loc[(self.df_uois_lookup['UnitOfIssueSymbol'] == unit_of_measure),'UnitOfIssueSymbolId'].values[0]
-        except IndexError:
-            unit_of_measure_symbol_id = self.obIngester.ingest_uoi_symbol(unit_of_measure)
+        if unit_of_measure == '':
+            unit_of_measure_symbol_id = -1
+        else:
+            try:
+                unit_of_measure_symbol_id = self.df_uois_lookup.loc[(self.df_uois_lookup['UnitOfIssueSymbol'] == unit_of_measure),'UnitOfIssueSymbolId'].values[0]
+            except IndexError:
+                unit_of_measure_symbol_id = self.obIngester.ingest_uoi_symbol(unit_of_measure)
 
         df_collect_product_base_data['UnitOfMeasureSymbolId'] = [unit_of_measure_symbol_id]
 
