@@ -176,7 +176,7 @@ class BasicProcessObject:
 
 
     def define_new(self, b_match_vendor = False):
-        clear_headers = ['UpdateManufacturerName', 'ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'
+        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'
             ,'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes','TakePriority']
         for each_header in clear_headers:
             if each_header in self.df_product.columns:

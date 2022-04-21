@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 class MinimumProductPrice(BasicProcessObject):
     req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'
-        ,'Conv Factor/QTY UOM','UnitOfMeasure','UnitOfIssue']
+        ,'Conv Factor/QTY UOM','UnitOfIssue']
     sup_fields = []
     gen_fields = ['ProductId', 'VendorId', 'UnitOfIssueId']
     att_fields = []
@@ -155,7 +155,7 @@ class MinimumProductPrice(BasicProcessObject):
             df_collect_product_base_data['Conv Factor/QTY UOM'] = [-1]
 
         if ('UnitOfMeasure' not in row):
-            unit_of_measure = ''
+            unit_of_measure = 'EA'
             df_collect_product_base_data['UnitOfMeasure'] = [unit_of_measure]
         else:
             unit_of_measure = self.normalize_units(row['UnitOfMeasure'])
@@ -165,8 +165,6 @@ class MinimumProductPrice(BasicProcessObject):
         if 'UnitOfIssue' in row:
             unit_of_issue = self.normalize_units(row['UnitOfIssue'])
             df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
-
-
 
         if unit_of_issue == '':
             unit_of_issue_symbol_id = -1
@@ -226,7 +224,9 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_issue_quantity = row['Conv Factor/QTY UOM']
 
         if str(row['Filter']) == 'Partial':
-            self.obIngester.insert_product_price(fy_product_number, allow_purchases, fy_part_number,
+            if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
+
+                self.obIngester.insert_product_price(fy_product_number, allow_purchases, fy_part_number,
                                              product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
                                              unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
 

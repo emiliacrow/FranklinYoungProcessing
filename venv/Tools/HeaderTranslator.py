@@ -30,13 +30,13 @@ class HeaderTranslator():
                             'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
 
-                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue','QtyUOI','Qty UOI','Qty'],
+                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue','QtyUOI','Qty UOI','Qty','UnitOfIssueByQuantity'],
                             'UnitOfIssue':['UnitOfIssue', 'Unit Of Issue', 'UnitOfIssueSymbol', 'Unit Of Issue Symbol', 'UOI', 'uoi','unit_of_issue','unit of issue'],
                             'UnitOfMeasure':['UnitOfMeasure','Unit Of Measure','UnitOfMeasureSymbol','Unit Of Measure Symbol','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
                             'IsHazardous':['IsHazardous','Is Hazardous','Hazardous','is_hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
                             'IsVisible':['IsVisible','Is Visible','is_visible','is visible'],
-                            'LeadTime':['LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
+                            'LeadTime':['LeadTime','LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
                             'LeadTimeExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
 
                             'VendorListPrice':['Vendor List Price','VendorListPrice','VendorList','Vendor List','List Price','primary_vendor_list_price','vendor_list_price'],
