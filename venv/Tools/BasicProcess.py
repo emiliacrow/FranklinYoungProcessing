@@ -145,7 +145,7 @@ class BasicProcessObject:
         lst_names = []
         for colName, row in df_attribute.iterrows():
             manufacturer_name = row['ManufacturerName'].upper()
-            manufacturer_name = self.obValidator.clean_manufacturer_name(manufacturer_name,True)
+            manufacturer_name = self.obValidator.clean_manufacturer_name(manufacturer_name,False)
             while '  ' in manufacturer_name:
                 manufacturer_name = manufacturer_name.replace('  ',' ')
 

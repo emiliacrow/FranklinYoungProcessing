@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 # keep this
 class MinimumProduct(BasicProcessObject):
     req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName', 'VendorPartNumber',
-                  'ProductName', 'ShortDescription', 'CountryOfOrigin', 'Category','LeadTime']
+                  'ProductName', 'ShortDescription', 'CountryOfOrigin', 'LeadTime']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix',
@@ -286,8 +286,7 @@ class MinimumProduct(BasicProcessObject):
                 self.obReporter.update_report('Alert','Country of origin unknown')
 
             if ('CategoryId' not in row):
-                self.obReporter.update_report('Fail','No category assigned.')
-                return False, df_collect_product_base_data
+                self.obReporter.update_report('Alert','No category assigned.')
 
             if ('ShippingInstructionsId' not in row):
                 success, df_collect_product_base_data = self.process_shipping(df_collect_product_base_data, row)
@@ -416,7 +415,10 @@ class MinimumProduct(BasicProcessObject):
             country_of_origin_id = row['CountryOfOriginId']
 
             manufacturer_id = row['ManufacturerId']
-            category_id = row['CategoryId']
+            try:
+                category_id = row['CategoryId']
+            except KeyError:
+                category_id = -1
 
             shipping_instructions_id = row['ShippingInstructionsId']
             recommended_storage_id = row['RecommendedStorageId']
