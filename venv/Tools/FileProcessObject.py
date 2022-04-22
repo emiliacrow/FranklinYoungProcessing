@@ -349,7 +349,8 @@ class FileProcessor(BasicProcessObject):
         self.success = True
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            success, df_collect_attribute_data, manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
+            if 'FyCatalogNumber' not in row:
+                success, df_collect_attribute_data, manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
 
             if not success:
                 return success, df_collect_attribute_data

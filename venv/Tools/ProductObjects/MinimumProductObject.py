@@ -311,8 +311,8 @@ class MinimumProduct(BasicProcessObject):
             fy_catalog_number = row['FyCatalogNumber']
             b_pass_number_check = self.obValidator.review_product_number(fy_catalog_number)
             if not b_pass_number_check:
-                self.obReporter.update_report('Fail', 'Your catalog number contains outlawed characters')
                 if not b_override:
+                    self.obReporter.update_report('Fail', 'Your catalog number contains outlawed characters')
                     return False, df_collect_product_base_data
 
         if self.previous_fy_catalog_number != fy_catalog_number:

@@ -296,6 +296,10 @@ class IngestionObject:
         if ('ManufacturerName' in entered_values.keys()) and ('SupplierName' in entered_values.keys()):
             manufacturer_name = (str(entered_values['ManufacturerName'])).upper()
             supplier_name = (str(entered_values['SupplierName'])).lower()
+
+            if manufacturer_name != atmp_man:
+                supplier_name = atmp_man
+
         else:
             return 0
 
