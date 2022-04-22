@@ -271,7 +271,8 @@ class MinimumProduct(BasicProcessObject):
             if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
-            success, df_collect_product_base_data, manufacturer_prefix = self.process_manufacturer(df_collect_product_base_data, row)
+            if 'FyCatalogNumber' not in row:
+                success, df_collect_product_base_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_product_base_data, row)
 
             success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
             if success == False:

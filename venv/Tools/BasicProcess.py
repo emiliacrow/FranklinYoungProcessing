@@ -938,6 +938,13 @@ class BasicProcessObject:
             self.obReporter.default_uoi_report()
 
 
+        if manufacturer in self.manufacturer_repeater:
+            new_manufacturer_id = self.manufacturer_repeater[manufacturer][0]
+            new_prefix = self.manufacturer_repeater[manufacturer][1]
+            df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
+            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+            return True, df_collect_product_base_data, new_prefix
+
         if 'ManufacturerId' in row:
             new_manufacturer_id = row['ManufacturerId']
             new_prefix = self.df_manufacturer_translator.loc[
@@ -961,7 +968,7 @@ class BasicProcessObject:
                 (self.df_manufacturer_translator['SupplierName'] == manufacturer.lower()), ['ManufacturerId',
                                                                                     'FyManufacturerPrefix']].values[0]
 
-            self.manufacturer_repeater[manufacturer] = [new_manufacturer_id,new_manufacturer_id]
+            self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
 
@@ -973,7 +980,7 @@ class BasicProcessObject:
                                                                                         'FyManufacturerPrefix']].values[
                 0]
 
-            self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_manufacturer_id]
+            self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
 
@@ -988,7 +995,7 @@ class BasicProcessObject:
                                                                                         'FyManufacturerPrefix']].values[
                     0]
 
-                self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_manufacturer_id]
+                self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
 
@@ -1004,7 +1011,7 @@ class BasicProcessObject:
                 new_prefix = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
 
-                self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_manufacturer_id]
+                self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
 
@@ -1021,19 +1028,17 @@ class BasicProcessObject:
             new_prefix = self.df_manufacturer_translator.loc[
                 (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']]
 
-            self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_manufacturer_id]
+            self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
 
             return True, df_collect_product_base_data, new_prefix
 
 
-
-
-    def build_part_number(self, row, manufacturer_part_number, manufacturer_prefix, unit_of_issue, b_override):
+    def build_part_number(self, row, manufacturer_part_number, fy_manufacturer_prefix, unit_of_issue, b_override):
 
         if 'FyCatalogNumber' not in row and 'FyCatalogNumber_y' not in row:
-            fy_catalog_number = self.make_fy_catalog_number(manufacturer_prefix, manufacturer_part_number, b_override)
+            fy_catalog_number = self.make_fy_catalog_number(fy_manufacturer_prefix, manufacturer_part_number, b_override)
 
         elif 'FyCatalogNumber' in row:
             fy_catalog_number = row['FyCatalogNumber']

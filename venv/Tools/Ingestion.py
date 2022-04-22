@@ -297,8 +297,8 @@ class IngestionObject:
             manufacturer_name = (str(entered_values['ManufacturerName'])).upper()
             supplier_name = (str(entered_values['SupplierName'])).lower()
 
-            if manufacturer_name != atmp_man:
-                supplier_name = atmp_man
+            if manufacturer_name == supplier_name.upper() and manufacturer_name != atmp_sup.upper():
+                supplier_name = atmp_sup
 
         else:
             return 0

@@ -65,14 +65,9 @@ class FileProcessor(BasicProcessObject):
         if self.proc_to_run == 'Assign FyPartNumbers':
             # 'FyCatalogNumber', 'FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','db_IsProductNumberOverride'
             self.df_override_lookup = self.obDal.get_overrides()
-            self.df_basic_override_lookup = self.df_override_lookup[(self.df_override_lookup['UnitOfIssue'] == '')].copy()
-            match_set = ['ManufacturerName', 'ManufacturerPartNumber', 'UnitOfIssue']
+            self.df_override_lookup = self.df_override_lookup.drop(columns=['FyProductNumber','UnitOfIssue'])
+            match_set = ['ManufacturerName', 'ManufacturerPartNumber']
             self.df_product = self.df_product.merge(self.df_override_lookup, how='left', on = match_set)
-
-            if len(self.df_basic_override_lookup.index) > 0:
-                self.df_basic_override_lookup.drop(columns=['FyProductNumber','UnitOfIssue'])
-                match_set = ['ManufacturerName', 'ManufacturerPartNumber']
-                self.df_product = self.df_product.merge(self.df_basic_override_lookup, how='left', on=match_set)
 
 
     def process_product_line(self, df_line_product):
@@ -346,11 +341,10 @@ class FileProcessor(BasicProcessObject):
 
 
     def assign_fy_part_numbers(self, df_line_product):
-        self.success = True
+        success = True
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            if 'FyCatalogNumber' not in row:
-                success, df_collect_attribute_data, manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
+            success, df_collect_attribute_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
 
             if not success:
                 return success, df_collect_attribute_data
@@ -374,7 +368,7 @@ class FileProcessor(BasicProcessObject):
 
             manufacturer_part_number = str(row['ManufacturerPartNumber'])
 
-            fy_catalog_number, fy_product_number = self.build_part_number(row, manufacturer_part_number, manufacturer_prefix, unit_of_issue, b_override)
+            fy_catalog_number, fy_product_number = self.build_part_number(row, manufacturer_part_number, fy_manufacturer_prefix, unit_of_issue, b_override)
 
             df_collect_attribute_data['FyCatalogNumber'] = [fy_catalog_number]
             df_collect_attribute_data['FyProductNumber'] = [fy_product_number]
