@@ -995,7 +995,7 @@ class BasicProcessObject:
                                                                                         'FyManufacturerPrefix']].values[
                     0]
 
-                self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
+                self.manufacturer_repeater[supplier] = [new_manufacturer_id, new_prefix]
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
                 df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
 
