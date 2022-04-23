@@ -1009,7 +1009,7 @@ class BasicProcessObject:
                 # this needs to return the prefix so it can be used
 
                 new_prefix = self.df_manufacturer_translator.loc[
-                    (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']][0][0]
+                    (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
 
                 self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
                 df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
@@ -1026,7 +1026,7 @@ class BasicProcessObject:
             # this needs to return the prefix so it can be used
 
             new_prefix = self.df_manufacturer_translator.loc[
-                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']][0][0]
+                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
 
             self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
