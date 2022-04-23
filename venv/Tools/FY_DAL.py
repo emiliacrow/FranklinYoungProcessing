@@ -715,11 +715,14 @@ class DalObject:
         runner.start()
 
 
-    def get_base_product_price_lookup(self):
+    def get_markup_lookup(self):
         proc_name = 'sequoia.get_BasePrice_lookup'
         column_names = ['ProductId', 'ManufacturerPartNumber', 'FyCatalogNumber', 'ProductPriceId', 'FyProductNumber',
                         'VendorPartNumber', 'BaseProductPriceId', 'db_Discount', 'db_MarkUp_sell', 'db_MarkUp_list']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        df_base_price_lookup = df_base_price_lookup.drop(columns=['ProductId', 'ManufacturerPartNumber',
+                                                                  'FyCatalogNumber', 'ProductPriceId',
+                                                                  'FyProductNumber','VendorPartNumber'])
         return df_base_price_lookup
 
 

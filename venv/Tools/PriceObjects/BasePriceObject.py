@@ -46,7 +46,7 @@ class BasePrice(BasicProcessObject):
 
     def collect_markups(self):
         # here we will collect the markups and provide if possible.
-        self.df_markup_lookup = self.obDal.get_base_product_price_lookup()
+        self.df_markup_lookup = self.obDal.get_markup_lookup()
 
         product_headers = set(self.df_product.columns)
         markup_headers = set(self.df_markup_lookup.columns)
@@ -272,7 +272,7 @@ class BasePrice(BasicProcessObject):
             if db_markup_sell <= 0:
                 db_mus_success = False
                 self.obReporter.update_report('Alert','DB Markup Sell negative')
-            elif db_markup_sell <= 1:
+            elif db_markup_sell < 1:
                 db_mus_success = False
                 self.obReporter.update_report('Alert','DB Markup Sell too low')
 
@@ -315,6 +315,7 @@ class BasePrice(BasicProcessObject):
         if (not db_mus_success and not mus_success) and (not db_mul_success and not mul_success):
             self.obReporter.update_report('Fail', 'No markups not present')
             return False, df_collect_product_base_data
+
         elif (db_mus_success and not mus_success) and (db_mul_success and not mul_success):
             self.obReporter.update_report('Alert', 'DB markups were used')
             markup_sell = db_markup_sell
@@ -375,7 +376,16 @@ class BasePrice(BasicProcessObject):
             estimated_freight = row['Estimated Freight']
             fy_landed_cost = row['Landed Cost']
 
-            markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']
+            try:
+                markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']
+            except KeyError:
+                for colName2, row2 in df_collect_product_base_data.iterrows():
+                    print(row2)
+                reports = self.obReporter.get_report()
+                print('pass',reports[0])
+                print('alert',reports[1])
+                print('fail',reports[2])
+                x = input('Markup failure is a mystery, this shouldn\'t happen')
 
             if 'Sell Price' not in row:
                 df_collect_product_base_data['Sell Price'] = [0]
@@ -410,7 +420,7 @@ class BasePrice(BasicProcessObject):
 
             product_price_id = row['ProductPriceId']
 
-        if fy_landed_cost >= fy_sell_price and fy_sell_price != 0:
+        if (fy_landed_cost - fy_sell_price) > 0.005 and fy_sell_price != 0:
             self.obReporter.update_report('Fail','Margin was zero')
             return False, df_line_product
 

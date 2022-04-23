@@ -11,7 +11,7 @@ class IngestionObject:
     def __init__(self, obDal):
         self.name = 'Ingester Nester'
         self.obDal = obDal
-        self.load_limit = 10
+        self.load_limit = 50
         self.base_price_collector = []
         self.product_collector = []
         self.product_insert_collector = []
