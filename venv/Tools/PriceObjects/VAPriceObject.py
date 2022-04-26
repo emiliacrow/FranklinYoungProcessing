@@ -153,6 +153,9 @@ class VAPrice(BasicProcessObject):
             mfc_approved_price = row['ApprovedMfcPrice']
 
             sin = row['VA_Sin']
+            product_notes = ''
+            if 'VAProductNotes' in row:
+                product_notes = str(row['VAProductNotes'])
 
             va_product_price_id = -1
             if 'VAProductPriceId' in row:
@@ -163,14 +166,14 @@ class VAPrice(BasicProcessObject):
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
                                              approved_price_date, approved_percent,
-                                             mfc_percent, mfc_approved_price, sin)
+                                             mfc_percent, mfc_approved_price, sin, product_notes)
         else:
             product_price_id = int(row['ProductPriceId'])
             self.obIngester.va_product_price_update(va_product_price_id, base_product_price_id, product_price_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
                                              approved_price_date, approved_percent,
-                                             mfc_percent, mfc_approved_price, sin)
+                                             mfc_percent, mfc_approved_price, sin, product_notes)
 
         return success, return_df_line_product
 

@@ -10,13 +10,12 @@ from Tools.BasicProcess import BasicProcessObject
 
 # keep this
 class MinimumProduct(BasicProcessObject):
-    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName', 'VendorPartNumber',
-                  'ProductName', 'ShortDescription', 'CountryOfOrigin', 'LeadTime']
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName',
+                  'VendorPartNumber', 'ProductName', 'ShortDescription', 'CountryOfOrigin', 'LeadTime']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
-    gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix',
-                                'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
-                                'ExpectedLeadTimeId']
+    gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'IsFreeShipping', 'IsColdChain',
+                  'ShippingInstructionsId', 'RecommendedStorageId', 'ExpectedLeadTimeId']
 
 
     def __init__(self,df_product, user, password, is_testing):
@@ -426,6 +425,10 @@ class MinimumProduct(BasicProcessObject):
 
         if str(row['Filter']) == 'New':
             if (expected_lead_time_id != -1):
+                print(fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
+                                                 long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
+                                                 shipping_instructions_id, recommended_storage_id,
+                                                 expected_lead_time_id, category_id)
                 self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
