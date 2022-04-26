@@ -174,18 +174,36 @@ class GSAPrice(BasicProcessObject):
 
             sin = row['GSA_Sin']
 
+            product_notes = ''
+            if 'GSAProductNotes' in row:
+                product_notes = str(row['GSAProductNotes'])
 
-        self.obIngester.gsa_product_price_cap(base_product_price_id, fy_product_number, on_contract, approved_base_price,
+            gsa_product_price_id = -1
+            if 'GSAProductPriceId' in row:
+                gsa_product_price_id = int(row['GSAProductPriceId'])
+
+
+        if gsa_product_price_id == -1:
+            self.obIngester.gsa_product_price_insert(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
                                               approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
-                                              mfc_precent, mfc_price, sin)
+                                              mfc_precent, mfc_price, sin, product_notes)
+        else:
+            product_price_id = int(row['ProductPriceId'])
+            self.obIngester.gsa_product_price_update(gsa_product_price_id, base_product_price_id, product_price_id, fy_product_number, on_contract, approved_base_price,
+                                              approved_sell_price, approved_list_price, contract_manu_number,
+                                              contract_number, contract_mod_number, is_pricing_approved,
+                                              approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
+                                              mfc_precent, mfc_price, sin, product_notes)
+
 
         return success, return_df_line_product
 
 
     def trigger_ingest_cleanup(self):
-        self.obIngester.ingest_gsa_product_price_cleanup()
+        self.obIngester.insert_gsa_product_price_cleanup()
+        self.obIngester.update_gsa_product_price_cleanup()
 
 
 ## end ##

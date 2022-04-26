@@ -835,6 +835,49 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.gsa_product_price_cap(self.product_collector)
 
+    def gsa_product_price_insert(self, newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
+                              newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                              newContractNumber, newContractModificatactionNumber, newGSAPricingApproved,
+                              newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice,
+                              newMFCPercent, newMFCPrice, newGSA_SIN, newGSAProductNotes):
+        if (len(self.product_insert_collector) > self.load_limit):
+            self.product_insert_collector.append(
+                (newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice,
+                 newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber,
+                 newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN, newGSAProductNotes))
+            self.obDal.gsa_product_price_insert(self.product_insert_collector)
+            self.product_insert_collector = []
+        else:
+            self.product_insert_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
+                                           newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                                           newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN, newGSAProductNotes))
+
+    def insert_gsa_product_price_cleanup(self):
+        if self.product_insert_collector != []:
+            self.obDal.gsa_product_price_insert(self.product_insert_collector)
+
+
+    def gsa_product_price_update(self, newGSAProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
+                              newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                              newContractNumber, newContractModificatactionNumber, newGSAPricingApproved,
+                              newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice,
+                              newMFCPercent, newMFCPrice, newGSA_SIN, newGSAProductNotes):
+        if (len(self.product_update_collector) > self.load_limit):
+            self.product_update_collector.append(
+                (newGSAProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice,
+                 newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber,
+                 newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN, newGSAProductNotes))
+            self.obDal.gsa_product_price_update(self.product_update_collector)
+            self.product_update_collector = []
+        else:
+            self.product_update_collector.append((newGSAProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract, newApprovedBasePrice,
+                                           newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                                           newContractNumber, newContractModificatactionNumber, newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newGSABasePrice, newGSASellPrice, newMFCPercent, newMFCPrice, newGSA_SIN, newGSAProductNotes))
+
+    def update_gsa_product_price_cleanup(self):
+        if self.product_update_collector != []:
+            self.obDal.gsa_product_price_update(self.product_update_collector)
+
 
     def htme_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,

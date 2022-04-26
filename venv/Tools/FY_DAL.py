@@ -454,6 +454,20 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_product_price)
         runner.start()
 
+    def gsa_product_price_insert(self,lst_gsa_product_price):
+        proc_name = 'sequoia.GSAProductPrice_insert'
+        proc_statement = 'CALL `sequoia`.`GSAProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_product_price)
+        runner.start()
+
+    def gsa_product_price_update(self,lst_gsa_product_price):
+        proc_name = 'sequoia.GSAProductPrice_update'
+        proc_statement = 'CALL `sequoia`.`GSAProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_product_price)
+        runner.start()
+
     def get_gsa_price_lookup(self):
         proc_name = 'sequoia.get_GSAPrice_lookup'
         column_names = ['FyProductNumber','VendorPartNumber','GSAOnContract','db_ContractedManufacturerPartNumber', 'GSAApprovedListPrice',
