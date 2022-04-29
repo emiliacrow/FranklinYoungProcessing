@@ -3,6 +3,15 @@
 # Updated: 20210610
 # CreateFor: Franklin Young International
 
+import os
+import shutil
+import pandas
+import requests
+
+from PIL import Image
+from PIL import UnidentifiedImageError
+
+from Tools.FY_DAL import S3Object
 from Tools.BasicProcess import BasicProcessObject
 
 class FileProcessor(BasicProcessObject):
@@ -10,11 +19,13 @@ class FileProcessor(BasicProcessObject):
     sup_fields = []
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product, user, password, is_testing, proc_to_set):
+    def __init__(self,df_product, user, password, is_testing, proc_to_set, aws_access_key_id, aws_secret_access_key):
         self.proc_to_run = proc_to_set
         super().__init__(df_product, user, password, is_testing)
         self.name = 'File Processor'
         self.lindas_increase = 0.25
+        if self.proc_to_run == 'Load Manufacturer Default Image':
+            self.obS3 = S3Object(aws_access_key_id, aws_secret_access_key)
 
 
     def header_viability(self):
@@ -53,6 +64,10 @@ class FileProcessor(BasicProcessObject):
                                'ManufacturerName','ManufacturerPartNumber', 'Category']
             self.sup_fields = []
 
+        if self.proc_to_run == 'Load Manufacturer Default Image':
+            self.req_fields = ['ManufacturerName', 'ImagePath']
+            self.sup_fields = ['ImageCaption']
+
         # inital file viability check
         product_headers = set(self.lst_product_headers)
         required_headers = set(self.req_fields)
@@ -69,6 +84,11 @@ class FileProcessor(BasicProcessObject):
             match_set = ['ManufacturerName', 'ManufacturerPartNumber']
             self.df_product = self.df_product.merge(self.df_override_lookup, how='left', on = match_set)
 
+        if self.proc_to_run == 'Load Manufacturer Default Image':
+            self.batch_process_manufacturer()
+            self.lst_image_objects = self.obS3.get_object_list('franklin-young-image-bank')
+
+
 
     def process_product_line(self, df_line_product):
         self.success = True
@@ -83,6 +103,9 @@ class FileProcessor(BasicProcessObject):
 
         elif self.proc_to_run == 'Generate Upload File':
             self.success, df_line_product = self.generate_BC_upload(df_line_product)
+
+        elif self.proc_to_run == 'Load Manufacturer Default Image':
+            self.success, df_line_product = self.manufacturer_default_images(df_line_product)
 
         else:
             self.obReporter.report_no_process()
@@ -119,6 +142,94 @@ class FileProcessor(BasicProcessObject):
                             self.obReporter.update_report('Alert','Review for unicode ' + each_column_to_clean)
 
         return self.success, df_collect_line
+
+
+    def manufacturer_default_images(self,df_line_product):
+        success = True
+
+        df_collect_line = df_line_product.copy()
+
+        for colName, row in df_line_product.iterrows():
+            manufacturer_name = row['ManufacturerName']
+
+            path_manufacturer_name = manufacturer_name.replace(',', '')
+            path_manufacturer_name = path_manufacturer_name.replace(' ', '_')
+
+            image_path = row['ImagePath']
+            bucket = 'franklin-young-image-bank'
+
+            if 'http' in image_path:
+                # asset path is a url to fetch
+                # this is the name of the file as pulled from the url
+                url_name = image_path.rpartition('/')[2]
+                # this is the path which is placed, relatively to CWD
+                temp_path = 'temp_asset_files\\' + url_name
+                # This is the true path to the file
+                whole_path = str(os.getcwd()) + '\\' + temp_path
+                df_collect_line['WholeFilePath'] = [whole_path]
+
+                if os.path.exists(whole_path):
+                    object_name = whole_path.rpartition('\\')[2]
+                    self.obReporter.update_report('Alert', 'This was previously scraped')
+                else:
+                    # Make http request for remote file data
+                    asset_data = requests.get(image_path)
+
+
+                    if asset_data.ok:
+                        # Save file data to local copy
+                        with open(temp_path, 'wb')as file:
+                            file.write(asset_data.content)
+                        object_name = whole_path.rpartition('\\')[2]
+                        df_collect_line['AssetObjectName'] = [object_name]
+                        self.obReporter.update_report('Alert', 'This asset was scraped')
+                    else:
+                        self.obReporter.update_report('Fail', 'This url doesn\'t work.')
+                        return False, df_collect_line
+
+            elif os.path.exists(image_path):
+                object_name = image_path.rpartition('\\')[2]
+                whole_path = image_path
+                df_collect_line['AssetObjectName'] = [object_name]
+            else:
+                self.obReporter.update_report('Alert', 'Please check that the path is a url or file path')
+                return False, df_collect_line
+
+
+            s3_name = path_manufacturer_name + '/' + object_name
+
+            # we check if the documents
+            if 'CurrentAssetPath' in row:
+                current_asset_path = row['CurrentAssetPath']
+                if current_asset_path == whole_path and asset_type != 'Image' and asset_type != 'Video':
+                    self.obReporter.update_report('Fail', 'This asset already exists.')
+                    return False, df_collect_line
+                else:
+                    self.obReporter.update_report('Alert', 'This product asset was overwritten.')
+
+            if s3_name not in self.lst_image_objects:
+                self.obS3.put_file(whole_path, s3_name, bucket)
+                self.lst_image_objects.append(s3_name)
+
+            # the size can't fail
+            image_width, image_height = self.get_image_size(whole_path)
+
+            success = self.obDal.set_manufacturer_default_image(manufacturer_name, s3_name, object_name, image_width, image_height)
+            if not success:
+                self.obReporter.update_report('Fail','Failed at ingestion')
+
+        return success, df_collect_line
+
+
+    def get_image_size(self, image_path):
+        try:
+            current_image = Image.open(image_path)
+            image_width, image_height = current_image.size
+        except UnidentifiedImageError:
+            image_width, image_height = 0, 0
+
+        return image_width, image_height
+
 
     def generate_BC_upload(self, df_line_product):
         self.success = True

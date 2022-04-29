@@ -958,13 +958,13 @@ class IngestionObject:
             self.obDal.set_product_notes(self.product_notes_collector)
 
 
-    def set_productimage(self, product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height):
+    def set_productimage(self, product_id, manufacturer_name, product_image_url, object_name, image_preference, image_caption, image_width, image_height):
         if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append((product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height))
+            self.product_collector.append((product_id, manufacturer_name, product_image_url, object_name, image_preference, image_caption, image_width, image_height))
             self.obDal.product_image_capture(self.product_collector)
             self.product_collector = []
         else:
-            self.product_collector.append((product_id, product_image_url, object_name, image_preference, image_caption, image_width, image_height))
+            self.product_collector.append((product_id, manufacturer_name, product_image_url, object_name, image_preference, image_caption, image_width, image_height))
 
     def set_productimage_cleanup(self):
         if self.product_collector != []:

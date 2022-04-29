@@ -564,8 +564,8 @@ class DalObject:
 
 
     def product_image_capture(self,lst_product_image):
-        proc_name = 'sequoia.ProductImage_capture'
-        proc_statement = 'CALL `sequoia`.`ProductImage_capture`(%s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.ProductImage2_capture'
+        proc_statement = 'CALL `sequoia`.`ProductImage2_capture`(%s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_image)
         runner.start()
@@ -590,6 +590,24 @@ class DalObject:
         proc_args = (newUnitOfIssueSymbol, newUnitOfIssueSymbolName, ECATUnitOfIssueSymbol)
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
+
+
+    def set_manufacturer_default_image(self, manufacturer_name, s3_name, object_name, image_width, image_height):
+        proc_name = 'sequoia.set_manufacturer_default_image'
+        proc_args = (manufacturer_name, s3_name, object_name, image_width, image_height)
+        success = True
+        self.open_connection(1)
+        obCursor = self.connection.cursor()
+
+        try:
+            obCursor.callproc(proc_name, args=proc_args)
+        except OperationalError:
+            success = False
+
+        self.connection.commit()
+        self.connection.close()
+
+        return success
 
 
     def get_unit_of_issue_symbol_lookup(self):
@@ -888,12 +906,12 @@ class DataRunner(threading.Thread):
         for each_item in self.lst_data:
             count += 1
             # this value here for testing
-            #print(self.name, each_item)
-            #obCursor.callproc(self.proc_name, args=each_item)
-            try:
-                obCursor.callproc(self.proc_name, args = each_item)
-            except OperationalError:
-                fail_retries.append(each_item)
+            print(self.name, each_item)
+            obCursor.callproc(self.proc_name, args=each_item)
+            #try:
+            #    obCursor.callproc(self.proc_name, args = each_item)
+            #except OperationalError:
+            #    fail_retries.append(each_item)
 
         # this is for executing many in the DB which can be faster
         # obCursor.executemany(self.proc_statement, self.lst_data)

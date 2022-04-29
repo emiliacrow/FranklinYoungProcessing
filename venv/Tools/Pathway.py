@@ -124,8 +124,6 @@ class Pathways():
 
         elif file_action_selected == 'File Splitter Tool':
             self.success, self.message = self.file_splitter_tool()
-        elif file_action_selected == 'Load Image Files':
-            self.success, self.message = self.image_load_tool(is_testing)
         else:
             file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected, path = self.start_path)
             if file_ident_success == False:
@@ -159,7 +157,7 @@ class Pathways():
 
             else:
                 self.df_product = self.obFileFinder.read_xlsx()
-                self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected)
+                self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected, self.aws_access_key_id, self.aws_secret_access_key)
                 self.success, self.message = self.obFileProcessor.begin_process()
                 self.df_product = self.obFileProcessor.get_df()
 
@@ -598,16 +596,16 @@ class Pathways():
 
 
         self.success = False
-        b_inter_files = False
+        b_inter_files = True
         self.message = 'Ingest data pathway'
 
         # I have an alternate idea here where we could assign a write counter
         # the write counter would start with the number of steps and sub 1 each time it runs one
         # when it hits 0 it writes like magic!
-        self.obYNBox = YesNoDialog('Write intermediate files?')
-        self.obYNBox.initUI('Intermediate file dialog.', 'Would you like to write intermediate files?')
-        if self.obYNBox.yes_selected == True:
-            b_inter_files = True
+        #self.obYNBox = YesNoDialog('Write intermediate files?')
+        #self.obYNBox.initUI('Intermediate file dialog.', 'Would you like to write intermediate files?')
+        #if self.obYNBox.yes_selected == True:
+        #    b_inter_files = True
 
         self.df_product = self.obFileFinder.read_xlsx()
         all_steps = ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing']

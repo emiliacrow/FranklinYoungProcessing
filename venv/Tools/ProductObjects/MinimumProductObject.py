@@ -421,14 +421,10 @@ class MinimumProduct(BasicProcessObject):
 
             shipping_instructions_id = row['ShippingInstructionsId']
             recommended_storage_id = row['RecommendedStorageId']
-            expected_lead_time_id = row['ExpectedLeadTimeId']
+            expected_lead_time_id = int(row['ExpectedLeadTimeId'])
 
         if str(row['Filter']) == 'New':
             if (expected_lead_time_id != -1):
-                print(fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
-                                                 long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
-                                                 shipping_instructions_id, recommended_storage_id,
-                                                 expected_lead_time_id, category_id)
                 self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,

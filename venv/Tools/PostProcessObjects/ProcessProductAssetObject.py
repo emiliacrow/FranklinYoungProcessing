@@ -16,7 +16,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class ProcessProductAssetObject(BasicProcessObject):
-    req_fields = ['FyProductNumber','ManufacturerName','AssetPath', 'AssetType']
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber','AssetPath', 'AssetType']
 
     sup_fields = []
     att_fields = []
@@ -30,41 +30,8 @@ class ProcessProductAssetObject(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
-
-
-    def define_new(self):
-        # we use FyProductNumber to get ProductId
-        self.df_prod_id = self.obDal.get_product_fill_lookup()
-        self.df_prod_id['Filter'] = 'Pass'
-        self.df_product = self.df_product.merge(self.df_prod_id, how='left', on=['FyProductNumber'])
-
-        self.df_product.loc[(self.df_product['Filter'] != 'Pass'), 'Filter'] = 'Fail'
-
-        # split the data for a moment
-        self.df_process_product = self.df_product[(self.df_product['Filter'] == 'Pass')]
-        self.df_product = self.df_product[(self.df_product['Filter'] != 'Pass')]
-
-        if len(self.df_process_product.index) != 0:
-            self.df_process_product = self.df_process_product.drop(columns=['Filter'])
-            # this gets all the currect assets, images included
-            self.current_assets = self.obDal.get_current_assets()
-            self.current_assets['Filter'] = 'Pass'
-
-            # then we should be matching on FyProductNumber, AssetPath
-            match_headers = ['ProductId','FyProductNumber','AssetPath']
-            self.df_process_product = self.df_process_product.merge(self.current_assets, how='left', on=match_headers)
-
-            self.df_process_product.loc[(self.df_process_product['Filter'] != 'Pass'), 'Filter'] = 'Update'
-
-        if len(self.df_product.index)==0:
-            self.df_product = self.df_process_product.copy()
-        else:
-            self.df_product = self.df_product.append(self.df_process_product)
-
         self.lst_image_objects = self.obS3.get_object_list('franklin-young-image-bank')
         self.lst_document_objects = self.obS3.get_object_list('franklin-young-document-bank')
-
-        # then check for matching values in url and skip
 
 
     def remove_private_headers(self):
@@ -80,16 +47,26 @@ class ProcessProductAssetObject(BasicProcessObject):
             self.df_product = self.df_product.drop(columns=remove_headers)
 
 
+
     def filter_check_in(self, row):
-        if 'Filter' in row:
-            if row['Filter'] == 'Fail':
-                self.obReporter.update_report('Fail', 'This product hasn\' been ingested.')
-                return False
-            else:
-                return True
+        if row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
+            return False
+
+        elif row['Filter'] in ['Partial', 'Base Pricing']:
+            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
+            return False
+
+        elif row['Filter'] == 'Ready':
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+            return True
+
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            return False
 
         else:
-            self.obReporter.update_report('Fail', 'This product hasn\' been ingested.')
+            self.obReporter.update_report('Fail', 'Failed filtering')
             return False
 
 
@@ -136,7 +113,6 @@ class ProcessProductAssetObject(BasicProcessObject):
         # pull values from df_ob
         # create temp path
         # iterate assets
-        fy_product_number = row['FyProductNumber']
         asset_path = row['AssetPath']
         manufacturer_name = row['ManufacturerName']
 
@@ -238,6 +214,16 @@ class ProcessProductAssetObject(BasicProcessObject):
         return True, df_return_product
 
 
+    def get_image_size(self, image_path):
+        try:
+            current_image = Image.open(image_path)
+            image_width, image_height = current_image.size
+        except UnidentifiedImageError:
+            image_width, image_height = 0, 0
+
+        return image_width, image_height
+
+
     def process_document(self, row, df_collect_product_base_data, asset_type):
         df_return_product = df_collect_product_base_data.copy()
         # this may also need to include functionality for changing the ACL for an asset.
@@ -252,12 +238,8 @@ class ProcessProductAssetObject(BasicProcessObject):
         # pull values from df_ob
         # create temp path
         # iterate assets
-        fy_product_number = row['FyProductNumber']
         asset_path = row['AssetPath']
         manufacturer_name = row['ManufacturerName']
-
-        manufacturer_name = manufacturer_name.replace(',', '')
-        manufacturer_name = manufacturer_name.replace(' ', '_')
 
         if 'http' in asset_path:
             # asset path is a url to fetch
@@ -347,20 +329,10 @@ class ProcessProductAssetObject(BasicProcessObject):
                 caption = row['ImageCaption']
             image_width, image_height = self.get_image_size(whole_path)
 
-            self.obIngester.set_productimage(product_id, s3_name, object_name, document_preference, caption, image_width, image_height)
+            self.obIngester.set_productimage(product_id, manufacturer_name, s3_name, object_name, document_preference, caption, image_width, image_height)
 
 
         return True, df_return_product
-
-
-    def get_image_size(self, image_path):
-        try:
-            current_image = Image.open(image_path)
-            image_width, image_height = current_image.size
-        except UnidentifiedImageError:
-            image_width, image_height = 0, 0
-
-        return image_width, image_height
 
 
     def process_video(self, row, return_df_line_product):

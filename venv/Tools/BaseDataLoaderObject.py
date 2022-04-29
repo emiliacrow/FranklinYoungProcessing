@@ -63,6 +63,7 @@ class BaseDataLoader(BasicProcessObject):
 
         return True, return_str
 
+
     def run_manufacturer_loads(self):
         df_new_manufacturers = self.df_product.copy()
         if self.df_manufacturer_translator is not None:

@@ -82,7 +82,7 @@ class DuckworthWindow(QWidget):
                                'File Appender Tool':'This tool combines files vertically',
                                'File Merger Tool':'This tool can combine files vertically and horizontally',
                                'File Splitter Tool':'This tool splits files vertically',
-                               'Load Image Files':'--DEPRICATED--\nThis tool is used to upload images to s3 in bulk sets',
+                               'Load Manufacturer Default Image':'Required: ManufacturerName, ImagePath\nThis tool is used to set manufacturer default images',
                                'Product Action Review':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber',
 
                                '1-Minimum Product Ingestion(3 steps)':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber, ShortDescription, CountryOfOrigin, ManufacturerName, Category'
@@ -278,7 +278,7 @@ class DuckworthWindow(QWidget):
                                     'Load Image Files', 'Product Action Review']
 
         self.file_action_options = ['Assign FyPartNumbers', 'File Appender Tool','File Merger Tool', 'Category Training',
-                                    'Category Assignment', 'Extract Attributes','Load Image Files',
+                                    'Category Assignment', 'Extract Attributes','Load Manufacturer Default Image',
                                     'Unicode Correction', 'Generate Upload File', 'File Splitter Tool',
                                     'Product Action Review']
 
