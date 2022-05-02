@@ -145,7 +145,9 @@ class BasePrice(BasicProcessObject):
         df_collect_product_base_data['Sell Price'] = [fy_sell_price]
 
         fy_list_price = fy_landed_cost * markup_list
-        fy_list_price = round(fy_list_price, 2)
+        print(fy_list_price)
+        fy_list_price = round(fy_list_price + .00000000001, 2)
+        print(fy_list_price)
         df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
         # TODO check that this is working right
@@ -300,7 +302,6 @@ class BasePrice(BasicProcessObject):
 
         if not mus_success and db_mus_success:
             df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
-            mus_success = True
 
         mul_success, markup_list = self.row_check(row, 'LandedCostMarkupPercent_FYList')
         if mul_success:
@@ -314,7 +315,6 @@ class BasePrice(BasicProcessObject):
 
         if not mul_success and db_mul_success:
             df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
-            mul_success = True
 
         # let's report if they're both missing
         if (not db_mus_success and not mus_success) and (not db_mul_success and not mul_success):
