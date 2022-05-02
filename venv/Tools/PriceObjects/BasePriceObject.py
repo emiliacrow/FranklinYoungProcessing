@@ -144,7 +144,9 @@ class BasePrice(BasicProcessObject):
         fy_sell_price = round(fy_landed_cost * markup_sell, 2)
         df_collect_product_base_data['Sell Price'] = [fy_sell_price]
 
-        fy_list_price = round(fy_landed_cost * markup_list, 2)
+        fy_list_price = fy_landed_cost * markup_list
+        print(fy_list_price)
+        fy_list_price = round(fy_list_price, 2)
         df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
         # TODO check that this is working right
@@ -296,8 +298,10 @@ class BasePrice(BasicProcessObject):
             elif markup_sell <= 1:
                 mus_success = False
                 self.obReporter.update_report('Alert','Markup Sell too low')
-            else:
-                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+
+        if not mus_success and db_mus_success:
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+            mus_success = True
 
         mul_success, markup_list = self.row_check(row, 'LandedCostMarkupPercent_FYList')
         if mul_success:
@@ -308,8 +312,10 @@ class BasePrice(BasicProcessObject):
             elif markup_list <= 1:
                 mul_success = False
                 self.obReporter.update_report('Alert','Markup List too low')
-            else:
-                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+
+        if not mul_success and db_mul_success:
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+            mul_success = True
 
         # let's report if they're both missing
         if (not db_mus_success and not mus_success) and (not db_mul_success and not mul_success):
@@ -353,6 +359,7 @@ class BasePrice(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            print(row)
             is_visible = row['IsVisible']
 
             if 'VAProductPriceId' in row:
