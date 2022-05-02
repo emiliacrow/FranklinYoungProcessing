@@ -145,7 +145,6 @@ class BasePrice(BasicProcessObject):
         df_collect_product_base_data['Sell Price'] = [fy_sell_price]
 
         fy_list_price = fy_landed_cost * markup_list
-        print(fy_list_price)
         fy_list_price = round(fy_list_price, 2)
         df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
