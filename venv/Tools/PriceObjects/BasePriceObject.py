@@ -298,9 +298,13 @@ class BasePrice(BasicProcessObject):
             elif markup_sell <= 1:
                 mus_success = False
                 self.obReporter.update_report('Alert','Markup Sell too low')
+            else:
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
 
         if not mus_success and db_mus_success:
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+            markup_sell = db_markup_sell
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [db_markup_sell]
+
 
         mul_success, markup_list = self.row_check(row, 'LandedCostMarkupPercent_FYList')
         if mul_success:
@@ -311,9 +315,12 @@ class BasePrice(BasicProcessObject):
             elif markup_list <= 1:
                 mul_success = False
                 self.obReporter.update_report('Alert','Markup List too low')
+            else:
+                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
 
         if not mul_success and db_mul_success:
-            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+            markup_list = db_markup_list
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [db_markup_list]
 
         # let's report if they're both missing
         if (not db_mus_success and not mus_success) and (not db_mul_success and not mul_success):
