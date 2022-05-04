@@ -770,19 +770,19 @@ class IngestionObject:
     def ecat_product_price_insert(self, newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup):
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup, newECATProductNotes):
         if (len(self.product_insert_collector) > self.load_limit):
             self.product_insert_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup, newECATProductNotes))
             self.obDal.ecat_product_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
             self.product_insert_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup, newECATProductNotes))
 
     def insert_ecat_product_price_cleanup(self):
         if self.product_insert_collector != []:
@@ -791,19 +791,19 @@ class IngestionObject:
     def ecat_product_price_update(self, newECATProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup):
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup, newECATProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append((newECATProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup, newECATProductNotes))
             self.obDal.ecat_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newECATProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newECATPricingApproved,
-                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup))
+                               newECATApprovedPriceDate, newECATSellPrice, newECATMaxMarkup, newECATProductNotes))
 
     def update_ecat_product_price_cleanup(self):
         if self.product_update_collector != []:

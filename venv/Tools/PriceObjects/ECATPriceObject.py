@@ -160,6 +160,10 @@ class ECATPrice(BasicProcessObject):
             ecat_sell_price = round(float(row['ECATSellPrice']), 2)
             max_markup = row['ECATMaxMarkup']
 
+            product_notes = ''
+            if 'ECATProductNotes' in row:
+                product_notes = str(row['ECATProductNotes'])
+
             ecat_product_price_id = -1
             if 'ECATProductPriceId' in row:
                 ecat_product_price_id = int(row['ECATProductPriceId'])
@@ -168,13 +172,13 @@ class ECATPrice(BasicProcessObject):
             self.obIngester.ecat_product_price_insert(base_product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, ecat_sell_price,max_markup)
+                                               approved_price_date, ecat_sell_price,max_markup,product_notes)
         else:
             product_price_id = int(row['ProductPriceId'])
             self.obIngester.ecat_product_price_update(ecat_product_price_id, base_product_price_id, product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, ecat_sell_price,max_markup)
+                                               approved_price_date, ecat_sell_price,max_markup,product_notes)
 
         return success, return_df_line_product
 

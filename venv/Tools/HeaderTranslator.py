@@ -68,7 +68,7 @@ class HeaderTranslator():
                             'GSASellPrice':['GSASellPrice', 'GSA Sell Price','current_gsa_price'],
                             'GSAContractModificationNumber':['GSAContractModificationNumber','GSAModificationNumber',
                                                              'GSA Contract Modification Number',
-                                                             'GSAContractModification', 'GSA Contract Modification'],
+                                                             'GSAContractModification', 'GSA Contract Modification','GSA Modification Number'],
                             'GSAApprovedPriceDate':['GSAApprovedPriceDate', 'GSA Approved Price Date',
                                                     'GSA Approved Date'],
                             'GSA_Sin':['GSA_Sin', 'GSA_SIN', 'GSA Sin', 'GSA SIN', 'GSASin','GSA Sin #'],
@@ -81,7 +81,7 @@ class HeaderTranslator():
                             'VASellPrice':['VASellPrice', 'VA Sell Price'],
                             'VAContractModificationNumber':['VAContractModificationNumber',
                                                              'VA Contract Modification Number',
-                                                             'VAContractModification', 'VA Contract Modification','VAModificationNumber'],
+                                                             'VAContractModification', 'VA Contract Modification','VAModificationNumber','VA Modification Number'],
                             'VAApprovedPriceDate':['VAApprovedPriceDate', 'VA Approved Price Date',
                                                     'VA Approved Date'],
 
@@ -95,7 +95,7 @@ class HeaderTranslator():
                             'ECATSellPrice':['ECATSellPrice', 'ECAT Sell Price'],
                             'ECATContractModificationNumber':['ECATContractModificationNumber',
                                                             'ECAT Contract Modification Number',
-                                                            'ECATContractModification', 'ECAT Contract Modification'],
+                                                            'ECATContractModification', 'ECAT Contract Modification','ECATModificationNumber','ECAT Modification Number'],
                             'ECATApprovedPriceDate':['ECATApprovedPriceDate', 'ECAT Approved Price Date',
                                                    'ECAT Approved Date'],
 
