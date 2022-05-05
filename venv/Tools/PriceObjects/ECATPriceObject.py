@@ -117,18 +117,6 @@ class ECATPrice(BasicProcessObject):
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
-            if 'ECATSellPrice' in row:
-                ecat_sell_price = float(row['ECATSellPrice'])
-                return_df_line_product['ECATSellPrice'] = ecat_sell_price
-
-            elif 'db_FyCost' in row:
-                fy_cost = float(row['db_FyCost'])
-                max_markup = float(row['ECATMaxMarkup'])
-                ecat_sell_price = round((fy_cost*max_markup),2)
-                return_df_line_product['ECATSellPrice'] = ecat_sell_price
-            else:
-                self.obReporter.update_report('Fail', 'Check for db_FyCost  or ECATSellPrice')
-                return False, return_df_line_product
 
         return success, return_df_line_product
 
@@ -157,7 +145,6 @@ class ECATPrice(BasicProcessObject):
             approved_sell_price = float(row['ECATApprovedSellPrice'])
             approved_list_price = float(row['ECATApprovedListPrice'])
 
-            ecat_sell_price = round(float(row['ECATSellPrice']), 2)
             max_markup = row['ECATMaxMarkup']
 
             product_notes = ''
@@ -172,13 +159,13 @@ class ECATPrice(BasicProcessObject):
             self.obIngester.ecat_product_price_insert(base_product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, ecat_sell_price,max_markup,product_notes)
+                                               approved_price_date,max_markup,product_notes)
         else:
             product_price_id = int(row['ProductPriceId'])
             self.obIngester.ecat_product_price_update(ecat_product_price_id, base_product_price_id, product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, ecat_sell_price,max_markup,product_notes)
+                                               approved_price_date,max_markup,product_notes)
 
         return success, return_df_line_product
 

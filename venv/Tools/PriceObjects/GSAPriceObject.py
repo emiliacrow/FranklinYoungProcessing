@@ -110,29 +110,6 @@ class GSAPrice(BasicProcessObject):
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
-            if 'GSABasePrice' not in row:
-                approved_list_price = float(row['GSAApprovedListPrice'])
-
-                approved_percent = float(row['GSAApprovedPercent'])
-                gsa_base_price = round(approved_list_price-(approved_list_price*approved_percent),4)
-                self.obReporter.update_report('Alert','GSABasePrice was calculated')
-
-                return_df_line_product['GSABasePrice'] = gsa_base_price
-            else:
-                gsa_base_price = round(float(row['GSABasePrice']), 4)
-                return_df_line_product['GSABasePrice'] = gsa_base_price
-                self.obReporter.update_report('Alert','GSABasePrice was rounded to 4')
-
-            if 'GSASellPrice' not in row:
-                iff_fee_percent = 0.9925
-                gsa_sell_price = round(gsa_base_price/iff_fee_percent, 2)
-                return_df_line_product['GSASellPrice'] = gsa_sell_price
-                self.obReporter.update_report('Alert','GSASellPrice was calculated')
-
-            if 'MfcPrice' not in row:
-                mfc_precent = float(row['MfcDiscountPercent'])
-                return_df_line_product['MfcPrice'] = round(approved_list_price-(approved_list_price*mfc_precent),2)
-                self.obReporter.update_report('Alert','MfcPrice was calculated')
 
         return success, return_df_line_product
 
@@ -166,11 +143,7 @@ class GSAPrice(BasicProcessObject):
             approved_list_price = float(row['GSAApprovedListPrice'])
             approved_percent = float(row['GSAApprovedPercent'])
 
-            gsa_base_price = row['GSABasePrice']
-            gsa_sell_price = row['GSASellPrice']
-
-            mfc_precent = row['MfcDiscountPercent']
-            mfc_price = row['MfcPrice']
+            mfc_percent = row['MfcDiscountPercent']
 
             sin = row['GSA_Sin']
 
@@ -187,15 +160,15 @@ class GSAPrice(BasicProcessObject):
             self.obIngester.gsa_product_price_insert(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
-                                              approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
-                                              mfc_precent, mfc_price, sin, product_notes)
+                                              approved_price_date, approved_percent, mfc_percent,
+                                              sin, product_notes)
         else:
             product_price_id = int(row['ProductPriceId'])
             self.obIngester.gsa_product_price_update(gsa_product_price_id, base_product_price_id, product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
-                                              approved_price_date, approved_percent, gsa_base_price, gsa_sell_price,
-                                              mfc_precent, mfc_price, sin, product_notes)
+                                              approved_price_date, approved_percent, mfc_percent,
+                                              sin, product_notes)
 
 
         return success, return_df_line_product

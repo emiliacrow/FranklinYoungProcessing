@@ -483,6 +483,20 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_product_price)
         runner.start()
 
+    def htme_product_price_insert(self,lst_htme_product_price):
+        proc_name = 'sequoia.HTMEProductPrice_insert'
+        proc_statement = 'CALL `sequoia`.`HTMEProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_product_price)
+        runner.start()
+
+    def htme_product_price_update(self,lst_htme_product_price):
+        proc_name = 'sequoia.HTMEProductPrice_update'
+        proc_statement = 'CALL `sequoia`.`HTMEProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_product_price)
+        runner.start()
+
     def get_htme_price_lookup(self):
         proc_name = 'sequoia.get_HTMEPrice_lookup'
         column_names = ['FyProductNumber', 'VendorPartNumber', 'HTMEOnContract', 'ECATApprovedListPrice', 'db_ContractedManufacturerPartNumber',

@@ -163,16 +163,33 @@ class HTMEPrice(BasicProcessObject):
             htme_sell_price = round(float(row['HTMESellPrice']), 2)
             max_markup = row['HTMEMaxMarkup']
 
-        self.obIngester.htme_product_price_cap(base_product_price_id, fy_product_number, on_contract,
+            product_notes = ''
+            if 'HTMEProductNotes' in row:
+                product_notes = str(row['HTMEProductNotes'])
+
+            htme_product_price_id = -1
+            if 'HTMEProductPriceId' in row:
+                htme_product_price_id = int(row['HTMEProductPriceId'])
+
+        if htme_product_price_id == -1:
+            self.obIngester.htme_product_price_insert(base_product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, htme_sell_price,max_markup)
+                                               approved_price_date, htme_sell_price,max_markup,product_notes)
+        else:
+            product_price_id = int(row['ProductPriceId'])
+            self.obIngester.htme_product_price_cap()
+            self.obIngester.htme_product_price_update(base_product_price_id, fy_product_number, on_contract,
+                                               approved_sell_price, approved_list_price, contract_manu_number,
+                                               contract_number, contract_mod_number, is_pricing_approved,
+                                               approved_price_date, htme_sell_price,max_markup,product_notes)
 
         return success, return_df_line_product
 
 
     def trigger_ingest_cleanup(self):
-        self.obIngester.ingest_htme_product_price_cleanup()
+        self.obIngester.insert_htme_product_price_cleanup()
+        self.obIngester.update_htme_product_price_cleanup()
 
 
 ## end ##
