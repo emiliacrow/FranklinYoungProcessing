@@ -841,7 +841,6 @@ class Pathways():
                 b_full_run = True
 
             self.obBCRTL = BC_RTL_Object(self.df_product, self.user, self.password, is_testing, full_run = b_full_run)
-            self.obBCRTL = BC_RTL_Object(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obBCRTL.begin_process()
             self.df_product = self.obBCRTL.get_df()
             self.obFileFinder.write_xlsx(self.df_product, 'BC_RTL')
