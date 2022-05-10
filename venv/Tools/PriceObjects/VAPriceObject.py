@@ -162,6 +162,7 @@ class VAPrice(BasicProcessObject):
                                              mfc_percent, sin, product_notes)
         else:
             product_price_id = int(row['ProductPriceId'])
+            # this may need to collect a reason why it's being put off contract
             self.obIngester.va_product_price_update(va_product_price_id, base_product_price_id, product_price_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,

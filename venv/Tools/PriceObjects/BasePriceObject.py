@@ -114,7 +114,7 @@ class BasePrice(BasicProcessObject):
 
 
     def set_vendor_discount(self, fy_cost, vendor_list_price):
-        if vendor_list_price == fy_cost:
+        if vendor_list_price == fy_cost or vendor_list_price <= 0:
             fy_discount_percent = 0
         else:
             fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)

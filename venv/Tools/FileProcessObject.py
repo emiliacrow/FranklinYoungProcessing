@@ -481,6 +481,10 @@ class FileProcessor(BasicProcessObject):
 
             fy_catalog_number, fy_product_number = self.build_part_number(row, manufacturer_part_number, fy_manufacturer_prefix, unit_of_issue, b_override)
 
+            if (fy_catalog_number != fy_product_number) and (fy_catalog_number not in fy_product_number):
+                self.obReporter.update_report('Fail','Catalog number/Product number disagree')
+                return False, df_collect_attribute_data
+
             df_collect_attribute_data['FyCatalogNumber'] = [fy_catalog_number]
             df_collect_attribute_data['FyProductNumber'] = [fy_product_number]
 
