@@ -183,13 +183,18 @@ class BasePrice(BasicProcessObject):
         # Check FyCost is valid, this is a proper fail
         # this prepares FyCost, we can't load if this fails
         success, fy_cost = self.row_check(row,'FyCost')
-        if success == False:
-            # fail line if missing
-            self.obReporter.update_report('Fail', 'FyCost was missing')
-            return success, df_collect_product_base_data
+        if not success:
+            success, fy_cost = self.row_check(row, 'db_FyCost')
+            if success:
+                df_collect_product_base_data['FyCost'] = [fy_cost]
+            else:
+                # fail line if missing
+                self.obReporter.update_report('Fail', 'FyCost was missing')
+                return success, df_collect_product_base_data
+
 
         success, fy_cost = self.float_check(fy_cost,'FyCost')
-        if success == False or fy_cost == 0:
+        if not success or fy_cost == 0:
             # fail if it's negative
             # we could allow these to get through in some way
             self.obReporter.update_report('Fail', 'Please check that FyCost is a positive number')
@@ -418,11 +423,17 @@ class BasePrice(BasicProcessObject):
             else:
                 ecommerce_discount = row['ECommerceDiscount']
 
-            try:
-                date_catalog_received = int(row['DateCatalogReceived'])
-                date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
-            except ValueError:
-                date_catalog_received = str(row['DateCatalogReceived'])
+            if 'DateCatalogReceived' in row:
+                try:
+                    date_catalog_received = int(row['DateCatalogReceived'])
+                    date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+                except ValueError:
+                    date_catalog_received = str(row['DateCatalogReceived'])
+            elif 'db_DateCatalogReceived' in row:
+                date_catalog_received = str(row['db_DateCatalogReceived'])
+            else:
+                self.obReporter.update_report('Fail','Catalog recieved date missing')
+                return False, df_line_product
 
             if 'CatalogProvidedBy' in row:
                 catalog_provided_by = str(row['CatalogProvidedBy'])
@@ -466,8 +477,9 @@ class BasePrice(BasicProcessObject):
         self.obIngester.update_base_price_cleanup()
 
 
-
 class UpdateBasePrice(BasePrice):
+    req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName',
+                  'VendorPartNumber']
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
 
