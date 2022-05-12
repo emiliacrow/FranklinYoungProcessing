@@ -142,11 +142,11 @@ class BasePrice(BasicProcessObject):
 
     def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
         fy_sell_price = fy_landed_cost * markup_sell
-        fy_sell_price = round(fy_sell_price + .00000000001, 2)
+        fy_sell_price = round(fy_sell_price + .00001, 2)
         df_collect_product_base_data['Sell Price'] = [fy_sell_price]
 
         fy_list_price = fy_landed_cost * markup_list
-        fy_list_price = round(fy_list_price + .00000000001, 2)
+        fy_list_price = round(fy_list_price + .00001, 2)
         df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
         # TODO check that this is working right
