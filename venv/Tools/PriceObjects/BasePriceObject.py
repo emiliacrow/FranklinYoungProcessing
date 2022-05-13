@@ -141,12 +141,45 @@ class BasePrice(BasicProcessObject):
 
 
     def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
-        fy_sell_price = fy_landed_cost * markup_sell
-        fy_sell_price = round(fy_sell_price + .00001, 2)
+        present_price = float(row['PresentedGSAPrice'])
+        previous_price = float(row['PreviousFyListPrice'])
+
+        # do math
+        fy_sell_price_long = fy_landed_cost * markup_sell
+
+        # initial rounding and formatting
+        fy_sell_price = round(fy_sell_price_long, 4)
+        str_fy_sell_price = "{:.4f}".format(fy_sell_price)
+        # evaluate the last two digits and do second rounding
+        final_digit = str_fy_sell_price[-2:]
+        if str_fy_sell_price[-2:] == '50':
+            fy_sell_price = round(fy_sell_price+0.0001, 2)
+
+        elif str_fy_sell_price[-1] == '5':
+            fy_sell_price = round(fy_sell_price+0.00001, 2)
+
+        else:
+            fy_sell_price = round(fy_sell_price, 2)
+
         df_collect_product_base_data['Sell Price'] = [fy_sell_price]
 
-        fy_list_price = fy_landed_cost * markup_list
-        fy_list_price = round(fy_list_price + .00001, 2)
+        # do math
+        fy_list_price_long = fy_landed_cost * markup_list
+
+        # initial rounding and formatting
+        fy_list_price = round(fy_list_price_long, 4)
+        str_fy_list_price = "{:.4f}".format(fy_list_price)
+        # evaluate the last two digits and do second rounding
+        final_digit = str_fy_list_price[-2:]
+        if str_fy_list_price[-2:] == '50':
+            fy_list_price = round(fy_list_price+0.0001, 2)
+
+        elif str_fy_list_price[-1] == '5':
+            fy_list_price = round(fy_list_price+0.00001, 2)
+
+        else:
+            fy_list_price = round(fy_list_price, 2)
+
         df_collect_product_base_data['Retail Price'] = [fy_list_price]
 
         # TODO check that this is working right
