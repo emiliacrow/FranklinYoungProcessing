@@ -141,9 +141,6 @@ class BasePrice(BasicProcessObject):
 
 
     def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
-        present_price = float(row['PresentedGSAPrice'])
-        previous_price = float(row['PreviousFyListPrice'])
-
         # do math
         fy_sell_price_long = fy_landed_cost * markup_sell
 
