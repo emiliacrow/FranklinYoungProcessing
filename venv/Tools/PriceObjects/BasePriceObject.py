@@ -161,7 +161,7 @@ class BasePrice(BasicProcessObject):
         df_collect_product_base_data['Sell Price'] = [fy_sell_price]
 
         # do math
-        fy_list_price_long = fy_landed_cost * markup_list
+        fy_list_price_long = float(fy_landed_cost * markup_list)
 
         # initial rounding and formatting
         fy_list_price = round(fy_list_price_long, 4)
