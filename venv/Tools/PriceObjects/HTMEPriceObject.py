@@ -116,18 +116,6 @@ class HTMEPrice(BasicProcessObject):
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
-            if 'HTMESellPrice' in row:
-                htme_sell_price = float(row['HTMESellPrice'])
-                return_df_line_product['HTMESellPrice'] = htme_sell_price
-
-            elif 'db_fy_cost' in row:
-                fy_cost = float(row['db_fy_cost'])
-                max_markup = float(row['HTMEMaxMarkup'])
-                htme_sell_price = round((fy_cost*max_markup),2)
-                return_df_line_product['HTMESellPrice'] = htme_sell_price
-            else:
-                self.obReporter.update_report('Fail', 'Check for db_fy_cost  or HTMESellPrice')
-                return False, return_df_line_product
 
         return success, return_df_line_product
 
@@ -160,7 +148,6 @@ class HTMEPrice(BasicProcessObject):
             approved_sell_price = round(float(row['HTMEApprovedSellPrice']), 2)
             approved_list_price = round(float(row['HTMEApprovedListPrice']), 2)
 
-            htme_sell_price = round(float(row['HTMESellPrice']), 2)
             max_markup = row['HTMEMaxMarkup']
 
             product_notes = ''
@@ -175,14 +162,14 @@ class HTMEPrice(BasicProcessObject):
             self.obIngester.htme_product_price_insert(base_product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, htme_sell_price,max_markup,product_notes)
+                                               approved_price_date,max_markup,product_notes)
         else:
             product_price_id = int(row['ProductPriceId'])
             self.obIngester.htme_product_price_cap()
             self.obIngester.htme_product_price_update(base_product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, htme_sell_price,max_markup,product_notes)
+                                               approved_price_date,max_markup,product_notes)
 
         return success, return_df_line_product
 

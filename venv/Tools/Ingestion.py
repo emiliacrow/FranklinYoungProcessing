@@ -905,19 +905,19 @@ class IngestionObject:
     def htme_product_price_insert(self, newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
-                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup, newHTMEProductNotes):
+                               newHTMEApprovedPriceDate, newHTMEMaxMarkup, newHTMEProductNotes):
         if (len(self.product_insert_collector) > self.load_limit):
             self.product_insert_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
-                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup, newHTMEProductNotes))
+                               newHTMEApprovedPriceDate, newHTMEMaxMarkup, newHTMEProductNotes))
             self.obDal.htme_product_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
             self.product_insert_collector.append((newBaseProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
-                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup, newHTMEProductNotes))
+                               newHTMEApprovedPriceDate, newHTMEMaxMarkup, newHTMEProductNotes))
 
     def insert_htme_product_price_cleanup(self):
         if self.product_insert_collector != []:
@@ -926,19 +926,19 @@ class IngestionObject:
     def htme_product_price_update(self, newHTMEProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
-                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup, newHTMEProductNotes):
+                               newHTMEApprovedPriceDate, newHTMEMaxMarkup, newHTMEProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append((newHTMEProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
-                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup, newHTMEProductNotes))
+                               newHTMEApprovedPriceDate, newHTMEMaxMarkup, newHTMEProductNotes))
             self.obDal.htme_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newHTMEProductPriceId, newBaseProductPriceId, newProductPriceId, newFyProductNumber, newOnContract,
                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
                                newContractNumber, newContractModificatactionNumber, newHTMEPricingApproved,
-                               newHTMEApprovedPriceDate, newHTMESellPrice, newHTMEMaxMarkup, newHTMEProductNotes))
+                               newHTMEApprovedPriceDate, newHTMEMaxMarkup, newHTMEProductNotes))
 
     def update_htme_product_price_cleanup(self):
         if self.product_update_collector != []:
