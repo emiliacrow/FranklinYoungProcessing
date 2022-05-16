@@ -9,11 +9,6 @@ import xlrd
 from Tools.BasicProcess import BasicProcessObject
 
 
-## TO-DO:
-## Review the rounding
-## etc.
-
-
 class HTMEPrice(BasicProcessObject):
     req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber',
                   'HTMEOnContract', 'HTMEApprovedListPrice', 'HTMEMaxMarkup', 'HTMEContractModificationNumber',
