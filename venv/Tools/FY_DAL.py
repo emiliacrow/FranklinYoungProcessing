@@ -876,7 +876,7 @@ class DalObject:
 
     def set_htme_toggles(self, lst_htme_toggles):
         proc_name = 'sequoia.set_htme_toggles'
-        proc_statement = 'CALL `sequoia`.`set_htme_toggles`(%s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`set_htme_toggles`(%s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_toggles)
         runner.start()
@@ -890,7 +890,7 @@ class DalObject:
 
     def set_va_toggles(self, lst_va_toggles):
         proc_name = 'sequoia.set_va_toggles'
-        proc_statement = 'CALL `sequoia`.`set_va_toggles`(%s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`set_va_toggles`(%s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_toggles)
         runner.start()

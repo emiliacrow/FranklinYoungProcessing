@@ -162,6 +162,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                 fy_product_notes = fy_product_notes.replace('NULL', '')
                 fy_product_notes = fy_product_notes.replace(';', ',')
 
+
             str_now = datetime.datetime.today().strftime('%d, %b %Y')
 
             ecat_contract = -1
@@ -205,9 +206,9 @@ class BigCommerceRTLObject(BasicProcessObject):
                         ecat_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(ecat_product_notes, mod_number, str_now)
 
 
-
             htme_contract = -1
             htme_approved = -1
+            htme_pending_del_flag = -1
             htme_product_notes = ''
             if htme_id != -1:
                 success, htme_contract = self.process_boolean(row, 'HTMETOnContract')
@@ -225,13 +226,35 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if 'HTMEProductNotes' in row:
                     htme_product_notes = row['HTMEProductNotes']
 
-                if db_is_discontinued == 0 and is_discontinued == 1:
-                    if htme_id != -1:
-                        htme_pending_del_flag = 1
+                db_htme_contract = int(row['db_HTMEOnContract'])
+                db_htme_approved = int(row['db_HTMEPricingApproved'])
+
+                # test if this matches the first condition
+                # not discontinued, gets pending if db discontinued and db contracted
+                if db_is_discontinued == 0 and is_discontinued == 1 and db_htme_contract == 1 and db_htme_approved == 1 and htme_approved != 1:
+                    htme_pending_del_flag = 1
+                    is_discontinued = 0
+                    htme_approved = 0
+
+                    if 'ending contract deletion,' not in fy_product_notes:
+                        if fy_product_notes == '':
+                            fy_product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                        else:
+                            fy_product_notes = '{0}, pending contract deletion, {1}'.format(fy_product_notes, str_now)
+
+                # if we're actually deleting from contract, we can add the notes
+                elif db_htme_contract == 1 and htme_contract == 0 and htme_approved == 1:
+                    mod_number = str(row['db_HTMEModNumber'])
+                    if htme_product_notes == '':
+                        htme_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
+                    else:
+                        htme_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(htme_product_notes, mod_number, str_now)
+
 
             gsa_contract = -1
             gsa_approved = -1
             gsa_product_notes = ''
+            gsa_pending_del_flag = -1
             if gsa_id != -1:
                 success, gsa_contract = self.process_boolean(row, 'GSAOnContract')
                 if success:
@@ -248,13 +271,35 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if 'GSAProductNotes' in row:
                     gsa_product_notes = row['GSAProductNotes']
 
-                if db_is_discontinued == 0 and is_discontinued == 1:
-                    if gsa_id != -1:
-                        gsa_pending_del_flag = 1
+                db_gsa_contract = int(row['db_GSAOnContract'])
+                db_gsa_approved = int(row['db_GSAPricingApproved'])
+
+                # test if this matches the first condition
+                # not discontinued, gets pending if db discontinued and db contracted
+                if db_is_discontinued == 0 and is_discontinued == 1 and db_gsa_contract == 1 and db_gsa_approved == 1 and gsa_approved != 1:
+                    gsa_pending_del_flag = 1
+                    is_discontinued = 0
+                    ecat_approved = 0
+
+                    if 'ending contract deletion,' not in fy_product_notes:
+                        if fy_product_notes == '':
+                            fy_product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                        else:
+                            fy_product_notes = '{0}, pending contract deletion, {1}'.format(fy_product_notes, str_now)
+
+                # if we're actually deleting from contract, we can add the notes
+                elif db_gsa_contract == 1 and gsa_contract == 0 and gsa_approved == 1:
+                    mod_number = str(row['db_GSAModNumber'])
+                    if gsa_product_notes == '':
+                        gsa_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
+                    else:
+                        gsa_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(gsa_product_notes, mod_number, str_now)
+
 
             va_contract = -1
             va_approved = -1
             va_product_notes = ''
+            va_pending_del_flag = -1
             if va_id != -1:
                 success, va_contract = self.process_boolean(row, 'VAOnContract')
                 if success:
@@ -271,9 +316,30 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if 'VAProductNotes' in row:
                     va_product_notes = row['VAProductNotes']
 
-                if db_is_discontinued == 0 and is_discontinued == 1:
-                    if va_id != -1:
-                        va_pending_del_flag = 1
+                db_va_contract = int(row['db_VAOnContract'])
+                db_va_approved = int(row['db_VAPricingApproved'])
+
+                # test if this matches the first condition
+                # not discontinued, gets pending if db discontinued and db contracted
+                if db_is_discontinued == 0 and is_discontinued == 1 and db_va_contract == 1 and db_va_approved == 1 and va_approved != 1:
+                    va_pending_del_flag = 1
+                    is_discontinued = 0
+                    ecat_approved = 0
+
+                    if 'ending contract deletion,' not in fy_product_notes:
+                        if fy_product_notes == '':
+                            fy_product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                        else:
+                            fy_product_notes = '{0}, pending contract deletion, {1}'.format(fy_product_notes, str_now)
+
+                # if we're actually deleting from contract, we can add the notes
+                elif db_va_contract == 1 and va_contract == 0 and va_approved == 1:
+                    mod_number = str(row['db_VAModNumber'])
+                    if va_product_notes == '':
+                        va_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
+                    else:
+                        va_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(va_product_notes, mod_number, str_now)
+
 
             # if it's on contract we want to make sure they show
             if (ecat_approved == 1 and ecat_contract == 1) or (htme_approved == 1 and htme_contract == 1) or (gsa_approved == 1 and gsa_contract == 1) or (va_approved == 1 and va_contract == 1):
@@ -382,54 +448,32 @@ class BigCommerceRTLObject(BasicProcessObject):
         if (ecat_contract != -1 or ecat_approved != -1):
             if db_ecat_contract != ecat_contract or db_ecat_approved != ecat_approved:
                 self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes)
-
             elif self.full_run:
                 self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes)
             else:
                 self.obReporter.update_report('Alert', 'No change to ECAT toggles')
 
-
         if (htme_contract != -1 or htme_approved != -1):
-            db_htme_contract = int(row['db_HTMEOnContract'])
-            db_htme_approved = int(row['db_HTMEPricingApproved'])
-
-            if htme_pending_del_flag == 1:
-                htme_product_notes = '{0}, {1}'.format(htme_product_notes, str_now)
-
             if db_htme_contract != htme_contract or db_htme_approved != htme_approved:
-                self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved)
-
+                self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved, htme_pending_del_flag, htme_product_notes)
             elif self.full_run:
-                self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved)
+                self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved, htme_pending_del_flag, htme_product_notes)
             else:
                 self.obReporter.update_report('Alert', 'No change to HTME toggles')
 
         if (gsa_contract != -1 or gsa_approved != -1):
-            db_gsa_contract = int(row['db_GSAOnContract'])
-            db_gsa_approved = int(row['db_GSAPricingApproved'])
-
-            if gsa_pending_del_flag == 1:
-                gsa_product_notes = '{0}, {1}'.format(gsa_product_notes, str_now)
-
             if db_gsa_contract != gsa_contract or db_gsa_approved != gsa_approved:
-                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved)
-
+                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes)
             elif self.full_run:
-                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved)
+                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes)
             else:
                 self.obReporter.update_report('Alert', 'No change to GSA toggles')
 
         if (va_contract != -1 or va_approved != -1):
-            db_va_contract = int(row['db_VAOnContract'])
-            db_va_approved = int(row['db_VAPricingApproved'])
-
-            if va_pending_del_flag == 1:
-                va_product_notes = '{0}, {1}'.format(va_product_notes, str_now)
-
             if db_va_contract != va_contract or db_va_approved != va_approved:
-                self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved)
+                self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved, va_pending_del_flag, va_product_notes)
             elif self.full_run:
-                self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved)
+                self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved, va_pending_del_flag, va_product_notes)
             else:
                 self.obReporter.update_report('Alert', 'No change to VA toggles')
 
