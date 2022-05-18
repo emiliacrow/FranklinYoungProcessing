@@ -4,6 +4,7 @@
 # CreateFor: Franklin Young International
 
 import pandas
+import datetime
 import numpy as np
 
 from Tools.BasicProcess import BasicProcessObject
@@ -39,10 +40,10 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         drop_values = ['db_IsDiscontinued','db_AllowPurchases',
                        'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
-                       'db_ECATOnContract', 'db_ECATPricingApproved',
-                       'db_HTMEOnContract', 'db_HTMEPricingApproved',
-                       'db_GSAOnContract', 'db_GSAPricingApproved',
-                       'db_VAOnContract', 'db_VAPricingApproved']
+                       'db_ECATOnContract', 'db_ECATModNumber', 'db_ECATPricingApproved',
+                       'db_HTMEOnContract', 'db_HTMEModNumber','db_HTMEPricingApproved',
+                       'db_GSAOnContract', 'db_GSAModNumber','db_GSAPricingApproved',
+                       'db_VAOnContract', 'db_VAModNumber','db_VAPricingApproved']
         self.df_top_toggles = self.df_top_toggles.drop(columns=drop_values)
 
         match_headers = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
@@ -117,15 +118,19 @@ class BigCommerceRTLObject(BasicProcessObject):
                 self.obReporter.update_report('Alert','BaseProductPriceId Missing')
                 return False, df_collect_product_base_data
 
+            # check if the product has contract records
             ecat_id = -1
             if 'ECATProductPriceId' in row:
                 ecat_id = row['ECATProductPriceId']
+
             htme_id = -1
             if 'HTMEProductPriceId' in row:
-                ecat_id = row['HTMEProductPriceId']
+                htme_id = row['HTMEProductPriceId']
+
             gsa_id = -1
             if 'GSAProductPriceId' in row:
                 gsa_id = row['GSAProductPriceId']
+
             va_id = -1
             if 'VAProductPriceId' in row:
                 va_id = row['VAProductPriceId']
@@ -140,24 +145,71 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 update_asset = -1
 
+            is_discontinued = -1
+            success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+            if success:
+                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+            else:
+                is_discontinued = -1
+
+
+            db_is_discontinued = int(row['db_IsDiscontinued'])
+            db_allow_purchases = int(row['db_AllowPurchases'])
+
+            fy_product_notes = ''
+            if 'FyProductNotes' in row:
+                fy_product_notes = row['FyProductNotes']
+                fy_product_notes = fy_product_notes.replace('NULL', '')
+                fy_product_notes = fy_product_notes.replace(';', ',')
+
+            str_now = datetime.datetime.today().strftime('%d, %b %Y')
+
             ecat_contract = -1
             ecat_approved = -1
-            if row['ECATProductPriceId'] != -1:
+            ecat_pending_del_flag = -1
+            ecat_product_notes = ''
+            if ecat_id != -1:
                 success, ecat_contract = self.process_boolean(row, 'ECATOnContract')
                 if success:
                     df_collect_product_base_data['ECATOnContract'] = [ecat_contract]
-                else:
-                    ecat_contract = -1
 
                 success, ecat_approved = self.process_boolean(row, 'ECATPricingApproved')
                 if success:
                     df_collect_product_base_data['ECATPricingApproved'] = [ecat_approved]
-                else:
-                    ecat_approved = -1
+
+                if 'ECATProductNotes' in row:
+                    ecat_product_notes = row['ECATProductNotes']
+
+                db_ecat_contract = int(row['db_ECATOnContract'])
+                db_ecat_approved = int(row['db_ECATPricingApproved'])
+
+                # test if this matches the first condition
+                # not discontinued, gets pending if db discontinued and db contracted
+                if db_is_discontinued == 0 and is_discontinued == 1 and db_ecat_contract == 1 and db_ecat_approved == 1 and ecat_approved != 1:
+                    ecat_pending_del_flag = 1
+                    is_discontinued = 0
+                    ecat_approved = 0
+
+                    if 'ending contract deletion,' not in fy_product_notes:
+                        if fy_product_notes == '':
+                            fy_product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                        else:
+                            fy_product_notes = '{0}, pending contract deletion, {1}'.format(fy_product_notes, str_now)
+
+                # if we're actually deleting from contract, we can add the notes
+                elif db_ecat_contract == 1 and ecat_contract == 0 and ecat_approved == 1:
+                    mod_number = str(row['db_ECATModNumber'])
+                    if ecat_product_notes == '':
+                        ecat_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
+                    else:
+                        ecat_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(ecat_product_notes, mod_number, str_now)
+
+
 
             htme_contract = -1
             htme_approved = -1
-            if row['HTMEProductPriceId'] != -1:
+            htme_product_notes = ''
+            if htme_id != -1:
                 success, htme_contract = self.process_boolean(row, 'HTMETOnContract')
                 if success:
                     df_collect_product_base_data['HTMETOnContract'] = [htme_contract]
@@ -170,9 +222,17 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     htme_approved = -1
 
+                if 'HTMEProductNotes' in row:
+                    htme_product_notes = row['HTMEProductNotes']
+
+                if db_is_discontinued == 0 and is_discontinued == 1:
+                    if htme_id != -1:
+                        htme_pending_del_flag = 1
+
             gsa_contract = -1
             gsa_approved = -1
-            if row['GSAProductPriceId'] != -1:
+            gsa_product_notes = ''
+            if gsa_id != -1:
                 success, gsa_contract = self.process_boolean(row, 'GSAOnContract')
                 if success:
                     df_collect_product_base_data['GSAOnContract'] = [gsa_contract]
@@ -185,9 +245,17 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     gsa_approved = -1
 
+                if 'GSAProductNotes' in row:
+                    gsa_product_notes = row['GSAProductNotes']
+
+                if db_is_discontinued == 0 and is_discontinued == 1:
+                    if gsa_id != -1:
+                        gsa_pending_del_flag = 1
+
             va_contract = -1
             va_approved = -1
-            if row['VAProductPriceId'] != -1:
+            va_product_notes = ''
+            if va_id != -1:
                 success, va_contract = self.process_boolean(row, 'VAOnContract')
                 if success:
                     df_collect_product_base_data['VAOnContract'] = [va_contract]
@@ -200,7 +268,14 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     va_approved = -1
 
+                if 'VAProductNotes' in row:
+                    va_product_notes = row['VAProductNotes']
 
+                if db_is_discontinued == 0 and is_discontinued == 1:
+                    if va_id != -1:
+                        va_pending_del_flag = 1
+
+            # if it's on contract we want to make sure they show
             if (ecat_approved == 1 and ecat_contract == 1) or (htme_approved == 1 and htme_contract == 1) or (gsa_approved == 1 and gsa_contract == 1) or (va_approved == 1 and va_contract == 1):
                 price_toggle = 1
                 df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
@@ -226,7 +301,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                     else:
                         data_toggle = -1
 
-
             else:
                 success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
                 if success:
@@ -239,13 +313,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                     df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
                 else:
                     data_toggle = -1
-
-                is_discontinued = -1
-                success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
-                if success:
-                    df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
-                else:
-                    is_discontinued = -1
 
                 allow_purchases = -1
                 success, allow_purchases = self.process_boolean(row, 'AllowPurchases')
@@ -262,11 +329,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                     is_visible = -1
 
 
-        fy_product_notes = ''
-        if 'FyProductNotes' in row:
-            fy_product_notes = row['FyProductNotes']
-            fy_product_notes = fy_product_notes.replace('NULL','')
-            fy_product_notes = fy_product_notes.replace(';',',')
 
         # at this point we've evaluated all the data
         if (price_toggle != -1 or data_toggle != -1):
@@ -282,15 +344,15 @@ class BigCommerceRTLObject(BasicProcessObject):
                     self.obReporter.update_report('Alert', 'No change to BC toggles')
 
         if (is_discontinued != -1 or allow_purchases != -1):
-            db_is_discontinued = int(row['db_IsDiscontinued'])
-            db_allow_purchases = int(row['db_AllowPurchases'])
             if str(row['IsTopProduct']) == 'Y':
                 if db_is_discontinued != is_discontinued or db_allow_purchases != allow_purchases:
                     self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
+
                 elif self.full_run:
                     self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
                 else:
                     self.obReporter.update_report('Alert', 'No change to discon/purchase toggles')
+
             else:
                 if db_is_discontinued != is_discontinued or db_allow_purchases != 0:
                     allow_purchases = 0
@@ -316,21 +378,27 @@ class BigCommerceRTLObject(BasicProcessObject):
         if (update_asset != -1):
             self.obIngester.set_update_asset(product_id, update_asset)
 
+
         if (ecat_contract != -1 or ecat_approved != -1):
-            db_ecat_contract = int(row['db_ECATOnContract'])
-            db_ecat_approved = int(row['db_ECATPricingApproved'])
             if db_ecat_contract != ecat_contract or db_ecat_approved != ecat_approved:
-                self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved)
+                self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes)
+
             elif self.full_run:
-                self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved)
+                self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes)
             else:
                 self.obReporter.update_report('Alert', 'No change to ECAT toggles')
+
 
         if (htme_contract != -1 or htme_approved != -1):
             db_htme_contract = int(row['db_HTMEOnContract'])
             db_htme_approved = int(row['db_HTMEPricingApproved'])
+
+            if htme_pending_del_flag == 1:
+                htme_product_notes = '{0}, {1}'.format(htme_product_notes, str_now)
+
             if db_htme_contract != htme_contract or db_htme_approved != htme_approved:
                 self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved)
+
             elif self.full_run:
                 self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved)
             else:
@@ -339,8 +407,13 @@ class BigCommerceRTLObject(BasicProcessObject):
         if (gsa_contract != -1 or gsa_approved != -1):
             db_gsa_contract = int(row['db_GSAOnContract'])
             db_gsa_approved = int(row['db_GSAPricingApproved'])
+
+            if gsa_pending_del_flag == 1:
+                gsa_product_notes = '{0}, {1}'.format(gsa_product_notes, str_now)
+
             if db_gsa_contract != gsa_contract or db_gsa_approved != gsa_approved:
                 self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved)
+
             elif self.full_run:
                 self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved)
             else:
@@ -349,6 +422,10 @@ class BigCommerceRTLObject(BasicProcessObject):
         if (va_contract != -1 or va_approved != -1):
             db_va_contract = int(row['db_VAOnContract'])
             db_va_approved = int(row['db_VAPricingApproved'])
+
+            if va_pending_del_flag == 1:
+                va_product_notes = '{0}, {1}'.format(va_product_notes, str_now)
+
             if db_va_contract != va_contract or db_va_approved != va_approved:
                 self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved)
             elif self.full_run:

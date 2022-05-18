@@ -1098,14 +1098,14 @@ class IngestionObject:
         if self.product_update_asset_collector != []:
             self.obDal.set_update_asset(self.product_update_asset_collector)
 
-    def set_ecat_toggles(self,base_id, fy_product_number, ecat_contract, ecat_approved):
+    def set_ecat_toggles(self,base_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes):
         if (len(self.product_ecat_toggle_collector) > self.load_limit):
-            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved))
+            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes))
             self.obDal.set_ecat_toggles(self.product_ecat_toggle_collector)
             self.product_ecat_toggle_collector = []
 
         else:
-            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved))
+            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes))
 
     def set_ecat_toggles_cleanup(self):
         if self.product_ecat_toggle_collector != []:
