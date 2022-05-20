@@ -154,7 +154,11 @@ class BigCommerceRTLObject(BasicProcessObject):
 
 
             db_is_discontinued = int(row['db_IsDiscontinued'])
-            db_allow_purchases = int(row['db_AllowPurchases'])
+            try:
+                db_allow_purchases = int(row['db_AllowPurchases'])
+            except:
+                print(row)
+                db_allow_purchases = -1
 
             fy_product_notes = ''
             if 'FyProductNotes' in row:
@@ -200,6 +204,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                 # if we're actually deleting from contract, we can add the notes
                 elif db_ecat_contract == 1 and ecat_contract == 0 and ecat_approved == 1:
                     mod_number = str(row['db_ECATModNumber'])
+                    ecat_pending_del_flag = 0
                     if ecat_product_notes == '':
                         ecat_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
                     else:

@@ -114,7 +114,10 @@ class HeaderTranslator():
                             'ImageUrl':['ImageUrl', 'ProductImageUrl', 'Image Url', 'Product Image Url',
                                         'product_photo_url'],
                             'ImageName':['ImageName','ProductImageName','Image Name','Product Image Name','product_photo_Name'],
-                            'ProductUrl':['URL','url','Product URL','Product Url','ProductUrl','product_url']}
+                            'ProductUrl':['URL','url','Product URL','Product Url','ProductUrl','product_url'],
+                            'BCPriceUpdateToggle':['BCPriceUpdateToggle','BCPriceToggle','BC Price Update Toggle','BC Price Toggle'],
+                            'BCDataUpdateToggle':['BCDataUpdateToggle','BCDataToggle','BC Data Update Toggle','BC Data Toggle']
+                            }
         self.build_trans_dct()
 
     def build_trans_dct(self):
