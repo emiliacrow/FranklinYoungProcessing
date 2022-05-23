@@ -199,7 +199,7 @@ class BasicProcessObject:
         """
         # get product look up
         self.df_product_agni_kai_lookup = self.obDal.get_product_action_review_lookup()
-        # for final step
+        # we create a df for the product notes alone so they can be added at the end.
         self.df_product_notes = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['db_FyProductNotes']!= '')]
         drop_notes = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber','FyProductNumber',
                       'VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued',

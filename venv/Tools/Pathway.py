@@ -821,8 +821,18 @@ class Pathways():
         b_full_run = False
         all_pathways = ['Update Toggles','Process Product Assets','Image Validitiy Tests']
 
-        if contract_selected != 'Image Validitiy Tests':
+        if contract_selected == 'Image Validitiy Tests':
+            # get the image urls and put them into self.df_product
+            # Then we iterate, testing each image
+            # images that fail must be removed.
+            # this would involve a couple different actions
+            # remove each product image association then reset image preference
+            # then remove the image record
+            # and remove from s3
+            return False, 'This process hasn\'t been created yet'
 
+
+        else:
             self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+contract_selected, path = self.start_path)
             if self.success == False:
                 return self.success, message_or_path
@@ -832,16 +842,6 @@ class Pathways():
             self.df_product = self.obFileFinder.read_xlsx()
 
             self.set_perm_file()
-
-        else:
-            # get the image urls and put them into self.df_product
-            # Then we iterate, testing each image
-            # images that fail must be removed.
-            # this would involve a couple different actions
-            # remove each product image association then reset image preference
-            # then remove the image record
-            # and remove from s3
-            return False, 'This process hasn\'t been created yet'
 
 
         self.success = False
