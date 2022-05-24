@@ -207,10 +207,6 @@ class BasicProcessObject:
         self.df_product_notes = self.df_product_notes.drop(columns=drop_notes)
         self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes'])
 
-
-
-        # LET'S BUILD!!
-
         # set up the different match types
         # all products in DB with pricing
         self.df_full_product_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['BaseProductPriceId'] != 'Load Pricing')].copy()
@@ -228,7 +224,6 @@ class BasicProcessObject:
         self.df_product_minumum_lookup = self.df_product_minumum_lookup.drop(columns = ['ProductPriceId'])
 
 
-
         # match all values, these are ready files
         print('Round 1')
         merge_columns = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber']
@@ -240,6 +235,7 @@ class BasicProcessObject:
         self.df_product, self.df_pricing_matched_product, self.df_product_price_lookup = self.merge_and_split(self.df_product, self.df_product_price_lookup, merge_columns)
         self.df_price_agnostic_product_lookup = pandas.concat([self.df_full_product_lookup, self.df_product_price_lookup, self.df_product_minumum_lookup], ignore_index=True)
 
+        self.df_price_agnostic_product_lookup.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'] , ignore_index = True, inplace = True)
 
         # round 3
         print('Round 3')
@@ -247,7 +243,6 @@ class BasicProcessObject:
         self.df_product = self.df_product.merge(self.df_price_agnostic_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
         self.df_man_ven_matched_products = self.df_product[(self.df_product['Filter'] == 'Partial')]
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
-
 
         # set aside everything that didn't match
         # but wait! there's more!
@@ -333,7 +328,7 @@ class BasicProcessObject:
         if len(self.df_fy_cat_matched_products.index) > 0:
             self.df_fy_cat_matched_products = self.df_fy_cat_matched_products.drop_duplicates()
             try:
-                self.df_product = pandas.concat([self.df_product,self.df_fy_cat_matched_products], ignore_index = True)
+                self.df_product = pandas.concat([self.df_product, self.df_fy_cat_matched_products], ignore_index = True)
             except pandas.errors.InvalidIndexError:
                 print('Invalid index error 5: this represents a bug')
 
@@ -460,10 +455,21 @@ class BasicProcessObject:
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'Alert'] = 'Verify your ManufacturerName'
 
+        self.df_product.loc[(self.df_product['Filter'] == 'check_vendor'), 'Alert'] = 'Verify your VendorName'
+
+        self.df_product.loc[(self.df_product['Filter'] == 'vendor_part_number_change'), 'Alert'] = 'Vendor Part Number Change'
+        self.df_product.loc[(self.df_product['Filter'] == 'manufacturer_part_number_change'), 'Alert'] = 'Manufacturer Part Number Change'
+        self.df_product.loc[(self.df_product['Filter'] == 'check_vendor_and_manu_part'), 'Alert'] = 'Manufacturer Part Number Change, check Vendor'
+
 
         self.df_product.loc[(self.df_product['Filter'] == 'Possible_Duplicate'), 'TakePriority'] = 'A'
+
         self.df_product.loc[(self.df_product['Filter'] == 'case_4'), 'TakePriority'] = 'W'
-        self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'TakePriority'] = 'F'
+        self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'TakePriority'] = 'J'
+        self.df_product.loc[(self.df_product['Filter'] == 'check_vendor_and_manu_part'), 'TakePriority'] = 'I'
+        self.df_product.loc[(self.df_product['Filter'] == 'manufacturer_part_number_change'), 'TakePriority'] = 'H'
+        self.df_product.loc[(self.df_product['Filter'] == 'vendor_part_number_change'), 'TakePriority'] = 'G'
+        self.df_product.loc[(self.df_product['Filter'] == 'check_vendor'), 'TakePriority'] = 'F'
 
         self.df_product.loc[(self.df_product['Filter'] == 'New'), 'TakePriority'] = 'E'
         self.df_product.loc[(self.df_product['Filter'] == 'Partial'), 'TakePriority'] = 'D'
@@ -486,7 +492,6 @@ class BasicProcessObject:
                   (self.df_man_ven_matched_products['FyProductNumber_x'] == self.df_man_ven_matched_products['FyProductNumber_y']) &
                   (self.df_man_ven_matched_products['BaseProductPriceId'] == 'Load Pricing'))
 
-
         # new vendor for new configuration
         case_3 = ((self.df_man_ven_matched_products['VendorName_x'] != self.df_man_ven_matched_products['VendorName_y']) &
                   (self.df_man_ven_matched_products['ManufacturerName_x'] == self.df_man_ven_matched_products['ManufacturerName_y']) &
@@ -504,9 +509,21 @@ class BasicProcessObject:
                   (self.df_man_ven_matched_products['VendorName_x'] == self.df_man_ven_matched_products['VendorName_y'] ) &
                   (self.df_man_ven_matched_products['VendorPartNumber_x'] == self.df_man_ven_matched_products['VendorPartNumber_y']))
 
+        # BAAAAAD manufacturer
+        case_10 = ((self.df_man_ven_matched_products['VendorName_x'] != self.df_man_ven_matched_products['VendorName_y']) &
+                  (self.df_man_ven_matched_products['ManufacturerName_x'] == self.df_man_ven_matched_products['ManufacturerName_y']) &
+                  (self.df_man_ven_matched_products['VendorPartNumber_x'] == self.df_man_ven_matched_products['VendorPartNumber_y']) &
+                  (self.df_man_ven_matched_products['FyProductNumber_x'] == self.df_man_ven_matched_products['FyProductNumber_y']))
 
-        conditions = [base_price,case_4,case_9,case_3]
-        choices = ['Base Price','case_4','case_9','case_3']
+        # BAAAAAD manufacturer
+        case_11 = ((self.df_man_ven_matched_products['VendorName_x'] == self.df_man_ven_matched_products['VendorName_y']) &
+                  (self.df_man_ven_matched_products['ManufacturerName_x'] == self.df_man_ven_matched_products['ManufacturerName_y']) &
+                  (self.df_man_ven_matched_products['VendorPartNumber_x'] != self.df_man_ven_matched_products['VendorPartNumber_y']) &
+                  (self.df_man_ven_matched_products['FyProductNumber_x'] == self.df_man_ven_matched_products['FyProductNumber_y']))
+
+
+        conditions = [base_price,case_4,case_9,case_3,case_10,case_11]
+        choices = ['Base Price','case_4','case_9','case_3','check_vendor','vendor_part_number_change']
 
         self.df_man_ven_matched_products['Filter'] = np.select(conditions, choices, default='New')
 
@@ -514,7 +531,6 @@ class BasicProcessObject:
         self.df_man_ven_matched_products.drop_duplicates(['FyCatalogNumber','ManufacturerName_x','ManufacturerPartNumber','FyProductNumber_x','VendorName_x','VendorPartNumber_x'] , ignore_index = True, inplace = True)
 
         self.df_man_ven_matched_products = self.man_ven_match_x_y_cleaning(self.df_man_ven_matched_products)
-
 
 
     def fy_cat_cleanup(self):
@@ -543,17 +559,27 @@ class BasicProcessObject:
                   (self.df_fy_cat_matched_products['VendorPartNumber_x'] != self.df_fy_cat_matched_products['VendorPartNumber_y']) &
                   (self.df_fy_cat_matched_products['FyProductNumber_x'] != self.df_fy_cat_matched_products['FyProductNumber_y']))
 
-        conditions = [case_5,case_6,case_7,case_8]
-        choices = ['case_5','case_6','case_7','case_8']
+        case_12 = ((self.df_fy_cat_matched_products['VendorName_x'] == self.df_fy_cat_matched_products['VendorName_y']) &
+                  (self.df_fy_cat_matched_products['ManufacturerPartNumber_x'] != self.df_fy_cat_matched_products['ManufacturerPartNumber_y']) &
+                  (self.df_fy_cat_matched_products['VendorPartNumber_x'] == self.df_fy_cat_matched_products['VendorPartNumber_y']) &
+                  (self.df_fy_cat_matched_products['FyProductNumber_x'] == self.df_fy_cat_matched_products['FyProductNumber_y']))
+
+        case_13 = ((self.df_fy_cat_matched_products['VendorName_x'] != self.df_fy_cat_matched_products['VendorName_y']) &
+                  (self.df_fy_cat_matched_products['ManufacturerPartNumber_x'] != self.df_fy_cat_matched_products['ManufacturerPartNumber_y']) &
+                  (self.df_fy_cat_matched_products['VendorPartNumber_x'] == self.df_fy_cat_matched_products['VendorPartNumber_y']) &
+                  (self.df_fy_cat_matched_products['FyProductNumber_x'] == self.df_fy_cat_matched_products['FyProductNumber_y']))
+
+
+        conditions = [case_5,case_6,case_7,case_8,case_12,case_13]
+        choices = ['case_5','case_6','case_7','case_8','manufacturer_part_number_change','check_vendor_and_manu_part']
 
         self.df_fy_cat_matched_products['Filter'] = np.select(conditions, choices, default='other')
 
-        # we will have to make assignments of more values _x, _y as we identify the partial type
-
-        self.df_fy_cat_matched_products.sort_values(by=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x','Filter'] , inplace = True, ascending=False)
+        self.df_fy_cat_matched_products.sort_values(by=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x','Filter'] , inplace = True)
         self.df_fy_cat_matched_products.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x'] , ignore_index = True, inplace = True)
 
         self.df_fy_cat_matched_products =self.x_y_cleaning(self.df_fy_cat_matched_products)
+
 
 
     def man_ven_match_x_y_cleaning(self, df_to_clean):
@@ -562,6 +588,10 @@ class BasicProcessObject:
         df_to_clean_case_3 = df_to_clean[(df_to_clean['Filter'] == 'case_3')].copy()
         df_to_clean_case_4 = df_to_clean[(df_to_clean['Filter'] == 'case_4')].copy()
         df_to_clean_case_9 = df_to_clean[(df_to_clean['Filter'] == 'case_9')].copy()
+
+        df_to_clean_check_vendor = df_to_clean[(df_to_clean['Filter'] == 'check_vendor')].copy()
+        df_to_clean_vendor_part = df_to_clean[(df_to_clean['Filter'] == 'vendor_part_number_change')].copy()
+
         df_new = df_to_clean[(df_to_clean['Filter'] == 'New')].copy()
 
         if len(df_to_clean_case_1.index) > 0:
@@ -610,6 +640,32 @@ class BasicProcessObject:
                       'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y']
         df_to_clean_case_9 = df_to_clean_case_9.drop(columns = drop_9)
 
+        if len(df_to_clean_check_vendor.index) > 0:
+            # configuration change
+            df_to_clean_check_vendor['ManufacturerName'] = df_to_clean_check_vendor[['ManufacturerName_y']]
+            df_to_clean_check_vendor['FyProductNumber'] = df_to_clean_check_vendor[['FyProductNumber_x']]
+            df_to_clean_check_vendor['VendorName'] = df_to_clean_check_vendor[['VendorName_x']]
+            df_to_clean_check_vendor['PossibleVendorName'] = df_to_clean_check_vendor[['VendorName_y']]
+            df_to_clean_check_vendor['VendorPartNumber'] = df_to_clean_check_vendor[['VendorPartNumber_x']]
+
+        drop_check_vendor = ['ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y']
+        df_to_clean_check_vendor = df_to_clean_check_vendor.drop(columns = drop_check_vendor)
+
+        if len(df_to_clean_vendor_part.index) > 0:
+            # configuration change
+            df_to_clean_vendor_part['ManufacturerName'] = df_to_clean_vendor_part[['ManufacturerName_y']]
+            df_to_clean_vendor_part['FyProductNumber'] = df_to_clean_vendor_part[['FyProductNumber_x']]
+            df_to_clean_vendor_part['VendorName'] = df_to_clean_vendor_part[['VendorName_x']]
+            df_to_clean_vendor_part['VendorPartNumber'] = df_to_clean_vendor_part[['VendorPartNumber_x']]
+            df_to_clean_vendor_part['PossibleVendorPartNumber'] = df_to_clean_vendor_part[['VendorPartNumber_y']]
+
+        drop_vendor_part = ['ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y']
+        df_to_clean_vendor_part = df_to_clean_vendor_part.drop(columns = drop_vendor_part)
+
+
+
         df_new['ManufacturerName'] = df_new[['ManufacturerName_x']]
         df_new['FyProductNumber'] = df_new[['FyProductNumber_x']]
         df_new['VendorName'] = df_new[['VendorName_x']]
@@ -619,7 +675,7 @@ class BasicProcessObject:
                   'VendorName_y','FyProductNumber_y','ManufacturerName_y']
         df_new = df_new.drop(columns = drop_p)
 
-        df_to_return = pandas.concat([df_to_clean_case_1,df_new,df_to_clean_case_3,df_to_clean_case_4,df_to_clean_case_9],ignore_index=True)
+        df_to_return = pandas.concat([df_to_clean_case_1,df_new,df_to_clean_case_3,df_to_clean_case_4,df_to_clean_case_9,df_to_clean_check_vendor,df_to_clean_vendor_part],ignore_index=True)
 
 
         return df_to_return
@@ -631,7 +687,9 @@ class BasicProcessObject:
         df_to_clean_case_6 = df_to_clean[(df_to_clean['Filter'] == 'case_6')].copy()
         df_to_clean_case_7 = df_to_clean[(df_to_clean['Filter'] == 'case_7')].copy()
         df_to_clean_case_8 = df_to_clean[(df_to_clean['Filter'] == 'case_8')].copy()
-        df_partials = df_to_clean[(df_to_clean['Filter'] == 'Partial')].copy()
+        df_to_clean_manu_part = df_to_clean[(df_to_clean['Filter'] == 'manufacturer_part_number_change')].copy()
+        df_to_clean_vendor_manu_part = df_to_clean[(df_to_clean['Filter'] == 'check_vendor_and_manu_part')].copy()
+        df_partials = df_to_clean[(df_to_clean['Filter'] == 'other')].copy()
 
         if len(df_to_clean_case_5.index) > 0:
             # This is a likely override/duplicate
@@ -683,6 +741,35 @@ class BasicProcessObject:
                       'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_to_clean_case_8 = df_to_clean_case_8.drop(columns = drop_8)
 
+        #  matched on 'FyCatalogNumber','ManufacturerName'
+        if len(df_to_clean_manu_part.index) > 0:
+            df_to_clean_manu_part['VendorName'] = df_to_clean_manu_part[['VendorName_x']]
+            df_to_clean_manu_part['ManufacturerPartNumber'] = df_to_clean_manu_part[['ManufacturerPartNumber_x']]
+            df_to_clean_manu_part['PossibleManufacturerPartNumber'] = df_to_clean_manu_part[['ManufacturerPartNumber_y']]
+            df_to_clean_manu_part['VendorName'] = df_to_clean_manu_part[['VendorName_x']]
+            df_to_clean_manu_part['VendorPartNumber'] = df_to_clean_manu_part[['VendorPartNumber_x']]
+            df_to_clean_manu_part['FyProductNumber'] = df_to_clean_manu_part[['FyProductNumber_x']]
+
+        drop_manu_part = ['ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
+        df_to_clean_manu_part = df_to_clean_manu_part.drop(columns = drop_manu_part)
+
+        #  matched on 'FyCatalogNumber','ManufacturerName'
+        if len(df_to_clean_vendor_manu_part.index) > 0:
+            df_to_clean_vendor_manu_part['VendorName'] = df_to_clean_vendor_manu_part[['VendorName_x']]
+            df_to_clean_vendor_manu_part['ManufacturerPartNumber'] = df_to_clean_vendor_manu_part[['ManufacturerPartNumber_x']]
+            df_to_clean_vendor_manu_part['PossibleManufacturerPartNumber'] = df_to_clean_vendor_manu_part[['ManufacturerPartNumber_y']]
+            df_to_clean_vendor_manu_part['VendorName'] = df_to_clean_vendor_manu_part[['VendorName_x']]
+            df_to_clean_vendor_manu_part['PossibleVendorName'] = df_to_clean_vendor_manu_part[['VendorName_y']]
+            df_to_clean_vendor_manu_part['VendorPartNumber'] = df_to_clean_vendor_manu_part[['VendorPartNumber_x']]
+            df_to_clean_vendor_manu_part['FyProductNumber'] = df_to_clean_vendor_manu_part[['FyProductNumber_x']]
+
+        drop_vendor_manu_part = ['ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
+        df_to_clean_vendor_manu_part = df_to_clean_vendor_manu_part.drop(columns = drop_vendor_manu_part)
+
+
+
         df_partials['ManufacturerPartNumber'] = df_partials[['ManufacturerPartNumber_x']]
         df_partials['FyProductNumber'] = df_partials[['FyProductNumber_x']]
         df_partials['VendorName'] = df_partials[['VendorName_x']]
@@ -692,7 +779,7 @@ class BasicProcessObject:
                       'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_partials = df_partials.drop(columns = drop_p)
 
-        df_to_return = pandas.concat([df_partials, df_to_clean_case_5,df_to_clean_case_6,df_to_clean_case_7,df_to_clean_case_8],ignore_index=True)
+        df_to_return = pandas.concat([df_partials, df_to_clean_case_5,df_to_clean_case_6,df_to_clean_case_7,df_to_clean_case_8,df_to_clean_manu_part,df_to_clean_vendor_manu_part],ignore_index=True)
 
         return df_to_return
 
