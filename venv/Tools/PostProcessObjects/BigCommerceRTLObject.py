@@ -121,19 +121,19 @@ class BigCommerceRTLObject(BasicProcessObject):
             # check if the product has contract records
             ecat_id = -1
             if 'ECATProductPriceId' in row:
-                ecat_id = row['ECATProductPriceId']
+                ecat_id = int(row['ECATProductPriceId'])
 
             htme_id = -1
             if 'HTMEProductPriceId' in row:
-                htme_id = row['HTMEProductPriceId']
+                htme_id = int(row['HTMEProductPriceId'])
 
             gsa_id = -1
             if 'GSAProductPriceId' in row:
-                gsa_id = row['GSAProductPriceId']
+                gsa_id = int(row['GSAProductPriceId'])
 
             va_id = -1
             if 'VAProductPriceId' in row:
-                va_id = row['VAProductPriceId']
+                va_id = int(row['VAProductPriceId'])
 
             fy_product_number = row['FyProductNumber']
             vendor_part_number = str(row['VendorPartNumber'])

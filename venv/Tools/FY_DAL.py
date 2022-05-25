@@ -921,8 +921,8 @@ class DataRunner(threading.Thread):
         for each_item in self.lst_data:
             count += 1
             # this value here for testing
-            # print(self.name, each_item)
-            # obCursor.callproc(self.proc_name, args=each_item)
+            #print(self.name, each_item)
+            #obCursor.callproc(self.proc_name, args=each_item)
             try:
                 obCursor.callproc(self.proc_name, args = each_item)
             except OperationalError as e:

@@ -241,7 +241,8 @@ class MinimumProductPrice(BasicProcessObject):
         return True, df_line_product
 
     def trigger_ingest_cleanup(self):
-        self.obIngester.ingest_product_price_cleanup()
+        self.obIngester.update_product_price_cleanup()
+        self.obIngester.insert_product_price_cleanup()
 
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
