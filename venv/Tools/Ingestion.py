@@ -659,7 +659,7 @@ class IngestionObject:
                                                 newProductTaxClass, newVendorPartNumber, newIsDiscontinued, newProductId, newVendorId,
                                                 newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes))
 
-    def ingest_product_price_cleanup(self):
+    def insert_product_price_cleanup(self):
         if self.product_insert_collector != []:
             self.obDal.min_product_price_insert(self.product_insert_collector)
 
