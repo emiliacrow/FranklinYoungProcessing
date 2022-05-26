@@ -415,7 +415,7 @@ class MinimumProduct(BasicProcessObject):
 
             manufacturer_id = row['ManufacturerId']
             try:
-                category_id = row['CategoryId']
+                category_id = int(row['CategoryId'])
             except KeyError:
                 category_id = -1
 

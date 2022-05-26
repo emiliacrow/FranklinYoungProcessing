@@ -921,13 +921,13 @@ class DataRunner(threading.Thread):
         for each_item in self.lst_data:
             count += 1
             # this value here for testing
-            #print(self.name, each_item)
-            #obCursor.callproc(self.proc_name, args=each_item)
-            try:
-                obCursor.callproc(self.proc_name, args = each_item)
-            except OperationalError as e:
-                print(e)
-                fail_retries.append(each_item)
+            print(self.name, each_item)
+            obCursor.callproc(self.proc_name, args=each_item)
+            #try:
+            #    obCursor.callproc(self.proc_name, args = each_item)
+            #except OperationalError as e:
+            #    print(e)
+            #    fail_retries.append(each_item)
 
         # this is for executing many in the DB which can be faster
         # obCursor.executemany(self.proc_statement, self.lst_data)
