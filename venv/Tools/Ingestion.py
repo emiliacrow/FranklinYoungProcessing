@@ -47,7 +47,7 @@ class IngestionObject:
         return_id = self.obDal.attribute_cap(attribute_desc,table_name)
         return return_id
 
-    # cetegory functions
+    # category functions
     def ingest_categories(self, df_categories):
         ingested_set = []
         self.set_progress_bar('Ingesting Categories',len(df_categories.index))
@@ -687,7 +687,7 @@ class IngestionObject:
     def update_product_price(self, newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append((newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes))
-            self.obDal.min_product_price_update(self.product_update_collector)
+            self.obDal.min_product_price_nouoi_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newProductPriceId, newFyProductNumber, newAllowPurchases, newFyPartNumber,
@@ -696,7 +696,7 @@ class IngestionObject:
 
     def update_product_price_cleanup(self):
         if self.product_update_collector != []:
-            self.obDal.min_product_price_update(self.product_update_collector)
+            self.obDal.min_product_price_nouoi_update(self.product_update_collector)
 
 
 

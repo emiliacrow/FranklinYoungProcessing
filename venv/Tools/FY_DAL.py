@@ -725,6 +725,13 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
+    def min_product_price_nouoi_update(self,lst_product_price):
+        proc_name = 'sequoia.MinimumProductPrice_nouoi_update'
+        proc_statement = 'CALL `sequoia`.`MinimumProductPrice_nouoi_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection(runner_limit=5)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
+        runner.start()
+
 
     def product_price_fill(self, lst_product_price):
         proc_name = 'sequoia.ProductPrice_fill'
