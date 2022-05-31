@@ -684,10 +684,11 @@ class IngestionObject:
         if self.product_insert_collector != []:
             self.obDal.min_product_price_insert(self.product_insert_collector)
 
+
     def update_product_price(self, newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append((newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes))
-            self.obDal.min_product_price_nouoi_update(self.product_update_collector)
+            self.obDal.min_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newProductPriceId, newFyProductNumber, newAllowPurchases, newFyPartNumber,
@@ -695,6 +696,22 @@ class IngestionObject:
                                                 newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes))
 
     def update_product_price_cleanup(self):
+        if self.product_update_collector != []:
+            self.obDal.min_product_price_update(self.product_update_collector)
+
+
+
+    def update_product_price_nouoi(self, newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId, FyProductNotes):
+        if (len(self.product_update_collector) > self.load_limit):
+            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId, FyProductNotes))
+            self.obDal.min_product_price_nouoi_update(self.product_update_collector)
+            self.product_update_collector = []
+        else:
+            self.product_update_collector.append((newProductPriceId, newFyProductNumber, newAllowPurchases, newFyPartNumber,
+                                                newProductTaxClass, newVendorPartNumber, newIsDiscontinued, newProductId, newVendorId,
+                                                FyProductNotes))
+
+    def update_product_price_nouoi_cleanup(self):
         if self.product_update_collector != []:
             self.obDal.min_product_price_nouoi_update(self.product_update_collector)
 

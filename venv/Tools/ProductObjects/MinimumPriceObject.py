@@ -227,20 +227,28 @@ class MinimumProductPrice(BasicProcessObject):
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
 
                 self.obIngester.insert_product_price(fy_product_number, allow_purchases, fy_part_number,
-                                             product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-                                             unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
+                                                     product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Base Pricing':
             price_id = row['ProductPriceId']
+            self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
+                                                 product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+                                                 fy_product_notes)
+
+        # this pathway will be needed at some point I'm sure
+        elif '' == 'UNIT CHANGE PATH':
+            price_id = row['ProductPriceId']
             self.obIngester.update_product_price(price_id, fy_product_number, allow_purchases, fy_part_number,
-                                             product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-                                             unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
+                                                 product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+                                                 unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
 
 
 
         return True, df_line_product
 
     def trigger_ingest_cleanup(self):
+        self.obIngester.update_product_price_nouoi_cleanup()
         self.obIngester.update_product_price_cleanup()
         self.obIngester.insert_product_price_cleanup()
 
