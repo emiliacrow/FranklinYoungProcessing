@@ -103,8 +103,8 @@ class MinimumProduct(BasicProcessObject):
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
                 else:
-                    # this might be causing a slow down
-                    # review this to see if it's working right, it should be
+
+                    # this is where we should be splitting the hierarchy to make it make sense
                     new_category_id = self.obDal.category_cap(category_name, category)
 
                 lst_ids.append(new_category_id)

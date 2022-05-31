@@ -78,17 +78,35 @@ class BigCommerceRTLObject(BasicProcessObject):
             self.df_product = self.df_product.drop(columns=remove_headers)
 
 
+    def filter_check_in(self, row):
+        filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
+
+        if row['Filter'] == 'New':
+            self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
+            return False
+
+        elif row['Filter'] == 'Partial':
+            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
+            return False
+
+        elif row['Filter'] in ['Ready', 'Base Pricing']:
+            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+            return True
+
+        elif row['Filter'] == 'Possible Duplicate':
+            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
+            return False
+
+        else:
+            self.obReporter.update_report('Fail', 'Failed filtering')
+            return False
+
+
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            if 'Filter' in row:
-
-                if row['Filter'] == 'Fail':
-                    self.obReporter.update_report('Alert','Failed filtering')
-                    return False, df_collect_product_base_data
-            else:
-                self.obReporter.update_report('Alert','This product was processed anyway')
+            if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
         success, return_df_line_product = self.process_changes(df_collect_product_base_data)
@@ -185,8 +203,13 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if 'ECATProductNotes' in row:
                     ecat_product_notes = row['ECATProductNotes']
 
-                db_ecat_contract = int(row['db_ECATOnContract'])
-                db_ecat_approved = int(row['db_ECATPricingApproved'])
+                try:
+                    db_ecat_contract = int(row['db_ECATOnContract'])
+                    db_ecat_approved = int(row['db_ECATPricingApproved'])
+                except KeyError:
+                    db_ecat_contract = 0
+                    db_ecat_approved = 0
+
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
@@ -231,8 +254,13 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if 'HTMEProductNotes' in row:
                     htme_product_notes = row['HTMEProductNotes']
 
-                db_htme_contract = int(row['db_HTMEOnContract'])
-                db_htme_approved = int(row['db_HTMEPricingApproved'])
+                try:
+                    db_htme_contract = int(row['db_HTMEOnContract'])
+                    db_htme_approved = int(row['db_HTMEPricingApproved'])
+                except KeyError:
+                    db_htme_contract = 0
+                    db_htme_approved = 0
+
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
@@ -276,8 +304,13 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if 'GSAProductNotes' in row:
                     gsa_product_notes = row['GSAProductNotes']
 
-                db_gsa_contract = int(row['db_GSAOnContract'])
-                db_gsa_approved = int(row['db_GSAPricingApproved'])
+                try:
+                    db_gsa_contract = int(row['db_GSAOnContract'])
+                    db_gsa_approved = int(row['db_GSAPricingApproved'])
+                except KeyError:
+                    db_gsa_contract = 0
+                    db_gsa_approved = 0
+
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
@@ -321,8 +354,13 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if 'VAProductNotes' in row:
                     va_product_notes = row['VAProductNotes']
 
-                db_va_contract = int(row['db_VAOnContract'])
-                db_va_approved = int(row['db_VAPricingApproved'])
+                try:
+                    db_va_contract = int(row['db_VAOnContract'])
+                    db_va_approved = int(row['db_VAPricingApproved'])
+                except KeyError:
+                    db_va_contract = 0
+                    db_va_approved = 0
+
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted

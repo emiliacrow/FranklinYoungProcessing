@@ -90,16 +90,37 @@ class IngestionObject:
         else:
             return 0
 
+        categories_to_ship = []
         if (cat_name != '') and (cat_hierarchy != '') and ('All Products/' in cat_hierarchy):
-            cat_id = self.obDal.category_cap(cat_name, cat_hierarchy)
-            new_cat_name = cat_hierarchy.rpartition('/')[2]
-            if new_cat_name != cat_name:
-                cat_id = self.obDal.category_cap(new_cat_name, cat_hierarchy)
+            # we remove any extraneous spacing
+            cat_hierarchy = cat_hierarchy.replace('/ ','/')
+            cat_hierarchy = cat_hierarchy.replace(' /', '/')
 
+            # we set the name of the category
+            new_cat_name = cat_hierarchy.rpartition('/')[2]
+            # we strip whitespace
+            cat_hierarchy = cat_hierarchy.strip()
+            new_cat_name = new_cat_name.strip()
+            # collect the biggest one
+            categories_to_ship.append([new_cat_name,cat_hierarchy])
+
+            # as long as the hierarchy exists, we split it out
             while ('/' in cat_hierarchy):
                 cat_hierarchy = cat_hierarchy.rpartition('/')[0]
                 cat_name = cat_hierarchy.rpartition('/')[2]
-                level_cat_id = self.obDal.category_cap(cat_name, cat_hierarchy)
+                cat_hierarchy = cat_hierarchy.strip()
+                cat_name = cat_name.strip()
+                categories_to_ship.append([cat_name,cat_hierarchy])
+
+            # this is the magic
+            # this sets the order smallest to largest
+            # this puts the mapping into the DB in the right order
+            # and returns the correct id at the end
+            categories_to_ship.sort(key=lambda x:len(x[1]))
+
+            # ship it!
+            for each_category in categories_to_ship:
+                cat_id = self.obDal.category_cap(each_category[0], each_category[1])
 
             return cat_id
         else:
