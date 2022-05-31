@@ -95,6 +95,12 @@ class MinimumProduct(BasicProcessObject):
                 category = str(row['Category']).strip()
                 category_name = (category.rpartition('/')[2]).strip()
 
+                category_name = category_name.replace('/ ', '/')
+                category_name = category_name.replace(' /', '/')
+
+                category_name = category_name.strip()
+                category = category.strip()
+
                 if category_name in self.df_category_names['CategoryName'].values:
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
@@ -103,9 +109,32 @@ class MinimumProduct(BasicProcessObject):
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
                 else:
+                    categories_to_ship = []
+                    if (category != '') and (category_name != '') and ('All Products/' in category_name):
 
-                    # this is where we should be splitting the hierarchy to make it make sense
-                    new_category_id = self.obDal.category_cap(category_name, category)
+                        # we set the name of the category
+                        new_category = category_name.rpartition('/')[2]
+                        # we strip whitespace
+                        # collect the biggest one
+                        categories_to_ship.append([new_category, category_name])
+
+                        # as long as the hierarchy exists, we split it out
+                        while ('/' in category_name):
+                            category_name = category_name.rpartition('/')[0]
+                            new_category = category_name.rpartition('/')[2]
+                            category_name = category_name.strip()
+                            new_category = new_category.strip()
+                            categories_to_ship.append([new_category, category_name])
+
+                        # this is the magic
+                        # this sets the order smallest to largest
+                        # this puts the mapping into the DB in the right order
+                        # and returns the correct id at the end
+                        categories_to_ship.sort(key=lambda x:len(x[1]))
+
+                        # ship it!
+                        for each_category in categories_to_ship:
+                            new_category_id = self.obDal.category_cap(each_category[0], each_category[1])
 
                 lst_ids.append(new_category_id)
 
