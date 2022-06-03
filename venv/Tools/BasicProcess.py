@@ -188,6 +188,7 @@ class BasicProcessObject:
             self.batch_process_manufacturer()
 
         print('Agni Kai')
+        self.obProgressBarWindow.update_bar(1)
         """
           M C P V : types of product ids
         1 X X X X : These are called ready (unless they need pricing in which case Update-BasePrice)
@@ -227,12 +228,14 @@ class BasicProcessObject:
 
         # match all values, these are ready files
         print('Round 1')
+        self.obProgressBarWindow.update_bar(2)
         merge_columns = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber']
         self.df_product, self.df_full_matched_product, self.df_full_product_lookup = self.merge_and_split(self.df_product, self.df_full_product_lookup, merge_columns)
 
 
         # match all values, these are Base Price files
         print('Round 2')
+        self.obProgressBarWindow.update_bar(3)
         self.df_product, self.df_pricing_matched_product, self.df_product_price_lookup = self.merge_and_split(self.df_product, self.df_product_price_lookup, merge_columns)
         self.df_price_agnostic_product_lookup = pandas.concat([self.df_full_product_lookup, self.df_product_price_lookup, self.df_product_minumum_lookup], ignore_index=True)
 
@@ -240,6 +243,7 @@ class BasicProcessObject:
 
         # round 3
         print('Round 3')
+        self.obProgressBarWindow.update_bar(4)
         self.df_price_agnostic_product_lookup['Filter'] = 'Partial'
         self.df_product = self.df_product.merge(self.df_price_agnostic_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerPartNumber'])
         self.df_man_ven_matched_products = self.df_product[(self.df_product['Filter'] == 'Partial')]
@@ -272,6 +276,7 @@ class BasicProcessObject:
                 self.df_product = pandas.concat([self.df_product, self.df_product_remains_new], ignore_index=True)
 
         print('Round 4')
+        self.obProgressBarWindow.update_bar(5)
         # print(self.df_product.columns)
         self.df_price_agnostic_product_lookup['Filter'] = 'Partial'
         self.df_product = self.df_product.merge(self.df_price_agnostic_product_lookup, how='left',on=['FyCatalogNumber','ManufacturerName'])
@@ -299,6 +304,7 @@ class BasicProcessObject:
         self.df_product['Filter'] = 'New'
 
         print('Collecting')
+        self.obProgressBarWindow.update_bar(6)
         if len(self.df_full_matched_product.index) > 0:
             self.df_full_matched_product = self.df_full_matched_product.drop_duplicates()
             try:
@@ -345,12 +351,14 @@ class BasicProcessObject:
             self.df_product = self.df_product.drop(columns = ['FyProductNumber_x'])
 
         print('Finals')
+        self.obProgressBarWindow.update_bar(7)
         self.eval_cases()
 
         self.duplicate_logic()
         if 'ProductPriceId' in self.df_product.columns:
             print('Adding Notes')
             self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
+            self.obProgressBarWindow.update_bar(8)
 
         del self.df_product_notes
         self.df_product = self.df_product.reindex()
