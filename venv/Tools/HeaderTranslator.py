@@ -52,6 +52,12 @@ class HeaderTranslator():
                             'OnContract':['OnContract', 'On Contract'],
                             'FyProductNotes':['FyProductNotes', 'Fy Product Notes','ProductNotes','Product Notes','InternalProductNotes','Internal Product Notes','FYProductNotes','FY Product Notes'],
 
+                            'WebsiteOnly':['WebsiteOnly', 'Website Only', 'Web Only'],
+                            'ECATEligible':['ECATEligible', 'ECAT Eligible', 'ECAT Is Eligible', 'ECAT IsEligible'],
+                            'HTMEEligible':['HTMEEligible', 'HTME Eligible', 'HTME Is Eligible', 'HTME IsEligible'],
+                            'GSAEligible':['GSAEligible', 'GSA Eligible', 'GSA Is Eligible', 'GSA IsEligible'],
+                            'VAEligible':['VAEligible', 'VA Eligible', 'VA Is Eligible', 'VA IsEligible'],
+
                             'ECATOnContract':['ECATOnContract', 'ECAT On Contract', 'ECAT On Contract'],
                             'HTMEOnContract':['HTMEOnContract', 'HTME On Contract', 'HTME On Contract'],
                             'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],

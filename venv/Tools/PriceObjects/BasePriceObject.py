@@ -480,15 +480,45 @@ class BasePrice(BasicProcessObject):
             self.obReporter.update_report('Fail','Sell price too high')
             return False, df_line_product
 
+        success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
+        if success:
+            df_collect_product_base_data['WebsiteOnly'] = [b_website_only]
+        else:
+            b_website_only = -1
 
+        success, va_eligible = self.process_boolean(row, 'VAEligible')
+        if success:
+            df_collect_product_base_data['VAEligible'] = [va_eligible]
+        else:
+            va_eligible = -1
+
+        success, gsa_eligible = self.process_boolean(row, 'GSAEligible')
+        if success:
+            df_collect_product_base_data['GSAEligible'] = [gsa_eligible]
+        else:
+            gsa_eligible = -1
+
+        success, htme_eligible = self.process_boolean(row, 'HTMEEligible')
+        if success:
+            df_collect_product_base_data['HTMEEligible'] = [htme_eligible]
+        else:
+            htme_eligible = -1
+
+        success, ecat_eligible = self.process_boolean(row, 'ECATEligible')
+        if success:
+            df_collect_product_base_data['ECATEligible'] = [ecat_eligible]
+        else:
+            ecat_eligible = -1
+
+        success = True
         if str(row['Filter']) == 'Base Pricing':
             self.obIngester.insert_base_price(vendor_list_price, fy_discount_percent, fy_cost,
                                                           estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price,
                                                           markup_percent_fy_list, fy_list_price, ecommerce_discount,
                                                           is_visible, date_catalog_received, catalog_provided_by,
-                                                          product_price_id, va_product_price_id, gsa_product_price_id,
-                                                          htme_product_price_id, ecat_product_price_id, fedmall_product_price_id)
+                                                          product_price_id, b_website_only, va_product_price_id, va_eligible, gsa_product_price_id, gsa_eligible,
+                                                          htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id)
         elif str(row['Filter']) == 'Ready':
             base_price_id = row['BaseProductPriceId']
             self.obIngester.update_base_price(base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
@@ -496,8 +526,8 @@ class BasePrice(BasicProcessObject):
                                                           markup_percent_fy_sell, fy_sell_price,
                                                           markup_percent_fy_list, fy_list_price, ecommerce_discount,
                                                           is_visible, date_catalog_received, catalog_provided_by,
-                                                          product_price_id, va_product_price_id, gsa_product_price_id,
-                                                          htme_product_price_id, ecat_product_price_id, fedmall_product_price_id)
+                                                          product_price_id, b_website_only, va_product_price_id, va_eligible, gsa_product_price_id, gsa_eligible,
+                                                          htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id)
 
         return success, df_line_product
 

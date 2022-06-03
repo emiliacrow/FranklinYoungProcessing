@@ -747,33 +747,59 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.base_price_cap(self.product_collector)
 
-    def insert_base_price(self, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId=-1, newGSAProductPriceId=-1, newHTMEProductPriceId=-1, newECATProductPriceId=-1, newFEDMALLProductPriceId=-1):
+    def insert_base_price(self, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight,
+                          fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
+                          ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
+                          newWebsiteOnly= -1, newVAProductPriceId=-1, newVAEligible = -1,
+                          newGSAProductPriceId=-1, newGSAEligible = -1, newHTMEProductPriceId=-1, newHTMEEligible = -1,
+                          newECATProductPriceId=-1, newECATEligible = -1,  newFEDMALLProductPriceId=-1):
         if (len(self.product_insert_collector) > self.load_limit):
-            self.product_insert_collector.append((vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
-                 markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
-                 is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
-                 newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId,
-                 newFEDMALLProductPriceId))
+            self.product_insert_collector.append((vendor_list_price, fy_discount_percent, fy_cost,
+                                                  estimated_freight, fy_landed_cost, markup_percent_fy_sell,
+                                                  fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
+                                                  is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
+                                                  newWebsiteOnly, newVAProductPriceId, newVAEligible,
+                                                  newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
+                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId))
             self.obDal.base_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
-            self.product_insert_collector.append((vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId, newFEDMALLProductPriceId))
+            self.product_insert_collector.append((vendor_list_price, fy_discount_percent, fy_cost,
+                                                  estimated_freight, fy_landed_cost, markup_percent_fy_sell,
+                                                  fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
+                                                  is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
+                                                  newWebsiteOnly, newVAProductPriceId, newVAEligible,
+                                                  newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
+                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId))
 
     def insert_base_price_cleanup(self):
         if self.product_insert_collector != []:
             self.obDal.base_price_insert(self.product_insert_collector)
 
-    def update_base_price(self, base_price_id, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId=-1, newGSAProductPriceId=-1, newHTMEProductPriceId=-1, newECATProductPriceId=-1, newFEDMALLProductPriceId=-1):
+    def update_base_price(self, base_price_id, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight,
+                          fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
+                          ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
+                          newWebsiteOnly= -1, newVAProductPriceId=-1, newVAEligible = -1,
+                          newGSAProductPriceId=-1, newGSAEligible = -1, newHTMEProductPriceId=-1, newHTMEEligible = -1,
+                          newECATProductPriceId=-1, newECATEligible = -1,  newFEDMALLProductPriceId=-1):
         if (len(self.product_update_collector) > self.load_limit):
-            self.product_update_collector.append((base_price_id, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
-                 markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
-                 is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
-                 newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId,
-                 newFEDMALLProductPriceId))
+            self.product_update_collector.append((base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
+                                                  estimated_freight, fy_landed_cost, markup_percent_fy_sell,
+                                                  fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
+                                                  is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
+                                                  newWebsiteOnly, newVAProductPriceId, newVAEligible,
+                                                  newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
+                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId))
             self.obDal.base_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
-            self.product_update_collector.append((base_price_id, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount, is_visible, date_catalog_recieved, catalog_provided_by, product_price_id, newVAProductPriceId, newGSAProductPriceId, newHTMEProductPriceId, newECATProductPriceId, newFEDMALLProductPriceId))
+            self.product_update_collector.append((base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
+                                                  estimated_freight, fy_landed_cost, markup_percent_fy_sell,
+                                                  fy_sell_price, markup_percent_fy_list, fy_list_price, ecommerce_discount,
+                                                  is_visible, date_catalog_recieved, catalog_provided_by, product_price_id,
+                                                  newWebsiteOnly, newVAProductPriceId, newVAEligible,
+                                                  newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
+                                                  newECATProductPriceId, newECATEligible, newFEDMALLProductPriceId))
 
     def update_base_price_cleanup(self):
         if self.product_update_collector != []:
