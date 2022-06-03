@@ -176,8 +176,9 @@ class BasicProcessObject:
 
 
     def define_new(self, b_match_vendor = False):
-        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued'
-            ,'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes','TakePriority']
+        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued',
+                         'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes',
+                         'db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes','TakePriority']
         for each_header in clear_headers:
             if each_header in self.df_product.columns:
                 self.df_product = self.df_product.drop(columns=[each_header])
@@ -205,7 +206,7 @@ class BasicProcessObject:
                       'VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued',
                       'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
         self.df_product_notes = self.df_product_notes.drop(columns=drop_notes)
-        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes'])
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes','db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes',])
 
         # set up the different match types
         # all products in DB with pricing
