@@ -806,7 +806,7 @@ class BasicProcessObject:
         df_partials['VendorName'] = df_partials[['VendorName_x']]
         df_partials['VendorPartNumber'] = df_partials[['VendorPartNumber_x']]
 
-        drop_p = ['ProductId','ProductPriceId','BaseProductPriceId','ECATProductPriceId','HTMEProductPriceId',
+        drop_p = ['ProductPriceId','BaseProductPriceId','ECATProductPriceId','HTMEProductPriceId',
                   'GSAProductPriceId','VAProductPriceId', 'ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x',
                   'VendorPartNumber_x','VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_partials = df_partials.drop(columns = drop_p)
