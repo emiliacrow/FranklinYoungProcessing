@@ -592,10 +592,10 @@ class FileProcessor(BasicProcessObject):
             if attribute != '':
                 df_collect_product_base_data['UnitOfIssue_8'] = attribute
         else:
-            attribute_left = (row['UnitOfIssue_8'])
+            attribute_left = str(row['UnitOfIssue_8'])
             container_str, attribute_right = self.obExtractor.extract_uoi_8(container_str)
-            if attribute != '':
-                df_collect_product_base_data['UnitOfIssue_8'] = attribute_right
+            if attribute_right != '':
+                df_collect_product_base_data['UnitOfIssue_8'] = attribute_left + '; ' + attribute_right
 
         if 'UnitOfIssue_5' not in row:
             container_str, attribute = self.obExtractor.extract_uoi_5(container_str)

@@ -133,25 +133,32 @@ class Extractor:
         if (phrase[0] == ' ') or (phrase[0] == '(') or (phrase[0] == '/'):
             phrase = phrase[1:]
 
-        print('1')
+        count = 0
         while ',,' in phrase:
             phrase = phrase.replace(',,',',')
+            count += 1
+            if count > 10:
+                break
 
-        print(' 1')
+        count = 0
         while '. .' in phrase:
             phrase = phrase.replace('. .','.')
+            if count > 10:
+                break
 
-        print('  1')
-        print(phrase)
         count = 0
         while ', ,' in phrase:
             count += 1
-            print(count)
             phrase = phrase.replace(', , ',', ')
+            if count > 10:
+                break
 
-        print('   1')
+        count = 0
         while '  ' in phrase:
+            count += 1
             phrase = phrase.replace('  ', ' ')
+            if count > 10:
+                break
 
         phrase = phrase.replace(', ;', '.')
         phrase = phrase.replace(', .', '.')
