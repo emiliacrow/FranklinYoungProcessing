@@ -284,7 +284,6 @@ class BasicProcessObject:
 
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Partial')]
 
-
         if len(self.df_fy_cat_matched_products.index) > 0:
             self.fy_cat_cleanup()
 
@@ -362,6 +361,7 @@ class BasicProcessObject:
 
         del self.df_product_notes
         self.df_product = self.df_product.reindex()
+        self.obProgressBarWindow.update_bar(9)
 
 
     def merge_and_split(self,df_left, df_right, on_columns):
@@ -464,6 +464,8 @@ class BasicProcessObject:
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'Alert'] = 'Verify your ManufacturerName'
 
+        self.df_product.loc[(self.df_product['Filter'] == 'case_14'), 'Filter'] = 'manufacturer_part_number_change'
+
         self.df_product.loc[(self.df_product['Filter'] == 'check_vendor'), 'Alert'] = 'Verify your VendorName'
 
         self.df_product.loc[(self.df_product['Filter'] == 'vendor_part_number_change'), 'Alert'] = 'Vendor Part Number Change'
@@ -475,6 +477,7 @@ class BasicProcessObject:
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_4'), 'TakePriority'] = 'W'
         self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'TakePriority'] = 'J'
+
         self.df_product.loc[(self.df_product['Filter'] == 'check_vendor_and_manu_part'), 'TakePriority'] = 'I'
         self.df_product.loc[(self.df_product['Filter'] == 'manufacturer_part_number_change'), 'TakePriority'] = 'H'
         self.df_product.loc[(self.df_product['Filter'] == 'vendor_part_number_change'), 'TakePriority'] = 'G'
@@ -578,11 +581,15 @@ class BasicProcessObject:
                   (self.df_fy_cat_matched_products['VendorPartNumber_x'] == self.df_fy_cat_matched_products['VendorPartNumber_y']) &
                   (self.df_fy_cat_matched_products['FyProductNumber_x'] == self.df_fy_cat_matched_products['FyProductNumber_y']))
 
+        # new vendor exising configuration
+        case_14 = ((self.df_fy_cat_matched_products['VendorName_x'] != self.df_fy_cat_matched_products['VendorName_y']) &
+                  (self.df_fy_cat_matched_products['ManufacturerPartNumber_x'] != self.df_fy_cat_matched_products['ManufacturerPartNumber_y']))
 
-        conditions = [case_5,case_6,case_7,case_8,case_12,case_13]
-        choices = ['case_5','case_6','case_7','case_8','manufacturer_part_number_change','check_vendor_and_manu_part']
+        conditions = [case_5,case_6,case_7,case_8,case_12,case_13,case_14]
+        choices = ['case_5','case_6','case_7','case_8','manufacturer_part_number_change','check_vendor_and_manu_part','case_14']
 
-        self.df_fy_cat_matched_products['Filter'] = np.select(conditions, choices, default='other')
+        self.df_fy_cat_matched_products['Filter'] = np.select(conditions, choices, default='Partial')
+
 
         self.df_fy_cat_matched_products.sort_values(by=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x','Filter'] , inplace = True)
         self.df_fy_cat_matched_products.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x'] , ignore_index = True, inplace = True)
@@ -696,9 +703,10 @@ class BasicProcessObject:
         df_to_clean_case_6 = df_to_clean[(df_to_clean['Filter'] == 'case_6')].copy()
         df_to_clean_case_7 = df_to_clean[(df_to_clean['Filter'] == 'case_7')].copy()
         df_to_clean_case_8 = df_to_clean[(df_to_clean['Filter'] == 'case_8')].copy()
+        df_to_clean_case_14 = df_to_clean[(df_to_clean['Filter'] == 'case_14')].copy()
         df_to_clean_manu_part = df_to_clean[(df_to_clean['Filter'] == 'manufacturer_part_number_change')].copy()
         df_to_clean_vendor_manu_part = df_to_clean[(df_to_clean['Filter'] == 'check_vendor_and_manu_part')].copy()
-        df_partials = df_to_clean[(df_to_clean['Filter'] == 'other')].copy()
+        df_partials = df_to_clean[(df_to_clean['Filter'] == 'Partial')].copy()
 
         if len(df_to_clean_case_5.index) > 0:
             # This is a likely override/duplicate
@@ -778,17 +786,32 @@ class BasicProcessObject:
         df_to_clean_vendor_manu_part = df_to_clean_vendor_manu_part.drop(columns = drop_vendor_manu_part)
 
 
+        if len(df_to_clean_case_14.index) > 0:
+            # This is a likely override/duplicate
+            df_to_clean_case_14['VendorName'] = df_to_clean_case_14[['VendorName_x']]
+            df_to_clean_case_14['ManufacturerPartNumber'] = df_to_clean_case_14[['ManufacturerPartNumber_x']]
+            df_to_clean_case_14['Other_ManufacturerPartNumber'] = df_to_clean_case_14[['ManufacturerPartNumber_y']]
+            df_to_clean_case_14['VendorPartNumber'] = df_to_clean_case_14[['VendorPartNumber_x']]
+            df_to_clean_case_14['Other_VendorPartNumber'] = df_to_clean_case_14[['VendorPartNumber_y']]
+            df_to_clean_case_14['FyProductNumber'] = df_to_clean_case_14[['FyProductNumber_x']]
+
+        drop_14 = ['ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorName_y','VendorPartNumber_x',
+                      'VendorPartNumber_y','FyProductNumber_y','ManufacturerPartNumber_y']
+        df_to_clean_case_14 = df_to_clean_case_14.drop(columns = drop_14)
+
+
 
         df_partials['ManufacturerPartNumber'] = df_partials[['ManufacturerPartNumber_x']]
         df_partials['FyProductNumber'] = df_partials[['FyProductNumber_x']]
         df_partials['VendorName'] = df_partials[['VendorName_x']]
         df_partials['VendorPartNumber'] = df_partials[['VendorPartNumber_x']]
 
-        drop_p = ['ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
-                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
+        drop_p = ['ProductId','ProductPriceId','BaseProductPriceId','ECATProductPriceId','HTMEProductPriceId',
+                  'GSAProductPriceId','VAProductPriceId', 'ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x',
+                  'VendorPartNumber_x','VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_partials = df_partials.drop(columns = drop_p)
 
-        df_to_return = pandas.concat([df_partials, df_to_clean_case_5,df_to_clean_case_6,df_to_clean_case_7,df_to_clean_case_8,df_to_clean_manu_part,df_to_clean_vendor_manu_part],ignore_index=True)
+        df_to_return = pandas.concat([df_partials, df_to_clean_case_5,df_to_clean_case_6,df_to_clean_case_7,df_to_clean_case_8,df_to_clean_manu_part,df_to_clean_vendor_manu_part,df_to_clean_case_14],ignore_index=True)
 
         return df_to_return
 

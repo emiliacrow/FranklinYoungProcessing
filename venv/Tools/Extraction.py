@@ -9,13 +9,47 @@ class Extractor:
     def __init__(self):
         self.name = 'Enrique the Extractor'
         self.lst_extractions = []
+        self.pat_for_clean = '(\{\d+\})'
         # simple patterns to be used wherever
         self.pat_for_decimal = '(\d{0,3}[\.,]?\d{0,3}[\.,]?\d{1,4})'
         self.pat_for_fractions = '(\d{0,3}[-/]?\d{0,3}[-/]?\d{1,4})'
         self.pat_for_drop_val = '(?<=[\D,^])(\s?0{1,3})(?!\.\d)'
 
-        self.pat_for_uom = '(CS|BX|CT|DR|DZ|EA|FT|GA|HR|IN|LB|MO|MR|OZ|PK|RL|RM|ST|TB|UN|YD|BG|GL|GM|GR|JR|KG|KT|PR)'
+        self.pat_for_uom = '(CS|BX|CT|DZ|EA|MO|PK|RL|RM|TB|BG|GR|JR|KT|PR)'
+        self.pat_for_uom_word = '(refill|piece|card|pack|case|each|bag|box|ctn|tip)'
+        self.pat_for_uom_words = '(refills|pieces|eaches|boxes|packs|cases|cards|bags|tips|pcs)'
+        self.pat_for_uom_all_words = '(refills|refill|pieces|eaches|piece|boxes|packs|cases|cards|card|pack|case|each|bags|tips|bag|box|ctn|tip|pcs)'
+
         self.pat_for_uoi = '({0}/{1})'.format(self.pat_for_decimal, self.pat_for_uom)
+
+        # add '100 per box' to this set?
+
+        # VWR STOPPER RUB 1HOLE (1LB)  1PK=69
+        # Capture: 1PK=69
+        self.pat_for_uoi_1 = '[ \(]({0}\s?{1}\={0})'.format(self.pat_for_decimal, self.pat_for_uom)
+        # LAB COAT WHITE BUTTON MENS XL  10EA=CS, 1EA/CS
+        # Capture: 10EA=CS, 1EA/CS
+        self.pat_for_uoi_2 = '[ \(]({0}\s?{1}[\=/]{1})'.format(self.pat_for_decimal, self.pat_for_uom)
+        # LAB COAT WHITE BUTTON MENS XL  1EA/25CS
+        # Capture: 1EA/25CS
+        self.pat_for_uoi_3 = '[ \(]({0}\s?{1}/{0}\s?{1})'.format(self.pat_for_decimal, self.pat_for_uom)
+        # Standard HGA Graphite Walled Tube, 24ea/BOX
+        # Capture: 24ea/BOX
+        self.pat_for_uoi_4 = '[ \(]({0}\s?{1}/{2})'.format(self.pat_for_decimal, self.pat_for_uom, self.pat_for_uom_word)
+
+        # Vwr Pipet Tip Univ Reload St 300Ul PK960. VWR Universal 200UL Pipet Tip, Low Retention, Pre-Sterile, 96 Tips/refill, 10 refills/Pack, 5 Packs/Case, 4800 Tips/Case, Certified-Free Dnase, Rnase, and human DNA, Color: Clear, Size: 300ul
+        # Capture:96 Tips/refill, 10 refills/Pack, 5 Packs/Case, 4800 Tips/Case
+        self.pat_for_uoi_5 = '[ \(]({0}\s?{1}/{2})'.format(self.pat_for_decimal, self.pat_for_uom_all_words, self.pat_for_uom_word)
+        # Silicone gasket, 10x14.9 mm (10 pieces)
+        # Capture: 10 pieces
+        self.pat_for_uoi_6 = '[ \(]({0}[/= ]{1})'.format(self.pat_for_decimal, self.pat_for_uom_all_words)
+        # DISPOSABLE RESPIRATOR STORAGE BAG 96 EA/box
+        # Capture: 96 EA/box
+        self.pat_for_uoi_7 = '[ \(]({0}\s?{1}/{2})'.format(self.pat_for_decimal, self.pat_for_uom, self.pat_for_uom_word)
+        # SUPERFROST SLIDE PM MICRO WHT 1PK=1/2GR
+        # Capture: 1PK=1/2GR
+        self.pat_for_uoi_8 = '[ \(]({0}\s?{1}\={0}/{0}\s?{1})'.format(self.pat_for_decimal, self.pat_for_uom)
+
 
         self.pat_d_length_unit = '([cmnuμ]?m|[Ii][Nn]\.?|inch(es)?|ft\.?|feet)'
         self.pat_f_length_unit = '([Ii][Nn]\.?|inch(es)?)'
@@ -90,24 +124,40 @@ class Extractor:
         self.pat_for_thickness = '\s?({0}{1})'.format(self.pat_for_fractions,self.pat_for_thickness_unit)
         self.pat_for_thickness_range = '\s?({0}{1}?\s?(\-|to){0}{1})'.format(self.pat_for_fractions,self.pat_for_thickness_unit)
 
+    def wipe_injection(self, phrase):
+        phrase = re.sub(self.pat_for_clean, '', phrase)
+        phrase = self.post_scrub(phrase)
+        return phrase
 
     def post_scrub(self, phrase):
-        if (phrase[0] == ' ') or (phrase[0] == '('):
+        if (phrase[0] == ' ') or (phrase[0] == '(') or (phrase[0] == '/'):
             phrase = phrase[1:]
-        phrase = phrase.replace(',,',',')
-        phrase = phrase.replace('  ',' ')
-        phrase = phrase.replace(', , ',', ')
-        phrase = phrase.replace('. .','.')
-        phrase = phrase.replace(', .','.')
+
+        print('1')
+        while ',,' in phrase:
+            phrase = phrase.replace(',,',',')
+
+        print(' 1')
+        while '. .' in phrase:
+            phrase = phrase.replace('. .','.')
+
+        print('  1')
+        print(phrase)
+        count = 0
+        while ', ,' in phrase:
+            count += 1
+            print(count)
+            phrase = phrase.replace(', , ',', ')
+
+        print('   1')
+        while '  ' in phrase:
+            phrase = phrase.replace('  ', ' ')
+
+        phrase = phrase.replace(', ;', '.')
+        phrase = phrase.replace(', .', '.')
+        phrase = phrase.replace(' ,', ',')
         if phrase[0] == '/':
             phrase = phrase[1:]
-
-
-        pat_for_drop = re.compile(self.pat_for_drop_val)
-        drop_results = pat_for_drop.findall(' '+phrase+' ')
-
-        if len(drop_results) > 0:
-            phrase = ''
 
         return phrase
 
@@ -168,11 +218,6 @@ class Extractor:
                         dirty_attribute = cur_attribute_ps
 
         return outer_text, dirty_attribute
-
-    def extract_uoi(self, container_str):
-        uoi = ''
-        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi)
-        return container_str, uoi
 
     def extract_dimensions(self, container_str):
         dimensions = ''
@@ -344,10 +389,62 @@ class Extractor:
         return container_str, electrical
 
 
+    def extract_uoi(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi)
+        return container_str, uoi
+
+    def extract_uoi_1(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi_1)
+        return container_str, uoi
+
+    def extract_uoi_2(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi_2)
+        return container_str, uoi
+
+    def extract_uoi_3(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi_3)
+        return container_str, uoi
+
+    def extract_uoi_4(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi_4)
+        return container_str, uoi
+
+    def extract_uoi_5(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi_5)
+        return container_str, uoi
+
+    def extract_uoi_6(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi_6)
+        return container_str, uoi
+
+    def extract_uoi_7(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi_7)
+        return container_str, uoi
+
+    def extract_uoi_8(self, container_str):
+        uoi = ''
+        container_str, uoi = self.extract_attributes(container_str, self.pat_for_uoi_8)
+        return container_str, uoi
+
+
+
 def test_frame():
     obExtractor = Extractor()
-    print(obExtractor.pat_for_rpm)
-    print(obExtractor.pat_for_rate_range)
+    in_string = 'LAB COAT WHITE BUTTON MENS XL 1EA/25CS'
+    out_string, terms = obExtractor.extract_uoi_3(in_string)
+
+
+    print(terms)
+    print(out_string)
+
 
 
 

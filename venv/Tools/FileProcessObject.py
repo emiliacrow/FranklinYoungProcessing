@@ -33,6 +33,10 @@ class FileProcessor(BasicProcessObject):
             self.req_fields = []
             self.sup_fields = ['LongDescription', 'ShortDescription','ProductDescription']
 
+        if self.proc_to_run == 'Extract Configuration':
+            self.req_fields = []
+            self.sup_fields = ['ProductName','LongDesc', 'ShortDesc','ProductDesc']
+
         if self.proc_to_run == 'Assign FyPartNumbers':
             self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber','UnitOfIssue']
             self.sup_fields = []
@@ -41,38 +45,33 @@ class FileProcessor(BasicProcessObject):
             self.req_fields = ['ProductName']
             self.sup_fields = []
 
-        if self.proc_to_run == 'Generate Upload File':
-            self.set_new_order = True
-            self.out_column_headers = ['Pass','Alert','Fail','FyCatalogNumber','FyProductNumber','FyPartNumber','Item Type', 'ProductName', 'Product Type',
-                                       'Product Code/SKU', 'Brand Name', 'Option Set Align', 'Product Description',
-                                       'VendorListPrice', 'Discount', 'FyCost', 'Fixed Shipping Cost',
-                                       'FyLandedCost', 'LandedCostMarkupPercent_FYSell','Sell Price',
-                                       'LandedCostMarkupPercent_FYList', 'Retail Price', 'ECommerceDiscount',
-                                       'Free Shipping', 'Product Weight', 'Product Width', 'Product Height',
-                                       'Product Depth', 'Allow Purchases?', 'Product Visible?', 'Track Inventory',
-                                       'Current Stock Level', 'Low Stock Level', 'Category', 'Product Image File - 1',
-                                       'Product Image Description - 1', 'Product Image Sort - 1', 'Product Condition',
-                                       'Show Product Condition?', 'Sort Order', 'Product Tax Class',
-                                       'Stop Processing Rules', 'ProductUrl', 'GPS Manufacturer Part Number',
-                                       'GPS Enabled', 'Tax Provider Tax Code', 'Product Custom Fields',
-                                       'ShortDescription','LongDescription','Hazmat','Add to Website/GSA',
-                                       'Conv Factor/QTY UOM','CountryOfOrigin','ManufacturerName',
-                                       'ManufacturerPartNumber','SupplierName','Temp Control',
-                                       'VendorPartNumber','UnitOfMeasure','UNSPSC','VendorName']
-
-            self.req_fields = ['FyPartNumber','ShortDescription', 'FyCost',
-                               'ManufacturerName','ManufacturerPartNumber', 'Category']
+        if self.proc_to_run == 'Test Data Load File':
+            self.req_fields = ['FyCatalogNumber','FyProductNumber', 'ManufacturerPartNumber','ManufacturerName',
+                               'VendorPartNumber','VendorName']
             self.sup_fields = []
 
         if self.proc_to_run == 'Load Manufacturer Default Image':
             self.req_fields = ['ManufacturerName', 'ImagePath']
             self.sup_fields = ['ImageCaption']
 
-        # inital file viability check
+
+        # if there are required headers we check if they're all there
         product_headers = set(self.lst_product_headers)
-        required_headers = set(self.req_fields)
-        overlap = list(required_headers.intersection(product_headers))
-        if len(overlap) >= 1:
+        if len(self.req_fields) > 0:
+            required_headers = set(self.req_fields)
+            self.is_viable = required_headers.issubset(product_headers)
+            # if it passes and there are support headers we check them
+            if (len(self.sup_fields) > 0) and self.is_viable:
+                support_headers = set(self.sup_fields)
+                if len(product_headers.intersection(support_headers)) == 0:
+                    self.is_viable = False
+
+        # there aren't required headers, but there are support headers
+        elif len(self.sup_fields) > 0:
+            support_headers = set(self.sup_fields)
+            if len(product_headers.intersection(support_headers)) > 0:
+                self.is_viable = True
+        else:
             self.is_viable = True
 
 
@@ -89,7 +88,6 @@ class FileProcessor(BasicProcessObject):
             self.lst_image_objects = self.obS3.get_object_list('franklin-young-image-bank')
 
 
-
     def process_product_line(self, df_line_product):
         self.success = True
         if self.proc_to_run == 'Extract Attributes':
@@ -101,8 +99,11 @@ class FileProcessor(BasicProcessObject):
         elif self.proc_to_run == 'Unicode Correction':
             self.success, df_line_product = self.correct_bad_unicode(df_line_product)
 
-        elif self.proc_to_run == 'Generate Upload File':
-            self.success, df_line_product = self.generate_BC_upload(df_line_product)
+        elif self.proc_to_run == 'Extract Configuration':
+            self.success, df_line_product = self.extract_configuration(df_line_product)
+
+        elif self.proc_to_run == 'Test Data Load File':
+            self.success, df_line_product = self.test_load_file(df_line_product)
 
         elif self.proc_to_run == 'Load Manufacturer Default Image':
             self.success, df_line_product = self.manufacturer_default_images(df_line_product)
@@ -231,106 +232,41 @@ class FileProcessor(BasicProcessObject):
         return image_width, image_height
 
 
-    def generate_BC_upload(self, df_line_product):
+    def extract_configuration(self, df_line_product):
         self.success = True
+        df_collect_attribute_data = df_line_product.copy()
 
-        df_collect_line = df_line_product.copy()
+        if 'ProductName' in df_line_product.columns:
+            for colName, row in df_line_product.iterrows():
+                self.success, df_collect_attribute_data, product_name = self.process_configuration(df_collect_attribute_data, row, row['ProductName'])
+                product_name = self.obExtractor.reinject_phrase(product_name)
+                df_collect_attribute_data['ProductName'] = [product_name]
+            df_line_product = df_collect_attribute_data.copy()
 
-        for colName, row in df_line_product.iterrows():
-            # they all get this
-            df_collect_line['Product Width'] = ['0']
-            df_collect_line['Product Height'] = ['0']
-            df_collect_line['Product Depth'] = ['0']
-            df_collect_line['Product Weight'] = ['1']
+        if 'LongDesc' in df_line_product.columns:
+            for colName, row in df_line_product.iterrows():
+                self.success, df_collect_attribute_data, long_desc = self.process_configuration(df_collect_attribute_data, row, row['LongDesc'])
+                long_desc = self.obExtractor.reinject_phrase(long_desc)
+                df_collect_attribute_data['LongDesc'] = [long_desc]
+            df_line_product = df_collect_attribute_data.copy()
 
-            df_collect_line['Show Product Condition?'] = ['N']
-            df_collect_line['Product Condition'] = ['New']
-            df_collect_line['Track Inventory'] = ['none']
-            df_collect_line['Current Stock Level'] = ['0']
-            df_collect_line['Low Stock Level'] = ['0']
-            df_collect_line['Sort Order'] = ['0']
+        if 'ShortDesc' in df_line_product.columns:
+            for colName, row in df_line_product.iterrows():
+                self.success, df_collect_attribute_data, short_desc = self.process_configuration(df_collect_attribute_data, row, row['ShortDesc'])
+                short_desc = self.obExtractor.reinject_phrase(short_desc)
+                df_collect_attribute_data['ShortDesc'] = [short_desc]
+            df_line_product = df_collect_attribute_data.copy()
 
-            df_collect_line['Stop Processing Rules'] = ['N']
-            df_collect_line['Free Shipping'] = ['N']
-            df_collect_line['Fixed Shipping Cost'] = ['0']
-            df_collect_line['Sale Price'] = ['0']
-
-            df_collect_line['GPS Enabled'] = ['N']
-            df_collect_line['Option Set Align'] = ['Right']
-            df_collect_line['Allow Purchases?'] = ['Y']
-            df_collect_line['Product Visible?'] = ['Y']
-            df_collect_line['Product Type'] = ['P']
-            df_collect_line['Tax Provider Tax Code'] = ['NonTaxable']
-            df_collect_line['Product Tax Class'] = ['Default Tax Class']
-            df_collect_line['Item Type'] = ['Product']
-
-            # if GSA there is something else to generate "GSA - Sch 66"
-            # this generates the descriptions
-            short_desc = row['ShortDescription']
-            if 'LongDescription' in row:
-                long_desc = row['LongDescription']
-            else:
-                long_desc = short_desc
-                df_collect_line['LongDescription'] = [short_desc]
-
-            df_collect_line['Product Description'] = [long_desc]
-
-            # this deals with product numbers
-            manufacturer_name = row['ManufacturerName']
-            df_collect_line['Brand Name'] = [manufacturer_name]
-            manufacturer_part_number = row['ManufacturerPartNumber']
-            df_collect_line['GPS Manufacturer Part Number'] = [manufacturer_part_number]
-
-            fy_part_number = row['FyPartNumber']
-            df_collect_line['Product Code/SKU'] = [fy_part_number]
-
-            if 'ProductName' not in row:
-                if len(short_desc) > 40:
-                    product_name  = short_desc[:40]
-                else:
-                    product_name  = short_desc
-                df_collect_line['ProductName'] = [product_name]
-
-            else:
-                product_name = row['ProductName']
-                if len(product_name) > 40:
-                    product_name  = product_name[:40]
-
-            # this section should generate pricing correctly
-            pricing_success, df_collect_line = self.generate_pricing(df_collect_line, row)
-            if pricing_success == False:
-                return pricing_success, df_collect_line
+        if 'ProductDesc' in df_line_product.columns:
+            for colName, row in df_line_product.iterrows():
+                self.success, df_collect_attribute_data, prod_desc = self.process_configuration(df_collect_attribute_data, row, row['ProductDesc'])
+                prod_desc = self.obExtractor.reinject_phrase(prod_desc)
+                df_collect_attribute_data['ProductDesc'] = [prod_desc]
+            df_line_product = df_collect_attribute_data.copy()
 
 
-            # this deals with the image
-            if 'ImageName' not in row:
-                df_collect_line['Product Image File - 1'] = ['']
-                df_collect_line['Product Image Sort - 1'] = ['']
-                self.obReporter.update_report('Alert','Image was missing')
-            else:
-                image = row['ImageName']
-                df_collect_line['Product Image File - 1'] = [image]
-                df_collect_line['Product Image Sort - 1'] = ['0']
+        return True, df_collect_attribute_data
 
-            df_collect_line['Product Image Description - 1'] = [product_name]
-
-            # this deals with the custom fields
-            uoi = row['UnitOfIssue']
-            if 'Conv Factor/QTY UOM' in row:
-                quantity = row['Conv Factor/QTY UOM']
-            else:
-                quantity = '1'
-                df_collect_line['Conv Factor/QTY UOM'] = [quantity]
-                self.obReporter.update_report('Alert','Conv Factor was generated.')
-
-            custom_fields = '"ShortDescription=' + short_desc +'"'
-            custom_fields = custom_fields + ';unit_of_issue=' + uoi
-            custom_fields = custom_fields + ';unit_of_issue_qty=' + str(quantity) + ';uom_std=EA;green_product=1;'
-            custom_fields = custom_fields + '"primary_vendor_product_name=' + product_name.partition(' {')[0] +'"'
-
-            df_collect_line['Product Custom Fields'] = [custom_fields]
-
-        return self.success, df_collect_line
 
     def generate_pricing(self, df_collect_product_base_data, row):
         fy_cost = round(float(row['FyCost']),2)
@@ -499,6 +435,10 @@ class FileProcessor(BasicProcessObject):
         self.success = True
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            if 'ProductName' in row:
+                self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['ProductName'])
+                long_desc = self.obExtractor.reinject_phrase(long_desc)
+                df_collect_attribute_data['ProductName'] = [long_desc]
             if 'LongDescription' in row:
                 self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['LongDescription'])
                 long_desc = self.obExtractor.reinject_phrase(long_desc)
@@ -643,6 +583,106 @@ class FileProcessor(BasicProcessObject):
 
 
         return True, df_collect_product_base_data, container_str
+
+
+    def process_configuration(self, df_collect_product_base_data, row, container_str):
+
+        if 'UnitOfIssue_8' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi_8(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_8'] = attribute
+        else:
+            attribute_left = (row['UnitOfIssue_8'])
+            container_str, attribute_right = self.obExtractor.extract_uoi_8(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_8'] = attribute_right
+
+        if 'UnitOfIssue_5' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi_5(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_5'] = attribute
+
+        if 'UnitOfIssue_7' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi_7(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_7'] = attribute
+
+        if 'UnitOfIssue_4' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi_4(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_4'] = attribute
+
+        if 'UnitOfIssue_3' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi_3(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_3'] = attribute
+
+        if 'UnitOfIssue_2' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi_2(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_2'] = attribute
+
+        if 'UnitOfIssue_1' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi_1(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_1'] = attribute
+
+        if 'UnitOfIssue_6' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi_6(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue_6'] = attribute
+
+        if 'UnitOfIssue' not in row:
+            container_str, attribute = self.obExtractor.extract_uoi(container_str)
+            if attribute != '':
+                df_collect_product_base_data['UnitOfIssue'] = attribute
+
+        return True, df_collect_product_base_data, container_str
+
+
+    def test_load_file(self, df_line_product):
+        df_collect_attribute_data = df_line_product.copy()
+        for colName, row in df_line_product.iterrows():
+            if 'ProductName' in row:
+                product_name = str(row['ProductName'])
+                if len(product_name) > 40:
+
+                    # maybe take the configuration out here?
+                    success, df_collect_attribute_data, product_name = self.process_configuration(df_collect_attribute_data, row, product_name)
+                    product_name = self.obExtractor.wipe_injection(product_name)
+
+                    product_name = product_name[:40]
+                    df_collect_attribute_data['ProductNumber_40'] = product_name
+                    self.obReporter.update_report('Alert','Product Name was trimmed.')
+
+            elif 'ShortDescription' in row:
+                self.obReporter.update_report('Alert','Product Name missing')
+                short_desc = str(row['ShortDescription'])
+                if len(short_desc) > 40:
+                    success, df_collect_attribute_data, short_desc = self.process_configuration(df_collect_attribute_data, row, short_desc)
+                    short_desc = self.obExtractor.wipe_injection(short_desc)
+
+                    product_name = short_desc[:40]
+                    df_collect_attribute_data['ProductNumber_40'] = product_name
+                    self.obReporter.update_report('Alert','Short Description was trimmed for ProductName')
+
+            elif 'LongDescription' in row:
+                self.obReporter.update_report('Alert','Product Name missing')
+                long_desc = str(row['LongDescription'])
+                if len(long_desc) > 40:
+                    success, df_collect_attribute_data, long_desc = self.process_configuration(df_collect_attribute_data, row, long_desc)
+                    long_desc = self.obExtractor.wipe_injection(long_desc)
+
+                    product_name = long_desc[:40]
+                    df_collect_attribute_data['ProductNumber_40'] = product_name
+                    self.obReporter.update_report('Alert','Long Description was trimmed for ProductName')
+
+
+
+        return True, df_collect_attribute_data
+
+
+
 
 
 

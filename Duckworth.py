@@ -72,7 +72,7 @@ class DuckworthWindow(QWidget):
         self.setWindowIcon(QIcon(os.getcwd() + '\\venv\Assets\Duckworth2.png'))
         self.base_interval = 5000
         
-        self.dct_mouse_tips = {'Assign FyPartNumbers':'For generating FyProduct Tracking numbers\nRequired: ManufacturerName, ManufacturerPartNumber, UnitOfIssue\nSupport: FyProductNumberOverride',
+        self.dct_mouse_tips = {'Assign FyPartNumbers': 'For generating FyProduct Tracking numbers\nRequired: ManufacturerName, ManufacturerPartNumber, UnitOfIssue\nSupport: FyProductNumberOverride',
                                'Category Training':'For improving category assignments\nRequired: Word1, Word2, Category, IsGood',
                                'Category Assignment':'For assigning categories to products\nRequired: FyProductNumber, ManufacturerPartNumber, ShortDescription\nSupport: LongDescription, ProductDescription',
                                'Category Picker':'--DEPRICATED--\nRequired: ManufacturerPartNumber, ShortDescription\nSupport: LongDescription, ProductDescription',
@@ -273,13 +273,13 @@ class DuckworthWindow(QWidget):
     def file_process_buttons(self, column_pos):
         # all the stuffing for file processing actions
         self.all_file_action_options = ['Assign FyPartNumbers', 'File Appender Tool','File Merger Tool', 'Category Training',
-                                    'Category Assignment', 'Category Picker', 'Extract Attributes',
-                                    'Unicode Correction', 'Generate Upload File', 'File Splitter Tool',
-                                    'Load Image Files', 'Product Action Review']
+                                        'Category Assignment', 'Category Picker', 'Extract Attributes', 'Unicode Correction',
+                                        'Extract Configuration', 'Test Data Load File', 'File Splitter Tool',
+                                        'Load Image Files', 'Product Action Review']
 
         self.file_action_options = ['Assign FyPartNumbers', 'File Appender Tool','File Merger Tool', 'Category Training',
                                     'Category Assignment', 'Extract Attributes','Load Manufacturer Default Image',
-                                    'Unicode Correction', 'Generate Upload File', 'File Splitter Tool',
+                                    'Unicode Correction', 'Extract Configuration', 'Test Data Load File', 'File Splitter Tool',
                                     'Product Action Review']
 
         self.file_action_options.sort()
