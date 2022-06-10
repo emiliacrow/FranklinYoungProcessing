@@ -52,7 +52,7 @@ class FileProcessor(BasicProcessObject):
 
         if self.proc_to_run == 'Load Manufacturer Default Image':
             self.req_fields = ['ManufacturerName', 'ImagePath']
-            self.sup_fields = ['ImageCaption']
+            self.sup_fields = []
 
 
         # if there are required headers we check if they're all there
