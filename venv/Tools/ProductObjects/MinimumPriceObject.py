@@ -115,6 +115,10 @@ class MinimumProductPrice(BasicProcessObject):
             success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
             if success and return_val == 1:
                 b_override = True
+            else:
+                success, return_val = self.process_boolean(row, 'db_ProductNumberOverride')
+                if success and return_val == 1:
+                    b_override = True
 
             fy_product_number = row['FyProductNumber']
             b_pass_number_check = self.obValidator.review_product_number(fy_product_number)
@@ -225,7 +229,6 @@ class MinimumProductPrice(BasicProcessObject):
 
         if str(row['Filter']) == 'Partial':
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
-
                 self.obIngester.insert_product_price(fy_product_number, allow_purchases, fy_part_number,
                                                      product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
                                                      unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)

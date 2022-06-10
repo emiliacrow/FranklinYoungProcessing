@@ -176,7 +176,7 @@ class BasicProcessObject:
 
 
     def define_new(self, b_match_vendor = False):
-        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_IsDiscontinued',
+        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_ProductNumberOverride','db_IsDiscontinued',
                          'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes',
                          'db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes','TakePriority']
         for each_header in clear_headers:
@@ -205,9 +205,9 @@ class BasicProcessObject:
         self.df_product_notes = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['db_FyProductNotes']!= '')]
         drop_notes = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber','FyProductNumber',
                       'VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued',
-                      'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
+                      'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_ProductNumberOverride']
         self.df_product_notes = self.df_product_notes.drop(columns=drop_notes)
-        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes','db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes',])
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes','db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes'])
 
         # set up the different match types
         # all products in DB with pricing
@@ -307,7 +307,7 @@ class BasicProcessObject:
         if len(self.df_full_matched_product.index) > 0:
             self.df_full_matched_product = self.df_full_matched_product.drop_duplicates()
             try:
-                self.df_product = pandas.concat([self.df_product,self.df_full_matched_product], ignore_index = True)
+                self.df_product = pandas.concat([self.df_product, self.df_full_matched_product], ignore_index = True)
             except pandas.errors.InvalidIndexError:
                 print('Invalid index error 2: this represents a bug')
 

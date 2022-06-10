@@ -335,6 +335,10 @@ class MinimumProduct(BasicProcessObject):
             success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
             if success and return_val == 1:
                 b_override = True
+            else:
+                success, return_val = self.process_boolean(row, 'db_ProductNumberOverride')
+                if success and return_val == 1:
+                    b_override = True
 
             fy_catalog_number = row['FyCatalogNumber']
             b_pass_number_check = self.obValidator.review_product_number(fy_catalog_number)
@@ -431,6 +435,10 @@ class MinimumProduct(BasicProcessObject):
 
             b_override = 0
             success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
+            if success and return_val == 1:
+                b_override = 1
+
+            success, return_val = self.process_boolean(row, 'db_ProductNumberOverride')
             if success and return_val == 1:
                 b_override = 1
 
