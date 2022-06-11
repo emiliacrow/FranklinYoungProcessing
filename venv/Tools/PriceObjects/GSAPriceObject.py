@@ -110,7 +110,9 @@ class GSAPrice(BasicProcessObject):
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
-
+            # this is where we should try to capture the string literal '10.00%'
+            # and make it what it should be
+            # I think there's some code for this in base price
             approved_percent = float(row['GSAApprovedPercent'])
 
 
@@ -145,11 +147,7 @@ class GSAPrice(BasicProcessObject):
             approved_sell_price = float(row['GSAApprovedSellPrice'])
             approved_list_price = float(row['GSAApprovedListPrice'])
 
-            print(row['GSAApprovedPercent'])
-            x = input('x')
-
             approved_percent = float(row['GSAApprovedPercent'])
-
 
             mfc_percent = row['MfcDiscountPercent']
 
