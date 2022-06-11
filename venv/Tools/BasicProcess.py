@@ -205,9 +205,9 @@ class BasicProcessObject:
         self.df_product_notes = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['db_FyProductNotes']!= '')]
         drop_notes = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber','FyProductNumber',
                       'VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued',
-                      'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_ProductNumberOverride']
+                      'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
         self.df_product_notes = self.df_product_notes.drop(columns=drop_notes)
-        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_FyProductNotes','db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes'])
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_ProductNumberOverride','db_FyProductNotes','db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes'])
 
         # set up the different match types
         # all products in DB with pricing
@@ -309,6 +309,8 @@ class BasicProcessObject:
             try:
                 self.df_product = pandas.concat([self.df_product, self.df_full_matched_product], ignore_index = True)
             except pandas.errors.InvalidIndexError:
+                print(self.df_full_matched_product)
+                print(self.df_product)
                 print('Invalid index error 2: this represents a bug')
 
         del self.df_full_matched_product
@@ -318,6 +320,8 @@ class BasicProcessObject:
             try:
                 self.df_product = pandas.concat([self.df_product,self.df_pricing_matched_product], ignore_index = True)
             except pandas.errors.InvalidIndexError:
+                print(self.df_pricing_matched_product)
+                print(self.df_product)
                 print('Invalid index error 3: this represents a bug')
 
         del self.df_pricing_matched_product
@@ -327,6 +331,8 @@ class BasicProcessObject:
             try:
                 self.df_product = pandas.concat([self.df_product,self.df_man_ven_matched_products], ignore_index = True)
             except pandas.errors.InvalidIndexError:
+                print(self.df_man_ven_matched_products)
+                print(self.df_product)
                 print('Invalid index error 4: this represents a bug')
 
         del self.df_man_ven_matched_products
@@ -336,6 +342,8 @@ class BasicProcessObject:
             try:
                 self.df_product = pandas.concat([self.df_product, self.df_fy_cat_matched_products], ignore_index = True)
             except pandas.errors.InvalidIndexError:
+                print(self.df_fy_cat_matched_products)
+                print(self.df_product)
                 print('Invalid index error 5: this represents a bug')
 
         del self.df_fy_cat_matched_products

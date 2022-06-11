@@ -111,6 +111,9 @@ class GSAPrice(BasicProcessObject):
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
 
+            approved_percent = float(row['GSAApprovedPercent'])
+
+
         return success, return_df_line_product
 
 
@@ -141,7 +144,12 @@ class GSAPrice(BasicProcessObject):
 
             approved_sell_price = float(row['GSAApprovedSellPrice'])
             approved_list_price = float(row['GSAApprovedListPrice'])
+
+            print(row['GSAApprovedPercent'])
+            x = input('x')
+
             approved_percent = float(row['GSAApprovedPercent'])
+
 
             mfc_percent = row['MfcDiscountPercent']
 
