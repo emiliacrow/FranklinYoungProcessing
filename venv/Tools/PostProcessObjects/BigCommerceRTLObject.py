@@ -89,7 +89,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             self.obReporter.update_report('Alert', 'Passed filtering as partial product')
             return False
 
-        elif row['Filter'] in ['Ready', 'Base Pricing']:
+        elif row['Filter'] in ['Ready', 'Update', 'Base Pricing']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
