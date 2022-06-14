@@ -470,7 +470,8 @@ class BasicProcessObject:
         self.df_product.loc[(self.df_product['Filter'] == 'case_8'), 'Alert'] = 'New Vendor Existing product(step 1.5)'
         self.df_product.loc[(self.df_product['Filter'] == 'case_8'), 'Filter'] = 'Partial'
 
-        self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'Alert'] = 'Verify your ManufacturerName'
+        self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'Alert'] = 'ManufacturerName was corrected'
+        self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'Filter'] = 'Ready'
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_14'), 'Filter'] = 'manufacturer_part_number_change'
 
@@ -484,7 +485,6 @@ class BasicProcessObject:
         self.df_product.loc[(self.df_product['Filter'] == 'Possible_Duplicate'), 'TakePriority'] = 'A'
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_4'), 'TakePriority'] = 'W'
-        self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'TakePriority'] = 'J'
 
         self.df_product.loc[(self.df_product['Filter'] == 'check_vendor_and_manu_part'), 'TakePriority'] = 'I'
         self.df_product.loc[(self.df_product['Filter'] == 'manufacturer_part_number_change'), 'TakePriority'] = 'H'
@@ -527,7 +527,8 @@ class BasicProcessObject:
         # BAAAAAD manufacturer
         case_9 = ((self.df_man_ven_matched_products['ManufacturerName_x'] != self.df_man_ven_matched_products['ManufacturerName_y']) &
                   (self.df_man_ven_matched_products['VendorName_x'] == self.df_man_ven_matched_products['VendorName_y'] ) &
-                  (self.df_man_ven_matched_products['VendorPartNumber_x'] == self.df_man_ven_matched_products['VendorPartNumber_y']))
+                  (self.df_man_ven_matched_products['VendorPartNumber_x'] == self.df_man_ven_matched_products['VendorPartNumber_y']) &
+                  (self.df_man_ven_matched_products['FyProductNumber_x'] == self.df_man_ven_matched_products['FyProductNumber_y']))
 
         # BAAAAAD manufacturer
         case_10 = ((self.df_man_ven_matched_products['VendorName_x'] != self.df_man_ven_matched_products['VendorName_y']) &
