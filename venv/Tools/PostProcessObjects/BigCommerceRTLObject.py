@@ -172,6 +172,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
 
             db_is_discontinued = int(row['db_IsDiscontinued'])
+
             try:
                 db_allow_purchases = int(row['db_AllowPurchases'])
             except:
