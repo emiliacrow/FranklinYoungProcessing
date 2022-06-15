@@ -18,6 +18,7 @@ class MinimumProductPrice(BasicProcessObject):
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Minimum Product Price'
+        self.dct_fy_product_description = {}
 
     def batch_preprocessing(self):
         self.remove_private_headers()
@@ -25,6 +26,21 @@ class MinimumProductPrice(BasicProcessObject):
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
         self.define_new()
+        # pull the current descriptions
+        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
+
+        self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
+
+        # and do something with them
+        # like what if we could predict the next ID from this and
+        # do the insert blind?
+        # in the current situation there's a a max ID of 1
+        # so the next insert would be 2
+        # we can prep accordingly and pre assign 2 to the next insert
+
+        self.df_next_fy_description_id = self.obDal.get_next_fy_product_description_id()
+        self.next_fy_description_id = int(self.df_next_fy_description_id['AUTO_INCREMENT'].iloc[0])
+
         self.df_product.sort_values(by=['FyProductNumber'], inplace=True)
 
 
@@ -34,7 +50,7 @@ class MinimumProductPrice(BasicProcessObject):
                            'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'Report','Filter'}
+                           'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyShortDescription','db_FyLongDescription'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
@@ -142,6 +158,23 @@ class MinimumProductPrice(BasicProcessObject):
                         self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                         df_collect_product_base_data[each_bool] = [0]
 
+        # all the products that need the info to be ingested
+        if fy_product_number in self.dct_fy_product_description:
+            if 'ProductDescriptionId' not in row:
+                fy_product_desc_id = self.dct_fy_product_description[fy_product_number]
+                df_collect_product_base_data['ProductDescriptionId'] = [fy_product_desc_id]
+
+        else:
+            if 'ProductDescriptionId' not in row:
+                success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
+                if success:
+                    df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
+                    self.next_fy_description_id += 1
+                else:
+                    df_collect_product_base_data['ProductDescriptionId'] = [-1]
+            else:
+                fy_product_desc_id = row['ProductDescriptionId']
+                self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
 
@@ -153,6 +186,30 @@ class MinimumProductPrice(BasicProcessObject):
             return False, df_collect_product_base_data
 
         return True, df_collect_product_base_data
+
+    def process_fy_description(self, df_collect_product_base_data, row):
+        fy_product_number = row['FyProductNumber']
+        if 'FyProductName' not in row:
+            return False, df_collect_product_base_data
+        else:
+            fy_product_name = row['FyProductName']
+
+        if 'FyShortDescription' not in row:
+            return False, df_collect_product_base_data
+        else:
+            fy_short_description = row['FyShortDescription']
+
+        if 'FyLongDescription' not in row:
+            return False, df_collect_product_base_data
+        else:
+            fy_long_description = row['FyLongDescription']
+
+        # for speed sake this is a one-off
+        lst_descriptions = [(fy_product_number, fy_product_name, fy_short_description, fy_long_description)]
+        self.obDal.fy_product_description_insert(lst_descriptions)
+
+        return True, df_collect_product_base_data
+
 
     def identify_units(self, df_collect_product_base_data, row):
         if ('Conv Factor/QTY UOM' not in row):
@@ -203,6 +260,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
+
     def minimum_product_price(self,df_line_product):
         fy_part_number = ''
         fy_product_notes = ''
@@ -227,24 +285,26 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_measure_symbol_id = row['UnitOfMeasureSymbolId']
             unit_of_issue_quantity = row['Conv Factor/QTY UOM']
 
+            product_description_id = row['ProductDescriptionId']
+
         if str(row['Filter']) == 'Partial':
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
                 self.obIngester.insert_product_price(fy_product_number, allow_purchases, fy_part_number,
                                                      product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
+                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, fy_product_notes)
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Base Pricing':
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
                                                  product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-                                                 fy_product_notes)
+                                                 product_description_id, fy_product_notes)
 
         # this pathway will be needed at some point I'm sure
-        elif '' == 'UNIT CHANGE PATH':
+        elif 'DEPRICATED' == 'UNIT CHANGE PATH':
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price(price_id, fy_product_number, allow_purchases, fy_part_number,
                                                  product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-                                                 unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, fy_product_notes)
+                                                 unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, fy_product_notes)
 
 
 

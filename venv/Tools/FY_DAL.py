@@ -713,22 +713,22 @@ class DalObject:
         runner.start()
 
     def min_product_price_insert(self,lst_product_price):
-        proc_name = 'sequoia.MinimumProductPrice_insert'
-        proc_statement = 'CALL `sequoia`.`MinimumProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.MinimumProductPrice_insert2'
+        proc_statement = 'CALL `sequoia`.`MinimumProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
     def min_product_price_update(self,lst_product_price):
-        proc_name = 'sequoia.MinimumProductPrice_update'
-        proc_statement = 'CALL `sequoia`.`MinimumProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.MinimumProductPrice_update2'
+        proc_statement = 'CALL `sequoia`.`MinimumProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
     def min_product_price_nouoi_update(self,lst_product_price):
-        proc_name = 'sequoia.MinimumProductPrice_nouoi_update'
-        proc_statement = 'CALL `sequoia`.`MinimumProductPrice_nouoi_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.MinimumProductPrice_nouoi_update2'
+        proc_statement = 'CALL `sequoia`.`MinimumProductPrice_nouoi_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
@@ -844,6 +844,26 @@ class DalObject:
                         'db_VAOnContract', 'db_VAModNumber', 'db_VAPricingApproved']
         df_toggles = self.get_lookup(proc_name,column_names)
         return df_toggles
+
+    def fy_product_description_insert(self, lst_descriptions):
+        proc_name = 'sequoia.ProductDescription_insert'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_insert`(%s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
+        runner.start()
+
+
+    def get_fy_product_descriptions(self):
+        proc_name = 'sequoia.get_FyProductDescriptions'
+        column_names = ['ProductDescriptionId', 'FyProductNumber','db_FyProductName','db_FyShortDescription','db_FyLongDescription']
+        df_descriptions = self.get_lookup(proc_name,column_names)
+        return df_descriptions
+
+    def get_next_fy_product_description_id(self):
+        proc_name = 'sequoia.get_NextFyDescriptionId'
+        column_names = ['AUTO_INCREMENT']
+        df_description_id = self.get_lookup(proc_name,column_names)
+        return df_description_id
 
 
     def set_bc_toggles(self, lst_bc_toggles):
