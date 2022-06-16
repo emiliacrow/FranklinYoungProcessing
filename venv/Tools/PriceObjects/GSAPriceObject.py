@@ -192,7 +192,7 @@ class GSAPrice(BasicProcessObject):
             if 'GSAProductPriceId' in row:
                 gsa_product_price_id = int(row['GSAProductPriceId'])
 
-
+        print(is_pricing_approved, approved_price_date, approved_percent)
         if gsa_product_price_id == -1:
             self.obIngester.gsa_product_price_insert(base_product_price_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
