@@ -232,9 +232,9 @@ class BigCommerceRTLObject(BasicProcessObject):
                     mod_number = str(row['db_ECATModNumber'])
                     ecat_pending_del_flag = 0
                     if ecat_product_notes == '':
-                        ecat_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
+                        ecat_product_notes = 'Deleted from contract, {0}'.format(str_now)
                     else:
-                        ecat_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(ecat_product_notes, mod_number, str_now)
+                        ecat_product_notes = '{0}, Deleted from contract, {1}'.format(ecat_product_notes, str_now)
 
 
             htme_contract = -1
@@ -284,9 +284,9 @@ class BigCommerceRTLObject(BasicProcessObject):
                 elif db_htme_contract == 1 and htme_contract == 0 and htme_approved == 1:
                     mod_number = str(row['db_HTMEModNumber'])
                     if htme_product_notes == '':
-                        htme_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
+                        htme_product_notes = 'Deleted from contract, {0}'.format(str_now)
                     else:
-                        htme_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(htme_product_notes, mod_number, str_now)
+                        htme_product_notes = '{0}, Deleted from contract, {1}'.format(htme_product_notes, str_now)
 
 
             gsa_contract = -1
@@ -336,9 +336,9 @@ class BigCommerceRTLObject(BasicProcessObject):
                 elif db_gsa_contract == 1 and gsa_contract == 0 and gsa_approved == 1:
                     mod_number = str(row['db_GSAModNumber'])
                     if gsa_product_notes == '':
-                        gsa_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
+                        gsa_product_notes = 'Deleted from contract, {0}'.format(str_now)
                     else:
-                        gsa_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(gsa_product_notes, mod_number, str_now)
+                        gsa_product_notes = '{0}, Deleted from contract, {1}'.format(gsa_product_notes, str_now)
 
 
             va_contract = -1
@@ -388,9 +388,9 @@ class BigCommerceRTLObject(BasicProcessObject):
                 elif db_va_contract == 1 and va_contract == 0 and va_approved == 1:
                     mod_number = str(row['db_VAModNumber'])
                     if va_product_notes == '':
-                        va_product_notes = 'Deleted from contract with mod {0}, {1}'.format(mod_number, str_now)
+                        va_product_notes = 'Deleted from contract, {0}'.format(str_now)
                     else:
-                        va_product_notes = '{0}, Deleted from contract with mod {1}, {2}'.format(va_product_notes, mod_number, str_now)
+                        va_product_notes = '{0}, Deleted from contract, {1}'.format(va_product_notes, str_now)
 
 
             # if it's on contract we want to make sure they show
