@@ -1207,7 +1207,7 @@ class IngestionObject:
             self.obDal.set_gsa_toggles(self.product_gsa_toggle_collector)
 
 
-    def set_va_toggles(self,base_id, fy_product_number, va_contract, va_approved):
+    def set_va_toggles(self,base_id, fy_product_number, va_contract, va_approved, va_pending_del_flag, va_product_notes):
         if (len(self.product_va_toggle_collector) > self.load_limit):
             self.product_va_toggle_collector.append((base_id, fy_product_number, va_contract, va_approved, va_pending_del_flag, va_product_notes))
             self.obDal.set_va_toggles(self.product_va_toggle_collector)
