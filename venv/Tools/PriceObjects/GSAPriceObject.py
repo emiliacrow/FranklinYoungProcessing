@@ -24,6 +24,7 @@ class GSAPrice(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
+        self.assign_contract_ids()
 
 
     def remove_private_headers(self):
@@ -38,6 +39,10 @@ class GSAPrice(BasicProcessObject):
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
+
+    def assign_contract_ids(self):
+        self.df_contract_ids = self.obDal.get_gsa_contract_ids()
+        self.df_product = self.df_product.merge(self.df_contract_ids, how='left', on=['FyProductNumber'])
 
 
     def filter_check_in(self, row):
@@ -191,6 +196,9 @@ class GSAPrice(BasicProcessObject):
             gsa_product_price_id = -1
             if 'GSAProductPriceId' in row:
                 gsa_product_price_id = int(row['GSAProductPriceId'])
+
+            if 'db_GSAProductPriceId' in row and gsa_product_price_id == -1:
+                gsa_product_price_id = int(row['db_GSAProductPriceId'])
 
         if gsa_product_price_id == -1:
             self.obIngester.gsa_product_price_insert(base_product_price_id, fy_product_number, on_contract, approved_base_price,

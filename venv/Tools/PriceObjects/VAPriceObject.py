@@ -24,6 +24,7 @@ class VAPrice(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
+        self.assign_contract_ids()
 
 
     def remove_private_headers(self):
@@ -38,6 +39,11 @@ class VAPrice(BasicProcessObject):
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
+
+
+    def assign_contract_ids(self):
+        self.df_contract_ids = self.obDal.get_va_contract_ids()
+        self.df_product = self.df_product.merge(self.df_contract_ids, how='left', on=['FyProductNumber'])
 
 
     def filter_check_in(self, row):
@@ -184,6 +190,9 @@ class VAPrice(BasicProcessObject):
             va_product_price_id = -1
             if 'VAProductPriceId' in row:
                 va_product_price_id = int(row['VAProductPriceId'])
+
+            if 'db_VAProductPriceId' in row and va_product_price_id == -1:
+                va_product_price_id = int(row['db_VAProductPriceId'])
 
         if va_product_price_id == -1:
             self.obIngester.va_product_price_insert(base_product_price_id, fy_product_number, on_contract, approved_base_price,

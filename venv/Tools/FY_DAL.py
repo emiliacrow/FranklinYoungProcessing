@@ -439,6 +439,12 @@ class DalObject:
         df_ecat_price_lookup = self.get_lookup(proc_name, column_names)
         return df_ecat_price_lookup
 
+    def get_ecat_contract_ids(self):
+        proc_name = 'sequoia.get_ECATContractId_lookup'
+        column_names = ['FyProductNumber', 'db_ECATProductPriceId']
+        df_base_price_lookup = self.get_lookup(proc_name, column_names)
+        return df_base_price_lookup
+
 
     def fedmall_product_price_cap(self,newIsVisible, newDateCatalogReceived, newFEDMALLSellPrice, newFEDMALLApprovedPriceDate, newFEDMALLPricingApproved, newFEDMALLContractNumber, newFEDMALLContractModificationNumber, newFEDMALLProductGMPercent, newFEDMALLProductGMPrice):
         proc_name = 'sequoia.FEDMALLProductPrice_capture_wrap'
@@ -475,6 +481,12 @@ class DalObject:
         df_gsa_price_lookup = self.get_lookup(proc_name,column_names)
         return df_gsa_price_lookup
 
+    def get_gsa_contract_ids(self):
+        proc_name = 'sequoia.get_GSAContractId_lookup'
+        column_names = ['FyProductNumber','db_GSAProductPriceId']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
+
 
     def htme_product_price_cap(self,lst_htme_product_price):
         proc_name = 'sequoia.HTMEProductPrice_capture'
@@ -504,6 +516,12 @@ class DalObject:
         df_htme_price_lookup = self.get_lookup(proc_name, column_names)
         return df_htme_price_lookup
 
+    def get_htme_contract_ids(self):
+        proc_name = 'sequoia.get_HTMEContractId_lookup'
+        column_names = ['FyProductNumber','db_HTMEProductPriceId']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
+
 
     def va_product_price_cap(self, lst_va_product_price):
         proc_name = 'sequoia.VAProductPrice_capture'
@@ -530,6 +548,12 @@ class DalObject:
         proc_name = 'sequoia.get_VAPrice_lookup'
         column_names = ['FyProductNumber','VendorPartNumber','VAOnContract','db_ContractedManufacturerPartNumber', 'VAApprovedListPrice',
                          'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
+        df_base_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_base_price_lookup
+
+    def get_va_contract_ids(self):
+        proc_name = 'sequoia.get_VAContractId_lookup'
+        column_names = ['FyProductNumber','db_VAProductPriceId']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 
