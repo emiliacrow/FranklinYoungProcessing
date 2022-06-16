@@ -142,7 +142,7 @@ class VAPrice(BasicProcessObject):
                 except ValueError:
                     approved_price_date = str(row['VAApprovedPriceDate'])
             else:
-                approved_price_date = -1
+                approved_price_date = '0000-00-00 00:00:00'
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
