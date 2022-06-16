@@ -24,14 +24,7 @@ class ECATPrice(BasicProcessObject):
     def batch_preprocessing(self):
         self.remove_private_headers()
         self.define_new()
-        if 'FySellPrice' not in self.df_product.columns:
-            self.get_fy_sell_price()
-
-
-    def get_fy_sell_price(self):
-        self.ecat_price_lookup = self.obDal.get_ecat_price_lookup()
-        merge_heads = ['FyCatalogNumber', 'FyProductNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'VendorName', 'VendorPartNumber']
-        self.df_product = self.df_product.merge(self.ecat_price_lookup, how= 'left', on = merge_heads)
+        self.assign_contract_ids()
 
 
     def remove_private_headers(self):
@@ -46,6 +39,11 @@ class ECATPrice(BasicProcessObject):
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
+
+
+    def assign_contract_ids(self):
+        self.df_contract_ids = self.obDal.get_ecat_contract_ids()
+        self.df_product = self.df_product.merge(self.df_contract_ids, how='left', on=['FyProductNumber'])
 
 
     def filter_check_in(self, row):
@@ -85,9 +83,7 @@ class ECATPrice(BasicProcessObject):
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
-                    self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
-                    df_collect_product_base_data[each_bool] = [0]
-
+                    df_collect_product_base_data[each_bool] = [-1]
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
@@ -106,14 +102,17 @@ class ECATPrice(BasicProcessObject):
             if 'ContractedManufacturerPartNumber' in row:
                 contract_manu_number = row['ContractedManufacturerPartNumber']
 
-                if 'db_ContractedManufacturerPartNumber' in row and contract_manu_number == '':
-                    db_contract_manu_number = row['db_ContractedManufacturerPartNumber']
-                    contract_manu_number = db_contract_manu_number
-                    return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                if 'db_ContractedManufacturerPartNumber' in row:
+                    if contract_manu_number == '':
+                        db_contract_manu_number = row['db_ContractedManufacturerPartNumber']
+                        contract_manu_number = db_contract_manu_number
+                        return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                        self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
 
             elif 'db_ContractedManufacturerPartNumber' in row:
                 contract_manu_number = db_contract_manu_number
                 return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
+                self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
             else:
                 return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
@@ -125,27 +124,50 @@ class ECATPrice(BasicProcessObject):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            ecat_product_price_id = -1
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            on_contract = row['ECATOnContract']
+            if 'ECATOnContract' in row:
+                on_contract = row['ECATOnContract']
+            else:
+                on_contract = -1
 
             contract_number = 'SPE2DE-21-D-0014'
-            contract_mod_number = row['ECATContractModificationNumber']
-            is_pricing_approved = row['ECATPricingApproved']
 
-            try:
-                approved_price_date = int(row['ECATApprovedPriceDate'])
-                approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
-            except ValueError:
-                approved_price_date = str(row['ECATApprovedPriceDate'])
+            if 'ECATContractModificationNumber' in row:
+                contract_mod_number = row['ECATContractModificationNumber']
+            else:
+                contract_mod_number = ''
+
+            if 'ECATPricingApproved' in row:
+                is_pricing_approved = float(row['ECATPricingApproved'])
+            else:
+                is_pricing_approved = -1
+
+            if 'ECATApprovedPriceDate' in row:
+                try:
+                    approved_price_date = int(row['ECATApprovedPriceDate'])
+                    approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
+                except ValueError:
+                    approved_price_date = str(row['ECATApprovedPriceDate'])
+            else:
+                approved_price_date = '0000-00-00 00:00:00'
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
-            approved_sell_price = float(row['ECATApprovedSellPrice'])
-            approved_list_price = float(row['ECATApprovedListPrice'])
+            if 'ECATApprovedSellPrice' in row:
+                approved_sell_price = float(row['ECATApprovedSellPrice'])
+            else:
+                approved_sell_price = -1
 
-            max_markup = row['ECATMaxMarkup']
+            if 'ECATApprovedListPrice' in row:
+                approved_list_price = float(row['ECATApprovedListPrice'])
+            else:
+                approved_list_price = -1
+
+            if 'ECATMaxMarkup' in row:
+                max_markup = float(row['ECATMaxMarkup'])
+            else:
+                max_markup = -1
 
             product_notes = ''
             if 'ECATProductNotes' in row:
@@ -154,6 +176,9 @@ class ECATPrice(BasicProcessObject):
             ecat_product_price_id = -1
             if 'ECATProductPriceId' in row:
                 ecat_product_price_id = int(row['ECATProductPriceId'])
+
+            if 'db_ECATProductPriceId' in row and ecat_product_price_id == -1:
+                ecat_product_price_id = int(row['db_ECATProductPriceId'])
 
         if ecat_product_price_id == -1:
             self.obIngester.ecat_product_price_insert(base_product_price_id, fy_product_number, on_contract,
@@ -174,5 +199,15 @@ class ECATPrice(BasicProcessObject):
         self.obIngester.insert_ecat_product_price_cleanup()
         self.obIngester.update_ecat_product_price_cleanup()
 
+class UpdateECATPrice(ECATPrice):
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber']
+    sup_fields = []
+    att_fields = []
+    gen_fields = ['ContractedManufacturerPartNumber','ECATOnContract', 'ECATApprovedListPrice', 'ECATMaxMarkup', 'ECATContractModificationNumber',
+                  'ECATApprovedPriceDate','ECATPricingApproved']
+
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
+        self.name = 'ECAT Price Update'
 
 ## end ##

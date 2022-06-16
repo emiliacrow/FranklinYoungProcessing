@@ -52,6 +52,7 @@ from Tools.PriceObjects.VAPriceObject import UpdateVAPrice
 from Tools.PriceObjects.GSAPriceObject import GSAPrice
 from Tools.PriceObjects.GSAPriceObject import UpdateGSAPrice
 from Tools.PriceObjects.ECATPriceObject import ECATPrice
+from Tools.PriceObjects.ECATPriceObject import UpdateECATPrice
 from Tools.PriceObjects.HTMEPriceObject import HTMEPrice
 from Tools.PriceObjects.FEDMALLPriceObject import FEDMALLPrice
 
@@ -804,7 +805,7 @@ class Pathways():
             return self.success, self.message
 
         if update_action_selected == 'Update ECAT Pricing':
-            self.obECATPrice = ECATPrice(self.df_product, self.user, self.password, is_testing)
+            self.obECATPrice = UpdateECATPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obECATPrice.begin_process()
             self.df_product = self.obECATPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'ECATPrice')

@@ -426,7 +426,7 @@ class DalObject:
         runner.start()
 
     def ecat_product_price_update(self,lst_ecat_product_price):
-        proc_name = 'sequoia.ECATProductPrice_update'
+        proc_name = 'sequoia.ECATProductPrice_update2'
         proc_statement = 'CALL `sequoia`.`ECATProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=2)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
