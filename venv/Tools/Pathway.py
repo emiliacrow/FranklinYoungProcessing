@@ -48,6 +48,7 @@ from Tools.PriceObjects.BasePriceObject import BasePrice
 from Tools.PriceObjects.BasePriceObject import UpdateBasePrice
 
 from Tools.PriceObjects.VAPriceObject import VAPrice
+from Tools.PriceObjects.VAPriceObject import UpdateVAPrice
 from Tools.PriceObjects.GSAPriceObject import GSAPrice
 from Tools.PriceObjects.ECATPriceObject import ECATPrice
 from Tools.PriceObjects.HTMEPriceObject import HTMEPrice
@@ -781,7 +782,7 @@ class Pathways():
                 return self.success, self.message
 
         if update_action_selected == 'Update VA Pricing':
-            self.obVAPrice = VAPrice(self.df_product, self.user, self.password, is_testing)
+            self.obVAPrice = UpdateVAPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obVAPrice.begin_process()
             self.df_product = self.obVAPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'VAPrice')

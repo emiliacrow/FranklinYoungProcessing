@@ -208,8 +208,8 @@ class FileProcessor(BasicProcessObject):
                 else:
                     self.obReporter.update_report('Alert', 'This product asset was overwritten.')
 
+            self.obS3.put_file(whole_path, s3_name, bucket)
             if s3_name not in self.lst_image_objects:
-                self.obS3.put_file(whole_path, s3_name, bucket)
                 self.lst_image_objects.append(s3_name)
 
             # the size can't fail

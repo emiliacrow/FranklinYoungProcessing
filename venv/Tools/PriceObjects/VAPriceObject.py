@@ -120,32 +120,64 @@ class VAPrice(BasicProcessObject):
 
             base_product_price_id = row['BaseProductPriceId']
             fy_product_number = row['FyProductNumber']
-            on_contract = row['VAOnContract']
+            if 'VAOnContract' in row:
+                on_contract = row['VAOnContract']
+            else:
+                on_contract = -1
 
             contract_number = 'VA797H-16-D-0024/SPE2D1-16-D-0019'
-            contract_mod_number = row['VAContractModificationNumber']
-            is_pricing_approved = row['VAPricingApproved']
+            if 'VAContractModificationNumber' in row:
+                contract_mod_number = row['VAContractModificationNumber']
+            else:
+                contract_mod_number = ''
 
-            try:
-                approved_price_date = int(row['VAApprovedPriceDate'])
-                approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
-            except ValueError:
-                approved_price_date = str(row['VAApprovedPriceDate'])
+            if 'VAPricingApproved' in row:
+                is_pricing_approved = float(row['VAPricingApproved'])
+            else:
+                is_pricing_approved = -1
+
+            if 'VAApprovedPriceDate' in row:
+                try:
+                    approved_price_date = int(row['VAApprovedPriceDate'])
+                    approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
+                except ValueError:
+                    approved_price_date = str(row['VAApprovedPriceDate'])
+            else:
+                approved_price_date = -1
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
             if 'VAApprovedBasePrice' in row:
                 approved_base_price = float(row['VAApprovedBasePrice'])
             else:
-                approved_base_price = ''
+                approved_base_price = -1
 
-            approved_sell_price = float(row['VAApprovedSellPrice'])
-            approved_list_price = float(row['VAApprovedListPrice'])
-            approved_percent = float(row['VAApprovedPercent'])
+            if 'VAApprovedSellPrice' in row:
+                approved_sell_price = float(row['VAApprovedSellPrice'])
+            else:
+                approved_sell_price = -1
 
-            mfc_percent = row['MfcDiscountPercent']
+            if 'VAApprovedListPrice' in row:
+                approved_list_price = float(row['VAApprovedListPrice'])
+            else:
+                approved_list_price = -1
 
-            sin = row['VA_Sin']
+
+            if 'VAApprovedPercent' in row:
+                approved_percent = float(row['VAApprovedPercent'])
+            else:
+                approved_percent = -1
+
+            if 'MfcDiscountPercent' in row:
+                mfc_percent = row['MfcDiscountPercent']
+            else:
+                mfc_percent = -1
+
+            if 'VA_Sin' in row:
+                sin = row['VA_Sin']
+            else:
+                sin = ''
+
             product_notes = ''
             if 'VAProductNotes' in row:
                 product_notes = str(row['VAProductNotes'])
@@ -175,5 +207,21 @@ class VAPrice(BasicProcessObject):
     def trigger_ingest_cleanup(self):
         self.obIngester.va_product_price_insert_cleanup()
         self.obIngester.va_product_price_update_cleanup()
+
+
+
+
+
+class UpdateVAPrice(VAPrice):
+    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber']
+    sup_fields = []
+    att_fields = []
+    gen_fields = ['VAOnContract', 'VAApprovedListPrice', 'VAApprovedPercent', 'MfcDiscountPercent',
+                  'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','ContractedManufacturerPartNumber','VAPricingApproved']
+
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
+        self.name = 'VA Price Ingestion'
+
 
 ## end ##

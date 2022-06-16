@@ -520,7 +520,7 @@ class DalObject:
         runner.start()
 
     def va_product_price_update(self, lst_va_product_price):
-        proc_name = 'sequoia.VAProductPrice_update'
+        proc_name = 'sequoia.VAProductPrice_update2'
         proc_statement = 'CALL `sequoia`.`VAProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_product_price)
