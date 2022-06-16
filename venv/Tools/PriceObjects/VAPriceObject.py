@@ -77,8 +77,7 @@ class VAPrice(BasicProcessObject):
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
-                    self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
-                    df_collect_product_base_data[each_bool] = [0]
+                    df_collect_product_base_data[each_bool] = [-1]
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
@@ -221,7 +220,7 @@ class UpdateVAPrice(VAPrice):
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
-        self.name = 'VA Price Ingestion'
+        self.name = 'VA Price Update'
 
 
 ## end ##

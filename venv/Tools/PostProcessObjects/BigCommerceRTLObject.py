@@ -190,6 +190,8 @@ class BigCommerceRTLObject(BasicProcessObject):
 
             ecat_contract = -1
             ecat_approved = -1
+            db_ecat_contract = 0
+            db_ecat_approved = 0
             ecat_pending_del_flag = -1
             ecat_product_notes = ''
             if ecat_id != -1:
@@ -237,6 +239,8 @@ class BigCommerceRTLObject(BasicProcessObject):
 
             htme_contract = -1
             htme_approved = -1
+            db_htme_contract = 0
+            db_htme_approved = 0
             htme_pending_del_flag = -1
             htme_product_notes = ''
             if htme_id != -1:
@@ -287,6 +291,8 @@ class BigCommerceRTLObject(BasicProcessObject):
 
             gsa_contract = -1
             gsa_approved = -1
+            db_gsa_contract = 0
+            db_gsa_approved = 0
             gsa_product_notes = ''
             gsa_pending_del_flag = -1
             if gsa_id != -1:
@@ -337,6 +343,8 @@ class BigCommerceRTLObject(BasicProcessObject):
 
             va_contract = -1
             va_approved = -1
+            db_va_contract = 0
+            db_va_approved = 0
             va_product_notes = ''
             va_pending_del_flag = -1
             if va_id != -1:

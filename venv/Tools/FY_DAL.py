@@ -462,8 +462,8 @@ class DalObject:
         runner.start()
 
     def gsa_product_price_update(self,lst_gsa_product_price):
-        proc_name = 'sequoia.GSAProductPrice_update'
-        proc_statement = 'CALL `sequoia`.`GSAProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.GSAProductPrice_update2'
+        proc_statement = 'CALL `sequoia`.`GSAProductPrice_update2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_product_price)
         runner.start()
@@ -521,7 +521,7 @@ class DalObject:
 
     def va_product_price_update(self, lst_va_product_price):
         proc_name = 'sequoia.VAProductPrice_update2'
-        proc_statement = 'CALL `sequoia`.`VAProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`VAProductPrice_update2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_product_price)
         runner.start()

@@ -50,6 +50,7 @@ from Tools.PriceObjects.BasePriceObject import UpdateBasePrice
 from Tools.PriceObjects.VAPriceObject import VAPrice
 from Tools.PriceObjects.VAPriceObject import UpdateVAPrice
 from Tools.PriceObjects.GSAPriceObject import GSAPrice
+from Tools.PriceObjects.GSAPriceObject import UpdateGSAPrice
 from Tools.PriceObjects.ECATPriceObject import ECATPrice
 from Tools.PriceObjects.HTMEPriceObject import HTMEPrice
 from Tools.PriceObjects.FEDMALLPriceObject import FEDMALLPrice
@@ -789,7 +790,7 @@ class Pathways():
             return self.success, self.message
 
         if update_action_selected == 'Update GSA Pricing':
-            self.obGSAPrice = GSAPrice(self.df_product, self.user, self.password, is_testing)
+            self.obGSAPrice = UpdateGSAPrice(self.df_product, self.user, self.password, is_testing)
             self.success, self.message = self.obGSAPrice.begin_process()
             self.df_product = self.obGSAPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'GSAPrice')
