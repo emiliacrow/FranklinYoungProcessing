@@ -31,7 +31,7 @@ class ECATPrice(BasicProcessObject):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
                            'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
-                           'ECATProductPriceId','ECATProductPriceId_x','ECATProductPriceId_y',
+                           'db_ECATProductPriceId','ECATProductPriceId','ECATProductPriceId_x','ECATProductPriceId_y',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter'}
