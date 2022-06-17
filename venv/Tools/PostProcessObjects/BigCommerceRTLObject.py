@@ -229,12 +229,27 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # if we're actually deleting from contract, we can add the notes
                 elif db_ecat_contract == 1 and ecat_contract == 0 and ecat_approved == 1:
-                    mod_number = str(row['db_ECATModNumber'])
-                    ecat_pending_del_flag = 0
+                    mod_number = ''
+                    if 'ECATContractModificationNumber' in row:
+                        mod_number = str(row['ECATContractModificationNumber'])
+
+                    db_mod_number = str(row['db_ECATModNumber'])
+
+                    approved_price_date = ''
+                    if 'ECATApprovedPriceDate' in row:
+                        approved_price_date = str(row['ECATApprovedPriceDate'])
+
+                    notes_insert = 'Deleted from contract'
+                    if mod_number != '':
+                        notes_insert = notes_insert+' with mod '+mod_number
+
+                    if approved_price_date != '':
+                        notes_insert = notes_insert + ', approved on ' + approved_price_date.partition(' ')[0]
+
                     if ecat_product_notes == '':
-                        ecat_product_notes = 'Deleted from contract, {0}'.format(str_now)
+                        ecat_product_notes = notes_insert
                     else:
-                        ecat_product_notes = '{0}, Deleted from contract, {1}'.format(ecat_product_notes, str_now)
+                        ecat_product_notes = '{0}, {1}'.format(ecat_product_notes, notes_insert)
 
 
             htme_contract = -1
@@ -282,11 +297,27 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # if we're actually deleting from contract, we can add the notes
                 elif db_htme_contract == 1 and htme_contract == 0 and htme_approved == 1:
-                    mod_number = str(row['db_HTMEModNumber'])
+                    mod_number = ''
+                    if 'HTMEContractModificationNumber' in row:
+                        mod_number = str(row['HTMEContractModificationNumber'])
+
+                    db_mod_number = str(row['db_HTMEModNumber'])
+
+                    approved_price_date = ''
+                    if 'HTMEApprovedPriceDate' in row:
+                        approved_price_date = str(row['HTMEApprovedPriceDate'])
+
+                    notes_insert = 'Deleted from contract'
+                    if mod_number != '':
+                        notes_insert = notes_insert+' with mod '+mod_number
+
+                    if approved_price_date != '':
+                        notes_insert = notes_insert + ', approved on ' + approved_price_date.partition(' ')[0]
+
                     if htme_product_notes == '':
-                        htme_product_notes = 'Deleted from contract, {0}'.format(str_now)
+                        htme_product_notes = notes_insert
                     else:
-                        htme_product_notes = '{0}, Deleted from contract, {1}'.format(htme_product_notes, str_now)
+                        htme_product_notes = '{0}, {1}'.format(htme_product_notes, notes_insert)
 
 
             gsa_contract = -1
@@ -334,11 +365,27 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # if we're actually deleting from contract, we can add the notes
                 elif db_gsa_contract == 1 and gsa_contract == 0 and gsa_approved == 1:
-                    mod_number = str(row['db_GSAModNumber'])
+                    mod_number = ''
+                    if 'GSAContractModificationNumber' in row:
+                        mod_number = str(row['GSAContractModificationNumber'])
+
+                    db_mod_number = str(row['db_GSAModNumber'])
+
+                    approved_price_date = ''
+                    if 'GSAApprovedPriceDate' in row:
+                        approved_price_date = str(row['GSAApprovedPriceDate'])
+
+                    notes_insert = 'Deleted from contract'
+                    if mod_number != '':
+                        notes_insert = notes_insert+' with mod '+mod_number
+
+                    if approved_price_date != '':
+                        notes_insert = notes_insert + ', approved on ' + approved_price_date.partition(' ')[0]
+
                     if gsa_product_notes == '':
-                        gsa_product_notes = 'Deleted from contract, {0}'.format(str_now)
+                        gsa_product_notes = notes_insert
                     else:
-                        gsa_product_notes = '{0}, Deleted from contract, {1}'.format(gsa_product_notes, str_now)
+                        gsa_product_notes = '{0}, {1}'.format(gsa_product_notes, notes_insert)
 
 
             va_contract = -1
@@ -386,11 +433,28 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # if we're actually deleting from contract, we can add the notes
                 elif db_va_contract == 1 and va_contract == 0 and va_approved == 1:
-                    mod_number = str(row['db_VAModNumber'])
+                    mod_number = ''
+                    if 'VAContractModificationNumber' in row:
+                        mod_number = str(row['VAContractModificationNumber'])
+
+                    db_mod_number = str(row['db_VAModNumber'])
+
+                    approved_price_date = ''
+                    if 'VAApprovedPriceDate' in row:
+                        approved_price_date = str(row['VAApprovedPriceDate'])
+
+                    notes_insert = 'Deleted from contract'
+                    if mod_number != '':
+                        notes_insert = notes_insert+' with mod '+mod_number
+
+                    if approved_price_date != '':
+                        notes_insert = notes_insert + ', approved on ' + approved_price_date.partition(' ')[0]
+
                     if va_product_notes == '':
-                        va_product_notes = 'Deleted from contract, {0}'.format(str_now)
+                        va_product_notes = notes_insert
                     else:
-                        va_product_notes = '{0}, Deleted from contract, {1}'.format(va_product_notes, str_now)
+                        va_product_notes = '{0}, {1}'.format(va_product_notes, notes_insert)
+
 
 
             # if it's on contract we want to make sure they show
