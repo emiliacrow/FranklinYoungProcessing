@@ -122,10 +122,7 @@ class MinimumProductPrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','Failed at vendor identification')
                 return success, df_collect_product_base_data
 
-            success, df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
-            if success == False:
-                self.obReporter.update_report('Fail','Can\'t identify units')
-                return success, df_collect_product_base_data
+            df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
 
             b_override = False
             success, return_val = self.process_boolean(row, 'FyProductNumberOverride')
@@ -215,19 +212,19 @@ class MinimumProductPrice(BasicProcessObject):
         if ('Conv Factor/QTY UOM' not in row):
             df_collect_product_base_data['Conv Factor/QTY UOM'] = [-1]
 
-        if ('UnitOfMeasure' not in row):
-            unit_of_measure = 'EA'
-            df_collect_product_base_data['UnitOfMeasure'] = [unit_of_measure]
+        if 'UnitOfMeasure' not in row:
+            unit_of_measure = -1
         else:
             unit_of_measure = self.normalize_units(row['UnitOfMeasure'])
             df_collect_product_base_data['UnitOfMeasure'] = [unit_of_measure]
 
-        unit_of_issue = ''
-        if 'UnitOfIssue' in row:
+        if 'UnitOfIssue' not in row:
+            unit_of_issue = -1
+        else:
             unit_of_issue = self.normalize_units(row['UnitOfIssue'])
             df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
 
-        if unit_of_issue == '':
+        if unit_of_issue == -1:
             unit_of_issue_symbol_id = -1
         else:
             try:
@@ -237,7 +234,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         df_collect_product_base_data['UnitOfIssueSymbolId'] = [unit_of_issue_symbol_id]
 
-        if unit_of_measure == '':
+        if unit_of_measure == -1:
             unit_of_measure_symbol_id = -1
         else:
             try:
@@ -247,7 +244,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         df_collect_product_base_data['UnitOfMeasureSymbolId'] = [unit_of_measure_symbol_id]
 
-        return True, df_collect_product_base_data
+        return df_collect_product_base_data
 
 
     def process_vendor(self, df_collect_product_base_data, row):
@@ -281,6 +278,7 @@ class MinimumProductPrice(BasicProcessObject):
 
             product_id = row['ProductId']
             vendor_id = row['VendorId']
+
             unit_of_issue_symbol_id = row['UnitOfIssueSymbolId']
             unit_of_measure_symbol_id = row['UnitOfMeasureSymbolId']
             unit_of_issue_quantity = row['Conv Factor/QTY UOM']
@@ -294,13 +292,13 @@ class MinimumProductPrice(BasicProcessObject):
                                                      unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, fy_product_notes)
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Base Pricing':
-            price_id = row['ProductPriceId']
-            self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
-                                                 product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-                                                 product_description_id, fy_product_notes)
+            # price_id = row['ProductPriceId']
+            # self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
+            #                                      product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+            #                                      product_description_id, fy_product_notes)
 
         # this pathway will be needed at some point I'm sure
-        elif 'DEPRICATED' == 'UNIT CHANGE PATH':
+        #elif 'DEPRICATED' == 'UNIT CHANGE PATH':
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price(price_id, fy_product_number, allow_purchases, fy_part_number,
                                                  product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,

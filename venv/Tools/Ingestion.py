@@ -686,15 +686,15 @@ class IngestionObject:
             self.obDal.min_product_price_insert(self.product_insert_collector)
 
 
-    def update_product_price(self, newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes):
+    def update_product_price(self, newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId,FyProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
-            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes))
+            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes))
             self.obDal.min_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newProductPriceId, newFyProductNumber, newAllowPurchases, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newIsDiscontinued, newProductId, newVendorId,
-                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes))
+                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes))
 
     def update_product_price_cleanup(self):
         if self.product_update_collector != []:
