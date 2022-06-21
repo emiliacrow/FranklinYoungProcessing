@@ -155,23 +155,24 @@ class MinimumProductPrice(BasicProcessObject):
                         self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                         df_collect_product_base_data[each_bool] = [0]
 
-        # all the products that need the info to be ingested
-        if fy_product_number in self.dct_fy_product_description:
-            if 'ProductDescriptionId' not in row:
-                fy_product_desc_id = self.dct_fy_product_description[fy_product_number]
-                df_collect_product_base_data['ProductDescriptionId'] = [fy_product_desc_id]
+            # all the products that need the info to be ingested
+            if fy_product_number in self.dct_fy_product_description:
+                if 'ProductDescriptionId' not in row:
+                    fy_product_desc_id = self.dct_fy_product_description[fy_product_number]
+                    df_collect_product_base_data['ProductDescriptionId'] = [fy_product_desc_id]
 
-        else:
-            if 'ProductDescriptionId' not in row:
-                success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
-                if success:
-                    df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
-                    self.next_fy_description_id += 1
-                else:
-                    df_collect_product_base_data['ProductDescriptionId'] = [-1]
             else:
-                fy_product_desc_id = row['ProductDescriptionId']
-                self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
+                if 'ProductDescriptionId' not in row:
+                    success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
+                    if success:
+                        df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
+                        self.dct_fy_product_description[fy_product_number] = self.next_fy_description_id
+                        self.next_fy_description_id += 1
+                    else:
+                        df_collect_product_base_data['ProductDescriptionId'] = [-1]
+                else:
+                    fy_product_desc_id = row['ProductDescriptionId']
+                    self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
 

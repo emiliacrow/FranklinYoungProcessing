@@ -361,7 +361,7 @@ class BasicProcessObject:
         self.obProgressBarWindow.update_bar(7)
         self.eval_cases()
 
-        self.duplicate_logic()
+        # self.duplicate_logic()
         if 'ProductPriceId' in self.df_product.columns:
             print('Adding Notes')
             self.df_product = self.df_product.merge(self.df_product_notes, how='left',on=['ProductPriceId'])
@@ -1053,7 +1053,7 @@ class BasicProcessObject:
         return df_collect_ids
 
 
-    def process_manufacturer(self, df_collect_product_base_data, row):
+    def process_manufacturer(self, df_collect_product_base_data, row, skip_manufacturers = False):
         manufacturer = row['ManufacturerName']
         manufacturer = manufacturer.strip().replace('  ',' ')
 
@@ -1129,6 +1129,9 @@ class BasicProcessObject:
 
                 return True, df_collect_product_base_data, new_prefix
             else:
+                if skip_manufacturers:
+                    return False, df_collect_product_base_data, '0000'
+
                 manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
                 manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
 
@@ -1146,8 +1149,12 @@ class BasicProcessObject:
                 return True, df_collect_product_base_data, new_prefix
 
         else:
+            if skip_manufacturers:
+                return False, df_collect_product_base_data, '0000'
+
             manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
             manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+
 
             new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer, lst_manufacturer_names=manufacturer_name_list)
 
