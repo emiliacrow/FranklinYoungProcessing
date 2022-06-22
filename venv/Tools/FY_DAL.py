@@ -533,14 +533,14 @@ class DalObject:
     def va_product_price_insert(self, lst_va_product_price):
         proc_name = 'sequoia.VAProductPrice_insert'
         proc_statement = 'CALL `sequoia`.`VAProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_product_price)
         runner.start()
 
     def va_product_price_update(self, lst_va_product_price):
         proc_name = 'sequoia.VAProductPrice_update2'
         proc_statement = 'CALL `sequoia`.`VAProductPrice_update2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_product_price)
         runner.start()
 
@@ -561,7 +561,7 @@ class DalObject:
     def set_product_notes(self, lst_product_notes):
         proc_name = 'sequoia.set_product_notes'
         proc_statement = 'CALL `sequoia`.`set_product_notes`(%s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_notes)
         runner.start()
 
@@ -679,14 +679,14 @@ class DalObject:
     def min_product_insert(self, lst_product):
         proc_name = 'sequoia.MinimumProduct_insert2'
         proc_statement = 'CALL `sequoia`.`MinimumProduct_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
         runner.start()
 
     def min_product_update(self, lst_product):
         proc_name = 'sequoia.MinimumProduct_update'
         proc_statement = 'CALL `sequoia`.`MinimumProduct_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
         runner.start()
 
@@ -694,7 +694,7 @@ class DalObject:
         proc_name = 'sequoia.Product_fill'
         proc_statement = 'CALL `sequoia`.`Product_fill`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
                          '%s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
@@ -739,21 +739,21 @@ class DalObject:
     def min_product_price_insert(self,lst_product_price):
         proc_name = 'sequoia.MinimumProductPrice_insert2'
         proc_statement = 'CALL `sequoia`.`MinimumProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
     def min_product_price_update(self,lst_product_price):
         proc_name = 'sequoia.MinimumProductPrice_update2'
         proc_statement = 'CALL `sequoia`.`MinimumProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
     def min_product_price_nouoi_update(self,lst_product_price):
         proc_name = 'sequoia.MinimumProductPrice_nouoi_update2'
         proc_statement = 'CALL `sequoia`.`MinimumProductPrice_nouoi_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
@@ -780,7 +780,7 @@ class DalObject:
     def base_price_insert(self, lst_base_product_price):
         proc_name = 'sequoia.BaseProductPrice_insert2'
         proc_statement = 'CALL `sequoia`.`BaseProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_base_product_price)
         runner.start()
 
@@ -788,7 +788,7 @@ class DalObject:
     def base_price_update(self, lst_base_product_price):
         proc_name = 'sequoia.BaseProductPrice_update2'
         proc_statement = 'CALL `sequoia`.`BaseProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=5)
+        self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_base_product_price)
         runner.start()
 
@@ -893,7 +893,7 @@ class DalObject:
     def set_bc_toggles(self, lst_bc_toggles):
         proc_name = 'sequoia.set_BC_toggles'
         proc_statement = 'CALL `sequoia`.`set_BC_toggles`(%s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)
         runner.start()
 
@@ -901,49 +901,49 @@ class DalObject:
     def set_discon(self, lst_discon_toggles):
         proc_name = 'sequoia.set_is_discon_allow_purchase'
         proc_statement = 'CALL `sequoia`.`set_is_discon_allow_purchase`(%s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_discon_toggles)
         runner.start()
 
     def set_is_visible(self, lst_is_vis_toggles):
         proc_name = 'sequoia.set_is_visible'
         proc_statement = 'CALL `sequoia`.`set_is_visible`(%s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_is_vis_toggles)
         runner.start()
 
     def set_update_asset(self, lst_update_assets_toggles):
         proc_name = 'sequoia.set_update_assets'
         proc_statement = 'CALL `sequoia`.`set_update_assets`(%s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_update_assets_toggles)
         runner.start()
 
     def set_ecat_toggles(self, lst_ecat_toggles):
         proc_name = 'sequoia.set_ecat_toggles'
         proc_statement = 'CALL `sequoia`.`set_ecat_toggles`(%s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_toggles)
         runner.start()
 
     def set_htme_toggles(self, lst_htme_toggles):
         proc_name = 'sequoia.set_htme_toggles'
         proc_statement = 'CALL `sequoia`.`set_htme_toggles`(%s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_toggles)
         runner.start()
 
     def set_gsa_toggles(self, lst_gsa_toggles):
         proc_name = 'sequoia.set_gsa_toggles'
         proc_statement = 'CALL `sequoia`.`set_gsa_toggles`(%s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_toggles)
         runner.start()
 
     def set_va_toggles(self, lst_va_toggles):
         proc_name = 'sequoia.set_va_toggles'
         proc_statement = 'CALL `sequoia`.`set_va_toggles`(%s, %s, %s, %s, %s, %s);'
-        self.open_connection()
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_va_toggles)
         runner.start()
 
