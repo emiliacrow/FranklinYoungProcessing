@@ -355,7 +355,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if db_is_discontinued == 0 and is_discontinued == 1 and db_gsa_contract == 1 and db_gsa_approved == 1 and gsa_approved != 1:
                     gsa_pending_del_flag = 1
                     is_discontinued = 0
-                    ecat_approved = 0
+                    gsa_approved = 0
 
                     if 'ending contract deletion,' not in fy_product_notes:
                         if fy_product_notes == '':

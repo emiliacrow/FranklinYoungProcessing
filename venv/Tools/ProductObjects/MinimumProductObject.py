@@ -359,11 +359,11 @@ class MinimumProduct(BasicProcessObject):
 
 
     def process_long_desc(self, df_collect_product_base_data, row):
-        try:
+        short_desc = ''
+        if 'ShortDescription' in row:
             short_desc = str(row['ShortDescription'])
-        except KeyError:
-            short_desc = ''
-            df_collect_product_base_data['ShortDescription'] = [short_desc]
+
+
 
         if 'ProductName' not in row:
             df_collect_product_base_data['ProductName'] = ['']
