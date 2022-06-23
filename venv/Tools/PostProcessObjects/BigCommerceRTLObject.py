@@ -59,7 +59,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         self.df_ready_products.loc[(self.df_ready_products['IsTopProduct'] != 'Y'), 'IsTopProduct'] = 'N'
 
-        self.df_ready_products = self.df_ready_products.sort_values(by=['FyProductNumber','IsTopProduct'], ascending= False)
+        self.df_ready_products = self.df_ready_products.sort_values(by=['ProductPriceId','IsTopProduct'], ascending = True)
 
         self.df_product = pandas.concat([self.df_product, self.df_ready_products], ignore_index = True)
 

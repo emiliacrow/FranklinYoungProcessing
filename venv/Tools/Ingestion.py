@@ -1113,6 +1113,7 @@ class IngestionObject:
     def set_bc_update_toggles(self, price_id, fy_product_number, price_toggle, data_toggle):
         if (len(self.product_bc_toggle_collector) > self.load_limit):
             self.product_bc_toggle_collector.append((price_id, fy_product_number, price_toggle, data_toggle))
+            self.product_bc_toggle_collector.sort(key=lambda x:x[0], reverse=True)
             self.obDal.set_bc_toggles(self.product_bc_toggle_collector)
             self.product_bc_toggle_collector = []
 
@@ -1121,6 +1122,7 @@ class IngestionObject:
 
     def set_bc_update_toggles_cleanup(self):
         if self.product_bc_toggle_collector != []:
+            self.product_bc_toggle_collector.sort(key=lambda x:x[0], reverse=True)
             self.obDal.set_bc_toggles(self.product_bc_toggle_collector)
 
 

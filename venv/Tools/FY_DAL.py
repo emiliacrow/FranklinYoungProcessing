@@ -893,7 +893,7 @@ class DalObject:
     def set_bc_toggles(self, lst_bc_toggles):
         proc_name = 'sequoia.set_BC_toggles'
         proc_statement = 'CALL `sequoia`.`set_BC_toggles`(%s, %s, %s, %s);'
-        self.open_connection(runner_limit=15)
+        self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)
         runner.start()
 
