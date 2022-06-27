@@ -1110,6 +1110,21 @@ class IngestionObject:
             self.obDal.productvideo_cap(self.product_video_collector)
 
 
+    def set_featured_product(self, old_product_price_id, new_product_price_id, product_sort_order):
+        if (len(self.product_video_collector) > self.load_limit):
+            self.product_update_collector.append((old_product_price_id, new_product_price_id, product_sort_order))
+            self.obDal.set_featured_product(self.product_update_collector)
+            self.product_video_collector = []
+
+        else:
+            self.product_update_collector.append((old_product_price_id, new_product_price_id, product_sort_order))
+
+    def set_featured_product_cleanup(self):
+        if self.product_update_collector != []:
+            self.obDal.set_featured_product(self.product_update_collector)
+
+
+
     def set_bc_update_toggles(self, price_id, fy_product_number, price_toggle, data_toggle):
         if (len(self.product_bc_toggle_collector) > self.load_limit):
             self.product_bc_toggle_collector.append((price_id, fy_product_number, price_toggle, data_toggle))

@@ -889,6 +889,23 @@ class DalObject:
         df_description_id = self.get_lookup(proc_name,column_names)
         return df_description_id
 
+    def get_featured_products(self):
+        proc_name = 'sequoia.get_FeaturedProducts'
+        column_names = ['ProductPriceId', 'FyCatalogNumber', 'FyProductNumber', 'ManufacturerName',
+                        'ManufacturerPartNumber', 'VendorName', 'VendorPartNumber', 'IsFeaturedProduct', 'ProductSortOrder']
+        df_descriptions = self.get_lookup(proc_name,column_names)
+        return df_descriptions
+
+
+    # oldProductPriceId, newProductPriceId, newProductSortOrder
+    def set_featured_product(self, lst_featured_products):
+        proc_name = 'sequoia.get_FeaturedProducts'
+        proc_statement = 'CALL `sequoia`.`get_FeaturedProducts`(%s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_featured_products)
+        runner.start()
+
+
 
     def set_bc_toggles(self, lst_bc_toggles):
         proc_name = 'sequoia.set_BC_toggles'
