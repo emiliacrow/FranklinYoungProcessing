@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FeaturedProductObject(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber', 'IsFeaturedProduct', 'ProductSortOrder']
+    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber', 'ProductSortOrder']
 
     sup_fields = []
     att_fields = []
@@ -106,10 +106,12 @@ class FeaturedProductObject(BasicProcessObject):
             if old_product_price_id in self.lst_compeleted_products:
                 old_product_price_id  = -1
 
-            self.obIngester.set_featured_product(old_product_price_id, new_product_price_id, product_sort_order)
-
-            self.lst_compeleted_products.append(new_product_price_id)
-
+            if 0 < int(product_sort_order) < 26:
+                self.obIngester.set_featured_product(old_product_price_id, new_product_price_id, product_sort_order)
+                self.lst_compeleted_products.append(new_product_price_id)
+            else:
+                self.obReporter.update_report('Fail','ProductSortOrder was out of range')
+                return False, df_line_product
 
         return True, df_line_product
 
