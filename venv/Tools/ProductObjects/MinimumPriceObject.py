@@ -174,6 +174,12 @@ class MinimumProductPrice(BasicProcessObject):
                 else:
                     fy_product_desc_id = row['ProductDescriptionId']
                     self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
+                    success, df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
+                    if success:
+                        self.obReporter.update_report('Alert','FyProductName, Description were updated.')
+                    if not success:
+                        self.obReporter.update_report('Alert','FyProductName, Description were not updated.')
+
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
 
@@ -186,6 +192,33 @@ class MinimumProductPrice(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
+    def update_fy_description(self, df_collect_product_base_data, row):
+        fy_product_desc_id = row['ProductDescriptionId']
+        fy_product_number = row['FyProductNumber']
+        if 'FyProductName' not in row:
+            return False, df_collect_product_base_data
+        else:
+            fy_product_name = row['FyProductName']
+
+        if 'FyProductDescription' not in row:
+            return False, df_collect_product_base_data
+        else:
+            fy_product_description = row['FyProductDescription']
+
+
+        if len(fy_product_name) > 80:
+            self.obReporter.update_report('Alert','FyProductName might be too long for some contracts.')
+
+        if len(fy_product_description) > 1000:
+            self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
+
+        # for speed sake this is a one-off
+        lst_descriptions = [(fy_product_desc_id,fy_product_number, fy_product_name, fy_product_description)]
+        self.obDal.set_fy_product_description(lst_descriptions)
+
+        return True, df_collect_product_base_data
+
+
     def process_fy_description(self, df_collect_product_base_data, row):
         fy_product_number = row['FyProductNumber']
         if 'FyProductName' not in row:
@@ -193,11 +226,17 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             fy_product_name = row['FyProductName']
 
-        if 'FyShortDescription' not in row:
+        if 'FyProductDescription' not in row:
             return False, df_collect_product_base_data
         else:
             fy_product_description = row['FyProductDescription']
 
+
+        if len(fy_product_name) > 80:
+            self.obReporter.update_report('Alert','FyProductName might be too long for some contracts.')
+
+        if len(fy_product_description) > 1000:
+            self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
         # for speed sake this is a one-off
         lst_descriptions = [(fy_product_number, fy_product_name, fy_product_description)]
@@ -256,7 +295,7 @@ class MinimumProductPrice(BasicProcessObject):
         return True, df_collect_product_base_data
 
 
-    def minimum_product_price(self,df_line_product):
+    def minimum_product_price(self, df_line_product):
         fy_part_number = ''
         fy_product_notes = ''
         for colName, row in df_line_product.iterrows():
