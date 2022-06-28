@@ -50,7 +50,7 @@ class MinimumProductPrice(BasicProcessObject):
                            'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyShortDescription','db_FyLongDescription'}
+                           'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
@@ -196,15 +196,11 @@ class MinimumProductPrice(BasicProcessObject):
         if 'FyShortDescription' not in row:
             return False, df_collect_product_base_data
         else:
-            fy_short_description = row['FyShortDescription']
+            fy_product_description = row['FyProductDescription']
 
-        if 'FyLongDescription' not in row:
-            return False, df_collect_product_base_data
-        else:
-            fy_long_description = row['FyLongDescription']
 
         # for speed sake this is a one-off
-        lst_descriptions = [(fy_product_number, fy_product_name, fy_short_description, fy_long_description)]
+        lst_descriptions = [(fy_product_number, fy_product_name, fy_product_description)]
         self.obDal.fy_product_description_insert(lst_descriptions)
 
         return True, df_collect_product_base_data
@@ -294,13 +290,13 @@ class MinimumProductPrice(BasicProcessObject):
                                                      unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, fy_product_notes)
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Base Pricing':
-            # price_id = row['ProductPriceId']
-            # self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
-            #                                      product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-            #                                      product_description_id, fy_product_notes)
+            price_id = row['ProductPriceId']
+            self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
+                                                 product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+                                                 product_description_id, fy_product_notes)
 
         # this pathway will be needed at some point I'm sure
-        #elif 'DEPRICATED' == 'UNIT CHANGE PATH':
+        elif 'DEPRICATED' == 'UNIT CHANGE PATH':
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price(price_id, fy_product_number, allow_purchases, fy_part_number,
                                                  product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,

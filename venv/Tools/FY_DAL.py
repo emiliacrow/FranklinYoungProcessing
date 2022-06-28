@@ -869,9 +869,10 @@ class DalObject:
         df_toggles = self.get_lookup(proc_name,column_names)
         return df_toggles
 
+
     def fy_product_description_insert(self, lst_descriptions):
         proc_name = 'sequoia.ProductDescription_insert'
-        proc_statement = 'CALL `sequoia`.`ProductDescription_insert`(%s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_insert`(%s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
@@ -879,7 +880,7 @@ class DalObject:
 
     def get_fy_product_descriptions(self):
         proc_name = 'sequoia.get_FyProductDescriptions'
-        column_names = ['ProductDescriptionId', 'FyProductNumber','db_FyProductName','db_FyShortDescription','db_FyLongDescription']
+        column_names = ['ProductDescriptionId', 'FyProductNumber','db_FyProductName','db_FyProductDescription']
         df_descriptions = self.get_lookup(proc_name,column_names)
         return df_descriptions
 
@@ -888,6 +889,7 @@ class DalObject:
         column_names = ['AUTO_INCREMENT']
         df_description_id = self.get_lookup(proc_name,column_names)
         return df_description_id
+
 
     def get_featured_products(self):
         proc_name = 'sequoia.get_FeaturedProducts'
