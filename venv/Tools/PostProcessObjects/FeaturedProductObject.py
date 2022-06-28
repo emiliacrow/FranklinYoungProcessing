@@ -74,7 +74,6 @@ class FeaturedProductObject(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            print(row)
             if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
@@ -84,7 +83,6 @@ class FeaturedProductObject(BasicProcessObject):
 
 
     def process_changes(self, df_line_product):
-
         for colName, row in df_line_product.iterrows():
             new_product_price_id = row['ProductPriceId']
             new_fy_product_number = row['FyProductNumber']
