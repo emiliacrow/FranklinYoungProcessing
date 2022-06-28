@@ -27,6 +27,8 @@ from Tools.BaseDataLoaderObject import BaseDataLoader
 from Tools.ProductAgniKaiObject import ProductAgniKaiObject
 from Tools.CategoryProcessingObject import CategoryProcessor
 from Tools.PostProcessObjects.BigCommerceRTLObject import BigCommerceRTLObject as BC_RTL_Object
+from Tools.PostProcessObjects.FeaturedProductObject import FeaturedProductObject
+
 from Tools.PostProcessObjects.DiscontinuationObject import DiscontinueObject
 from Tools.PostProcessObjects.ProcessProductAssetObject import ProcessProductAssetObject
 
@@ -884,6 +886,17 @@ class Pathways():
             self.df_product = self.obAsset.get_df()
             self.obFileFinder.write_xlsx(self.df_product, 'asset')
             return self.success, self.message
+
+        elif contract_selected == 'Process Featured Product':
+            self.obFeaturedProduct = FeaturedProductObject(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obFeaturedProduct.begin_process()
+            self.df_product = self.obFeaturedProduct.get_df()
+            self.obFileFinder.write_xlsx(self.df_product, 'feat_prod')
+            return self.success, self.message
+
+
+
+
 
         return False, 'Process not built.'
 
