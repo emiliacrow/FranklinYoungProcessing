@@ -57,7 +57,8 @@ class HeaderTranslator():
                             'FyProductDescription':['FyProductDescription', 'Fy Product Description', 'Fy ProductDescription','FyProductDesc', 'Fy Product Desc', 'Fy ProductDesc'],
                             'FyCountryOfOrigin':['FY_CountryOfOrigin', 'FyCountryOfOrigin', 'Fy Country of Origin', 'Fy CountryOfOrigin','FyCOO', 'Fy COO', 'Fy_COO'],
                             'FyUnitOfIssue':['FY_UOI', 'FyUnitOfIssue', 'Fy Unit Of Issue', 'Fy UnitOfIssue','FyUOI', 'Fy UOI', 'Fy_UOI'],
-                            'FyUnitOfIssueQuantity':['FY_UOIQTY', 'FyUnitOfIssueQuantity', 'Fy Unit Of Issue Quantity', 'Fy UOIQuantity','Fy_UOIQuantity','Fy UnitOfIssueQuantity','FyQTY', 'Fy QTY', 'Fy_QTY'],
+                            'FyUnitOfIssueQuantity':['FY_UOIQTY', 'FyUOIQTY', 'FyUnitOfIssueQuantity', 'Fy Unit Of Issue Quantity', 'Fy UOIQuantity','Fy_UOIQuantity','FyUOIQuantity','Fy UnitOfIssueQuantity','FyQTY', 'Fy QTY', 'Fy_QTY'],
+                            'FyLeadTime':['Fy_lead_time', 'FyLeadTime', 'Fy Lead Time', 'Fy LeadTime', 'fy lead time', 'fy lead_time', 'fy_lead_time'],
 
                             'WebsiteOnly':['WebsiteOnly', 'Website Only', 'Web Only'],
                             'ECATEligible':['ECATEligible', 'ECAT Eligible', 'ECAT Is Eligible', 'ECAT IsEligible'],

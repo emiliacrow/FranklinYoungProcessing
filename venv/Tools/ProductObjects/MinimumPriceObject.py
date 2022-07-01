@@ -270,6 +270,11 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             fy_uoi_qty = -1
 
+        if 'FyLeadTime' in row:
+            fy_lead_time = int(row['FyLeadTime'])
+        else:
+            fy_lead_time = -1
+
         if len(fy_product_name) > 80 and fy_product_name != '':
             self.obReporter.update_report('Alert','FyProductName might be too long for some contracts.')
 
@@ -277,8 +282,8 @@ class MinimumProductPrice(BasicProcessObject):
             self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
         # for speed sake this is a one-off
-        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1):
-            lst_descriptions = [(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty)]
+        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1):
+            lst_descriptions = [(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time)]
             self.obDal.set_fy_product_description(lst_descriptions)
 
         return df_collect_product_base_data
@@ -311,6 +316,11 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             fy_uoi_qty = -1
 
+        if 'FyLeadTime' in row:
+            fy_lead_time = int(row['FyLeadTime'])
+        else:
+            fy_lead_time = -1
+
         if len(fy_product_name) > 80:
             self.obReporter.update_report('Alert','FyProductName might be too long for some contracts.')
 
@@ -318,8 +328,8 @@ class MinimumProductPrice(BasicProcessObject):
             self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
         # for speed sake this is a one-off
-        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1):
-            lst_descriptions = [(fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty)]
+        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1):
+            lst_descriptions = [(fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time)]
             self.obDal.fy_product_description_insert(lst_descriptions)
             return True, df_collect_product_base_data
         else:
