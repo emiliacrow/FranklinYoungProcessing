@@ -53,6 +53,12 @@ class HeaderTranslator():
                             'FyProductNumberOverride':['FyProductNumberOverride', 'Fy Product Number Override','IsProductNumberOverride', 'ProductNumberOverride', 'Product Number Override'],
                             'FyProductNotes':['FyProductNotes', 'Fy Product Notes','ProductNotes','Product Notes','InternalProductNotes','Internal Product Notes','FYProductNotes','FY Product Notes'],
 
+                            'FyProductName':['FyProductName', 'Fy Product Name','Fy ProductName'],
+                            'FyProductDescription':['FyProductDescription', 'Fy Product Description', 'Fy ProductDescription','FyProductDesc', 'Fy Product Desc', 'Fy ProductDesc'],
+                            'FyCountryOfOrigin':['FY_CountryOfOrigin', 'FyCountryOfOrigin', 'Fy Country of Origin', 'Fy CountryOfOrigin','FyCOO', 'Fy COO', 'Fy_COO'],
+                            'FyUnitOfIssue':['FY_UOI', 'FyUnitOfIssue', 'Fy Unit Of Issue', 'Fy UnitOfIssue','FyUOI', 'Fy UOI', 'Fy_UOI'],
+                            'FyUnitOfIssueQuantity':['FY_UOIQTY', 'FyUnitOfIssueQuantity', 'Fy Unit Of Issue Quantity', 'Fy UOIQuantity','Fy_UOIQuantity','Fy UnitOfIssueQuantity','FyQTY', 'Fy QTY', 'Fy_QTY'],
+
                             'WebsiteOnly':['WebsiteOnly', 'Website Only', 'Web Only'],
                             'ECATEligible':['ECATEligible', 'ECAT Eligible', 'ECAT Is Eligible', 'ECAT IsEligible'],
                             'HTMEEligible':['HTMEEligible', 'HTME Eligible', 'HTME Is Eligible', 'HTME IsEligible'],

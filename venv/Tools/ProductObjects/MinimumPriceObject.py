@@ -25,6 +25,10 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_uois_lookup = self.obDal.get_unit_of_issue_symbol_lookup()
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
+
+        if 'FyCountryOfOrigin' in self.df_product.columns:
+            self.batch_process_country()
+
         self.define_new()
         # pull the current descriptions
         self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
@@ -55,6 +59,53 @@ class MinimumProductPrice(BasicProcessObject):
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
+
+
+    def batch_process_country(self):
+        if 'FyCountryOfOriginId' not in self.df_product.columns:
+
+            df_attribute = self.df_product[['FyCountryOfOrigin']]
+            df_attribute = df_attribute.drop_duplicates(subset=['FyCountryOfOrigin'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                country = row['FyCountryOfOrigin']
+                country = self.obValidator.clean_country_name(country)
+                country = country.upper()
+                if (len(country) == 2):
+                    if country in self.df_country_translator['CountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    elif country in ['XX','ZZ']:
+                        # unknown
+                        lst_ids.append(-1)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
+                        lst_ids.append(coo_id)
+
+                elif (len(country) == 3):
+                    if country in self.df_country_translator['ECATCountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(ecat_code = country)
+                        lst_ids.append(coo_id)
+
+                elif (len(country) > 3):
+                    if country in self.df_country_translator['CountryName'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
+                        lst_ids.append(coo_id)
+                else:
+                    lst_ids.append(-1)
+
+            df_attribute['FyCountryOfOriginId'] = lst_ids
+            self.df_product = self.df_product.merge(df_attribute,
+                                                              how='left', on=['FyCountryOfOrigin'])
 
 
     def batch_process_vendor(self):
@@ -111,6 +162,11 @@ class MinimumProductPrice(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
 
+        for colName, row in df_line_product.iterrows():
+            df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
+
+        df_line_product = df_collect_product_base_data.copy()
+
         # step-wise product processing
         for colName, row in df_line_product.iterrows():
             if self.filter_check_in(row) == False:
@@ -161,6 +217,11 @@ class MinimumProductPrice(BasicProcessObject):
                 if 'ProductDescriptionId' not in row:
                     fy_product_desc_id = self.dct_fy_product_description[fy_product_number]
                     df_collect_product_base_data['ProductDescriptionId'] = [fy_product_desc_id]
+                else:
+                    fy_product_desc_id = row['ProductDescriptionId']
+                    self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
+                    df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
+
 
             else:
                 if 'ProductDescriptionId' not in row:
@@ -174,12 +235,7 @@ class MinimumProductPrice(BasicProcessObject):
                 else:
                     fy_product_desc_id = row['ProductDescriptionId']
                     self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
-                    success, df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
-                    if success:
-                        self.obReporter.update_report('Alert','FyProductName, Description were updated.')
-                    if not success:
-                        self.obReporter.update_report('Alert','FyProductName, Description were not updated.')
-
+                    df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
 
@@ -194,55 +250,85 @@ class MinimumProductPrice(BasicProcessObject):
 
     def update_fy_description(self, df_collect_product_base_data, row):
         fy_product_desc_id = row['ProductDescriptionId']
-        fy_product_number = row['FyProductNumber']
         if 'FyProductName' not in row:
-            return False, df_collect_product_base_data
+            fy_product_name = ''
         else:
             fy_product_name = row['FyProductName']
 
         if 'FyProductDescription' not in row:
-            return False, df_collect_product_base_data
+            fy_product_description = ''
         else:
             fy_product_description = row['FyProductDescription']
 
+        if 'FyCountryOfOriginId' in row:
+            fy_coo_id = int(row['FyCountryOfOriginId'])
+        else:
+            fy_coo_id = -1
 
-        if len(fy_product_name) > 80:
+        if 'FyUnitOfIssueSymbolId' in row:
+            fy_uoi_id = int(row['FyUnitOfIssueSymbolId'])
+        else:
+            fy_uoi_id = -1
+
+        if 'FyUnitOfIssueQuantity' in row:
+            fy_uoi_qty = int(row['FyUnitOfIssueQuantity'])
+        else:
+            fy_uoi_qty = -1
+
+        if len(fy_product_name) > 80 and fy_product_name != '':
             self.obReporter.update_report('Alert','FyProductName might be too long for some contracts.')
 
-        if len(fy_product_description) > 1000:
+        if len(fy_product_description) > 800 and fy_product_description != '':
             self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
         # for speed sake this is a one-off
-        lst_descriptions = [(fy_product_desc_id,fy_product_number, fy_product_name, fy_product_description)]
-        self.obDal.set_fy_product_description(lst_descriptions)
+        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1):
+            lst_descriptions = [(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty)]
+            self.obDal.set_fy_product_description(lst_descriptions)
 
-        return True, df_collect_product_base_data
+        return df_collect_product_base_data
 
 
     def process_fy_description(self, df_collect_product_base_data, row):
         fy_product_number = row['FyProductNumber']
         if 'FyProductName' not in row:
-            return False, df_collect_product_base_data
+            fy_product_name = ''
         else:
             fy_product_name = row['FyProductName']
 
         if 'FyProductDescription' not in row:
-            return False, df_collect_product_base_data
+            fy_product_description = ''
         else:
             fy_product_description = row['FyProductDescription']
 
+        if 'FyCountryOfOriginId' in row:
+            fy_coo_id = int(row['FyCountryOfOriginId'])
+        else:
+            fy_coo_id = -1
+
+        if 'FyUnitOfIssueSymbolId' in row:
+            fy_uoi_id = int(row['FyUnitOfIssueSymbolId'])
+        else:
+            fy_uoi_id = -1
+
+        if 'FyUnitOfIssueQuantity' in row:
+            fy_uoi_qty = int(row['FyUnitOfIssueQuantity'])
+        else:
+            fy_uoi_qty = -1
 
         if len(fy_product_name) > 80:
             self.obReporter.update_report('Alert','FyProductName might be too long for some contracts.')
 
-        if len(fy_product_description) > 1000:
+        if len(fy_product_description) > 800:
             self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
         # for speed sake this is a one-off
-        lst_descriptions = [(fy_product_number, fy_product_name, fy_product_description)]
-        self.obDal.fy_product_description_insert(lst_descriptions)
-
-        return True, df_collect_product_base_data
+        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1):
+            lst_descriptions = [(fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty)]
+            self.obDal.fy_product_description_insert(lst_descriptions)
+            return True, df_collect_product_base_data
+        else:
+            return False, df_collect_product_base_data
 
 
     def identify_units(self, df_collect_product_base_data, row):
@@ -261,6 +347,12 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_issue = self.normalize_units(row['UnitOfIssue'])
             df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
 
+        if 'FyUnitOfIssue' not in row:
+            fy_unit_of_issue = -1
+        else:
+            fy_unit_of_issue = self.normalize_units(row['FyUnitOfIssue'])
+            df_collect_product_base_data['FyUnitOfIssue'] = [fy_unit_of_issue]
+
         if unit_of_issue == -1:
             unit_of_issue_symbol_id = -1
         else:
@@ -271,6 +363,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         df_collect_product_base_data['UnitOfIssueSymbolId'] = [unit_of_issue_symbol_id]
 
+
         if unit_of_measure == -1:
             unit_of_measure_symbol_id = -1
         else:
@@ -280,6 +373,17 @@ class MinimumProductPrice(BasicProcessObject):
                 unit_of_measure_symbol_id = self.obIngester.ingest_uoi_symbol(unit_of_measure)
 
         df_collect_product_base_data['UnitOfMeasureSymbolId'] = [unit_of_measure_symbol_id]
+
+
+        if fy_unit_of_issue == -1:
+            fy_unit_of_issue_symbol_id = -1
+        else:
+            try:
+                fy_unit_of_issue_symbol_id = self.df_uois_lookup.loc[(self.df_uois_lookup['UnitOfIssueSymbol'] == fy_unit_of_issue),'UnitOfIssueSymbolId'].values[0]
+            except IndexError:
+                fy_unit_of_issue_symbol_id = self.obIngester.ingest_uoi_symbol(fy_unit_of_issue)
+
+        df_collect_product_base_data['FyUnitOfIssueSymbolId'] = [fy_unit_of_issue_symbol_id]
 
         return df_collect_product_base_data
 

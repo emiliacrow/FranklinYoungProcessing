@@ -871,15 +871,15 @@ class DalObject:
 
 
     def fy_product_description_insert(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_insert'
-        proc_statement = 'CALL `sequoia`.`ProductDescription_insert`(%s, %s, %s);'
+        proc_name = 'sequoia.ProductDescription_insert2'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_insert2`(%s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
 
     def set_fy_product_description(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_update'
-        proc_statement = 'CALL `sequoia`.`ProductDescription_update`(%s, %s, %s, %s);'
+        proc_name = 'sequoia.ProductDescription_update2'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_update2`(%s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
