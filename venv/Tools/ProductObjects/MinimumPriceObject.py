@@ -281,7 +281,6 @@ class MinimumProductPrice(BasicProcessObject):
         if len(fy_product_description) > 800 and fy_product_description != '':
             self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
-        # for speed sake this is a one-off
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1):
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time)
 
