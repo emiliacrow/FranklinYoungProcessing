@@ -16,6 +16,7 @@ class IngestionObject:
         self.product_collector = []
         self.product_insert_collector = []
         self.product_update_collector = []
+        self.product_description_update_collector = []
         self.product_update_nouoi_collector = []
         self.product_price_collector = []
         self.product_image_match_collector = []
@@ -655,6 +656,21 @@ class IngestionObject:
     def ingest_species(self,species_sci_name, species_name = ''):
         return_id = self.obDal.species_cap(species_sci_name,species_name)
         return return_id
+
+
+    def update_fy_product_description(self, fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time):
+        if (len(self.product_description_update_collector) > self.load_limit):
+            self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time))
+            self.obDal.set_fy_product_description(self.product_description_update_collector)
+            self.product_description_update_collector = []
+        else:
+            self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time))
+
+    def update_fy_product_description_cleanup(self):
+        if self.product_description_update_collector != []:
+            self.obDal.set_fy_product_description(self.product_description_update_collector)
+
+
 
 
     def ingest_product_price(self, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, FyProductNotes):

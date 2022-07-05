@@ -283,8 +283,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         # for speed sake this is a one-off
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1):
-            lst_descriptions = [(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time)]
-            self.obDal.set_fy_product_description(lst_descriptions)
+            self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time)
 
         return df_collect_product_base_data
 
@@ -458,6 +457,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.obIngester.update_product_price_nouoi_cleanup()
         self.obIngester.update_product_price_cleanup()
         self.obIngester.insert_product_price_cleanup()
+        self.obIngester.update_fy_product_description_cleanup()
 
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
