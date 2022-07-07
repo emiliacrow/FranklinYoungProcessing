@@ -442,11 +442,25 @@ class MinimumProduct(BasicProcessObject):
             if success and return_val == 1:
                 b_override = 1
 
-            product_name = row['ProductName']
-            short_desc = row['ShortDescription']
+            try:
+                product_name = row['ProductName']
+            except:
+                product_name = ''
 
-            long_desc = row['LongDescription']
-            ec_long_desc = row['ECommerceLongDescription']
+            try:
+                short_desc = row['ShortDescription']
+            except:
+                short_desc = ''
+
+            try:
+                long_desc = row['LongDescription']
+            except:
+                long_desc = ''
+
+            try:
+                ec_long_desc = row['ECommerceLongDescription']
+            except:
+                ec_long_desc = ''
 
             country_of_origin_id = row['CountryOfOriginId']
 
