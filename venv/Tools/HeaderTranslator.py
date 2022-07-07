@@ -118,7 +118,7 @@ class HeaderTranslator():
                                                   'approved MFC per','VA_MFC_Discount','GSA_MFC_Discount'],
                             'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
 
-                            'DateCatalogReceived':['DateCatalogRecieved','DateCatelogReceived', 'DateCatalogReceived',
+                            'DateCatalogReceived':['DateCatalogRecieved', 'DateCatelogReceived', 'DateCatalogReceived',
                                                    'Date Catalog Recieved', 'date_catalog_received','DateCatalogRcvd'],
 
                             'AllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?'],

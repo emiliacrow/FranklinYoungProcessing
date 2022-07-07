@@ -459,10 +459,11 @@ class BasePrice(BasicProcessObject):
                     date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
                 except ValueError:
                     date_catalog_received = str(row['DateCatalogReceived'])
+
             elif 'db_DateCatalogReceived' in row:
                 date_catalog_received = str(row['db_DateCatalogReceived'])
             else:
-                self.obReporter.update_report('Fail','Catalog recieved date missing')
+                self.obReporter.update_report('Fail','Catalog received date missing')
                 return False, df_line_product
 
             if 'CatalogProvidedBy' in row:
