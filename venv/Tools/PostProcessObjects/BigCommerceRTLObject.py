@@ -176,7 +176,6 @@ class BigCommerceRTLObject(BasicProcessObject):
             try:
                 db_allow_purchases = int(row['db_AllowPurchases'])
             except:
-                print(row)
                 db_allow_purchases = -1
 
             fy_product_notes = ''
@@ -198,10 +197,15 @@ class BigCommerceRTLObject(BasicProcessObject):
                 success, ecat_contract = self.process_boolean(row, 'ECATOnContract')
                 if success:
                     df_collect_product_base_data['ECATOnContract'] = [ecat_contract]
+                else:
+                    ecat_contract = -1
+
 
                 success, ecat_approved = self.process_boolean(row, 'ECATPricingApproved')
                 if success:
                     df_collect_product_base_data['ECATPricingApproved'] = [ecat_approved]
+                else:
+                    ecat_approved = -1
 
                 if 'ECATProductNotes' in row:
                     ecat_product_notes = row['ECATProductNotes']
@@ -423,7 +427,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                 if db_is_discontinued == 0 and is_discontinued == 1 and db_va_contract == 1 and db_va_approved == 1 and va_approved != 1:
                     va_pending_del_flag = 1
                     is_discontinued = 0
-                    ecat_approved = 0
+                    va_approved = 0
 
                     if 'ending contract deletion,' not in fy_product_notes:
                         if fy_product_notes == '':
@@ -599,6 +603,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
+
     def trigger_ingest_cleanup(self):
         self.obIngester.set_bc_update_toggles_cleanup()
         self.obIngester.set_is_discon_allow_purchase_cleanup()
@@ -609,5 +614,7 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.obIngester.set_gsa_toggles_cleanup()
         self.obIngester.set_va_toggles_cleanup()
         self.obIngester.set_product_notes_cleanup()
+
+
 
 ## end ##
