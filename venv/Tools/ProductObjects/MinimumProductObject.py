@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 # keep this
 class MinimumProduct(BasicProcessObject):
     req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName',
-                  'VendorPartNumber', 'ProductName', 'ShortDescription', 'CountryOfOrigin', 'LeadTime']
+                  'VendorPartNumber']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
     gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'IsFreeShipping', 'IsColdChain',
@@ -149,7 +149,7 @@ class MinimumProduct(BasicProcessObject):
 
 
     def batch_process_country(self):
-        if 'CountryOfOriginId' not in self.df_product.columns:
+        if 'CountryOfOriginId' not in self.df_product.columns and 'CountryOfOrigin' in self.df_product.columns:
 
             df_attribute = self.df_product[['CountryOfOrigin']]
             df_attribute = df_attribute.drop_duplicates(subset=['CountryOfOrigin'])
@@ -193,6 +193,51 @@ class MinimumProduct(BasicProcessObject):
             df_attribute['CountryOfOriginId'] = lst_ids
             self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=['CountryOfOrigin'])
+
+        if 'CountryOfOriginId' not in self.df_product.columns and 'FyCountryOfOrigin' in self.df_product.columns:
+
+            df_attribute = self.df_product[['FyCountryOfOrigin']]
+            df_attribute = df_attribute.drop_duplicates(subset=['FyCountryOfOrigin'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                country = row['FyCountryOfOrigin']
+                country = self.obValidator.clean_country_name(country)
+                country = country.upper()
+                if (len(country) == 2):
+                    if country in self.df_country_translator['CountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    elif country in ['XX','ZZ']:
+                        # unknown
+                        lst_ids.append(-1)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
+                        lst_ids.append(coo_id)
+
+                elif (len(country) == 3):
+                    if country in self.df_country_translator['ECATCountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(ecat_code = country)
+                        lst_ids.append(coo_id)
+
+                elif (len(country) > 3):
+                    if country in self.df_country_translator['CountryName'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
+                        lst_ids.append(coo_id)
+                else:
+                    lst_ids.append(-1)
+
+            df_attribute['CountryOfOriginId'] = lst_ids
+            self.df_product = self.df_product.merge(df_attribute,
+                                                              how='left', on=['FyCountryOfOrigin'])
 
 
     def batch_process_lead_time(self):
@@ -262,6 +307,67 @@ class MinimumProduct(BasicProcessObject):
 
                 df_attribute['ExpectedLeadTimeId'] = lst_ids
                 self.df_product = self.df_product.merge(df_attribute,how='left', on=['LeadTime'])
+
+            elif 'FyLeadTime' in self.df_product.columns:
+                df_attribute = self.df_product[['FyLeadTime']]
+                df_attribute = df_attribute.drop_duplicates(subset=['FyLeadTime'])
+                lst_ids = []
+                for colName, row in df_attribute.iterrows():
+                    lead_time = row['FyLeadTime']
+                    success, lead_time = self.float_check(lead_time, 'lead time')
+                    if success:
+                        lead_time = int(lead_time)
+                        try:
+                            new_lead_time_id = self.df_lead_times.loc[
+                                (self.df_lead_times['LeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
+                        except IndexError:
+                            if 'LeadTimeExpedited' in row:
+                                success, expedited_lead_time = self.float_check(row['LeadTimeExpedited'], 'Lead Time Expedited')
+                                if not success:
+                                    new_lead_time_id = -1
+
+                            else:
+                                expedited_lead_time = lead_time
+                            new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
+
+                    elif lead_time != '':
+                        if 'day' in lead_time:
+                            lead_time = int(lead_time.rpartition('day')[0])
+
+                        elif 'week' in lead_time:
+                            lead_time = int(lead_time.rpartition('week')[0]) * 7
+
+                        elif 'month' in lead_time:
+                            lead_time = int(lead_time.rpartition('month')[0]) * 30
+
+                        elif 'year' in lead_time:
+                            lead_time = int(lead_time.rpartition('year')[0]) * 365
+
+                        else:
+                            new_lead_time_id = -1
+
+
+                        if 'LeadTimeExpedited' in row:
+                            expedited_lead_time = row['LeadTimeExpedited']
+                        else:
+                            expedited_lead_time = lead_time
+
+
+                        if lead_time in self.df_lead_times['FyLeadTime'].tolist():
+                            new_lead_time_id = self.df_lead_times.loc[
+                                (self.df_lead_times['FyLeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
+
+                        else:
+                            new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
+
+                    else:
+                        new_lead_time_id = -1
+
+
+                    lst_ids.append(new_lead_time_id)
+
+                df_attribute['ExpectedLeadTimeId'] = lst_ids
+                self.df_product = self.df_product.merge(df_attribute,how='left', on=['FyLeadTime'])
             else:
                 self.df_product['ExpectedLeadTimeId'] = -1
 
@@ -359,20 +465,19 @@ class MinimumProduct(BasicProcessObject):
 
 
     def process_long_desc(self, df_collect_product_base_data, row):
-        short_desc = ''
-        if 'ShortDescription' in row:
-            short_desc = str(row['ShortDescription'])
+        product_description = ''
+        if 'ProductDescription' in row:
+            product_description = str(row['ProductDescription'])
+        elif 'FyProductDescription' in row:
+            product_description = str(row['FyProductDescription'])
+            df_collect_product_base_data['ProductDescription'] = [product_description]
 
-
-
-        if 'ProductName' not in row:
-            df_collect_product_base_data['ProductName'] = ['']
-
-        else:
+        if 'ProductName' in row:
             product_name = str(row['ProductName'])
-            if len(product_name) > 40:
-                product_name  = product_name[:40]
+        elif 'FyProductName' in row:
+            product_name = str(row['FyProductName'])
             df_collect_product_base_data['ProductName'] = [product_name]
+
 
         # processing/cleaning
         if 'LongDescription' in row:
@@ -448,9 +553,9 @@ class MinimumProduct(BasicProcessObject):
                 product_name = ''
 
             try:
-                short_desc = row['ShortDescription']
+                product_description = row['ProductDescription']
             except:
-                short_desc = ''
+                product_description = ''
 
             try:
                 long_desc = row['LongDescription']
@@ -475,15 +580,28 @@ class MinimumProduct(BasicProcessObject):
             expected_lead_time_id = int(row['ExpectedLeadTimeId'])
 
         if str(row['Filter']) == 'New':
-            if (expected_lead_time_id != -1):
-                self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
+            if (expected_lead_time_id == -1):
+                self.obReporter.update_report('Fail','Missing LeadTime')
+                return df_line_product
+            if (country_of_origin_id == -1):
+                self.obReporter.update_report('Fail','Missing CountryOfOrigin')
+                return df_line_product
+
+            if (product_name == ''):
+                self.obReporter.update_report('Fail','Missing ProductName')
+                return df_line_product
+            if (product_description == ''):
+                self.obReporter.update_report('Fail','Missing ProductDescription')
+                return df_line_product
+            else:
+                self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, product_description,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Partial' or str(row['Filter']) == 'Base Pricing':
             product_id = row['ProductId']
-            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, product_name, short_desc,
+            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, product_name, product_description,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
