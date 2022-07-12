@@ -622,7 +622,7 @@ class Pathways():
         self.df_product = self.obFileFinder.read_xlsx()
         all_steps = ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing']
 
-        self.obYNBox.close()
+        # self.obYNBox.close()
 
         if ingestion_action_selected in ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)']:
             self.obMinProduct = MinimumProduct(self.df_product, self.user, self.password, is_testing)

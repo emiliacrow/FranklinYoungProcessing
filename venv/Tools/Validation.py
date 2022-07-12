@@ -184,6 +184,8 @@ class Validator:
         out_phrase = out_phrase.replace('â','-')
 
         # and many more
+        print(in_phrase)
+        print(out_phrase)
 
         return out_phrase
 

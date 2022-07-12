@@ -118,11 +118,12 @@ class FileProcessor(BasicProcessObject):
 
     def correct_bad_unicode(self, df_line_product):
         self.success = True
-        clean_up_columns = ['ProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription']
+        clean_up_columns = ['ProductName','FyProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription','FyProductDescription']
         df_collect_line = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             for each_column_to_clean in clean_up_columns:
                 if each_column_to_clean in row:
+                    print(each_column_to_clean)
                     product_name = row[each_column_to_clean]
                     if self.obValidator.isEnglish(product_name) == False:
                         product_name = self.obValidator.remove_unicode(product_name)
