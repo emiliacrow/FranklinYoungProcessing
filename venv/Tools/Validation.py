@@ -80,8 +80,8 @@ class Validator:
         return image_name
 
     def clean_description(self,description):
-        pattern = ''
-        description = re.sub(pattern, '', description)
+        pattern = '([\r\n\t])'
+        description = re.sub(pattern, ' ', description)
         return description
 
     def prep_for_category_match(self,look_up_val):

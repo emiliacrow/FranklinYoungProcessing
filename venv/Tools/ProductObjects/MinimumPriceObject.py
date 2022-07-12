@@ -293,11 +293,16 @@ class MinimumProductPrice(BasicProcessObject):
             fy_product_name = ''
         else:
             fy_product_name = row['FyProductName']
+            fy_product_name = self.obValidator.clean_description(fy_product_name)
+            df_collect_product_base_data['FyProductName'] = fy_product_name
+
 
         if 'FyProductDescription' not in row:
             fy_product_description = ''
         else:
             fy_product_description = row['FyProductDescription']
+            fy_product_description = self.obValidator.clean_description(fy_product_description)
+            df_collect_product_base_data['FyProductDescription'] = fy_product_description
 
         if 'FyCountryOfOriginId' in row:
             fy_coo_id = int(row['FyCountryOfOriginId'])
@@ -328,8 +333,6 @@ class MinimumProductPrice(BasicProcessObject):
             self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1):
-            pass
-        else:
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time)
 
 
@@ -342,11 +345,15 @@ class MinimumProductPrice(BasicProcessObject):
             fy_product_name = ''
         else:
             fy_product_name = row['FyProductName']
+            fy_product_name = self.obValidator.clean_description(fy_product_name)
+            df_collect_product_base_data['FyProductName'] = fy_product_name
 
         if 'FyProductDescription' not in row:
             fy_product_description = ''
         else:
             fy_product_description = row['FyProductDescription']
+            fy_product_description = self.obValidator.clean_description(fy_product_description)
+            df_collect_product_base_data['FyProductDescription'] = fy_product_description
 
         if 'FyCountryOfOriginId' in row:
             fy_coo_id = int(row['FyCountryOfOriginId'])

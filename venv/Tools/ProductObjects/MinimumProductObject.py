@@ -466,27 +466,44 @@ class MinimumProduct(BasicProcessObject):
 
     def process_long_desc(self, df_collect_product_base_data, row):
         product_description = ''
+        fy_product_description = ''
         if 'ProductDescription' in row:
             product_description = str(row['ProductDescription'])
-        elif 'FyProductDescription' in row:
-            product_description = str(row['FyProductDescription'])
+            product_description = self.obValidator.clean_description(product_description)
+            df_collect_product_base_data['ProductDescription'] = [product_description]
+        if 'FyProductDescription' in row:
+            fy_product_description = str(row['FyProductDescription'])
+            fy_product_description = self.obValidator.clean_description(fy_product_description)
+            df_collect_product_base_data['FyProductDescription'] = [fy_product_description]
+        if product_description == '' and fy_product_description != '':
+            product_description = fy_product_description
             df_collect_product_base_data['ProductDescription'] = [product_description]
 
         if 'ProductName' in row:
             product_name = str(row['ProductName'])
-        elif 'FyProductName' in row:
-            product_name = str(row['FyProductName'])
+            product_name = self.obValidator.clean_description(product_name)
             df_collect_product_base_data['ProductName'] = [product_name]
+        if 'FyProductName' in row:
+            fy_product_name = str(row['FyProductName'])
+            fy_product_name = self.obValidator.clean_description(fy_product_name)
+            df_collect_product_base_data['FyProductName'] = [fy_product_name]
+        if fy_product_name == '' and fy_product_name != '':
+            fy_product_name = fy_product_name
+            df_collect_product_base_data['ProductName'] = [fy_product_name]
 
 
         # processing/cleaning
         if 'LongDescription' in row:
             long_desc = str(row['LongDescription'])
+            long_desc = self.obValidator.clean_description(long_desc)
+            df_collect_product_base_data['LongDescription'] = [long_desc]
         else:
             long_desc = ''
 
         if 'ECommerceLongDescription' in row:
             ec_long_desc = str(row['ECommerceLongDescription'])
+            ec_long_desc = self.obValidator.clean_description(ec_long_desc)
+            df_collect_product_base_data['ECommerceLongDescription'] = [ec_long_desc]
         else:
             ec_long_desc = ''
 
@@ -549,21 +566,25 @@ class MinimumProduct(BasicProcessObject):
 
             try:
                 product_name = row['ProductName']
+                product_name = self.obValidator.clean_description(product_name)
             except:
                 product_name = ''
 
             try:
                 product_description = row['ProductDescription']
+                product_description = self.obValidator.clean_description(product_description)
             except:
                 product_description = ''
 
             try:
                 long_desc = row['LongDescription']
+                long_desc = self.obValidator.clean_description(long_desc)
             except:
                 long_desc = ''
 
             try:
                 ec_long_desc = row['ECommerceLongDescription']
+                ec_long_desc = self.obValidator.clean_description(ec_long_desc)
             except:
                 ec_long_desc = ''
 
