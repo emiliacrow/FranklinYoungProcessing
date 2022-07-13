@@ -46,6 +46,35 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.df_product.sort_values(by=['FyProductNumber'], inplace=True)
 
+    def process_primary_vendor(self, df_collect_product_base_data, row):
+        df_collect_product_base_data
+        if 'PrimaryVendorName' in row:
+            vendor_name = row['PrimaryVendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+                df_collect_product_base_data['PrimaryVendorId'] = new_vendor_id
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+                df_collect_product_base_data['PrimaryVendorId'] = new_vendor_id
+            else:
+                self.obReporter.update_report('Alert','PrimaryVendorName did not match an existing vendor')
+
+        if 'SecondaryVendorName' in row:
+            vendor_name = row['SecondaryVendorName'].upper()
+            if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+                df_collect_product_base_data['SecondaryVendorId'] = new_vendor_id
+            elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                new_vendor_id = self.df_vendor_translator.loc[
+                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+                df_collect_product_base_data['SecondaryVendorId'] = new_vendor_id
+            else:
+                self.obReporter.update_report('Alert','SecondaryVendorName did not match an existing vendor')
+
+        return df_collect_product_base_data
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -208,6 +237,8 @@ class MinimumProductPrice(BasicProcessObject):
 
         for colName, row in df_line_product.iterrows():
             df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
+            if 'PrimaryVendorName' in row or 'SecondaryVendorName' in row:
+                df_collect_product_base_data = self.process_primary_vendor(df_collect_product_base_data, row)
 
         df_line_product = df_collect_product_base_data.copy()
 
@@ -254,7 +285,6 @@ class MinimumProductPrice(BasicProcessObject):
                     else:
                         self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                         df_collect_product_base_data[each_bool] = [0]
-
 
             # all the products that need the info to be ingested
             if fy_product_number in self.dct_fy_product_description:
@@ -332,13 +362,27 @@ class MinimumProductPrice(BasicProcessObject):
         if len(fy_product_description) > 800 and fy_product_description != '':
             self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
-        fy_is_hazardous = -1
-        primary_vendor_id = -1
-        secondary_vendor_id = -1
+        if 'FyIsHazardous' in row:
+            success, fy_is_hazardous = self.process_boolean(row, 'FyIsHazardous')
+            if success:
+                df_collect_product_base_data['FyIsHazardous'] = [fy_is_hazardous]
+            else:
+                fy_is_hazardous = -1
+        else:
+            fy_is_hazardous = -1
+
+        if 'PrimaryVendorId' in row:
+            primary_vendor_id = int(row['PrimaryVendorId'])
+        else:
+            primary_vendor_id = -1
+
+        if 'SecondaryVendorId' in row:
+            secondary_vendor_id = int(row['SecondaryVendorId'])
+        else:
+            secondary_vendor_id = -1
 
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1):
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)
-
 
         return df_collect_product_base_data
 
@@ -385,9 +429,24 @@ class MinimumProductPrice(BasicProcessObject):
         if len(fy_product_description) > 800:
             self.obReporter.update_report('Alert','FyProductDescription might be too long for some contracts.')
 
-        fy_is_hazardous = -1
-        primary_vendor_id = -1
-        secondary_vendor_id = -1
+        if 'FyIsHazardous' in row:
+            success, fy_is_hazardous = self.process_boolean(row, 'FyIsHazardous')
+            if success:
+                df_collect_product_base_data['FyIsHazardous'] = [fy_is_hazardous]
+            else:
+                fy_is_hazardous = -1
+        else:
+            fy_is_hazardous = -1
+
+        if 'PrimaryVendorId' in row:
+            primary_vendor_id = int(row['PrimaryVendorId'])
+        else:
+            primary_vendor_id = -1
+
+        if 'SecondaryVendorId' in row:
+            secondary_vendor_id = int(row['SecondaryVendorId'])
+        else:
+            secondary_vendor_id = -1
 
         # for speed sake this is a one-off
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1):
