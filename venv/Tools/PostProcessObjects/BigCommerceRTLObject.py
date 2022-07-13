@@ -565,7 +565,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             self.obIngester.set_update_asset(product_id, update_asset)
 
 
-        if (ecat_contract != -1 or ecat_approved != -1):
+        if (ecat_contract != -1 or ecat_approved != -1 or ecat_product_notes != ''):
             if db_ecat_contract != ecat_contract or db_ecat_approved != ecat_approved:
                 self.obIngester.set_ecat_toggles(ecat_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes)
             elif self.full_run:
@@ -573,7 +573,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 self.obReporter.update_report('Alert', 'No change to ECAT toggles')
 
-        if (htme_contract != -1 or htme_approved != -1):
+        if (htme_contract != -1 or htme_approved != -1 or htme_product_notes != ''):
             if db_htme_contract != htme_contract or db_htme_approved != htme_approved:
                 self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved, htme_pending_del_flag, htme_product_notes)
             elif self.full_run:
@@ -581,7 +581,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 self.obReporter.update_report('Alert', 'No change to HTME toggles')
 
-        if (gsa_contract != -1 or gsa_approved != -1):
+        if (gsa_contract != -1 or gsa_approved != -1 or gsa_product_notes != ''):
             if db_gsa_contract != gsa_contract or db_gsa_approved != gsa_approved:
                 self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes)
             elif self.full_run:
@@ -589,7 +589,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 self.obReporter.update_report('Alert', 'No change to GSA toggles')
 
-        if (va_contract != -1 or va_approved != -1):
+        if (va_contract != -1 or va_approved != -1 or va_product_notes != ''):
             if db_va_contract != va_contract or db_va_approved != va_approved:
                 self.obIngester.set_va_toggles(va_id, fy_product_number, va_contract, va_approved, va_pending_del_flag, va_product_notes)
             elif self.full_run:

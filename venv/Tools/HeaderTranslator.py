@@ -52,6 +52,13 @@ class HeaderTranslator():
                             'OnContract':['OnContract', 'On Contract'],
                             'FyProductNumberOverride':['FyProductNumberOverride', 'Fy Product Number Override','IsProductNumberOverride', 'ProductNumberOverride', 'Product Number Override'],
                             'FyProductNotes':['FyProductNotes', 'Fy Product Notes','ProductNotes','Product Notes','InternalProductNotes','Internal Product Notes','FYProductNotes','FY Product Notes'],
+                            'GSAProductNotes':['GSAProductNotes', 'GSA Product Notes', 'GSA ProductNotes', 'GSA Product Notes'],
+                            'VAProductNotes':['VAProductNotes', 'VA Product Notes', 'VA ProductNotes',
+                                               'VA Product Notes'],
+                            'ECATProductNotes':['ECATProductNotes', 'ECAT Product Notes', 'ECAT ProductNotes',
+                                               'ECAT Product Notes'],
+                            'HTMEProductNotes':['HTMEProductNotes', 'HTME Product Notes', 'HTME ProductNotes',
+                                               'HTME Product Notes'],
 
                             'FyProductName':['FyProductName', 'Fy Product Name','Fy ProductName'],
                             'FyProductDescription':['FyProductDescription', 'Fy Product Description', 'Fy ProductDescription','FyProductDesc', 'Fy Product Desc', 'Fy ProductDesc'],
