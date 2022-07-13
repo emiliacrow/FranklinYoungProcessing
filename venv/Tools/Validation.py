@@ -79,10 +79,6 @@ class Validator:
         image_name = re.sub(pattern, '', image_name)
         return image_name
 
-    def clean_description(self,description):
-        pattern = '([\r\n\t])'
-        description = re.sub(pattern, ' ', description)
-        return description
 
     def prep_for_category_match(self,look_up_val):
         look_up_val = ' '+look_up_val+' '
@@ -201,13 +197,31 @@ class Validator:
         out_phrase = in_phrase.replace('–','-')
         return out_phrase
 
+    def clean_description(self,description):
+        pattern = '([\r\n\t])'
+        description = re.sub(pattern, ' ', description)
+
+        # https://www.htmlhelp.com/reference/html40/entities/special.html
+        description = description.replace('&quot;', '"')
+        description = description.replace('&ldquo;', '"')
+        description = description.replace('&rdquo;', '"')
+
+        description = description.replace('&lsquo;', '\'')
+        description = description.replace('&rsquo;', '\'')
+
+        description = description.replace('&mdash;', '-')
+        description = description.replace('&ndash;', '-')
+
+        return description
 
 
 def test_frame():
-    char = ','
-    test_word = char+'123'+char+'456'+char
-    print(test_word)
-    print(clean_part_number(test_word))
+    obVal = Validator()
+    desc = 'This is an example of a large down quote? &ldquo; did you see it?'
+
+    print(desc)
+    desc = obVal.clean_description(desc)
+    print(desc)
 
 
 def clean_part_number(str_to_clean):

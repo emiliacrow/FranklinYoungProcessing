@@ -14,8 +14,8 @@ class BigCommerceRTLObject(BasicProcessObject):
     req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible',
-                  'UpdateAssets','ECATOnContract','ECATPricingApproved','HTMETOnContract','HTMEPricingApproved',
-                  'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved','FyProductNotes']
+                  'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','HTMETOnContract','HTMEPricingApproved','HTMEProductNotes',
+                  'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes']
     att_fields = []
     gen_fields = []
     def __init__(self,df_product, user, password, is_testing, full_run=False):
