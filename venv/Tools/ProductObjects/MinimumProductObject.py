@@ -467,6 +467,8 @@ class MinimumProduct(BasicProcessObject):
     def process_long_desc(self, df_collect_product_base_data, row):
         product_description = ''
         fy_product_description = ''
+        product_name = ''
+        fy_product_name = ''
         if 'ProductDescription' in row:
             product_description = str(row['ProductDescription'])
             product_description = self.obValidator.clean_description(product_description)
@@ -487,7 +489,7 @@ class MinimumProduct(BasicProcessObject):
             fy_product_name = str(row['FyProductName'])
             fy_product_name = self.obValidator.clean_description(fy_product_name)
             df_collect_product_base_data['FyProductName'] = [fy_product_name]
-        if fy_product_name == '' and fy_product_name != '':
+        if product_name == '' and fy_product_name != '':
             fy_product_name = fy_product_name
             df_collect_product_base_data['ProductName'] = [fy_product_name]
 
