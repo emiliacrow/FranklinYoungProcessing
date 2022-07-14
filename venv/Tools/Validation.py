@@ -213,6 +213,7 @@ class Validator:
         description = description.replace('&mdash;', '-')
         description = description.replace('&#x2013;', '-')
         description = description.replace('&#8315;', '-')
+        description = description.replace('&#8722;', '-')
 
         description = description.replace('&plusm;', '+/-')
         description = description.replace('&plusmn;', '+/-')
@@ -232,6 +233,17 @@ class Validator:
         description = description.replace('& reg;', '(R)')
         description = description.replace('&trade;', '(TM)')
         description = description.replace('&#8482;', '(TM)')
+
+        description = description.replace('&mu;', 'mu')
+        description = description.replace('&#181;', 'mu')
+        description = description.replace('&nu;', 'nu')
+        description = description.replace('&#957;', 'nu')
+        description = description.replace('&alpha;', 'alpha')
+        description = description.replace('&#945;', 'alpha')
+        description = description.replace('&alpha;', 'beta')
+        description = description.replace('&#946;', 'beta')
+        description = description.replace('&deg;', '(deg)')
+        description = description.replace('&ordm;', '(deg)')
         
         return description
 
