@@ -115,7 +115,6 @@ class Validator:
 
     def remove_unicode(self,in_phrase):
         out_phrase = in_phrase.replace('Î»','[lambda]')
-
         out_phrase = out_phrase.replace('Î±','[alpha]')
         out_phrase = out_phrase.replace('Â±', '[alpha]')
         out_phrase = out_phrase.replace('Î©','[omega]')
@@ -179,10 +178,6 @@ class Validator:
 
         out_phrase = out_phrase.replace('â','-')
 
-        # and many more
-        print(in_phrase)
-        print(out_phrase)
-
         return out_phrase
 
     def isEnglish(self,in_phrase):
@@ -202,16 +197,42 @@ class Validator:
         description = re.sub(pattern, ' ', description)
 
         # https://www.htmlhelp.com/reference/html40/entities/special.html
-        description = description.replace('&quot;', '"')
         description = description.replace('&ldquo;', '"')
         description = description.replace('&rdquo;', '"')
-
         description = description.replace('&lsquo;', '\'')
         description = description.replace('&rsquo;', '\'')
+        description = description.replace('&quot;', '"')
+        description = description.replace('&#8220;', '"')
+        description = description.replace('&#8221;', '"')
+        description = description.replace('&#34;', '"')
+        description = description.replace('&#39;', '\'')
+        description = description.replace('&#prime;', '\'')
+        description = description.replace('&#Prime;', '\'')
 
-        description = description.replace('&mdash;', '-')
         description = description.replace('&ndash;', '-')
+        description = description.replace('&mdash;', '-')
+        description = description.replace('&#x2013;', '-')
+        description = description.replace('&#8315;', '-')
 
+        description = description.replace('&plusm;', '+/-')
+        description = description.replace('&plusmn;', '+/-')
+        description = description.replace('&#x00b1;', '+/-')
+
+        description = description.replace('&gt;', '>')
+        description = description.replace('&ge;', '>=')
+        description = description.replace('&gte;', '>=')
+        description = description.replace('&#8805;', '>=')
+
+        description = description.replace('&lt;', '<')
+        description = description.replace('&le;', '<=')
+        description = description.replace('&lte;', '<=')
+        description = description.replace('&#8804;', '<=')
+
+        description = description.replace('&reg;', '(R)')
+        description = description.replace('& reg;', '(R)')
+        description = description.replace('&trade;', '(TM)')
+        description = description.replace('&#8482;', '(TM)')
+        
         return description
 
 

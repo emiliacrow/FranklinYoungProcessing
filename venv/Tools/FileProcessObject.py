@@ -32,7 +32,7 @@ class FileProcessor(BasicProcessObject):
     def header_viability(self):
         if self.proc_to_run == 'Extract Attributes':
             self.req_fields = []
-            self.sup_fields = ['LongDescription', 'ShortDescription','ProductDescription']
+            self.sup_fields = ['ProductName','FyProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription','FyProductDescription']
 
         if self.proc_to_run == 'Extract Configuration':
             self.req_fields = []
@@ -43,8 +43,8 @@ class FileProcessor(BasicProcessObject):
             self.sup_fields = []
 
         if self.proc_to_run == 'Unicode Correction':
-            self.req_fields = ['ProductName']
-            self.sup_fields = []
+            self.req_fields = []
+            self.sup_fields = ['ProductName','FyProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription','FyProductDescription']
 
         if self.proc_to_run == 'Test Data Load File':
             self.req_fields = ['FyCatalogNumber','FyProductNumber', 'ManufacturerPartNumber','ManufacturerName',
@@ -123,26 +123,16 @@ class FileProcessor(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             for each_column_to_clean in clean_up_columns:
                 if each_column_to_clean in row:
-                    print(each_column_to_clean)
                     product_name = row[each_column_to_clean]
+                    product_name = self.obValidator.clean_description(product_name)
+
                     if self.obValidator.isEnglish(product_name) == False:
                         product_name = self.obValidator.remove_unicode(product_name)
-                        df_collect_line[each_column_to_clean] = [product_name]
-                        temp_prod_name = product_name.replace('º','')
-                        temp_prod_name = product_name.replace('%','')
-                        temp_prod_name = product_name.replace('/','')
-                        temp_prod_name = product_name.replace('-','')
-
-                        temp_prod_name = product_name.replace('[','')
-                        temp_prod_name = product_name.replace(']','')
-                        temp_prod_name = product_name.replace('(','')
-                        temp_prod_name = product_name.replace(')','')
-                        temp_prod_name = product_name.replace('{','')
-                        temp_prod_name = product_name.replace('}','')
-
 
                         if self.obValidator.isEnglish(product_name) == False:
                             self.obReporter.update_report('Alert','Review for unicode ' + each_column_to_clean)
+
+                    df_collect_line[each_column_to_clean] = [product_name]
 
         return self.success, df_collect_line
 
@@ -237,35 +227,15 @@ class FileProcessor(BasicProcessObject):
     def extract_configuration(self, df_line_product):
         self.success = True
         df_collect_attribute_data = df_line_product.copy()
+        extract_set = ['ProductName','FyProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription','FyProductDescription']
 
-        if 'ProductName' in df_line_product.columns:
-            for colName, row in df_line_product.iterrows():
-                self.success, df_collect_attribute_data, product_name = self.process_configuration(df_collect_attribute_data, row, row['ProductName'])
-                product_name = self.obExtractor.reinject_phrase(product_name)
-                df_collect_attribute_data['ProductName'] = [product_name]
-            df_line_product = df_collect_attribute_data.copy()
-
-        if 'LongDesc' in df_line_product.columns:
-            for colName, row in df_line_product.iterrows():
-                self.success, df_collect_attribute_data, long_desc = self.process_configuration(df_collect_attribute_data, row, row['LongDesc'])
-                long_desc = self.obExtractor.reinject_phrase(long_desc)
-                df_collect_attribute_data['LongDesc'] = [long_desc]
-            df_line_product = df_collect_attribute_data.copy()
-
-        if 'ShortDesc' in df_line_product.columns:
-            for colName, row in df_line_product.iterrows():
-                self.success, df_collect_attribute_data, short_desc = self.process_configuration(df_collect_attribute_data, row, row['ShortDesc'])
-                short_desc = self.obExtractor.reinject_phrase(short_desc)
-                df_collect_attribute_data['ShortDesc'] = [short_desc]
-            df_line_product = df_collect_attribute_data.copy()
-
-        if 'ProductDesc' in df_line_product.columns:
-            for colName, row in df_line_product.iterrows():
-                self.success, df_collect_attribute_data, prod_desc = self.process_configuration(df_collect_attribute_data, row, row['ProductDesc'])
-                prod_desc = self.obExtractor.reinject_phrase(prod_desc)
-                df_collect_attribute_data['ProductDesc'] = [prod_desc]
-            df_line_product = df_collect_attribute_data.copy()
-
+        for each_col in extract_set:
+            if each_col in df_line_product.columns:
+                for colName, row in df_line_product.iterrows():
+                    self.success, df_collect_attribute_data, product_name = self.process_configuration(df_collect_attribute_data, row, row[each_col])
+                    product_name = self.obExtractor.reinject_phrase(product_name)
+                    df_collect_attribute_data[each_col] = [product_name]
+                df_line_product = df_collect_attribute_data.copy()
 
         return True, df_collect_attribute_data
 

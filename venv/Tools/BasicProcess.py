@@ -627,7 +627,8 @@ class BasicProcessObject:
             df_to_clean_case_1['VendorPartNumber'] = df_to_clean_case_1[['VendorPartNumber_x']]
 
         drop_1 = ['BaseProductPriceId','ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
-                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y']
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y',
+                  'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
         df_to_clean_case_1 = df_to_clean_case_1.drop(columns = drop_1)
 
         if len(df_to_clean_case_3.index) > 0:
@@ -638,7 +639,8 @@ class BasicProcessObject:
             df_to_clean_case_3['VendorPartNumber'] = df_to_clean_case_3[['VendorPartNumber_x']]
 
         drop_3 = ['ProductPriceId','BaseProductPriceId', 'ManufacturerName_x', 'FyProductNumber_x', 'VendorName_x',
-                      'VendorPartNumber_x', 'VendorPartNumber_y', 'VendorName_y', 'FyProductNumber_y', 'ManufacturerName_y']
+                      'VendorPartNumber_x', 'VendorPartNumber_y', 'VendorName_y', 'FyProductNumber_y', 'ManufacturerName_y',
+                  'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
         df_to_clean_case_3 = df_to_clean_case_3.drop(columns=drop_3)
 
         if len(df_to_clean_case_4.index) > 0:
@@ -649,8 +651,9 @@ class BasicProcessObject:
             df_to_clean_case_4['VendorName'] = df_to_clean_case_4[['VendorName_x']]
             df_to_clean_case_4['VendorPartNumber'] = df_to_clean_case_4[['VendorPartNumber_x']]
 
-        drop_4 = ['ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
-                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y']
+        drop_4 = ['ProductPriceId','BaseProductPriceId', 'ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y','ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
+
         df_to_clean_case_4 = df_to_clean_case_4.drop(columns = drop_4)
 
         if len(df_to_clean_case_9.index) > 0:
@@ -739,8 +742,9 @@ class BasicProcessObject:
             df_to_clean_case_6['ManufacturerPartNumber'] = df_to_clean_case_6[['ManufacturerPartNumber_x']]
 
         drop_6 = ['ProductPriceId','BaseProductPriceId','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
-                  'db_IsDiscontinued','ECATProductPriceId','HTMEProductPriceId','GSAProductPriceId','VAProductPriceId',
-                  'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_x','ManufacturerPartNumber_y']
+                  'db_IsDiscontinued',
+                  'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_x','ManufacturerPartNumber_y',
+                  'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
         df_to_clean_case_6 = df_to_clean_case_6.drop(columns = drop_6)
 
         if len(df_to_clean_case_7.index) > 0:
@@ -815,8 +819,8 @@ class BasicProcessObject:
         df_partials['VendorName'] = df_partials[['VendorName_x']]
         df_partials['VendorPartNumber'] = df_partials[['VendorPartNumber_x']]
 
-        drop_p = ['ProductPriceId','BaseProductPriceId','ECATProductPriceId','HTMEProductPriceId',
-                  'GSAProductPriceId','VAProductPriceId', 'ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x',
+        drop_p = ['ProductPriceId','BaseProductPriceId',
+                  'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x',
                   'VendorPartNumber_x','VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_partials = df_partials.drop(columns = drop_p)
 
