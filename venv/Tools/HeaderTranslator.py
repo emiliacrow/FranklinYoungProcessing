@@ -11,6 +11,8 @@ class HeaderTranslator():
         # that's stupid
         self.dct_headers = {'VendorName':['VendorName','Vendor Name','primary_vendor_name'],
                             'VendorCode':['VendorCode', 'Vendor Code', 'primary_vendor_code'],
+                            'PrimaryVendorName':['PrimaryVendorCode', 'Primary Vendor Code', 'primary_vendor_code','PrimaryVendor','Primary Vendor'],
+                            'SecondaryVendorName':['SecondaryVendorCode', 'Secondary Vendor Code', 'secondary_vendor_code','SecondaryVendor','Secondary Vendor'],
                             'ManufacturerName':['ManufacturerName','Manufacturer Name','Manu Name','manufacturer_name','Manufacturer Standard Name'],
                             'SupplierName':['SupplierName','Supplier Name','supplier name','supplier_name'],
 
