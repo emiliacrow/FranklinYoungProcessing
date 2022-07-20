@@ -461,15 +461,27 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def identify_units(self, df_collect_product_base_data, row):
-        if 'Conv Factor/QTY UOM' not in row:
-            if 'FyUnitOfIssueQuantity' not in row:
-                df_collect_product_base_data['Conv Factor/QTY UOM'] = [-1]
-            else:
-                fy_unit_of_issue_quantity = row['FyUnitOfIssueQuantity']
-                df_collect_product_base_data['Conv Factor/QTY UOM'] = [fy_unit_of_issue_quantity]
+        # set quantities
+        if 'Conv Factor/QTY UOM' in row:
+            unit_of_issue_quantity = row['Conv Factor/QTY UOM']
+        else:
+            unit_of_issue_quantity = -1
+            df_collect_product_base_data['Conv Factor/QTY UOM'] = [unit_of_issue_quantity]
+
+
+        if 'FyUnitOfIssueQuantity' in row:
+            fy_unit_of_issue_quantity = row['FyUnitOfIssueQuantity']
+        else:
+            fy_unit_of_issue_quantity = -1
+
+        if unit_of_issue_quantity == -1 and fy_unit_of_issue_quantity != -1:
+            unit_of_issue_quantity = fy_unit_of_issue_quantity
+            df_collect_product_base_data['Conv Factor/QTY UOM'] = [unit_of_issue_quantity]
+
 
         if 'UnitOfMeasure' not in row:
-            unit_of_measure = -1
+            unit_of_measure = self.normalize_units('EA')
+            df_collect_product_base_data['UnitOfMeasure'] = [unit_of_measure]
         else:
             unit_of_measure = self.normalize_units(row['UnitOfMeasure'])
             df_collect_product_base_data['UnitOfMeasure'] = [unit_of_measure]
@@ -481,11 +493,15 @@ class MinimumProductPrice(BasicProcessObject):
             unit_of_issue = self.normalize_units(row['UnitOfIssue'])
             df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
 
-        elif 'FyUnitOfIssue' in row:
+
+        if 'FyUnitOfIssue' in row:
             fy_unit_of_issue = self.normalize_units(row['FyUnitOfIssue'])
-            unit_of_issue = fy_unit_of_issue
-            df_collect_product_base_data['UnitOfIssue'] = [fy_unit_of_issue]
             df_collect_product_base_data['FyUnitOfIssue'] = [fy_unit_of_issue]
+
+        if unit_of_issue == -1 and fy_unit_of_issue != -1:
+            unit_of_issue = fy_unit_of_issue
+            df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
+
 
 
         if fy_unit_of_issue == -1:
@@ -571,13 +587,13 @@ class MinimumProductPrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','Check UOI, QTY, UOM')
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Base Pricing':
-            price_id = row['ProductPriceId']
-            self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
-                                                 product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-                                                 product_description_id, fy_product_notes)
+            # price_id = row['ProductPriceId']
+            # self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
+            #                                      product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+            #                                      product_description_id, fy_product_notes)
 
-        # this pathway will be needed at some point I'm sure
-        elif 'DEPRICATED' == 'UNIT CHANGE PATH':
+            # this pathway will be needed at some point I'm sure
+            # elif 'DEPRICATED' == 'UNIT CHANGE PATH':
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price(price_id, fy_product_number, allow_purchases, fy_part_number,
                                                  product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
