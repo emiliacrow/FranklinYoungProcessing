@@ -679,7 +679,7 @@ class DalObject:
     def min_product_insert(self, lst_product):
         proc_name = 'sequoia.MinimumProduct_insert2'
         proc_statement = 'CALL `sequoia`.`MinimumProduct_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=15)
+        self.open_connection(runner_limit=2)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
         runner.start()
 

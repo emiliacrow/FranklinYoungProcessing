@@ -317,6 +317,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         return True, df_collect_product_base_data
 
+
     def update_fy_description(self, df_collect_product_base_data, row):
         fy_product_desc_id = row['ProductDescriptionId']
         if 'FyProductName' not in row:
@@ -405,6 +406,8 @@ class MinimumProductPrice(BasicProcessObject):
 
         if 'FyCountryOfOriginId' in row:
             fy_coo_id = int(row['FyCountryOfOriginId'])
+            if fy_coo_id == 259:
+                fy_coo_id = -1
         else:
             fy_coo_id = -1
 
