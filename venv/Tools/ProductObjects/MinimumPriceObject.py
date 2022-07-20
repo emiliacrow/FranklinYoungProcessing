@@ -503,7 +503,6 @@ class MinimumProductPrice(BasicProcessObject):
             df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
 
 
-
         if fy_unit_of_issue == -1:
             fy_unit_of_issue_symbol_id = -1
         else:
