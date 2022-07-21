@@ -186,29 +186,30 @@ class MinimumProductPrice(BasicProcessObject):
             vendor_name = self.vendor_name_selection()
             self.df_product['VendorName'] = vendor_name
 
-        df_attribute = self.df_product[['VendorName']]
-        df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
-        lst_ids = []
-        for colName, row in df_attribute.iterrows():
-            vendor_name = row['VendorName'].upper()
-            if vendor_name in self.df_vendor_translator['VendorCode'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
-            elif vendor_name in self.df_vendor_translator['VendorName'].values:
-                new_vendor_id = self.df_vendor_translator.loc[
-                    (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
-            else:
-                vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
-                vendor_name_list = list(dict.fromkeys(vendor_name_list))
+        if 'VendorName' in self.df_product.columns:
+            df_attribute = self.df_product[['VendorName']]
+            df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                vendor_name = row['VendorName'].upper()
+                if vendor_name in self.df_vendor_translator['VendorCode'].values:
+                    new_vendor_id = self.df_vendor_translator.loc[
+                        (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+                elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                    new_vendor_id = self.df_vendor_translator.loc[
+                        (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+                else:
+                    vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
+                    vendor_name_list = list(dict.fromkeys(vendor_name_list))
 
-                new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
+                    new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
 
-            lst_ids.append(new_vendor_id)
+                lst_ids.append(new_vendor_id)
 
-        df_attribute['VendorId'] = lst_ids
+            df_attribute['VendorId'] = lst_ids
 
-        self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
-                                                 how='left', on=['VendorName'])
+            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                     how='left', on=['VendorName'])
 
 
     def filter_check_in(self, row):
@@ -586,13 +587,13 @@ class MinimumProductPrice(BasicProcessObject):
                 self.obReporter.update_report('Fail','Check UOI, QTY, UOM')
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Base Pricing':
-            # price_id = row['ProductPriceId']
-            # self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
-            #                                      product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
-            #                                      product_description_id, fy_product_notes)
+            price_id = row['ProductPriceId']
+            self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
+                                                 product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+                                                 product_description_id, fy_product_notes)
 
-            # this pathway will be needed at some point I'm sure
-            # elif 'DEPRICATED' == 'UNIT CHANGE PATH':
+        # this pathway will be needed at some point I'm sure
+        elif 'DEPRICATED' == 'UNIT CHANGE PATH':
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price(price_id, fy_product_number, allow_purchases, fy_part_number,
                                                  product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
