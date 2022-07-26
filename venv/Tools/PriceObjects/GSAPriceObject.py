@@ -40,6 +40,7 @@ class GSAPrice(BasicProcessObject):
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
 
+
     def assign_contract_ids(self):
         self.df_contract_ids = self.obDal.get_gsa_contract_ids()
         self.df_product = self.df_product.merge(self.df_contract_ids, how='left', on=['FyProductNumber'])

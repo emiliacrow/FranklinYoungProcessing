@@ -232,13 +232,11 @@ class BasicProcessObject:
         merge_columns = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber']
         self.df_product, self.df_full_matched_product, self.df_full_product_lookup = self.merge_and_split(self.df_product, self.df_full_product_lookup, merge_columns)
 
-
         # match all values, these are Base Price files
         print('Round 2')
         self.obProgressBarWindow.update_bar(3)
         self.df_product, self.df_pricing_matched_product, self.df_product_price_lookup = self.merge_and_split(self.df_product, self.df_product_price_lookup, merge_columns)
         self.df_price_agnostic_product_lookup = pandas.concat([self.df_full_product_lookup, self.df_product_price_lookup, self.df_product_minumum_lookup], ignore_index=True)
-
         self.df_price_agnostic_product_lookup.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'] , ignore_index = True, inplace = True)
 
         # round 3
@@ -372,7 +370,7 @@ class BasicProcessObject:
         self.obProgressBarWindow.update_bar(9)
 
 
-    def merge_and_split(self,df_left, df_right, on_columns):
+    def merge_and_split(self, df_left, df_right, on_columns):
         df_left['is_left'] = '1'
         df_right['is_right'] = '1'
 

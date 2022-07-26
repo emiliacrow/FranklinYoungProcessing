@@ -44,6 +44,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                        'db_HTMEOnContract', 'db_HTMEModNumber','db_HTMEPricingApproved',
                        'db_GSAOnContract', 'db_GSAModNumber','db_GSAPricingApproved',
                        'db_VAOnContract', 'db_VAModNumber','db_VAPricingApproved']
+
         self.df_top_toggles = self.df_top_toggles.drop(columns=drop_values)
 
         match_headers = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
@@ -63,7 +64,6 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         self.df_product = pandas.concat([self.df_product, self.df_ready_products], ignore_index = True)
 
-        # self.df_product = self.df_product.drop_duplicates(subset = ['FyProductNumber','VendorPartNumber_y']
 
 
     def remove_private_headers(self):
@@ -182,7 +182,6 @@ class BigCommerceRTLObject(BasicProcessObject):
             if 'FyProductNotes' in row:
                 fy_product_notes = row['FyProductNotes']
                 fy_product_notes = fy_product_notes.replace('NULL', '')
-                fy_product_notes = fy_product_notes.replace(';', ',')
 
 
             str_now = datetime.datetime.today().strftime('%d, %b %Y')
