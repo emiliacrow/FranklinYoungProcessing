@@ -205,6 +205,8 @@ class Validator:
         description = description.replace('&#8220;', '"')
         description = description.replace('&#8221;', '"')
         description = description.replace('&#34;', '"')
+        description = description.replace('ΓÇ¥', '"')
+
         description = description.replace('&#39;', '\'')
         description = description.replace('&#prime;', '\'')
         description = description.replace('&#Prime;', '\'')
@@ -229,16 +231,24 @@ class Validator:
         description = description.replace('&lte;', '<=')
         description = description.replace('&#8804;', '<=')
 
+        description = description.replace('┬á', ' ')
+        description = description.replace('û ', ' ')
+        description = description.replace('╬ô├ç├ë', ' ')
         description = description.replace('&#160;', ' ')
         description = description.replace('&#37;', '%')
 
+        description = description.replace('┬«', '(R)')
         description = description.replace('&reg;', '(R)')
         description = description.replace('& reg;', '(R)')
         description = description.replace('&#174;', '(R)')
 
+        description = description.replace('Γäó', '(TM)')
         description = description.replace('&trade;', '(TM)')
         description = description.replace('&#8482;', '(TM)')
 
+        description = description.replace('╬╝', '(mu)')
+        description = description.replace('┬╡', '(mu)')
+        description = description.replace('Γö¼Γòí', '(mu)')
         description = description.replace('&mu;', '(mu)')
         description = description.replace('&micro;', '(mu)')
         description = description.replace('&#181;', '(mu)')
@@ -256,7 +266,7 @@ class Validator:
         description = description.replace('&deg;', '(deg)')
         description = description.replace('&ordm;', '(deg)')
         description = description.replace('&#x00b0;', '(deg)')
-        
+
         return description
 
 
