@@ -41,6 +41,7 @@ def main():
 
 
 def excepthook(exc_type, exc_value, exc_tb):
+    # this captures and reports crashes that would otherwise be hidden by the gui
     tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
     crash_path = os.getcwd() + '\\venv\Assets\CrashReport.txt'
     error_path = tb.split('\n')
@@ -101,6 +102,10 @@ class DuckworthWindow(QWidget):
                                                         '\nEstimated Freight, Landed Cost, LandedCostMarkupPercent_FYSell, LandedCostMarkupPercent_FYList,'
                                                         '\nSell Price(FySellPrice), Retail Price(FyListPrice), DateCatalogReceived, CatalogProvidedBy',
 
+                               '0-FyProduct Ingestion(1 step)':'Required: FyCatalogNumber, FyProductNumber, ManufacturereName, ManufacturerPartNumber, VendorName, VendorPartNumber'
+                                                        '\nSupport: FyProductName, FyProductDescription, FyCountryOfOrigin, FyUnitOfIssue, FyUnitOfIssueQuantity,'
+                                                        '\nFyLeadTime, FyIsHazardous, PrimaryVendorName, SecondaryVendorName',
+
                                'GSA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber,'
                                                     '\nGSAOnContract, GSAApprovedListPrice, GSAApprovedPercent, MfcDiscountPercent,'
                                                     '\nGSAContractModificationNumber, GSA_Sin, GSAApprovedPriceDate, GSAPricingApproved',
@@ -132,6 +137,10 @@ class DuckworthWindow(QWidget):
                                                         '\nSupport: IsVisible, ECommerceDiscount, MfcDiscountPercent, VendorListPrice, Discount,'
                                                         '\nEstimated Freight, Landed Cost, LandedCostMarkupPercent_FYSell, LandedCostMarkupPercent_FYList,'
                                                         '\nSell Price(FySellPrice), Retail Price(FyListPrice), DateCatalogReceived, CatalogProvidedBy',
+
+                               '0-FyProduct Update(1 step)':'Required: FyCatalogNumber, FyProductNumber, ManufacturereName, ManufacturerPartNumber, VendorName, VendorPartNumber'
+                                                               '\nSupport: FyProductName, FyProductDescription, FyCountryOfOrigin, FyUnitOfIssue, FyUnitOfIssueQuantity,'
+                                                               '\nFyLeadTime, FyIsHazardous, PrimaryVendorName, SecondaryVendorName',
 
                                'Update GSA Pricing':'Required: FyCatalogNumber, FyProductNumber, ManufacturerPartNumber, VendorPartNumber,'
                                                     '\nGSAOnContract, GSAApprovedListPrice, GSAApprovedPercent, MfcDiscountPercent,'
@@ -370,7 +379,7 @@ class DuckworthWindow(QWidget):
 
 
     def ingestion_buttons(self,column_pos):
-        self.ingestion_options = ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing', 'HTME Pricing',
+        self.ingestion_options = ['0-FyProduct Ingestion(1 step)','1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing', 'HTME Pricing',
                                   'ECAT Pricing', 'FEDMALL Pricing']
         self.ingestion_options.sort()
 
@@ -405,10 +414,10 @@ class DuckworthWindow(QWidget):
         success, message = self.obPathway.ingest_data_pathway(self.is_testing, ingestion_action_selected)
 
         if success:
-            self.message_scroll_text.append([ingestion_action_selected,message,self.success_string_style1])
+            self.message_scroll_text.append([ingestion_action_selected, message, self.success_string_style1])
 
         else:
-            self.message_scroll_text.append([ingestion_action_selected,message,self.failure_string_style])
+            self.message_scroll_text.append([ingestion_action_selected, message, self.failure_string_style])
         self.message_number = self.message_scroll_text.index(self.message_scroll_text[-1])
         self.set_new_tooltip()
 
@@ -416,7 +425,7 @@ class DuckworthWindow(QWidget):
 
 
     def update_data_buttons(self,column_pos):
-        self.update_data_options = ['1-Update Minimum Product Data(3 steps)', '1.5-Update Minimum Product Price Data(2 steps)', '2-Update Full Product(5 steps)', '3-Update Product Attributes(2 steps)', '4-Update Base Pricing(1 step)', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
+        self.update_data_options = ['0-FyProduct Update(1 step)','1-Update Minimum Product Data(3 steps)', '1.5-Update Minimum Product Price Data(2 steps)', '2-Update Full Product(5 steps)', '3-Update Product Attributes(2 steps)', '4-Update Base Pricing(1 step)', 'Update GSA Pricing', 'Update VA Pricing', 'Update HTME Pricing', 'Update ECAT Pricing', 'Update FEDMALL Pricing']
         self.update_data_options.sort()
 
         self.update_data_button = QPushButton('Update Data')

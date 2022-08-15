@@ -45,6 +45,8 @@ from Tools.ProductObjects.MinimumPriceObject import UpdateMinimumProductPrice
 from Tools.ProductObjects.FillPriceObject import FillProductPrice
 from Tools.ProductObjects.FillPriceObject import UpdateFillProductPrice
 
+from Tools.ProductObjects.FyProductObject import FyProductIngest
+
 # pricing objects
 from Tools.PriceObjects.BasePriceObject import BasePrice
 from Tools.PriceObjects.BasePriceObject import UpdateBasePrice
@@ -620,9 +622,17 @@ class Pathways():
         #    b_inter_files = True
 
         self.df_product = self.obFileFinder.read_xlsx()
-        all_steps = ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing']
+        all_steps = ['0-FyProduct Ingestion(1 step)','1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing']
 
         # self.obYNBox.close()
+
+        if ingestion_action_selected in ['0-FyProduct Ingestion(1 step)']:
+            self.obFyProductIngest = FyProductIngest(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obFyProductIngest.begin_process()
+            self.df_product = self.obFyProductIngest.get_df()
+            if b_inter_files:
+                self.obFileFinder.write_xlsx(self.df_product,'FyProdIn')
+            return self.success, self.message
 
         if ingestion_action_selected in ['1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)']:
             self.obMinProduct = MinimumProduct(self.df_product, self.user, self.password, is_testing)
@@ -717,7 +727,7 @@ class Pathways():
 
         self.full_process = True
         self.success = False
-        b_inter_files = False
+        b_inter_files = True
         self.message = 'Update data pathway'
 
         self.obYNBox = YesNoDialog('Write intermediate files?')
@@ -726,7 +736,8 @@ class Pathways():
             b_inter_files = True
 
         self.df_product = self.obFileFinder.read_xlsx()
-        all_steps = ['1-Update Minimum Product Data(3 steps)',
+        all_steps = ['0-FyProduct Update(1 step)',
+                     '1-Update Minimum Product Data(3 steps)',
                      '1.5-Update Minimum Product Price Data(2 steps)',
                      '2-Update Full Product(5 steps)',
                      '3-Update Product Attributes(2 steps)',
@@ -738,6 +749,14 @@ class Pathways():
                      'Update FEDMALL Pricing']
 
         self.obYNBox.close()
+
+        if update_action_selected in ['0-FyProduct Update(1 step)']:
+            self.obFyProductIngest = FyProductIngest(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obFyProductIngest.begin_process()
+            self.df_product = self.obFyProductIngest.get_df()
+            if b_inter_files:
+                self.obFileFinder.write_xlsx(self.df_product,'FyProdUp')
+            return self.success, self.message
 
         if update_action_selected in ['1-Update Minimum Product Data(3 steps)', '2-Update Full Product(5 steps)']:
 
