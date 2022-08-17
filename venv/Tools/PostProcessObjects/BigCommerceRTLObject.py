@@ -16,6 +16,7 @@ class BigCommerceRTLObject(BasicProcessObject):
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible',
                   'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','HTMETOnContract','HTMEPricingApproved','HTMEProductNotes',
                   'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes']
+
     att_fields = []
     gen_fields = []
     def __init__(self,df_product, user, password, is_testing, full_run=False):
@@ -32,38 +33,13 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.df_ready_products = self.df_product[(self.df_product['Filter'] == 'Ready')].copy()
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
 
-        self.df_ready_products = self.df_ready_products.drop(columns=['Filter','db_IsDiscontinued'])
+        self.df_ready_products = self.df_ready_products.drop(columns=['db_IsDiscontinued'])
         # toggle setup
         self.df_current_toggles = self.obDal.get_toggles_full()
 
-        self.df_top_toggles = self.df_current_toggles.drop_duplicates(subset = ['FyProductNumber'])
-
-        drop_values = ['db_IsDiscontinued','db_AllowPurchases',
-                       'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
-                       'db_ECATOnContract', 'db_ECATModNumber', 'db_ECATPricingApproved',
-                       'db_HTMEOnContract', 'db_HTMEModNumber','db_HTMEPricingApproved',
-                       'db_GSAOnContract', 'db_GSAModNumber','db_GSAPricingApproved',
-                       'db_VAOnContract', 'db_VAModNumber','db_VAPricingApproved']
-
-        self.df_top_toggles = self.df_top_toggles.drop(columns=drop_values)
-
-        match_headers = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
-        self.df_current_toggles['Filter'] = 'Update'
-        self.df_ready_products = self.df_ready_products.merge(self.df_current_toggles, how='left', on=match_headers)
-
-        self.df_ready_products.loc[(self.df_ready_products['Filter'] != 'Update'), 'Filter'] = 'Fail'
-
-        match_headers = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
-        self.df_top_toggles['IsTopProduct'] = 'Y'
-
-        self.df_ready_products = self.df_ready_products.merge(self.df_top_toggles, how='left', on=match_headers)
-
-        self.df_ready_products.loc[(self.df_ready_products['IsTopProduct'] != 'Y'), 'IsTopProduct'] = 'N'
-
-        self.df_ready_products = self.df_ready_products.sort_values(by=['ProductPriceId','IsTopProduct'], ascending = True)
+        self.df_ready_products = self.df_ready_products.merge(self.df_current_toggles, how='left', on=['FyProductNumber'])
 
         self.df_product = pandas.concat([self.df_product, self.df_ready_products], ignore_index = True)
-
 
 
     def remove_private_headers(self):
@@ -518,37 +494,23 @@ class BigCommerceRTLObject(BasicProcessObject):
         # at this point we've evaluated all the data
         if (price_toggle != -1 or data_toggle != -1):
             # this needs to be better
-            if str(row['IsTopProduct']) == 'Y':
-                db_price_toggle = int(row['db_BCPriceUpdateToggle'])
-                db_data_toggle = int(row['db_BCPriceUpdateToggle'])
-                if db_price_toggle != price_toggle or db_data_toggle != data_toggle:
-                    self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
-                elif self.full_run:
-                    self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
-                else:
-                    self.obReporter.update_report('Alert', 'No change to BC toggles')
+            db_price_toggle = int(row['db_BCPriceUpdateToggle'])
+            db_data_toggle = int(row['db_BCPriceUpdateToggle'])
+            if db_price_toggle != price_toggle or db_data_toggle != data_toggle:
+                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
+            elif self.full_run:
+                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
+            else:
+                self.obReporter.update_report('Alert', 'No change to BC toggles')
 
         if (is_discontinued != -1 or allow_purchases != -1):
-            if str(row['IsTopProduct']) == 'Y':
-                if db_is_discontinued != is_discontinued or db_allow_purchases != allow_purchases:
-                    self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
+            if db_is_discontinued != is_discontinued or db_allow_purchases != allow_purchases:
+                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
 
-                elif self.full_run:
-                    self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
-                else:
-                    self.obReporter.update_report('Alert', 'No change to discon/purchase toggles')
-
+            elif self.full_run:
+                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
             else:
-                if db_is_discontinued != is_discontinued or db_allow_purchases != 0:
-                    allow_purchases = 0
-                    self.obReporter.update_report('Alert','Product is not top, AllowPurchase overridden')
-                    self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
-                elif self.full_run:
-                    allow_purchases = 0
-                    self.obReporter.update_report('Alert','Product is not top, AllowPurchase overridden')
-                    self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
-                else:
-                    self.obReporter.update_report('Alert', 'No change to discon/purchase toggles')
+                self.obReporter.update_report('Alert', 'No change to discon/purchase toggles')
 
 
         if (is_visible != -1):
