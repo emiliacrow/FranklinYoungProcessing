@@ -859,7 +859,7 @@ class DalObject:
 
     def get_toggles_full(self):
         proc_name = 'sequoia.get_Toggles5'
-        column_names = ['FyProductNumber','db_IsDiscontinued','db_AllowPurchases',
+        column_names = ['FyProductNumber', 'ProductDescriptionId', 'db_IsDiscontinued','db_AllowPurchases',
                         'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
                         'db_ECATOnContract', 'db_ECATModNumber', 'db_ECATPricingApproved',
                         'db_HTMEOnContract', 'db_HTMEModNumber', 'db_HTMEPricingApproved',
@@ -914,8 +914,8 @@ class DalObject:
 
 
     def set_bc_toggles(self, lst_bc_toggles):
-        proc_name = 'sequoia.set_BC_toggles'
-        proc_statement = 'CALL `sequoia`.`set_BC_toggles`(%s, %s, %s, %s);'
+        proc_name = 'sequoia.set_BC_toggles2'
+        proc_statement = 'CALL `sequoia`.`set_BC_toggles`(%s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)
         runner.start()

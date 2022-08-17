@@ -44,7 +44,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
-                           'ProductPriceId_y','ProductPriceId_x',
+                           'ProductPriceId_y','ProductPriceId_x','ProductDescriptionId',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter'}
@@ -111,6 +111,8 @@ class BigCommerceRTLObject(BasicProcessObject):
             except KeyError:
                 self.obReporter.update_report('Alert','BaseProductPriceId Missing')
                 return False, df_collect_product_base_data
+
+            # product description
 
             # check if the product has contract records
             ecat_id = -1
@@ -490,37 +492,19 @@ class BigCommerceRTLObject(BasicProcessObject):
                     is_visible = -1
 
 
-
         # at this point we've evaluated all the data
-        if (price_toggle != -1 or data_toggle != -1):
+        if (price_toggle != -1 or data_toggle != -1 or is_discontinued != -1 or allow_purchases != -1 or is_visible != -1):
             # this needs to be better
+            prod_desc_id = int(row['ProductDescriptionId'])
             db_price_toggle = int(row['db_BCPriceUpdateToggle'])
             db_data_toggle = int(row['db_BCPriceUpdateToggle'])
-            if db_price_toggle != price_toggle or db_data_toggle != data_toggle:
-                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
-            elif self.full_run:
-                self.obIngester.set_bc_update_toggles(price_id, fy_product_number, price_toggle, data_toggle)
-            else:
-                self.obReporter.update_report('Alert', 'No change to BC toggles')
-
-        if (is_discontinued != -1 or allow_purchases != -1):
-            if db_is_discontinued != is_discontinued or db_allow_purchases != allow_purchases:
-                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
-
-            elif self.full_run:
-                self.obIngester.set_is_discon_allow_purchase(price_id, fy_product_number, is_discontinued, allow_purchases)
-            else:
-                self.obReporter.update_report('Alert', 'No change to discon/purchase toggles')
-
-
-        if (is_visible != -1):
             db_is_visible = int(row['db_IsVisible'])
-            if db_is_visible != is_visible:
-                self.obIngester.set_is_visible(base_id, is_visible)
+
+            if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_allow_purchases != allow_purchases or db_is_visible != is_visible:
+                self.obIngester.set_bc_update_toggles(prod_desc_id, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
             elif self.full_run:
-                self.obIngester.set_is_visible(base_id, is_visible)
-            else:
-                self.obReporter.update_report('Alert', 'No change to is visible')
+                self.obIngester.set_bc_update_toggles(prod_desc_id, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
+
 
         if (update_asset != -1):
             self.obIngester.set_update_asset(product_id, update_asset)
