@@ -148,8 +148,13 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 is_discontinued = -1
 
+            db_is_discontinued = -1
+            success, is_discontinued = self.process_boolean(row, 'db_IsDiscontinued')
+            if success:
+                df_collect_product_base_data['db_IsDiscontinued'] = [db_is_discontinued]
+            else:
+                db_is_discontinued = -1
 
-            db_is_discontinued = int(row['db_IsDiscontinued'])
 
             try:
                 db_allow_purchases = int(row['db_AllowPurchases'])
