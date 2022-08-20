@@ -245,6 +245,277 @@ class FyProductIngest(BasicProcessObject):
         return df_collect_product_base_data
 
 
+    # plug this in somewhere
+    def process_pricing(self, df_collect_product_base_data, row):
+        # from the file
+        success, fy_landed_cost = self.row_check(row,'Landed Cost')
+        if not success:
+            # from the db
+            success, fy_landed_cost = self.row_check(row,'CurrentFyLandedCost')
+
+        if success:
+            success, fy_landed_cost = self.float_check(fy_landed_cost, 'Landed Cost')
+            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+
+        if not success:
+            # we could try to perform the calculations here
+            self.obReporter.update_report('Alert', 'Landed Cost not provided')
+            vlp_success, vendor_list_price = self.row_check(row, 'VendorListPrice')
+            if vlp_success:
+                vlp_success, vendor_list_price = self.float_check(vendor_list_price,'VendorListPrice')
+                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+            else:
+                vlp_success, vendor_list_price = self.row_check(row, 'PrimaryVendorListPrice')
+                if vlp_success:
+                    vlp_success, vendor_list_price = self.float_check(vendor_list_price,'PrimaryVendorListPrice')
+                    df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+                else:
+                    vlp_success, vendor_list_price = self.row_check(row, 'CurrentVendorListPrice')
+                    if vlp_success:
+                        vlp_success, vendor_list_price = self.float_check(vendor_list_price,'CurrentVendorListPrice')
+                        df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+                    else:
+                        vendor_list_price = 0
+                        df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+
+            if vlp_success:
+                discount_success, fy_discount_percent = self.row_check(row,'Discount')
+                if discount_success:
+                    discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'Discount')
+                    df_collect_product_base_data['Discount'] = [fy_discount_percent]
+                else:
+                    discount_success, fy_discount_percent = self.row_check(row,'PrimaryDiscount')
+                    if discount_success:
+                        discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'PrimaryDiscount')
+                        df_collect_product_base_data['Discount'] = [fy_discount_percent]
+                    else:
+                        discount_success, fy_discount_percent = self.row_check(row, 'CurrentDiscount')
+                        if discount_success:
+                            discount_success, fy_discount_percent = self.float_check(fy_discount_percent,
+                                                                                     'CurrentDiscount')
+                            df_collect_product_base_data['Discount'] = [fy_discount_percent]
+                        else:
+                            fy_discount_percent = 0
+                            df_collect_product_base_data['Discount'] = [fy_discount_percent]
+            else:
+                discount_success = False
+
+
+            success, fy_cost = self.row_check(row,'FyCost')
+            if success:
+                success, fy_cost = self.float_check(fy_cost, 'FyCost')
+            else:
+                success, fy_cost = self.row_check(row, 'PrimaryFyCost')
+                if success:
+                    success, fy_cost = self.float_check(fy_cost, 'PrimaryFyCost')
+                    df_collect_product_base_data['FyCost'] = [fy_cost]
+                else:
+                    success, fy_cost = self.row_check(row, 'CurrentFyCost')
+                    if success:
+                        success, fy_cost = self.float_check(fy_cost, 'CurrentFyCost')
+                        df_collect_product_base_data['FyCost'] = [fy_cost]
+                    else:
+                        # fail line if missing
+                        self.obReporter.update_report('Alert', 'FyCost was missing')
+                        fy_cost = 0
+                        df_collect_product_base_data['FyCost'] = [fy_cost]
+
+
+            if vlp_success and not discount_success:
+                fy_discount_percent = self.set_vendor_discount(fy_cost, vendor_list_price)
+                df_collect_product_base_data['Discount'] = [fy_discount_percent]
+
+            elif not vlp_success and discount_success:
+                vendor_list_price = self.set_vendor_list(fy_cost, fy_discount_percent)
+                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+
+            else:
+                vendor_list_price = 0
+                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+
+
+
+
+            # checks for shipping costs
+            success, estimated_freight = self.row_check(row, 'Estimated Freight')
+            if success:
+                success, estimated_freight = self.float_check(estimated_freight,'Estimated Freight')
+                df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+
+            else:
+                success, estimated_freight = self.row_check(row, 'PrimaryEstimatedFrieght')
+                if success:
+                    success, estimated_freight = self.float_check(estimated_freight,'PrimaryEstimatedFrieght')
+                    df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+                else:
+                    success, estimated_freight = self.row_check(row, 'CurrentEstimatedFrieght')
+                    if success:
+                        success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFrieght')
+                        df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+                    else:
+                        estimated_freight = 0
+                        df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+                        self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
+
+
+            fy_landed_cost = fy_cost + estimated_freight
+            self.obReporter.update_report('Alert', 'Landed Cost was calculated')
+            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+
+
+
+        # we get the values from the DB because that's what we rely on
+        db_mus_success, db_markup_sell = self.row_check(row, 'CurrentMarkUp_sell')
+        if db_mus_success:
+            db_mus_success, db_markup_sell = self.float_check(db_markup_sell, 'CurrentMarkUp_sell')
+            if db_markup_sell <= 0:
+                db_mus_success = False
+                self.obReporter.update_report('Alert','DB Markup Sell negative')
+            elif db_markup_sell < 1:
+                db_mus_success = False
+                self.obReporter.update_report('Alert','DB Markup Sell too low')
+
+        db_mul_success, db_markup_list = self.row_check(row, 'CurrentMarkUp_list')
+        if db_mul_success:
+            db_mul_success, db_markup_list = self.float_check(db_markup_list, 'CurrentMarkUp_list')
+            if db_markup_list <= 0:
+                db_mul_success = False
+                self.obReporter.update_report('Alert','DB Markup List negative')
+            elif db_markup_list <= 1:
+                db_mul_success = False
+                self.obReporter.update_report('Alert','DB Markup List too low')
+
+        # get the markups from the file
+        mus_success, markup_sell = self.row_check(row, 'LandedCostMarkupPercent_FYSell')
+        if mus_success:
+            mus_success, markup_sell = self.float_check(markup_sell, 'LandedCostMarkupPercent_FYSell')
+            if markup_sell <= 0:
+                mus_success = False
+                self.obReporter.update_report('Alert','Markup Sell negative')
+            elif markup_sell <= 1:
+                mus_success = False
+                self.obReporter.update_report('Alert','Markup Sell too low')
+            else:
+                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+
+        if not mus_success and db_mus_success:
+            markup_sell = db_markup_sell
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [db_markup_sell]
+
+
+        mul_success, markup_list = self.row_check(row, 'LandedCostMarkupPercent_FYList')
+        if mul_success:
+            mul_success, markup_list = self.float_check(markup_list, 'LandedCostMarkupPercent_FYList')
+            if markup_list <= 0:
+                mul_success = False
+                self.obReporter.update_report('Alert','Markup List negative')
+            elif markup_list <= 1:
+                mul_success = False
+                self.obReporter.update_report('Alert','Markup List too low')
+            else:
+                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+
+        if not mul_success and db_mul_success:
+            markup_list = db_markup_list
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [db_markup_list]
+
+        # let's report if they're both missing
+        if (not db_mus_success and not mus_success) and (not db_mul_success and not mul_success):
+            self.obReporter.update_report('Fail', 'No markups not present')
+            markup_sell = 0
+            markup_list = 0
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+
+        elif (db_mus_success and not mus_success) and (db_mul_success and not mul_success):
+            self.obReporter.update_report('Alert', 'DB markups were used')
+            markup_sell = db_markup_sell
+            markup_list = db_markup_list
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+
+        elif (db_mus_success and mus_success) and (db_mul_success and mul_success):
+            if (markup_list != db_markup_list) or (markup_sell != db_markup_sell):
+                self.obReporter.update_report('Alert', 'DB markups will be over-written')
+
+        elif (not db_mus_success and mus_success) and (not db_mul_success and mul_success):
+            self.obReporter.update_report('Alert', 'File markups were used')
+
+        if 'FyProductNotes' in row and 'ProductPriceId' in row:
+            fy_product_notes = row['FyProductNotes']
+            if (fy_product_notes != ''):
+                product_price_id = int(row['ProductPriceId'])
+                fy_product_notes = fy_product_notes.replace('NULL','')
+                fy_product_notes = fy_product_notes.replace(';','')
+
+                self.obIngester.set_product_notes(product_price_id, fy_product_notes)
+
+        df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)
+        return True, df_collect_product_base_data
+
+
+    def set_vendor_discount(self, fy_cost, vendor_list_price):
+        if vendor_list_price == fy_cost or vendor_list_price <= 0:
+            fy_discount_percent = 0
+        else:
+            fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
+
+        self.obReporter.update_report('Alert', 'Discount was calculated')
+        return fy_discount_percent
+
+
+    def set_vendor_list(self, fy_cost, fy_discount_percent):
+        if fy_discount_percent == 0:
+            vendor_list_price = round(fy_cost, 2)
+        else:
+            vendor_list_price = round(fy_cost / (1 - fy_discount_percent), 2)
+
+        self.obReporter.update_report('Alert', 'Vendor List Price was calculated')
+        return vendor_list_price
+
+
+    def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
+        # do math
+        fy_sell_price_long = fy_landed_cost * markup_sell
+
+        # initial rounding and formatting
+        fy_sell_price = round(fy_sell_price_long, 4)
+        str_fy_sell_price = "{:.4f}".format(fy_sell_price)
+        # evaluate the last two digits and do second rounding
+        final_digit = str_fy_sell_price[-2:]
+        if str_fy_sell_price[-2:] == '50':
+            fy_sell_price = round(fy_sell_price+0.0001, 2)
+
+        elif str_fy_sell_price[-1] == '5':
+            fy_sell_price = round(fy_sell_price+0.00001, 2)
+
+        else:
+            fy_sell_price = round(fy_sell_price, 2)
+
+        df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+
+        # do math
+        fy_list_price_long = float(fy_landed_cost * markup_list)
+
+        # initial rounding and formatting
+        fy_list_price = round(fy_list_price_long, 4)
+        str_fy_list_price = "{:.4f}".format(fy_list_price)
+        # evaluate the last two digits and do second rounding
+        final_digit = str_fy_list_price[-2:]
+        if str_fy_list_price[-2:] == '50':
+            fy_list_price = round(fy_list_price+0.0001, 2)
+
+        elif str_fy_list_price[-1] == '5':
+            fy_list_price = round(fy_list_price+0.00001, 2)
+
+        else:
+            fy_list_price = round(fy_list_price, 2)
+
+        df_collect_product_base_data['Retail Price'] = [fy_list_price]
+
+        return df_collect_product_base_data
+
+
     def process_fy_description(self, df_collect_product_base_data, row):
         fy_product_number = row['FyProductNumber']
         if 'FyProductName' not in row:
@@ -376,8 +647,9 @@ class FyProductIngest(BasicProcessObject):
             data_toggle = 1
 
         report = ''
-        if (fy_product_name != '' and fy_product_description != '' and fy_coo_id != -1 and fy_uoi_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1):
-            # this needs to change into an ingestor
+        if (fy_product_name != '' and fy_product_description != '' and fy_coo_id != -1 and fy_uoi_id != -1 and
+                fy_uom_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1):
+            # this needs to proper ingest the info
             self.obIngester.insert_fy_product_description(fy_product_number, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time,
                                                           fy_is_hazardous, primary_vendor_id, secondary_vendor_id,

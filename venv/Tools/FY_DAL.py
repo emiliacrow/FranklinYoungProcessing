@@ -884,8 +884,9 @@ class DalObject:
         runner.start()
 
     def get_fy_product_descriptions(self):
-        proc_name = 'sequoia.get_FyProductDescriptions'
-        column_names = ['ProductDescriptionId', 'FyProductNumber','db_FyProductName','db_FyProductDescription']
+        proc_name = 'sequoia.get_FyProductDescriptions2'
+        column_names = ['ProductDescriptionId', 'FyProductNumber', 'db_FyProductName', 'db_FyProductDescription',
+                        'CurrentVendorListPrice', 'CurrentDiscount','CurrentFyCost','CurrentEstimatedFrieght','CurrentFyLandedCost', 'CurrentMarkUp_sell', 'CurrentMarkUp_list']
         df_descriptions = self.get_lookup(proc_name,column_names)
         return df_descriptions
 
