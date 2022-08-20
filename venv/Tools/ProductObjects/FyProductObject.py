@@ -12,7 +12,8 @@ from Tools.BasicProcess import BasicProcessObject
 class FyProductIngest(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = ['FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
-                  'FyUnitOfIssueQuantity','FyLeadTime', 'FyIsHazardous', 'PrimaryVendorName', 'SecondaryVendorName']
+                  'FyUnitOfIssueQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'PrimaryVendorName', 'SecondaryVendorName',
+                  'FyCost', 'Landed Cost','LandedCostMarkupPercent_FYSell','LandedCostMarkupPercent_FYList']
     att_fields = []
     gen_fields = []
 
@@ -31,6 +32,12 @@ class FyProductIngest(BasicProcessObject):
 
         self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
+
+        if 'PrimaryVendorId' in self.df_product.columns:
+            self.df_fy_vendor_price_lookup = self.obDal.get_fy_product_vendor_prices()
+            self.df_product = self.df_product.merge(self.df_fy_vendor_price_lookup,how='left',on=['FyProductNumber','PrimaryVendorId'])
+
+        # add secondary?
 
 
     def remove_private_headers(self):
@@ -92,6 +99,33 @@ class FyProductIngest(BasicProcessObject):
 
 
     def batch_process_primary_vendor(self):
+        if 'VendorName' in self.df_product.columns:
+            df_attribute = self.df_product[['VendorName']]
+            df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                vendor_name = row['VendorName'].upper()
+                if vendor_name == '':
+                    new_vendor_id = -1
+                elif vendor_name in self.df_vendor_translator['VendorCode'].values:
+                    new_vendor_id = self.df_vendor_translator.loc[
+                        (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
+                elif vendor_name in self.df_vendor_translator['VendorName'].values:
+                    new_vendor_id = self.df_vendor_translator.loc[
+                        (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
+                else:
+                    vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
+                    vendor_name_list = list(dict.fromkeys(vendor_name_list))
+
+                    new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
+
+                lst_ids.append(new_vendor_id)
+
+            df_attribute['VendorId'] = lst_ids
+
+            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                     how='left', on=['VendorName'])
+
         if 'PrimaryVendorName' in self.df_product.columns:
             df_attribute = self.df_product[['PrimaryVendorName']]
             df_attribute = df_attribute.drop_duplicates(subset=['PrimaryVendorName'])
@@ -156,7 +190,12 @@ class FyProductIngest(BasicProcessObject):
             df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
 
         df_line_product = df_collect_product_base_data.copy()
+        for colName, row in df_line_product.iterrows():
+            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
+            if not success:
+                return success, df_collect_product_base_data
 
+        df_line_product = df_collect_product_base_data.copy()
         for colName, row in df_line_product.iterrows():
             # check if it is update or not
             if 'ProductDescriptionId' in df_line_product.columns:
@@ -166,13 +205,13 @@ class FyProductIngest(BasicProcessObject):
 
         return success, df_collect_product_base_data
 
+
     def identify_units(self, df_collect_product_base_data, row):
         # set quantities
         fy_unit_of_issue = -1
         if 'FyUnitOfIssue' in row:
             fy_unit_of_issue = self.normalize_units(row['FyUnitOfIssue'])
             df_collect_product_base_data['FyUnitOfIssue'] = [fy_unit_of_issue]
-
 
         if fy_unit_of_issue == -1:
             fy_unit_of_issue_symbol_id = -1
@@ -184,6 +223,24 @@ class FyProductIngest(BasicProcessObject):
                 fy_unit_of_issue_symbol_id = self.obIngester.ingest_uoi_symbol(fy_unit_of_issue)
 
         df_collect_product_base_data['FyUnitOfIssueSymbolId'] = [fy_unit_of_issue_symbol_id]
+
+        fy_unit_of_measure = -1
+        if 'FyUnitOfMeasure' in row:
+            fy_unit_of_measure = self.normalize_units(row['FyUnitOfMeasure'])
+            df_collect_product_base_data['FyUnitOfMeasure'] = [fy_unit_of_measure]
+
+        if fy_unit_of_measure == -1:
+            # force to each?
+            fy_unit_of_measure_symbol_id = 6
+
+        else:
+            try:
+                fy_unit_of_measure_symbol_id = self.df_uois_lookup.loc[
+                    (self.df_uois_lookup['UnitOfIssueSymbol'] == fy_unit_of_measure), 'UnitOfIssueSymbolId'].values[0]
+            except IndexError:
+                fy_unit_of_measure_symbol_id = self.obIngester.ingest_uoi_symbol(fy_unit_of_measure)
+
+        df_collect_product_base_data['FyUnitOfMeasureSymbolId'] = [fy_unit_of_measure_symbol_id]
 
         return df_collect_product_base_data
 
@@ -216,6 +273,11 @@ class FyProductIngest(BasicProcessObject):
         else:
             fy_uoi_id = -1
 
+        if 'FyUnitOfMeasureSymbolId' in row:
+            fy_uom_id = int(row['FyUnitOfMeasureSymbolId'])
+        else:
+            fy_uom_id = -1
+
         if 'FyUnitOfIssueQuantity' in row:
             fy_uoi_qty = int(row['FyUnitOfIssueQuantity'])
         else:
@@ -243,6 +305,8 @@ class FyProductIngest(BasicProcessObject):
 
         if 'PrimaryVendorId' in row:
             primary_vendor_id = int(row['PrimaryVendorId'])
+        elif 'VendorId' in row:
+            primary_vendor_id = int(row['VendorId'])
         else:
             primary_vendor_id = -1
 
@@ -251,12 +315,77 @@ class FyProductIngest(BasicProcessObject):
         else:
             secondary_vendor_id = -1
 
+        fy_landed_cost = row['Landed Cost']
+        try:
+            markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']
+        except KeyError:
+            for colName2, row2 in df_collect_product_base_data.iterrows():
+                print(row2)
+            reports = self.obReporter.get_report()
+            print('pass', reports[0])
+            print('alert', reports[1])
+            print('fail', reports[2])
+            x = input('Markup failure is a mystery, this shouldn\'t happen')
+
+        if 'Sell Price' not in row:
+            df_collect_product_base_data['Sell Price'] = [0]
+            fy_sell_price = 0
+        else:
+            fy_sell_price = row['Sell Price']
+
+        markup_percent_fy_list = row['LandedCostMarkupPercent_FYList']
+
+        if 'Retail Price' not in row:
+            df_collect_product_base_data['Retail Price'] = [0]
+            fy_list_price = 0
+        else:
+            fy_list_price = float(row['Retail Price'])
+
+        # note that these will get set automatically
+        is_discontinued = -1
+        success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+        if success:
+            df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+        else:
+            is_discontinued = 1
+
+        is_visible = -1
+        success, is_visible = self.process_boolean(row, 'IsVisible')
+        if success:
+            df_collect_product_base_data['IsVisible'] = [is_visible]
+        else:
+            is_visible = 0
+
+        allow_purchases = -1
+        success, allow_purchases = self.process_boolean(row, 'AllowPurchases')
+        if success:
+            df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
+        else:
+            allow_purchases = 0
+
+        success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
+        if success:
+            df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
+        else:
+            price_toggle = 1
+
+        success, data_toggle = self.process_boolean(row, 'BCDataUpdateToggle')
+        if success:
+            df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+        else:
+            data_toggle = 1
+
         report = ''
         if (fy_product_name != '' and fy_product_description != '' and fy_coo_id != -1 and fy_uoi_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1):
             # this needs to change into an ingestor
             self.obIngester.insert_fy_product_description(fy_product_number, fy_product_name, fy_product_description,
-                                                          fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time,
-                                                          fy_is_hazardous, primary_vendor_id, secondary_vendor_id)
+                                                          fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time,
+                                                          fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
+                                                          fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
+                                                          is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
+
+            # TO DO: we need to insert a record in toggles at the same time.
+
             return True, df_collect_product_base_data
 
         if fy_product_name == '':
@@ -279,6 +408,12 @@ class FyProductIngest(BasicProcessObject):
                 report = report + ', FyUnitOfIssue'
             else:
                 report = 'Missing FyUnitOfIssue'
+
+        if fy_uom_id == -1:
+            if report != '':
+                report = report + ', FyUnitOfMeasure'
+            else:
+                report = 'Missing FyUnitOfMeasure'
 
         if fy_uoi_qty == -1:
             if report != '':
@@ -331,6 +466,11 @@ class FyProductIngest(BasicProcessObject):
         else:
             fy_uoi_id = -1
 
+        if 'FyUnitOfMeasureSymbolId' in row:
+            fy_uom_id = int(row['FyUnitOfMeasureSymbolId'])
+        else:
+            fy_uom_id = -1
+
         if 'FyUnitOfIssueQuantity' in row:
             fy_uoi_qty = int(row['FyUnitOfIssueQuantity'])
         else:
@@ -366,8 +506,73 @@ class FyProductIngest(BasicProcessObject):
         else:
             secondary_vendor_id = -1
 
-        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1):
-            self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)
+        fy_landed_cost = row['Landed Cost']
+        try:
+            markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']
+        except KeyError:
+            for colName2, row2 in df_collect_product_base_data.iterrows():
+                print(row2)
+            reports = self.obReporter.get_report()
+            print('pass', reports[0])
+            print('alert', reports[1])
+            print('fail', reports[2])
+            x = input('Markup failure is a mystery, this shouldn\'t happen')
+
+        if 'Sell Price' not in row:
+            df_collect_product_base_data['Sell Price'] = [0]
+            fy_sell_price = 0
+        else:
+            fy_sell_price = row['Sell Price']
+
+        markup_percent_fy_list = row['LandedCostMarkupPercent_FYList']
+
+        if 'Retail Price' not in row:
+            df_collect_product_base_data['Retail Price'] = [0]
+            fy_list_price = 0
+        else:
+            fy_list_price = float(row['Retail Price'])
+
+        is_discontinued = -1
+        success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+        if success:
+            df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+        else:
+            is_discontinued = -1
+
+        is_visible = -1
+        success, is_visible = self.process_boolean(row, 'IsVisible')
+        if success:
+            df_collect_product_base_data['IsVisible'] = [is_visible]
+        else:
+            is_visible = -1
+
+        allow_purchases = -1
+        success, allow_purchases = self.process_boolean(row, 'AllowPurchases')
+        if success:
+            df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
+        else:
+            allow_purchases = -1
+
+        success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
+        if success:
+            df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
+        else:
+            price_toggle = 1
+
+        success, data_toggle = self.process_boolean(row, 'BCDataUpdateToggle')
+        if success:
+            df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+        else:
+            data_toggle = 1
+
+        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
+                or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
+                or is_discontinued != -1 or is_visible != -1 or allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
+            self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
+                                                          fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
+                                                          primary_vendor_id, secondary_vendor_id,
+                                                          fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
+                                                          is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
 
         return True, df_collect_product_base_data
 

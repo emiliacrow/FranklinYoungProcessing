@@ -287,6 +287,8 @@ class MinimumProductPrice(BasicProcessObject):
                         self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
                         df_collect_product_base_data[each_bool] = [0]
 
+
+            ### DEPRICATE ###
             # all the products that need the info to be ingested
             if fy_product_number in self.dct_fy_product_description:
                 if 'ProductDescriptionId' not in row:
@@ -306,6 +308,7 @@ class MinimumProductPrice(BasicProcessObject):
                     fy_product_desc_id = row['ProductDescriptionId']
                     self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
                     df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
+            ### DEPRICATE ###
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
 

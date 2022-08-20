@@ -114,22 +114,31 @@ class Validator:
         return out_phrase
 
     def remove_unicode(self,in_phrase):
-        out_phrase = in_phrase.replace('Î»','[lambda]')
-        out_phrase = out_phrase.replace('Î±','[alpha]')
-        out_phrase = out_phrase.replace('Â±', '[alpha]')
-        out_phrase = out_phrase.replace('Î©','[omega]')
-        out_phrase = out_phrase.replace('Ï‰','[omega]')
-        out_phrase = out_phrase.replace('Î³','[gamma]')
+        out_phrase = in_phrase.replace('Î»','(lambda)')
+        out_phrase = out_phrase.replace('╬▓','(alpha)')
+        out_phrase = out_phrase.replace('Î±','(alpha)')
+        out_phrase = out_phrase.replace('Â±', '(alpha)')
+
+        out_phrase = out_phrase.replace('╬⌐','(omega)')
+        out_phrase = out_phrase.replace('Î©','(omega)')
+        out_phrase = out_phrase.replace('Ï‰','(omega)')
+        out_phrase = out_phrase.replace('Î³','(gamma)')
+
+        out_phrase = out_phrase.replace('├ª','u')
         out_phrase = out_phrase.replace('Î¼','u')
         out_phrase = out_phrase.replace('•¡','u')
         out_phrase = out_phrase.replace('Âµ','u')
-        out_phrase = out_phrase.replace('Îº','[kappa]')
-        out_phrase = out_phrase.replace('Â²','[beta]')
-        out_phrase = out_phrase.replace('Î²','[beta]')
-        out_phrase = out_phrase.replace('ÃŸ','[beta]')
-        out_phrase = out_phrase.replace('Îµ','[epsilon]')
-        out_phrase = out_phrase.replace('Î¸','[theta]')
-        out_phrase = out_phrase.replace('Ïƒ','[sigma]')
+        out_phrase = out_phrase.replace('Îº','(kappa)')
+        out_phrase = out_phrase.replace('╬║','(kappa)')
+
+        out_phrase = out_phrase.replace('├ƒ','(beta)')
+        out_phrase = out_phrase.replace('╬▒','(beta)')
+        out_phrase = out_phrase.replace('Â²','(beta)')
+        out_phrase = out_phrase.replace('Î²','(beta)')
+        out_phrase = out_phrase.replace('ÃŸ','(beta)')
+        out_phrase = out_phrase.replace('Îµ','(epsilon)')
+        out_phrase = out_phrase.replace('Î¸','(theta)')
+        out_phrase = out_phrase.replace('Ïƒ','(sigma)')
 
         out_phrase = out_phrase.replace('‚„','')
         out_phrase = out_phrase.replace('â a','')
@@ -140,6 +149,8 @@ class Validator:
         out_phrase = out_phrase.replace('–‘','°')
         out_phrase = out_phrase.replace('Ëš','°')
         out_phrase = out_phrase.replace('Â°', '°')
+        out_phrase = out_phrase.replace('┬░', '°')
+
         out_phrase = out_phrase.replace('â€', '\"')
         out_phrase = out_phrase.replace('â€™', '\'')
         out_phrase = out_phrase.replace('"™','\'')
@@ -263,6 +274,10 @@ class Validator:
         description = description.replace('&alpha;', 'beta')
         description = description.replace('&#946;', 'beta')
 
+        description = description.replace('┬▓', '3')
+        description = description.replace('Γüä', '/')
+
+        description = description.replace('┬░', '(deg)')
         description = description.replace('&deg;', '(deg)')
         description = description.replace('&ordm;', '(deg)')
         description = description.replace('&#x00b0;', '(deg)')

@@ -870,15 +870,15 @@ class DalObject:
 
 
     def fy_product_description_insert(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_insert3'
-        proc_statement = 'CALL `sequoia`.`ProductDescription_insert3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.ProductDescription_insert4'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_insert3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
 
     def set_fy_product_description(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_update3'
-        proc_statement = 'CALL `sequoia`.`ProductDescription_update3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.ProductDescription_update4'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_update3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
@@ -886,6 +886,12 @@ class DalObject:
     def get_fy_product_descriptions(self):
         proc_name = 'sequoia.get_FyProductDescriptions'
         column_names = ['ProductDescriptionId', 'FyProductNumber','db_FyProductName','db_FyProductDescription']
+        df_descriptions = self.get_lookup(proc_name,column_names)
+        return df_descriptions
+
+    def get_fy_product_vendor_prices(self):
+        proc_name = 'sequoia.get_FyProductVendorPrices'
+        column_names = ['FyProductNumber', 'PrimaryVendorId', 'PrimaryVendorListPrice', 'PrimaryDiscount','PrimaryFyCost','PrimaryEstimatedFreight']
         df_descriptions = self.get_lookup(proc_name,column_names)
         return df_descriptions
 
