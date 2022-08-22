@@ -675,7 +675,7 @@ class IngestionObject:
             self.obDal.fy_product_description_insert(self.product_description_insert_collector)
 
 
-    def update_fy_product_description(self, fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle):
+    def update_fy_product_description(self, fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle):
         if (len(self.product_description_update_collector) > self.load_limit):
             self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
             self.obDal.set_fy_product_description(self.product_description_update_collector)

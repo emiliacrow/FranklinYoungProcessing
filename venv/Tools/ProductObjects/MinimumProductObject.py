@@ -95,8 +95,8 @@ class MinimumProduct(BasicProcessObject):
                 category = str(row['Category']).strip()
                 category_name = (category.rpartition('/')[2]).strip()
 
-                category_name = category_name.replace('/ ', '/')
-                category_name = category_name.replace(' /', '/')
+                category = category.replace('/ ', '/')
+                category = category.replace(' /', '/')
 
                 category_name = category_name.strip()
                 category = category.strip()
@@ -110,21 +110,23 @@ class MinimumProduct(BasicProcessObject):
                         (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
                 else:
                     categories_to_ship = []
-                    if (category != '') and (category_name != '') and ('All Products/' in category_name):
+                    if (category != '') and (category_name != '') and ('All Products/' in category):
+                        # collect the biggest one
+                        categories_to_ship.append([category_name, category])
 
                         # we set the name of the category
-                        new_category = category_name.rpartition('/')[2]
-                        # we strip whitespace
-                        # collect the biggest one
-                        categories_to_ship.append([new_category, category_name])
+                        category = category.rpartition('/')[0]
+                        category_name = category.rpartition('/')[2]
 
                         # as long as the hierarchy exists, we split it out
-                        while ('/' in category_name):
-                            category_name = category_name.rpartition('/')[0]
-                            new_category = category_name.rpartition('/')[2]
+                        while ('/' in category):
                             category_name = category_name.strip()
-                            new_category = new_category.strip()
-                            categories_to_ship.append([new_category, category_name])
+                            category = category.strip()
+                            categories_to_ship.append([category_name, category])
+
+                            # we set the name of the category
+                            category = category.rpartition('/')[0]
+                            category_name = category.rpartition('/')[2]
 
                         # this is the magic
                         # this sets the order smallest to largest
@@ -132,7 +134,6 @@ class MinimumProduct(BasicProcessObject):
                         # and returns the correct id at the end
                         categories_to_ship.sort(key=lambda x:len(x[1]))
 
-                        # ship it!
                         for each_category in categories_to_ship:
                             new_category_id = self.obDal.category_cap(each_category[0], each_category[1])
 

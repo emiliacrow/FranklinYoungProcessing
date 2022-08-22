@@ -297,17 +297,19 @@ class MinimumProductPrice(BasicProcessObject):
 
             else:
                 if 'ProductDescriptionId' not in row:
-                    success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
-                    if success:
-                        self.next_fy_description_id += 1
-                        df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
-                        self.dct_fy_product_description[fy_product_number] = self.next_fy_description_id
-                    else:
-                        df_collect_product_base_data['ProductDescriptionId'] = [-1]
-                else:
-                    fy_product_desc_id = row['ProductDescriptionId']
-                    self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
-                    df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
+                    self.obReporter.update_report('Alert', 'Ingest in FyProductDescription')
+
+                #    success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
+                #    if success:
+                #        self.next_fy_description_id += 1
+                #        df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
+                #        self.dct_fy_product_description[fy_product_number] = self.next_fy_description_id
+                #    else:
+                #        df_collect_product_base_data['ProductDescriptionId'] = [-1]
+                #else:
+                #    fy_product_desc_id = row['ProductDescriptionId']
+                #    self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
+                #    df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
             ### DEPRICATE ###
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
