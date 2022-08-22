@@ -30,7 +30,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.define_new()
         # pull the current descriptions
-        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
+        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions_short()
 
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
 
@@ -45,6 +45,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.next_fy_description_id = int(self.df_next_fy_description_id['AUTO_INCREMENT'].iloc[0])
 
         self.df_product.sort_values(by=['FyProductNumber'], inplace=True)
+
 
     def process_primary_vendor(self, df_collect_product_base_data, row):
         df_collect_product_base_data
@@ -75,6 +76,7 @@ class MinimumProductPrice(BasicProcessObject):
                 self.obReporter.update_report('Alert','SecondaryVendorName did not match an existing vendor')
 
         return df_collect_product_base_data
+
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -288,7 +290,6 @@ class MinimumProductPrice(BasicProcessObject):
                         df_collect_product_base_data[each_bool] = [0]
 
 
-            ### DEPRICATE ###
             # all the products that need the info to be ingested
             if fy_product_number in self.dct_fy_product_description:
                 if 'ProductDescriptionId' not in row:
@@ -299,18 +300,20 @@ class MinimumProductPrice(BasicProcessObject):
                 if 'ProductDescriptionId' not in row:
                     self.obReporter.update_report('Alert', 'Ingest in FyProductDescription')
 
-                #    success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
-                #    if success:
-                #        self.next_fy_description_id += 1
-                #        df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
-                #        self.dct_fy_product_description[fy_product_number] = self.next_fy_description_id
-                #    else:
-                #        df_collect_product_base_data['ProductDescriptionId'] = [-1]
-                #else:
-                #    fy_product_desc_id = row['ProductDescriptionId']
-                #    self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
-                #    df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
-            ### DEPRICATE ###
+                    ### DEPRICATE ###
+                    #success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
+                    #if success:
+                    #    self.next_fy_description_id += 1
+                    #    df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
+                    #    self.dct_fy_product_description[fy_product_number] = self.next_fy_description_id
+                    #else:
+                    #    df_collect_product_base_data['ProductDescriptionId'] = [-1]
+                    ### DEPRICATE ###
+                else:
+                    fy_product_desc_id = row['ProductDescriptionId']
+                    self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
+                    df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
+
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
 
@@ -388,8 +391,9 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             secondary_vendor_id = -1
 
+
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1):
-            self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)
+            self.obIngester.update_fy_product_description_short(fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)
 
         return df_collect_product_base_data
 

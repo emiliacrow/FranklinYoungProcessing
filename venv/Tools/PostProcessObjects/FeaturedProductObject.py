@@ -11,7 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class FeaturedProductObject(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber', 'ProductSortOrder']
+    req_fields = ['FyProductNumber', 'ProductSortOrder']
 
     sup_fields = []
     att_fields = []
@@ -25,7 +25,8 @@ class FeaturedProductObject(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.define_new()
+        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
+        self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
         self.identify_current_featured_products()
 
 
@@ -42,31 +43,16 @@ class FeaturedProductObject(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        if row['Filter'] == 'New':
-            self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
-            return False
-
-        elif row['Filter'] in ['Partial', 'Base Pricing']:
-            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
-            return False
-
-        elif row['Filter'] in ['Ready', 'Update']:
-            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+        if 'ProductDescriptionId' in row:
             return True
-
-        elif row['Filter'] == 'Possible Duplicate':
-            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
-            return False
-
-        else:
-            self.obReporter.update_report('Fail', 'Failed filtering')
-            return False
+        self.obReporter.update_report('Fail','Verify this product has been ingested.')
+        return False
 
 
     def identify_current_featured_products(self):
-        self.df_featured_products = self.obDal.get_featured_products()
+        self.df_featured_products = self.obDal.get_fy_featured_products()
         match_headers = ['ProductSortOrder']
-        self.df_product = self.df_product.merge(self.df_featured_products, how='outer', on=match_headers)
+        self.df_product = self.df_product.merge(self.df_featured_products, how='left', on=match_headers)
         self.df_product.sort_values(by=['ProductSortOrder'], inplace=True)
 
 
@@ -84,15 +70,15 @@ class FeaturedProductObject(BasicProcessObject):
 
     def process_changes(self, df_line_product):
         for colName, row in df_line_product.iterrows():
-            new_product_price_id = row['ProductPriceId']
+            new_product_description_id = row['ProductDescriptionId']
             new_fy_product_number = row['FyProductNumber']
 
             try:
-                old_product_price_id = row['old_ProductPriceId']
+                old_product_description_id = row['old_ProductDescriptionId']
             except TypeError:
-                old_product_price_id = -1
+                old_product_description_id = -1
             except KeyError:
-                old_product_price_id = -1
+                old_product_description_id = -1
 
             try:
                 old_fy_product_number = row['old_FyProductNumber']
@@ -103,12 +89,12 @@ class FeaturedProductObject(BasicProcessObject):
 
             product_sort_order = row['ProductSortOrder']
 
-            if old_product_price_id in self.lst_compeleted_products:
-                old_product_price_id  = -1
+            if old_product_description_id in self.lst_compeleted_products:
+                old_product_description_id  = -1
 
             if 0 < int(product_sort_order) < 26:
-                self.obIngester.set_featured_product(old_product_price_id, new_product_price_id, product_sort_order)
-                self.lst_compeleted_products.append(new_product_price_id)
+                self.obIngester.set_featured_product(old_product_description_id, new_product_description_id, product_sort_order)
+                self.lst_compeleted_products.append(new_product_description_id)
             else:
                 self.obReporter.update_report('Fail','ProductSortOrder was out of range')
                 return False, df_line_product

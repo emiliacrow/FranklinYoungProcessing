@@ -683,10 +683,24 @@ class IngestionObject:
         else:
             self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id, fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
 
+
     def update_fy_product_description_cleanup(self):
         if self.product_description_update_collector != []:
             self.obDal.set_fy_product_description(self.product_description_update_collector)
 
+
+    def update_fy_product_description_short(self, fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id):
+        if (len(self.product_description_update_collector) > self.load_limit):
+            self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id))
+            self.obDal.set_fy_product_description_short(self.product_description_update_collector)
+            self.product_description_update_collector = []
+        else:
+            self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id))
+
+
+    def update_fy_product_description_short_cleanup(self):
+        if self.product_description_update_collector != []:
+            self.obDal.set_fy_product_description_short(self.product_description_update_collector)
 
 
 
@@ -1143,18 +1157,18 @@ class IngestionObject:
             self.obDal.productvideo_cap(self.product_video_collector)
 
 
-    def set_featured_product(self, old_product_price_id, new_product_price_id, product_sort_order):
+    def set_featured_product(self, old_product_description_id, new_product_description_id, product_sort_order):
         if (len(self.product_video_collector) > self.load_limit):
-            self.product_update_collector.append((old_product_price_id, new_product_price_id, product_sort_order))
-            self.obDal.set_featured_product(self.product_update_collector)
+            self.product_update_collector.append((old_product_description_id, new_product_description_id, product_sort_order))
+            self.obDal.set_fy_featured_products(self.product_update_collector)
             self.product_video_collector = []
 
         else:
-            self.product_update_collector.append((old_product_price_id, new_product_price_id, product_sort_order))
+            self.product_update_collector.append((old_product_description_id, new_product_description_id, product_sort_order))
 
     def set_featured_product_cleanup(self):
         if self.product_update_collector != []:
-            self.obDal.set_featured_product(self.product_update_collector)
+            self.obDal.set_fy_featured_products(self.product_update_collector)
 
 
 
