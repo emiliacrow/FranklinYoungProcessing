@@ -13,7 +13,8 @@ class FyProductIngest(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = ['FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
                   'FyUnitOfIssueQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'PrimaryVendorName', 'SecondaryVendorName',
-                  'FyCost', 'Landed Cost','LandedCostMarkupPercent_FYSell','LandedCostMarkupPercent_FYList']
+                  'FyCost', 'Landed Cost','LandedCostMarkupPercent_FYSell','LandedCostMarkupPercent_FYList',
+                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible']
     att_fields = []
     gen_fields = []
 
