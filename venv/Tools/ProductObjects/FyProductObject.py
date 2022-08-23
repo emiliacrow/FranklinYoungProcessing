@@ -187,6 +187,11 @@ class FyProductIngest(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            # check if it is update or not
+            if 'ProductDescriptionId' in df_line_product.columns:
+                self.obReporter.update_report('Pass','This is an FyProduct update')
+            else:
+                self.obReporter.update_report('Pass','This is an FyProduct insert')
             df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
 
         df_line_product = df_collect_product_base_data.copy()
@@ -332,9 +337,6 @@ class FyProductIngest(BasicProcessObject):
             else:
                 vendor_list_price = 0
                 df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
-
-
-
 
             # checks for shipping costs
             success, estimated_freight = self.row_check(row, 'Estimated Freight')
@@ -586,17 +588,16 @@ class FyProductIngest(BasicProcessObject):
         else:
             secondary_vendor_id = -1
 
+        is_hot_price = False
         fy_landed_cost = row['Landed Cost']
-        try:
-            markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']
-        except KeyError:
-            for colName2, row2 in df_collect_product_base_data.iterrows():
-                print(row2)
-            reports = self.obReporter.get_report()
-            print('pass', reports[0])
-            print('alert', reports[1])
-            print('fail', reports[2])
-            x = input('Markup failure is a mystery, this shouldn\'t happen')
+        if fy_landed_cost != 0:
+            is_hot_price = True
+
+        if 'LandedCostMarkupPercent_FYSell' not in row:
+            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [0]
+            markup_percent_fy_sell = 0
+        else:
+            markup_percent_fy_sell = float(row['LandedCostMarkupPercent_FYSell'])
 
         if 'Sell Price' not in row:
             df_collect_product_base_data['Sell Price'] = [0]
@@ -604,13 +605,25 @@ class FyProductIngest(BasicProcessObject):
         else:
             fy_sell_price = row['Sell Price']
 
-        markup_percent_fy_list = row['LandedCostMarkupPercent_FYList']
+        if is_hot_price and fy_sell_price == 0:
+            self.obReporter.update_report('Fail','Sell price did not calculate')
+            return False, df_collect_product_base_data
+
+        if 'LandedCostMarkupPercent_FYList' not in row:
+            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [0]
+            markup_percent_fy_list = 0
+        else:
+            markup_percent_fy_list = float(row['LandedCostMarkupPercent_FYList'])
 
         if 'Retail Price' not in row:
             df_collect_product_base_data['Retail Price'] = [0]
             fy_list_price = 0
         else:
             fy_list_price = float(row['Retail Price'])
+
+        if is_hot_price and fy_list_price == 0:
+            self.obReporter.update_report('Fail','Retail price did not calculate')
+            return False, df_collect_product_base_data
 
         # note that these will get set automatically
         is_discontinued = -1
@@ -840,7 +853,7 @@ class FyProductIngest(BasicProcessObject):
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
                 or is_discontinued != -1 or is_visible != -1 or allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
-            self.obIngester.update_fy_product_description_short(fy_product_desc_id, fy_product_name, fy_product_description,
+            self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
@@ -851,7 +864,7 @@ class FyProductIngest(BasicProcessObject):
 
     def trigger_ingest_cleanup(self):
         self.obIngester.insert_fy_product_description_cleanup()
-        self.obIngester.update_fy_product_description_short_cleanup()
+        self.obIngester.update_fy_product_description_cleanup()
 
 
 ## end ##

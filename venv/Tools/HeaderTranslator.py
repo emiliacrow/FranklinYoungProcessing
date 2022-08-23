@@ -66,6 +66,8 @@ class HeaderTranslator():
                             'FyProductDescription':['FyProductDescription', 'Fy Product Description', 'Fy ProductDescription','FyProductDesc', 'Fy Product Desc', 'Fy ProductDesc'],
                             'FyCountryOfOrigin':['FY_CountryOfOrigin', 'FyCountryOfOrigin', 'Fy Country of Origin', 'Fy CountryOfOrigin','FyCOO', 'Fy COO', 'Fy_COO','FyCountryCode','Fy Country Code'],
                             'FyUnitOfIssue':['FY_UOI', 'FyUnitOfIssue', 'Fy Unit Of Issue', 'Fy UnitOfIssue','FyUOI', 'Fy UOI', 'Fy_UOI'],
+                            'FyUnitOfMeasure':['FY_UOM', 'FyUnitOfMeasure', 'Fy Unit Of Measure', 'Fy UnitOfMeasure', 'FyUOM',
+                                             'Fy UOM', 'Fy_UOM'],
                             'FyUnitOfIssueQuantity':['FY_UOIQTY', 'FyUOIQTY', 'FyUnitOfIssueQuantity', 'FyUnitOfIssueByQuantity', 'Fy Unit Of Issue Quantity', 'Fy Unit Of Issue By Quantity', 'Fy UOIQuantity','Fy_UOIQuantity','FyUOIQuantity','Fy UnitOfIssueQuantity','FyQTY', 'Fy QTY', 'Fy_QTY'],
                             'FyLeadTime':['Fy_lead_time', 'FyLeadTime', 'Fy Lead Time', 'Fy LeadTime', 'fy lead time', 'fy lead_time', 'fy_lead_time','Fy_lead_times', 'FyLeadTimes', 'Fy Lead Times', 'Fy LeadTimes', 'fy lead times', 'fy lead_times', 'fy_lead_times'],
 
