@@ -621,7 +621,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.obIngester.update_product_price_nouoi_cleanup()
         self.obIngester.update_product_price_cleanup()
         self.obIngester.insert_product_price_cleanup()
-        self.obIngester.update_fy_product_description_cleanup()
+        self.obIngester.update_fy_product_description_short_cleanup()
 
 
 class UpdateMinimumProductPrice(MinimumProductPrice):

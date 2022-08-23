@@ -840,7 +840,7 @@ class FyProductIngest(BasicProcessObject):
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
                 or is_discontinued != -1 or is_visible != -1 or allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
-            self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
+            self.obIngester.update_fy_product_description_short(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
@@ -851,7 +851,7 @@ class FyProductIngest(BasicProcessObject):
 
     def trigger_ingest_cleanup(self):
         self.obIngester.insert_fy_product_description_cleanup()
-        self.obIngester.update_fy_product_description_cleanup()
+        self.obIngester.update_fy_product_description_short_cleanup()
 
 
 ## end ##

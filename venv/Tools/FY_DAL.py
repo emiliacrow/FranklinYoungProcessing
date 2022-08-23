@@ -878,7 +878,7 @@ class DalObject:
 
     def set_fy_product_description(self, lst_descriptions):
         proc_name = 'sequoia.ProductDescription_update4'
-        proc_statement = 'CALL `sequoia`.`ProductDescription_update3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_update4`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
