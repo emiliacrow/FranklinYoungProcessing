@@ -14,7 +14,7 @@ class FyProductIngest(BasicProcessObject):
     sup_fields = ['FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
                   'FyUnitOfIssueQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'PrimaryVendorName', 'SecondaryVendorName',
                   'FyCost', 'Landed Cost','LandedCostMarkupPercent_FYSell','LandedCostMarkupPercent_FYList',
-                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','IsDiscontinued','AllowPurchases','IsVisible']
+                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
     att_fields = []
     gen_fields = []
 
@@ -28,6 +28,24 @@ class FyProductIngest(BasicProcessObject):
         self.df_uois_lookup = self.obDal.get_unit_of_issue_symbol_lookup()
         if 'FyCountryOfOrigin' in self.df_product.columns:
             self.batch_process_country()
+
+        if 'FyCategory' in self.df_product.columns:
+            self.batch_process_category()
+
+        if 'FyNAICSCode' in self.df_product.columns:
+            # get naics
+            self.df_naics_codes = self.obDal.get_naics_codes()
+            self.batch_process_naics()
+
+        if 'FyUNSPSCCode' in self.df_product.columns:
+            # get unspsc
+            self.df_unspsc_codes = self.obDal.get_unspsc_codes()
+            self.batch_process_unspsc()
+
+        if 'FyHazardousSpecialHandlingCode' in self.df_product.columns:
+            # get special_handling
+            self.df_special_handling_codes = self.obDal.get_special_handling_codes()
+            self.batch_process_special_handling()
 
         self.batch_process_primary_vendor()
 
@@ -183,11 +201,144 @@ class FyProductIngest(BasicProcessObject):
                                                      how='left', on=['SecondaryVendorName'])
 
 
+    def batch_process_category(self):
+        # this needs to be handled better
+        if 'FyCategory' in self.df_product.columns:
+            df_attribute = self.df_product[['FyCategory']]
+            df_attribute = df_attribute.drop_duplicates(subset=['FyCategory'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                category = str(row['FyCategory']).strip()
+                category_name = (category.rpartition('/')[2]).strip()
+
+                category = category.replace('/ ', '/')
+                category = category.replace(' /', '/')
+
+                category_name = category_name.strip()
+                category = category.strip()
+
+                if category_name in self.df_category_names['CategoryName'].values:
+                    new_category_id = self.df_category_names.loc[
+                        (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
+
+                elif category in self.df_category_names['Category'].values:
+                    new_category_id = self.df_category_names.loc[
+                        (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
+                else:
+                    categories_to_ship = []
+                    if (category != '') and (category_name != '') and ('All Products/' in category):
+                        # collect the biggest one
+                        categories_to_ship.append([category_name, category])
+
+                        # we set the name of the category
+                        category = category.rpartition('/')[0]
+                        category_name = category.rpartition('/')[2]
+
+                        # as long as the hierarchy exists, we split it out
+                        while ('/' in category):
+                            category_name = category_name.strip()
+                            category = category.strip()
+                            categories_to_ship.append([category_name, category])
+
+                            # we set the name of the category
+                            category = category.rpartition('/')[0]
+                            category_name = category.rpartition('/')[2]
+
+                        # this is the magic
+                        # this sets the order smallest to largest
+                        # this puts the mapping into the DB in the right order
+                        # and returns the correct id at the end
+                        categories_to_ship.sort(key=lambda x:len(x[1]))
+
+                        for each_category in categories_to_ship:
+                            new_category_id = self.obDal.category_cap(each_category[0], each_category[1])
+
+                lst_ids.append(new_category_id)
+
+            df_attribute['FyCategoryId'] = lst_ids
+
+            self.df_product = self.df_product.merge(df_attribute,
+                                                     how='left', on=['FyCategory'])
+        else:
+            self.df_fill_category = self.obDal.get_product_category()
+            self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['ProductId'])
+            del self.df_fill_category
+
+
+    def batch_process_naics(self):
+        if 'FyNAICSCode' in self.df_product.columns:
+            df_attribute = self.df_product[['FyNAICSCode']]
+            df_attribute = df_attribute.drop_duplicates(subset=['FyNAICSCode'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                naics_code = row['FyNAICSCode'].upper()
+                if naics_code == '':
+                    fy_naics_code_id = -1
+                elif naics_code in self.df_naics_codes['FyNAICSCode'].values:
+                    fy_naics_code_id = self.df_naics_codes.loc[
+                        (self.df_naics_codes['FyNAICSCode'] == naics_code),'FyNAICSCodeId'].values[0]
+
+                lst_ids.append(fy_naics_code_id)
+
+            df_attribute['FyNAICSCodeId'] = lst_ids
+
+            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                     how='left', on=['FyNAICSCode'])
+
+    def batch_process_unspsc(self):
+        if 'FyUNSPSCCode' in self.df_product.columns:
+            df_attribute = self.df_product[['FyUNSPSCCode']]
+            df_attribute = df_attribute.drop_duplicates(subset=['FyUNSPSCCode'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                unspsc_code = row['FyUNSPSCCode'].upper()
+                if unspsc_code == '':
+                    fy_unspsc_code_id = -1
+                elif unspsc_code in self.df_unspsc_codes['FyUNSPSCCode'].values:
+                    fy_unspsc_code_id = self.df_unspsc_codes.loc[
+                        (self.df_unspsc_codes['FyUNSPSCCode'] == unspsc_code), 'FyUNSPSCCodeId'].values[0]
+
+                lst_ids.append(fy_unspsc_code_id)
+
+            df_attribute['FyUNSPSCCodeId'] = lst_ids
+
+            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                     how='left', on=['FyUNSPSCCode'])
+
+
+    def batch_process_special_handling(self):
+        if 'FyHazardousSpecialHandlingCode' in self.df_product.columns:
+            df_attribute = self.df_product[['FyHazardousSpecialHandlingCode']]
+            df_attribute = df_attribute.drop_duplicates(subset=['FyHazardousSpecialHandlingCode'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                special_handling_code = row['FyHazardousSpecialHandlingCode'].upper()
+                if special_handling_code == '':
+                    fy_special_handling_id = -1
+                elif special_handling_code in self.df_special_handling_codes['FyHazardousSpecialHandlingCode'].values:
+                    fy_special_handling_id = self.df_special_handling_codes.loc[
+                        (self.df_special_handling_codes['FyHazardousSpecialHandlingCode'] == special_handling_code), 'FyHazardousSpecialHandlingCodeId'].values[0]
+
+                lst_ids.append(fy_special_handling_id)
+
+            df_attribute['FyHazardousSpecialHandlingCodeId'] = lst_ids
+
+            self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
+                                                     how='left', on=['FyHazardousSpecialHandlingCode'])
+
 
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCDPriceUpdateToggle','BCDataUpdateToggle']:
+                success, return_val = self.process_boolean(row, each_bool)
+                if success:
+                    df_collect_product_base_data[each_bool] = [return_val]
+                else:
+                    df_collect_product_base_data[each_bool] = [-1]
+
+
             # check if it is update or not
             if 'ProductDescriptionId' in df_line_product.columns:
                 self.obReporter.update_report('Pass','This is an FyProduct update')
@@ -251,7 +402,6 @@ class FyProductIngest(BasicProcessObject):
         return df_collect_product_base_data
 
 
-    # plug this in somewhere
     def process_pricing(self, df_collect_product_base_data, row):
         # from the file
         success, fy_landed_cost = self.row_check(row,'Landed Cost')
@@ -626,25 +776,90 @@ class FyProductIngest(BasicProcessObject):
             self.obReporter.update_report('Fail','Retail price did not calculate')
             return False, df_collect_product_base_data
 
+        if 'FyCategoryId' not in row:
+            df_collect_product_base_data['FyCategoryId'] = [-1]
+            fy_category_id = -1
+        else:
+            fy_category_id = int(row['FyCategoryId'])
+
+        fy_is_green = int(row['FyIsGreen'])
+        fy_is_latex_free = int(row['FyIsLatexFree'])
+
+        if 'FyColdChain' not in row:
+            df_collect_product_base_data['FyColdChain'] = ['']
+            fy_cold_chain = ''
+        else:
+            fy_cold_chain = str(row['FyColdChain'])
+            if fy_cold_chain not in ['A','F','R']:
+                fy_cold_chain = ''
+                df_collect_product_base_data['FyColdChain'] = ['']
+            elif fy_cold_chain.lower() in ['ambient']:
+                fy_cold_chain = 'A'
+                df_collect_product_base_data['FyColdChain'] = ['A']
+            elif fy_cold_chain.lower() in ['frozen']:
+                fy_cold_chain = 'F'
+                df_collect_product_base_data['FyColdChain'] = ['F']
+            elif fy_cold_chain.lower() in ['refrigerated']:
+                fy_cold_chain = 'R'
+                df_collect_product_base_data['FyColdChain'] = ['R']
+
+        if 'FyControlledCode' not in row:
+            df_collect_product_base_data['FyControlledCode'] = [-1]
+            fy_controlled_code = -1
+        else:
+            fy_controlled_code = int(row['FyControlledCode'])
+            if -1 > fy_controlled_code > 5:
+                fy_controlled_code = -1
+
+        if 'FyNAICSCodeId' not in row:
+            df_collect_product_base_data['FyNAICSCodeId'] = [-1]
+            fy_naics_code_id = -1
+        else:
+            fy_naics_code_id = int(row['FyNAICSCodeId'])
+
+        if 'FyUNSPSCCodeId' not in row:
+            df_collect_product_base_data['FyUNSPSCCodeId'] = [-1]
+            fy_unspsc_code_id = -1
+        else:
+            fy_unspsc_code_id = int(row['FyUNSPSCCodeId'])
+
+        if 'FyHazardousSpecialHandlingCodeId' not in row:
+            df_collect_product_base_data['FyHazardousSpecialHandlingCodeId'] = [-1]
+            fy_special_handling_id = -1
+        else:
+            fy_special_handling_id = int(row['FyHazardousSpecialHandlingCodeId'])
+
+        if 'FyShelfLifeMonths' not in row:
+            df_collect_product_base_data['FyShelfLifeMonths'] = [-1]
+            fy_shelf_life_months = -1
+        else:
+            fy_shelf_life_months = int(row['FyShelfLifeMonths'])
+
+        if 'FyProductNotes' not in row:
+            df_collect_product_base_data['FyProductNotes'] = ['']
+            fy_product_notes = ''
+        else:
+            fy_product_notes = str(row['FyProductNotes'])
+
         # note that these will get set automatically
         is_discontinued = -1
-        success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+        success, is_discontinued = self.process_boolean(row, 'FyIsDiscontinued')
         if success:
-            df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+            df_collect_product_base_data['FyIsDiscontinued'] = [is_discontinued]
         else:
             is_discontinued = 1
 
         is_visible = -1
-        success, is_visible = self.process_boolean(row, 'IsVisible')
+        success, is_visible = self.process_boolean(row, 'FyIsVisible')
         if success:
-            df_collect_product_base_data['IsVisible'] = [is_visible]
+            df_collect_product_base_data['FyIsVisible'] = [is_visible]
         else:
             is_visible = 0
 
         allow_purchases = -1
-        success, allow_purchases = self.process_boolean(row, 'AllowPurchases')
+        success, allow_purchases = self.process_boolean(row, 'FyAllowPurchases')
         if success:
-            df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
+            df_collect_product_base_data['FyAllowPurchases'] = [allow_purchases]
         else:
             allow_purchases = 0
 
@@ -667,6 +882,8 @@ class FyProductIngest(BasicProcessObject):
             self.obIngester.insert_fy_product_description(fy_product_number, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time,
                                                           fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
+                                                          fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
+                                                          fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
 
@@ -818,26 +1035,77 @@ class FyProductIngest(BasicProcessObject):
         else:
             fy_list_price = float(row['Retail Price'])
 
-        is_discontinued = -1
-        success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
-        if success:
-            df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
-        else:
-            is_discontinued = -1
 
-        is_visible = -1
-        success, is_visible = self.process_boolean(row, 'IsVisible')
-        if success:
-            df_collect_product_base_data['IsVisible'] = [is_visible]
+        if 'FyCategoryId' not in row:
+            df_collect_product_base_data['FyCategoryId'] = [-1]
+            fy_category_id = -1
         else:
-            is_visible = -1
+            fy_category_id = int(row['FyCategoryId'])
 
-        allow_purchases = -1
-        success, allow_purchases = self.process_boolean(row, 'AllowPurchases')
-        if success:
-            df_collect_product_base_data['AllowPurchases'] = [allow_purchases]
+        fy_is_green = int(row['FyIsGreen'])
+        fy_is_latex_free = int(row['FyIsLatexFree'])
+
+        if 'FyColdChain' not in row:
+            df_collect_product_base_data['FyColdChain'] = ['']
+            fy_cold_chain = ''
         else:
-            allow_purchases = -1
+            fy_cold_chain = str(row['FyColdChain'])
+            if fy_cold_chain.lower() in ['ambient']:
+                fy_cold_chain = 'A'
+                df_collect_product_base_data['FyColdChain'] = ['A']
+            elif fy_cold_chain.lower() in ['frozen']:
+                fy_cold_chain = 'F'
+                df_collect_product_base_data['FyColdChain'] = ['F']
+            elif fy_cold_chain.lower() in ['refrigerated']:
+                fy_cold_chain = 'R'
+                df_collect_product_base_data['FyColdChain'] = ['R']
+
+            if fy_cold_chain not in ['A','F','R']:
+                fy_cold_chain = ''
+                df_collect_product_base_data['FyColdChain'] = ['']
+
+        if 'FyControlledCode' not in row:
+            df_collect_product_base_data['FyControlledCode'] = [-1]
+            fy_controlled_code = -1
+        else:
+            fy_controlled_code = int(row['FyControlledCode'])
+            if -1 > fy_controlled_code > 5:
+                fy_controlled_code = -1
+
+
+        if 'FyNAICSCodeId' not in row:
+            df_collect_product_base_data['FyNAICSCodeId'] = [-1]
+            fy_naics_code_id = -1
+        else:
+            fy_naics_code_id = int(row['FyNAICSCodeId'])
+
+        if 'FyUNSPSCCodeId' not in row:
+            df_collect_product_base_data['FyUNSPSCCodeId'] = [-1]
+            fy_unspsc_code_id = -1
+        else:
+            fy_unspsc_code_id = int(row['FyUNSPSCCodeId'])
+
+        if 'FyHazardousSpecialHandlingCodeId' not in row:
+            df_collect_product_base_data['FyHazardousSpecialHandlingCodeId'] = [-1]
+            fy_special_handling_id = -1
+        else:
+            fy_special_handling_id = int(row['FyHazardousSpecialHandlingCodeId'])
+
+        if 'FyShelfLifeMonths' not in row:
+            df_collect_product_base_data['FyShelfLifeMonths'] = [-1]
+            fy_shelf_life_months = -1
+        else:
+            fy_shelf_life_months = int(row['FyShelfLifeMonths'])
+
+        if 'FyProductNotes' not in row:
+            df_collect_product_base_data['FyProductNotes'] = ['']
+            fy_product_notes = ''
+        else:
+            fy_product_notes = str(row['FyProductNotes'])
+
+        is_discontinued = row['FyIsDiscontinued']
+        is_visible = row['FyIsVisible']
+        allow_purchases = row['FyAllowPurchases']
 
         success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
         if success:
@@ -857,6 +1125,8 @@ class FyProductIngest(BasicProcessObject):
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
+                                                          fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
+                                                          fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
 

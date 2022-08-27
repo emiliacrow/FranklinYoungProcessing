@@ -336,12 +336,23 @@ class DalObject:
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
+    def get_unspsc_codes(self):
+        proc_name = 'sequoia.get_UNSPSCcodes'
+        column_names = ['FyUNSPSCCodeId', 'FyUNSPSCCode']
+        df_unspsc_lookup = self.get_lookup(proc_name, column_names)
+        return df_unspsc_lookup
+
     def get_unspsc_id(self,newUNSPSC,newUNSPSCTitle=''):
         proc_name = 'sequoia.get_UNSPSC_id'
         proc_args = (newUNSPSC, newUNSPSCTitle)
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
+    def get_special_handling_codes(self):
+        proc_name = 'sequoia.get_HazardousSpecialHandlingCodes'
+        column_names = ['FyHazardousSpecialHandlingCodeId', 'FyHazardousSpecialHandlingCode']
+        df_unspsc_lookup = self.get_lookup(proc_name, column_names)
+        return df_unspsc_lookup
 
     def fsc_code_cap(self,newFSCCode, newFSCCodeName,newFSCCodeDesc):
         proc_name = 'sequoia.FSCCode_capture_wrap'
@@ -366,6 +377,12 @@ class DalObject:
         proc_args = (newNAICSCodeDesc,newNAICSCode)
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
+
+    def get_naics_codes(self):
+        proc_name = 'sequoia.get_NAICSCodes'
+        column_names = ['FyNAICSCodeId', 'FyNAICSCode']
+        df_naics_lookup = self.get_lookup(proc_name, column_names)
+        return df_naics_lookup
 
     def national_drug_code_cap(self,newNationalDrugCode,newNationalDrugCodeDesc=''):
         proc_name = 'sequoia.NationalDrugCode_capture_wrap'
@@ -870,15 +887,15 @@ class DalObject:
 
 
     def fy_product_description_insert(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_insert4'
-        proc_statement = 'CALL `sequoia`.`ProductDescription_insert3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.ProductDescription_insert5'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_insert5`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
 
     def set_fy_product_description(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_update4'
-        proc_statement = 'CALL `sequoia`.`ProductDescription_update4`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.ProductDescription_update5'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_update5`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
