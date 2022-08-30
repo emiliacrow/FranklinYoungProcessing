@@ -277,18 +277,6 @@ class MinimumProductPrice(BasicProcessObject):
             if ('ProductTaxClass' not in row):
                 df_collect_product_base_data['ProductTaxClass'] = 'Default Tax Class'
 
-            for each_bool in ['IsDiscontinued','AllowPurchases']:
-                success, return_val = self.process_boolean(row, each_bool)
-                if success:
-                    df_collect_product_base_data[each_bool] = [return_val]
-                else:
-                    if each_bool == 'AllowPurchases':
-                        self.obReporter.update_report('Alert', '{0} was set to 1'.format(each_bool))
-                        df_collect_product_base_data[each_bool] = [1]
-                    else:
-                        self.obReporter.update_report('Alert', '{0} was set to 0'.format(each_bool))
-                        df_collect_product_base_data[each_bool] = [0]
-
 
             # all the products that need the info to be ingested
             if fy_product_number in self.dct_fy_product_description:
@@ -570,7 +558,6 @@ class MinimumProductPrice(BasicProcessObject):
         fy_product_notes = ''
         for colName, row in df_line_product.iterrows():
             fy_product_number = row['FyProductNumber']
-            allow_purchases = row['AllowPurchases']
             if 'FyPartNumber' in row:
                 fy_part_number = row['FyPartNumber']
 
@@ -581,7 +568,6 @@ class MinimumProductPrice(BasicProcessObject):
 
             product_tax_class = row['ProductTaxClass']
             vendor_part_number = row['VendorPartNumber']
-            is_discontinued = row['IsDiscontinued']
 
             product_id = row['ProductId']
             vendor_id = row['VendorId']
@@ -594,23 +580,23 @@ class MinimumProductPrice(BasicProcessObject):
 
         if str(row['Filter']) in ['Partial','ConfigurationChange']:
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
-                self.obIngester.insert_product_price(fy_product_number, allow_purchases, fy_part_number,
-                                                     product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+                self.obIngester.insert_product_price(fy_product_number, fy_part_number,
+                                                     product_tax_class, vendor_part_number, product_id, vendor_id,
                                                      unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, fy_product_notes)
             else:
                 self.obReporter.update_report('Fail','Check UOI, QTY, UOM')
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Base Pricing':
             price_id = row['ProductPriceId']
-            self.obIngester.update_product_price_nouoi(price_id, fy_product_number, allow_purchases, fy_part_number,
-                                                 product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+            self.obIngester.update_product_price_nouoi(price_id, fy_product_number, fy_part_number,
+                                                 product_tax_class, vendor_part_number, product_id, vendor_id,
                                                  product_description_id, fy_product_notes)
 
         # this pathway will be needed at some point I'm sure
         elif 'DEPRICATED' == 'UNIT CHANGE PATH':
             price_id = row['ProductPriceId']
-            self.obIngester.update_product_price(price_id, fy_product_number, allow_purchases, fy_part_number,
-                                                 product_tax_class, vendor_part_number, is_discontinued, product_id, vendor_id,
+            self.obIngester.update_product_price(price_id, fy_product_number, fy_part_number,
+                                                 product_tax_class, vendor_part_number, product_id, vendor_id,
                                                  unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, fy_product_notes)
 
 

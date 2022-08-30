@@ -754,21 +754,21 @@ class DalObject:
         runner.start()
 
     def min_product_price_insert(self,lst_product_price):
-        proc_name = 'sequoia.MinimumProductPrice_insert2'
+        proc_name = 'sequoia.MinimumProductPrice_insert3'
         proc_statement = 'CALL `sequoia`.`MinimumProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
     def min_product_price_update(self,lst_product_price):
-        proc_name = 'sequoia.MinimumProductPrice_update2'
+        proc_name = 'sequoia.MinimumProductPrice_update3'
         proc_statement = 'CALL `sequoia`.`MinimumProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)
         runner.start()
 
     def min_product_price_nouoi_update(self,lst_product_price):
-        proc_name = 'sequoia.MinimumProductPrice_nouoi_update2'
+        proc_name = 'sequoia.MinimumProductPrice_nouoi_update3'
         proc_statement = 'CALL `sequoia`.`MinimumProductPrice_nouoi_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_price)

@@ -13,7 +13,10 @@ class FyProductIngest(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = ['FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
                   'FyUnitOfIssueQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'PrimaryVendorName', 'SecondaryVendorName',
-                  'FyCost', 'Landed Cost','LandedCostMarkupPercent_FYSell','LandedCostMarkupPercent_FYList',
+                  'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
+                  'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
+                  'FyProductNotes', 'VendorListPrice','FyCost',
+                  'Landed Cost','FyLandedCostMarkupPercent_FYSell','FyLandedCostMarkupPercent_FYList',
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
     att_fields = []
     gen_fields = []
@@ -284,6 +287,7 @@ class FyProductIngest(BasicProcessObject):
 
             self.df_product = pandas.DataFrame.merge(self.df_product, df_attribute,
                                                      how='left', on=['FyNAICSCode'])
+
 
     def batch_process_unspsc(self):
         if 'FyUNSPSCCode' in self.df_product.columns:

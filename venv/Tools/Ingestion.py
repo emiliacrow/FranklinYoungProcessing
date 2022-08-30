@@ -742,14 +742,14 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.min_product_price_cap(self.product_collector)
 
-    def insert_product_price(self, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes):
+    def insert_product_price(self, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes):
         if (len(self.product_insert_collector) > self.load_limit):
-            self.product_insert_collector.append((newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes))
+            self.product_insert_collector.append((newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes))
             self.obDal.min_product_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
-            self.product_insert_collector.append((newFyProductNumber, newAllowPurchases, newFyPartNumber,
-                                                newProductTaxClass, newVendorPartNumber, newIsDiscontinued, newProductId, newVendorId,
+            self.product_insert_collector.append((newFyProductNumber, newFyPartNumber,
+                                                newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
                                                 newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes))
 
     def insert_product_price_cleanup(self):
@@ -757,14 +757,14 @@ class IngestionObject:
             self.obDal.min_product_price_insert(self.product_insert_collector)
 
 
-    def update_product_price(self, newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId,FyProductNotes):
+    def update_product_price(self, newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId,FyProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
-            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes))
+            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes))
             self.obDal.min_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
-            self.product_update_collector.append((newProductPriceId, newFyProductNumber, newAllowPurchases, newFyPartNumber,
-                                                newProductTaxClass, newVendorPartNumber, newIsDiscontinued, newProductId, newVendorId,
+            self.product_update_collector.append((newProductPriceId, newFyProductNumber, newFyPartNumber,
+                                                newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
                                                 newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes))
 
     def update_product_price_cleanup(self):
@@ -773,16 +773,16 @@ class IngestionObject:
 
 
 
-    def update_product_price_nouoi(self, newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,
-                                   newProductTaxClass,newVendorPartNumber,newIsDiscontinued, newProductId,
+    def update_product_price_nouoi(self, newProductPriceId, newFyProductNumber,newFyPartNumber,
+                                   newProductTaxClass,newVendorPartNumber, newProductId,
                                    newVendorId, newProductDescriptionId, FyProductNotes):
         if (len(self.product_update_nouoi_collector) > self.load_limit):
-            self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber,newAllowPurchases,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newIsDiscontinued,newProductId,newVendorId, newProductDescriptionId, FyProductNotes))
+            self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId, newProductDescriptionId, FyProductNotes))
             self.obDal.min_product_price_nouoi_update(self.product_update_nouoi_collector)
             self.product_update_nouoi_collector = []
         else:
-            self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber, newAllowPurchases, newFyPartNumber,
-                                                newProductTaxClass, newVendorPartNumber, newIsDiscontinued, newProductId, newVendorId,
+            self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber, newFyPartNumber,
+                                                newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
                                                 newProductDescriptionId, FyProductNotes))
 
     def update_product_price_nouoi_cleanup(self):
