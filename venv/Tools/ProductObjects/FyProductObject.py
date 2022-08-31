@@ -892,6 +892,31 @@ class FyProductIngest(BasicProcessObject):
                                                           is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
 
             # TO DO: we need to insert a record in toggles at the same time.
+            # P insert requirements
+            # FyCatalogNumber () we can create this from existing value
+            # ManufacturerPartNumber () we'll need this
+            # ProductName ()
+            # Country Id
+            # manufacturer Id
+            # ecommerce long description -- drop this req
+            # shipping id -- drop this req
+            # recommended storage id -- drop this req
+            # expected lead time -- drop this req
+            #
+            # PP insert requirements
+            # FyProductNumber
+            # ProductTaxClass = 'Default'
+            # product id
+            # vendor id
+            # units
+
+
+
+
+
+
+
+
 
             return True, df_collect_product_base_data
 

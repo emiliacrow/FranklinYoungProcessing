@@ -82,7 +82,9 @@ class HeaderTranslator():
                             'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],
                             'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
 
-                            'IsDiscontinued':['IsDiscontinued','Discontinued','is discontinued','Is Discontinued'],
+                            'FyIsDiscontinued':['IsDiscontinued','FyIsDiscontinued','Discontinued','is discontinued',
+                                                'fy is discontinued','Is Discontinued','Fy Is Discontinued','is_discontinued',
+                                                'fy_is_discontinued','Is_Discontinued','Fy_Is_Discontinued'],
 
 # GSA
                             'GSAApprovedListPrice':['GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
@@ -132,7 +134,7 @@ class HeaderTranslator():
                             'DateCatalogReceived':['DateCatalogRecieved', 'DateCatelogReceived', 'DateCatalogReceived',
                                                    'Date Catalog Recieved', 'date_catalog_received','DateCatalogRcvd'],
 
-                            'AllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?'],
+                            'FyAllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?','FyAllowPurchases','Fy Allow Purchases','Fy Allow Purchases?'],
                             'ProductTaxClass':['ProductTaxClass','Product Tax Class','Tax Class'],
                             'Category':['CategoryRecommendation','Category','category'],
 
