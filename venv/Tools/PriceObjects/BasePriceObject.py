@@ -514,19 +514,13 @@ class BasePrice(BasicProcessObject):
         success = True
         if str(row['Filter']) == 'Base Pricing':
             self.obIngester.insert_base_price(vendor_list_price, fy_discount_percent, fy_cost,
-                                                          estimated_freight, fy_landed_cost,
-                                                          markup_percent_fy_sell, fy_sell_price,
-                                                          markup_percent_fy_list, fy_list_price, ecommerce_discount,
-                                                          is_visible, date_catalog_received, catalog_provided_by,
+                                                          estimated_freight, fy_landed_cost, date_catalog_received, catalog_provided_by,
                                                           product_price_id, b_website_only, va_product_price_id, va_eligible, gsa_product_price_id, gsa_eligible,
                                                           htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id)
         elif str(row['Filter']) == 'Ready':
             base_price_id = row['BaseProductPriceId']
             self.obIngester.update_base_price(base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
-                                                          estimated_freight, fy_landed_cost,
-                                                          markup_percent_fy_sell, fy_sell_price,
-                                                          markup_percent_fy_list, fy_list_price, ecommerce_discount,
-                                                          is_visible, date_catalog_received, catalog_provided_by,
+                                                          estimated_freight, fy_landed_cost, date_catalog_received, catalog_provided_by,
                                                           product_price_id, b_website_only, va_product_price_id, va_eligible, gsa_product_price_id, gsa_eligible,
                                                           htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id)
 

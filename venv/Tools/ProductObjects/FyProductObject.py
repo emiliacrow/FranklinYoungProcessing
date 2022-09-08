@@ -891,33 +891,6 @@ class FyProductIngest(BasicProcessObject):
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
 
-            # TO DO: we need to insert a record in toggles at the same time.
-            # P insert requirements
-            # FyCatalogNumber () we can create this from existing value
-            # ManufacturerPartNumber () we'll need this
-            # ProductName ()
-            # Country Id
-            # manufacturer Id
-            # ecommerce long description -- drop this req
-            # shipping id -- drop this req
-            # recommended storage id -- drop this req
-            # expected lead time -- drop this req
-            #
-            # PP insert requirements
-            # FyProductNumber
-            # ProductTaxClass = 'Default'
-            # product id
-            # vendor id
-            # units
-
-
-
-
-
-
-
-
-
             return True, df_collect_product_base_data
 
         if fy_product_name == '':
@@ -967,6 +940,55 @@ class FyProductIngest(BasicProcessObject):
 
         self.obReporter.update_report('Fail', report)
         return False, df_collect_product_base_data
+
+
+
+        if ' ' in fy_product_number:
+            fy_catalog_number = fy_product_number.partition(' ')[0]
+        else:
+            fy_catalog_number = fy_product_number
+
+        if 'ManufacturerPartNumber' in row:
+            manufacturer_part_number = str(row['ManufacturerPartNumber'])
+        else:
+            self.obReporter.update_report('Fail','Incomplete ingestion-manufacturer part number')
+
+        if 'ManufacturerId' in row:
+            manufacturer_id = str(row['ManufacturerId'])
+        else:
+            self.obReporter.update_report('Fail','Incomplete ingestion-manufacturer id')
+
+        print(fy_coo_id)
+        print(fy_product_name)
+        print('Can ingest into product')
+
+
+
+        product_tax_class = 'Default Tax Class'
+        print(primary_vendor_id, fy_uoi_id, fy_uom_id, fy_uoi_qty)
+        if 'VendorPartNumber' in row:
+            vendor_part_number = str(row['VendorPartNumber'])
+        else:
+            self.obReporter.update_report('Fail','Incomplete ingestion-vendor part number')
+
+        print('Can ingest into product price')
+
+            # TO DO: we need to insert a record in toggles at the same time.
+            # P insert requirements
+            # FyCatalogNumber () we can create this from existing value
+            # ManufacturerPartNumber () we'll need this
+            # ProductName ()
+            # Country Id
+            # manufacturer Id
+            #
+            # PP insert requirements
+            # FyProductNumber
+            # ProductTaxClass = 'Default'
+            # product id
+            # vendor id
+            # units
+
+
 
 
     def update_fy_description(self, df_collect_product_base_data, row):

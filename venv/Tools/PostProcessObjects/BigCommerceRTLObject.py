@@ -448,6 +448,9 @@ class BigCommerceRTLObject(BasicProcessObject):
                 price_toggle = 1
                 df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
 
+                data_toggle = 1
+                df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+
                 is_discontinued = 0
                 df_collect_product_base_data['FyIsDiscontinued'] = [is_discontinued]
 
@@ -457,17 +460,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                 is_visible = 1
                 df_collect_product_base_data['FyIsVisible'] = [is_visible]
 
-                data_toggle = -1
-                if (update_asset != -1):
-                    data_toggle = 1
-                    df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
 
-                else:
-                    success, data_toggle = self.process_boolean(row, 'BCDataUpdateToggle')
-                    if success:
-                        df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
-                    else:
-                        data_toggle = -1
 
             else:
                 success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')

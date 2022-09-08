@@ -320,8 +320,9 @@ class ProcessProductAssetObject(BasicProcessObject):
             self.obReporter.update_report('Alert','AssetPreference set to 0')
 
         if asset_type != 'Image':
-            self.obIngester.set_productdocument_cap(product_id, s3_name, object_name, asset_type,
-                                                    document_preference)
+            # this is a kinda stupid way of doing things here
+            # we should be splitting these and
+            self.obIngester.set_productdocument_cap(product_id, s3_name, object_name, asset_type, document_preference)
 
         else:
             caption = ''

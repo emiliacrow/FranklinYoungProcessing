@@ -795,16 +795,16 @@ class DalObject:
         runner.start()
 
     def base_price_insert(self, lst_base_product_price):
-        proc_name = 'sequoia.BaseProductPrice_insert2'
-        proc_statement = 'CALL `sequoia`.`BaseProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.BaseProductPrice_insert3'
+        proc_statement = 'CALL `sequoia`.`BaseProductPrice_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_base_product_price)
         runner.start()
 
 
     def base_price_update(self, lst_base_product_price):
-        proc_name = 'sequoia.BaseProductPrice_update2'
-        proc_statement = 'CALL `sequoia`.`BaseProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_name = 'sequoia.BaseProductPrice_update3'
+        proc_statement = 'CALL `sequoia`.`BaseProductPrice_update`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_base_product_price)
         runner.start()
