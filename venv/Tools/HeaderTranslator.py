@@ -37,7 +37,6 @@ class HeaderTranslator():
                             'UnitOfMeasure':['UnitOfMeasure','Unit Of Measure','UnitOfMeasureSymbol','Unit Of Measure Symbol','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
                             'IsHazardous':['IsHazardous','Is Hazardous','Hazardous','is_hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
-                            'IsVisible':['IsVisible','Is Visible','is_visible','is visible'],
                             'LeadTime':['LeadTime','LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
                             'LeadTimeExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
 
@@ -46,9 +45,9 @@ class HeaderTranslator():
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
                             'Estimated Freight':['Estimated Freight','EstimatedFreight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
                             'Landed Cost':['FyLandedCost','LandedCost','Fy Landed Cost','Landed Cost'],
-                            'LandedCostMarkupPercent_FYSell':['LandedCostMarkupPercent_FYSell', 'LandedCostMarkupPercent_FySell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
+                            'LandedCostMarkupPercent_FYSell':['FyLandedCostMarkupPercent_FYSell', 'FyLandedCostMarkupPercent_FySell', 'LandedCostMarkupPercent_FYSell', 'LandedCostMarkupPercent_FySell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
                             'Sell Price':['FySellPrice','FyPrice','BC Sell Price','Ecom Sell Price'],
-                            'LandedCostMarkupPercent_FYList':['LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FyList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
+                            'LandedCostMarkupPercent_FYList':['FyLandedCostMarkupPercent_FYList','FyLandedCostMarkupPercent_FyList','LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FyList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
                             'OnContract':['OnContract', 'On Contract'],
@@ -85,6 +84,8 @@ class HeaderTranslator():
                             'FyIsDiscontinued':['IsDiscontinued','FyIsDiscontinued','Discontinued','is discontinued',
                                                 'fy is discontinued','Is Discontinued','Fy Is Discontinued','is_discontinued',
                                                 'fy_is_discontinued','Is_Discontinued','Fy_Is_Discontinued'],
+                            'FyIsVisible':['IsVisible','Is Visible','is_visible','is visible','FyIsVisible','Fy Is Visible','fy_is_visible','fy is visible'],
+                            'FyAllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?','FyAllowPurchases','Fy Allow Purchases','Fy Allow Purchases?'],
 
 # GSA
                             'GSAApprovedListPrice':['GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
@@ -134,7 +135,6 @@ class HeaderTranslator():
                             'DateCatalogReceived':['DateCatalogRecieved', 'DateCatelogReceived', 'DateCatalogReceived',
                                                    'Date Catalog Recieved', 'date_catalog_received','DateCatalogRcvd'],
 
-                            'FyAllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?','FyAllowPurchases','Fy Allow Purchases','Fy Allow Purchases?'],
                             'ProductTaxClass':['ProductTaxClass','Product Tax Class','Tax Class'],
                             'Category':['CategoryRecommendation','Category','category'],
 

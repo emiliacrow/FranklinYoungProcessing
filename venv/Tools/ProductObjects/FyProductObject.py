@@ -4,15 +4,18 @@
 # CreateFor: Franklin Young International
 
 import pandas
+import datetime
+import xlrd
 
 from Tools.ProgressBar import YesNoDialog
 from Tools.BasicProcess import BasicProcessObject
 
 
-class FyProductIngest(BasicProcessObject):
+class FyProductUpdate(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = ['FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
-                  'FyUnitOfIssueQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'PrimaryVendorName', 'SecondaryVendorName',
+                  'FyUnitOfIssueQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'VendorName', 'PrimaryVendorName', 'SecondaryVendorName',
+                  'ManufacturerPartNumber', 'ManufacturerName', 'VendorPartNumber','DateCatalogReceived',
                   'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost',
@@ -31,6 +34,9 @@ class FyProductIngest(BasicProcessObject):
         self.df_uois_lookup = self.obDal.get_unit_of_issue_symbol_lookup()
         if 'FyCountryOfOrigin' in self.df_product.columns:
             self.batch_process_country()
+
+        if 'ManufacturerName' in self.df_product.columns:
+            self.batch_process_manufacturer()
 
         if 'FyCategory' in self.df_product.columns:
             self.batch_process_category()
@@ -76,6 +82,7 @@ class FyProductIngest(BasicProcessObject):
 
 
     def batch_process_country(self):
+        print('Batch process country')
         df_attribute = self.df_product[['FyCountryOfOrigin']]
         df_attribute = df_attribute.drop_duplicates(subset=['FyCountryOfOrigin'])
         lst_ids = []
@@ -121,6 +128,7 @@ class FyProductIngest(BasicProcessObject):
 
 
     def batch_process_primary_vendor(self):
+        print('Batch process vendor')
         if 'VendorName' in self.df_product.columns:
             df_attribute = self.df_product[['VendorName']]
             df_attribute = df_attribute.drop_duplicates(subset=['VendorName'])
@@ -205,6 +213,7 @@ class FyProductIngest(BasicProcessObject):
 
 
     def batch_process_category(self):
+        print('Batch process category')
         # this needs to be handled better
         if 'FyCategory' in self.df_product.columns:
             df_attribute = self.df_product[['FyCategory']]
@@ -347,7 +356,9 @@ class FyProductIngest(BasicProcessObject):
             if 'ProductDescriptionId' in df_line_product.columns:
                 self.obReporter.update_report('Pass','This is an FyProduct update')
             else:
-                self.obReporter.update_report('Pass','This is an FyProduct insert')
+                self.obReporter.update_report('Fail','This is an FyProduct insert')
+                return False, df_collect_product_base_data
+
             df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
 
         df_line_product = df_collect_product_base_data.copy()
@@ -361,8 +372,6 @@ class FyProductIngest(BasicProcessObject):
             # check if it is update or not
             if 'ProductDescriptionId' in df_line_product.columns:
                 success, df_collect_product_base_data  = self.update_fy_description(df_collect_product_base_data, row)
-            else:
-                success, df_collect_product_base_data  = self.process_fy_description(df_collect_product_base_data, row)
 
         return success, df_collect_product_base_data
 
@@ -879,19 +888,83 @@ class FyProductIngest(BasicProcessObject):
         else:
             data_toggle = 1
 
+        if ' ' in fy_product_number:
+            fy_catalog_number = fy_product_number.partition(' ')[0]
+        else:
+            fy_catalog_number = fy_product_number
+
+        manufacturer_part_number = ''
+        if 'ManufacturerPartNumber' in row:
+            manufacturer_part_number = str(row['ManufacturerPartNumber'])
+
+        manufacturer_id = -1
+        if 'ManufacturerId' in row:
+            manufacturer_id = int(row['ManufacturerId'])
+
+        is_product_number_override = 0
+        if 'IsProductNumberOverride' in row:
+            is_product_number_override = int(row['IsProductNumberOverride'])
+
+        product_tax_class = 'Default Tax Class'
+        if 'ProductTaxClass' in row:
+            product_tax_class = str(row['ProductTaxClass'])
+
+        vendor_part_number = ''
+        if 'VendorPartNumber' in row:
+            vendor_part_number = str(row['VendorPartNumber'])
+
+        date_catalog_received = -1
+        if 'DateCatalogReceived' in row:
+            try:
+                date_catalog_received = int(row['DateCatalogReceived'])
+                date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+            except ValueError:
+                date_catalog_received = str(row['DateCatalogReceived'])
+
+        catalog_provided_by = ''
+        if 'CatalogProvidedBy' in row:
+            catalog_provided_by = str(row['CatalogProvidedBy'])
+
+        if 'VendorListPrice' in row:
+            vendor_list_price = float(row['VendorListPrice'])
+        else:
+            vendor_list_price = 0
+
+        if 'Discount' in row:
+            fy_discount_percent = float(row['Discount'])
+        else:
+            fy_discount_percent = 0
+
+        if 'FyCost' in row:
+            fy_cost = float(row['FyCost'])
+        else:
+            fy_cost = 0
+
+        if 'Estimated Freight' in row:
+            estimated_freight = float(row['Estimated Freight'])
+        else:
+            estimated_freight = 0
+
+
         report = ''
         if (fy_product_name != '' and fy_product_description != '' and fy_coo_id != -1 and fy_uoi_id != -1 and
-                fy_uom_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1):
+                fy_uom_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1 and manufacturer_part_number != '' and
+                manufacturer_id != -1 and vendor_part_number != '' and date_catalog_received != -1):
             # this needs to proper ingest the info
-            self.obIngester.insert_fy_product_description(fy_product_number, fy_product_name, fy_product_description,
-                                                          fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time,
-                                                          fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
-                                                          fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
-                                                          fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                          fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
-                                                          is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
+            self.obIngester.insert_fy_product_description(fy_catalog_number, manufacturer_part_number, is_product_number_override,
+                                                          manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
+                                                          fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
+                                                          vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
+                                                          secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
+                                                          fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
+                                                          fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                          vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
+                                                          markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
+                                                          fy_list_price, is_discontinued, is_visible, allow_purchases,
+                                                          price_toggle, data_toggle, date_catalog_received, catalog_provided_by)
 
             return True, df_collect_product_base_data
+
 
         if fy_product_name == '':
             report = 'Missing FyProductName'
@@ -938,56 +1011,33 @@ class FyProductIngest(BasicProcessObject):
             else:
                 report = 'Missing PrimaryVendorName'
 
+        if manufacturer_id == -1:
+            if report != '':
+                report = report + ', ManufacturerId'
+            else:
+                report = 'Missing ManufacturerId'
+
+        if manufacturer_part_number == '':
+            if report != '':
+                report = report + ', ManufacturerPartNumber'
+            else:
+                report = 'Missing ManufacturerPartNumber'
+
+        if vendor_part_number == '':
+            if report != '':
+                report = report + ', VendorPartNumber'
+            else:
+                report = 'Missing VendorPartNumber'
+
+        if date_catalog_received == -1:
+            if report != '':
+                report = report + ', DateCatalogReceived'
+            else:
+                report = 'Missing DateCatalogReceived'
+
+
         self.obReporter.update_report('Fail', report)
         return False, df_collect_product_base_data
-
-
-
-        if ' ' in fy_product_number:
-            fy_catalog_number = fy_product_number.partition(' ')[0]
-        else:
-            fy_catalog_number = fy_product_number
-
-        if 'ManufacturerPartNumber' in row:
-            manufacturer_part_number = str(row['ManufacturerPartNumber'])
-        else:
-            self.obReporter.update_report('Fail','Incomplete ingestion-manufacturer part number')
-
-        if 'ManufacturerId' in row:
-            manufacturer_id = str(row['ManufacturerId'])
-        else:
-            self.obReporter.update_report('Fail','Incomplete ingestion-manufacturer id')
-
-        print(fy_coo_id)
-        print(fy_product_name)
-        print('Can ingest into product')
-
-
-
-        product_tax_class = 'Default Tax Class'
-        print(primary_vendor_id, fy_uoi_id, fy_uom_id, fy_uoi_qty)
-        if 'VendorPartNumber' in row:
-            vendor_part_number = str(row['VendorPartNumber'])
-        else:
-            self.obReporter.update_report('Fail','Incomplete ingestion-vendor part number')
-
-        print('Can ingest into product price')
-
-            # TO DO: we need to insert a record in toggles at the same time.
-            # P insert requirements
-            # FyCatalogNumber () we can create this from existing value
-            # ManufacturerPartNumber () we'll need this
-            # ProductName ()
-            # Country Id
-            # manufacturer Id
-            #
-            # PP insert requirements
-            # FyProductNumber
-            # ProductTaxClass = 'Default'
-            # product id
-            # vendor id
-            # units
-
 
 
 
@@ -1184,9 +1234,140 @@ class FyProductIngest(BasicProcessObject):
         return True, df_collect_product_base_data
 
 
+        if ' ' in fy_product_number:
+            fy_catalog_number = fy_product_number.partition(' ')[0]
+        else:
+            fy_catalog_number = fy_product_number
+
+        if 'ManufacturerPartNumber' in row:
+            manufacturer_part_number = str(row['ManufacturerPartNumber'])
+        else:
+            self.obReporter.update_report('Fail', 'Incomplete ingestion-manufacturer part number')
+
+        if 'ManufacturerId' in row:
+            manufacturer_id = str(row['ManufacturerId'])
+        else:
+            self.obReporter.update_report('Fail', 'Incomplete ingestion-manufacturer id')
+
+        print(fy_coo_id)
+        print(fy_product_name)
+        print('Can ingest into product')
+
+        product_tax_class = 'Default Tax Class'
+        print(primary_vendor_id, fy_uoi_id, fy_uom_id, fy_uoi_qty)
+        if 'VendorPartNumber' in row:
+            vendor_part_number = str(row['VendorPartNumber'])
+        else:
+            self.obReporter.update_report('Fail', 'Incomplete ingestion-vendor part number')
+
+        print('Can ingest into product price')
+
+        if 'DateCatalogReceived' in row:
+            try:
+                date_catalog_received = int(row['DateCatalogReceived'])
+                date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+            except ValueError:
+                date_catalog_received = str(row['DateCatalogReceived'])
+
+        elif 'db_DateCatalogReceived' in row:
+            date_catalog_received = str(row['db_DateCatalogReceived'])
+        else:
+            self.obReporter.update_report('Fail', 'Catalog received date missing')
+            return False, df_collect_product_base_data
+
+        if 'CatalogProvidedBy' in row:
+            catalog_provided_by = str(row['CatalogProvidedBy'])
+        else:
+            catalog_provided_by = ''
+
+        if 'VendorListPrice' in row:
+            vendor_list_price = float(row['VendorListPrice'])
+        else:
+            vendor_list_price = 0
+
+        if 'Discount' in row:
+            fy_discount_percent = float(row['Discount'])
+        else:
+            fy_discount_percent = 0
+
+        if 'FyCost' in row:
+            fy_cost = float(row['FyCost'])
+        else:
+            fy_cost = 0
+
+        if 'Estimated Freight' in row:
+            estimated_freight = float(row['Estimated Freight'])
+        else:
+            estimated_freight = 0
+
+        if 1 == 2:
+            base_price_id = row['BaseProductPriceId']
+            self.obIngester.update_base_price(base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
+                                              estimated_freight, fy_landed_cost, date_catalog_received, catalog_provided_by,
+                                              product_price_id, b_website_only, va_product_price_id, va_eligible,
+                                              gsa_product_price_id, gsa_eligible,
+                                              htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible,
+                                              fedmall_product_price_id)
+
+
     def trigger_ingest_cleanup(self):
         self.obIngester.insert_fy_product_description_cleanup()
         self.obIngester.update_fy_product_description_cleanup()
+
+
+
+class FyProductIngest(FyProductUpdate):
+    req_fields = ['FyProductNumber', 'FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
+                  'FyUnitOfIssueQuantity','FyLeadTime', 'ManufacturerPartNumber',
+                  'ManufacturerName', 'VendorPartNumber','DateCatalogReceived']
+
+    sup_fields = ['VendorName', 'PrimaryVendorName', 'SecondaryVendorName', 'FyIsHazardous',
+                  'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
+                  'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
+                  'FyProductNotes', 'VendorListPrice','FyCost','FyUnitOfMeasure',
+                  'Landed Cost','FyLandedCostMarkupPercent_FYSell','FyLandedCostMarkupPercent_FYList',
+                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
+    att_fields = []
+    gen_fields = []
+
+    def __init__(self,df_product, user, password, is_testing):
+        super().__init__(df_product, user, password, is_testing)
+        self.name = 'FyProduct Ingest'
+
+
+    def process_product_line(self, df_line_product):
+        success = True
+        df_collect_product_base_data = df_line_product.copy()
+        for colName, row in df_line_product.iterrows():
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCDPriceUpdateToggle','BCDataUpdateToggle']:
+                success, return_val = self.process_boolean(row, each_bool)
+                if success:
+                    df_collect_product_base_data[each_bool] = [return_val]
+                else:
+                    df_collect_product_base_data[each_bool] = [-1]
+
+            # check if it is update or not
+            if 'ProductDescriptionId' in df_line_product.columns:
+                self.obReporter.update_report('Fail','This is an FyProduct update')
+                return False, df_collect_product_base_data
+            else:
+                self.obReporter.update_report('Pass','This is an FyProduct insert')
+
+            df_collect_product_base_data = self.identify_units(df_collect_product_base_data, row)
+
+        df_line_product = df_collect_product_base_data.copy()
+        for colName, row in df_line_product.iterrows():
+            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
+            if not success:
+                return success, df_collect_product_base_data
+
+        df_line_product = df_collect_product_base_data.copy()
+        for colName, row in df_line_product.iterrows():
+            success, df_collect_product_base_data  = self.process_fy_description(df_collect_product_base_data, row)
+
+        return success, df_collect_product_base_data
+
+
 
 
 ## end ##

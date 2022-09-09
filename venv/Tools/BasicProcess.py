@@ -143,6 +143,7 @@ class BasicProcessObject:
         df_attribute = df_attribute.drop_duplicates(subset=['ManufacturerName'])
         lst_ids = []
         lst_names = []
+
         for colName, row in df_attribute.iterrows():
             manufacturer_name = row['ManufacturerName'].upper()
             manufacturer_name = self.obValidator.clean_manufacturer_name(manufacturer_name,False)
@@ -150,7 +151,9 @@ class BasicProcessObject:
                 manufacturer_name = manufacturer_name.replace('  ',' ')
 
             new_manufacturer_name = manufacturer_name
-            if manufacturer_name.lower() in self.df_manufacturer_translator['SupplierName'].values:
+            if manufacturer_name == '':
+                new_manufacturer_id = -1
+            elif manufacturer_name.lower() in self.df_manufacturer_translator['SupplierName'].values:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()),'ManufacturerId'].values[0]
                 new_manufacturer_name = self.df_manufacturer_translator.loc[
@@ -162,7 +165,7 @@ class BasicProcessObject:
                 manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
                 manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
                 new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer_name.lower(), atmp_man=manufacturer_name, lst_manufacturer_names=manufacturer_name_list)
-                #new_manufacturer_id = -1
+
 
             lst_ids.append(new_manufacturer_id)
             lst_names.append(new_manufacturer_name)

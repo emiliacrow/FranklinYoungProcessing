@@ -46,6 +46,7 @@ from Tools.ProductObjects.FillPriceObject import FillProductPrice
 from Tools.ProductObjects.FillPriceObject import UpdateFillProductPrice
 
 from Tools.ProductObjects.FyProductObject import FyProductIngest
+from Tools.ProductObjects.FyProductObject import FyProductUpdate
 
 # pricing objects
 from Tools.PriceObjects.BasePriceObject import BasePrice
@@ -751,9 +752,9 @@ class Pathways():
         self.obYNBox.close()
 
         if update_action_selected in ['0-FyProduct Update(1 step)']:
-            self.obFyProductIngest = FyProductIngest(self.df_product, self.user, self.password, is_testing)
-            self.success, self.message = self.obFyProductIngest.begin_process()
-            self.df_product = self.obFyProductIngest.get_df()
+            self.obFyProductUpdate = FyProductUpdate(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obFyProductUpdate.begin_process()
+            self.df_product = self.obFyProductUpdate.get_df()
             if b_inter_files:
                 self.obFileFinder.write_xlsx(self.df_product,'FyProdUp')
             return self.success, self.message

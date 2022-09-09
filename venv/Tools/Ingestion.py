@@ -659,26 +659,35 @@ class IngestionObject:
         return return_id
 
 
-    def insert_fy_product_description(self, fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
+    def insert_fy_product_description(self, fy_catalog_number, manufacturer_part_number, is_product_number_override, manufacturer_id,
+                                      fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
+                                      product_tax_class, vendor_part_number,
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
-                                      fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes, fy_landed_cost, markup_percent_fy_sell,
-                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle):
+                                      fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                      vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
+                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle, date_catalog_received, catalog_provided_by):
+
         if (len(self.product_description_insert_collector) > self.load_limit):
-            self.product_description_insert_collector.append((fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
-                                                              fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
-                                                              fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
-                                                              fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes, fy_landed_cost, markup_percent_fy_sell,
-                                                              fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
+            self.product_description_insert_collector.append((fy_catalog_number, manufacturer_part_number, is_product_number_override, manufacturer_id,
+                                      fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
+                                      product_tax_class, vendor_part_number,
+                                      fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
+                                      fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
+                                      fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                      vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
+                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle, date_catalog_received, catalog_provided_by))
             self.obDal.fy_product_description_insert(self.product_description_insert_collector)
             self.product_description_insert_collector = []
         else:
-            self.product_description_insert_collector.append((fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
-                                                              fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
-                                                              fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
-                                                              fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                              fy_landed_cost, markup_percent_fy_sell,
-                                                              fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
+            self.product_description_insert_collector.append((fy_catalog_number, manufacturer_part_number, is_product_number_override, manufacturer_id,
+                                      fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
+                                      product_tax_class, vendor_part_number,
+                                      fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
+                                      fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
+                                      fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                      vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
+                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle, date_catalog_received, catalog_provided_by))
 
     def insert_fy_product_description_cleanup(self):
         if self.product_description_insert_collector != []:
@@ -820,6 +829,8 @@ class IngestionObject:
     def ingest_base_price_cleanup(self):
         if self.product_collector != []:
             self.obDal.base_price_cap(self.product_collector)
+
+
 
     def insert_base_price(self, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight,
                           fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
