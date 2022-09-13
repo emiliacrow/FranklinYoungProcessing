@@ -26,6 +26,9 @@ class VAPrice(BasicProcessObject):
         self.define_new()
         self.assign_contract_ids()
 
+        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions_short()
+        self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
+
 
     def remove_private_headers(self):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
@@ -123,7 +126,7 @@ class VAPrice(BasicProcessObject):
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
 
-            base_product_price_id = row['BaseProductPriceId']
+            product_description_id = row['ProductDescriptionId']
             fy_product_number = row['FyProductNumber']
             if 'VAOnContract' in row:
                 on_contract = row['VAOnContract']
@@ -195,15 +198,14 @@ class VAPrice(BasicProcessObject):
                 va_product_price_id = int(row['db_VAProductPriceId'])
 
         if va_product_price_id == -1:
-            self.obIngester.va_product_price_insert(base_product_price_id, fy_product_number, on_contract, approved_base_price,
+            self.obIngester.va_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
                                              approved_price_date, approved_percent,
                                              mfc_percent, sin, product_notes)
         else:
-            product_price_id = int(row['ProductPriceId'])
             # this may need to collect a reason why it's being put off contract
-            self.obIngester.va_product_price_update(va_product_price_id, base_product_price_id, product_price_id, fy_product_number, on_contract, approved_base_price,
+            self.obIngester.va_product_price_update(va_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
                                              approved_price_date, approved_percent,

@@ -10,6 +10,7 @@ import xlrd
 from Tools.ProgressBar import YesNoDialog
 from Tools.BasicProcess import BasicProcessObject
 
+# handle date catalog recieved for primary here?
 
 class FyProductUpdate(BasicProcessObject):
     req_fields = ['FyProductNumber']
