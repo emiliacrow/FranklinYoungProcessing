@@ -861,21 +861,21 @@ class FyProductUpdate(BasicProcessObject):
         if success:
             df_collect_product_base_data['FyIsDiscontinued'] = [is_discontinued]
         else:
-            is_discontinued = 1
+            is_discontinued = 0
 
         is_visible = -1
         success, is_visible = self.process_boolean(row, 'FyIsVisible')
         if success:
             df_collect_product_base_data['FyIsVisible'] = [is_visible]
         else:
-            is_visible = 0
+            is_visible = 1
 
         allow_purchases = -1
         success, allow_purchases = self.process_boolean(row, 'FyAllowPurchases')
         if success:
             df_collect_product_base_data['FyAllowPurchases'] = [allow_purchases]
         else:
-            allow_purchases = 0
+            allow_purchases = 1
 
         success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
         if success:
