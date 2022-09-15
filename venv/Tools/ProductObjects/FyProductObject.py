@@ -345,7 +345,7 @@ class FyProductUpdate(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCDPriceUpdateToggle','BCDataUpdateToggle']:
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
@@ -1340,7 +1340,7 @@ class FyProductIngest(FyProductUpdate):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCDPriceUpdateToggle','BCDataUpdateToggle']:
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
