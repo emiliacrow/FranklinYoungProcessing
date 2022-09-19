@@ -419,9 +419,6 @@ class FyProductUpdate(BasicProcessObject):
     def process_pricing(self, df_collect_product_base_data, row):
         # from the file
         success, fy_landed_cost = self.row_check(row,'Landed Cost')
-        if not success:
-            # from the db
-            success, fy_landed_cost = self.row_check(row,'CurrentFyLandedCost')
 
         if success:
             success, fy_landed_cost = self.float_check(fy_landed_cost, 'Landed Cost')
@@ -445,7 +442,7 @@ class FyProductUpdate(BasicProcessObject):
                         vlp_success, vendor_list_price = self.float_check(vendor_list_price,'CurrentVendorListPrice')
                         df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
                     else:
-                        vendor_list_price = 0
+                        vendor_list_price = -1
                         df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
             if vlp_success:
@@ -465,7 +462,7 @@ class FyProductUpdate(BasicProcessObject):
                                                                                      'CurrentDiscount')
                             df_collect_product_base_data['Discount'] = [fy_discount_percent]
                         else:
-                            fy_discount_percent = 0
+                            fy_discount_percent = -1
                             df_collect_product_base_data['Discount'] = [fy_discount_percent]
             else:
                 discount_success = False
@@ -487,7 +484,7 @@ class FyProductUpdate(BasicProcessObject):
                     else:
                         # fail line if missing
                         self.obReporter.update_report('Alert', 'FyCost was missing')
-                        fy_cost = 0
+                        fy_cost = -1
                         df_collect_product_base_data['FyCost'] = [fy_cost]
 
 
@@ -499,9 +496,6 @@ class FyProductUpdate(BasicProcessObject):
                 vendor_list_price = self.set_vendor_list(fy_cost, fy_discount_percent)
                 df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
-            else:
-                vendor_list_price = 0
-                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
             # checks for shipping costs
             success, estimated_freight = self.row_check(row, 'Estimated Freight')
@@ -1103,8 +1097,31 @@ class FyProductUpdate(BasicProcessObject):
 
         if 'PrimaryVendorId' in row:
             primary_vendor_id = int(row['PrimaryVendorId'])
+        elif 'VendorId' in row:
+            primary_vendor_id = int(row['VendorId'])
         else:
             primary_vendor_id = -1
+
+        if 'VendorListPrice' in row:
+            vendor_list_price = float(row['VendorListPrice'])
+        else:
+            vendor_list_price = -1
+
+        if 'Discount' in row:
+            discount = float(row['Discount'])
+        else:
+            discount = -1
+
+        if 'FyCost' in row:
+            fy_cost = float(row['FyCost'])
+        else:
+            fy_cost = -1
+
+        if 'EstimatedFreight' in row:
+            estimated_freight = float(row['EstimatedFreight'])
+        else:
+            estimated_freight = -1
+
 
         if 'SecondaryVendorId' in row:
             secondary_vendor_id = int(row['SecondaryVendorId'])
@@ -1229,11 +1246,17 @@ class FyProductUpdate(BasicProcessObject):
                                                           primary_vendor_id, secondary_vendor_id,
                                                           fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                          vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
 
         return True, df_collect_product_base_data
 
+
+        if 'EstimatedFreight' in row:
+            estimated_freight = float(row['EstimatedFreight'])
+        else:
+            estimated_freight = -1
 
         if ' ' in fy_product_number:
             fy_catalog_number = fy_product_number.partition(' ')[0]
