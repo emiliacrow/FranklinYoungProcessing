@@ -345,8 +345,9 @@ class ProcessProductAssetObject(BasicProcessObject):
         if 'VideoCaption' in row:
             video_caption = row['VideoCaption']
 
-        if 'VideoPreference' in row:
-            video_preference = row['VideoPreference']
+        if 'AssetPreference' in row:
+            video_preference = row['AssetPreference']
+
 
         self.obIngester.set_productvideo_cap(product_id, video_path, video_caption,
                                                 video_preference)
