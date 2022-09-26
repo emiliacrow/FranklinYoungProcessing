@@ -1238,6 +1238,21 @@ class FyProductUpdate(BasicProcessObject):
         else:
             data_toggle = 1
 
+        date_catalog_received = -1
+        if 'DateCatalogReceived' in row:
+            try:
+                date_catalog_received = int(row['DateCatalogReceived'])
+                date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+            except ValueError:
+                date_catalog_received = str(row['DateCatalogReceived'])
+
+
+        if 'CatalogProvidedBy' in row:
+            catalog_provided_by = str(row['CatalogProvidedBy'])
+        else:
+            catalog_provided_by = ''
+
+
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
                 or is_discontinued != -1 or is_visible != -1 or allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
@@ -1248,90 +1263,9 @@ class FyProductUpdate(BasicProcessObject):
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
-                                                          is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
+                                                          is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle, date_catalog_received, catalog_provided_by)
 
         return True, df_collect_product_base_data
-
-
-        if 'EstimatedFreight' in row:
-            estimated_freight = float(row['EstimatedFreight'])
-        else:
-            estimated_freight = -1
-
-        if ' ' in fy_product_number:
-            fy_catalog_number = fy_product_number.partition(' ')[0]
-        else:
-            fy_catalog_number = fy_product_number
-
-        if 'ManufacturerPartNumber' in row:
-            manufacturer_part_number = str(row['ManufacturerPartNumber'])
-        else:
-            self.obReporter.update_report('Fail', 'Incomplete ingestion-manufacturer part number')
-
-        if 'ManufacturerId' in row:
-            manufacturer_id = str(row['ManufacturerId'])
-        else:
-            self.obReporter.update_report('Fail', 'Incomplete ingestion-manufacturer id')
-
-        print(fy_coo_id)
-        print(fy_product_name)
-        print('Can ingest into product')
-
-        product_tax_class = 'Default Tax Class'
-        print(primary_vendor_id, fy_uoi_id, fy_uom_id, fy_uoi_qty)
-        if 'VendorPartNumber' in row:
-            vendor_part_number = str(row['VendorPartNumber'])
-        else:
-            self.obReporter.update_report('Fail', 'Incomplete ingestion-vendor part number')
-
-        print('Can ingest into product price')
-
-        if 'DateCatalogReceived' in row:
-            try:
-                date_catalog_received = int(row['DateCatalogReceived'])
-                date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
-            except ValueError:
-                date_catalog_received = str(row['DateCatalogReceived'])
-
-        elif 'db_DateCatalogReceived' in row:
-            date_catalog_received = str(row['db_DateCatalogReceived'])
-        else:
-            self.obReporter.update_report('Fail', 'Catalog received date missing')
-            return False, df_collect_product_base_data
-
-        if 'CatalogProvidedBy' in row:
-            catalog_provided_by = str(row['CatalogProvidedBy'])
-        else:
-            catalog_provided_by = ''
-
-        if 'VendorListPrice' in row:
-            vendor_list_price = float(row['VendorListPrice'])
-        else:
-            vendor_list_price = 0
-
-        if 'Discount' in row:
-            fy_discount_percent = float(row['Discount'])
-        else:
-            fy_discount_percent = 0
-
-        if 'FyCost' in row:
-            fy_cost = float(row['FyCost'])
-        else:
-            fy_cost = 0
-
-        if 'Estimated Freight' in row:
-            estimated_freight = float(row['Estimated Freight'])
-        else:
-            estimated_freight = 0
-
-        if 1 == 2:
-            base_price_id = row['BaseProductPriceId']
-            self.obIngester.update_base_price(base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
-                                              estimated_freight, fy_landed_cost, date_catalog_received, catalog_provided_by,
-                                              product_price_id, b_website_only, va_product_price_id, va_eligible,
-                                              gsa_product_price_id, gsa_eligible,
-                                              htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible,
-                                              fedmall_product_price_id)
 
 
     def trigger_ingest_cleanup(self):

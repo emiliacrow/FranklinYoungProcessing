@@ -493,7 +493,13 @@ class BigCommerceRTLObject(BasicProcessObject):
         # at this point we've evaluated all the data
         if (price_toggle != -1 or data_toggle != -1 or is_discontinued != -1 or allow_purchases != -1 or is_visible != -1):
             # this needs to be better
-            prod_desc_id = int(row['ProductDescriptionId'])
+            try:
+                prod_desc_id = int(row['ProductDescriptionId'])
+            except KeyError:
+                print(row)
+                self.obReporter.update_report('Fail','No ProductDescriptionId')
+                return True, df_collect_product_base_data
+
             db_price_toggle = int(row['db_BCPriceUpdateToggle'])
             db_data_toggle = int(row['db_BCPriceUpdateToggle'])
             db_is_visible = int(row['db_IsVisible'])
