@@ -179,7 +179,7 @@ class BasicProcessObject:
 
 
     def define_new(self, b_match_vendor = False):
-        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_ProductNumberOverride','db_IsDiscontinued',
+        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_ProductNumberOverride','db_IsDiscontinued','db_FyIsDiscontinued',
                          'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes',
                          'db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes','TakePriority']
         for each_header in clear_headers:
@@ -207,7 +207,7 @@ class BasicProcessObject:
         # we create a df for the product notes alone so they can be added at the end.
         self.df_product_notes = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['db_FyProductNotes']!= '')]
         drop_notes = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber','FyProductNumber',
-                      'VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued',
+                      'VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued','db_FyIsDiscontinued',
                       'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
         self.df_product_notes = self.df_product_notes.drop(columns=drop_notes)
         self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_ProductNumberOverride','db_FyProductNotes','db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes'])
@@ -221,7 +221,7 @@ class BasicProcessObject:
         # all products without pricing but with a vendor
         self.df_product_price_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] != 'Load Product Pricing')].copy()
         self.df_product_price_lookup['Filter'] = 'Base Pricing'
-        self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['BaseProductPriceId','db_IsDiscontinued','ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId'])
+        self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['BaseProductPriceId','db_IsDiscontinued','db_FyIsDiscontinued','ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId'])
 
         # all products without vendor
         self.df_product_minumum_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] == 'Load Product Pricing')].copy()
@@ -257,7 +257,7 @@ class BasicProcessObject:
         self.df_product['VendorPartNumber'] = self.df_product[['VendorPartNumber_x']]
         self.df_product['FyProductNumber'] = self.df_product[['FyProductNumber_x']]
 
-        drop_columns = ['Filter','db_IsDiscontinued','ProductId','ProductPriceId','BaseProductPriceId',
+        drop_columns = ['Filter','db_IsDiscontinued','db_FyIsDiscontinued','ProductId','ProductPriceId','BaseProductPriceId',
                         'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId','VAProductPriceId',
                         'ManufacturerName_x', 'ManufacturerName_y','VendorName_x','VendorName_y',
                         'FyProductNumber_x','FyProductNumber_y','VendorPartNumber_x','VendorPartNumber_y']
@@ -270,7 +270,7 @@ class BasicProcessObject:
             self.df_man_ven_matched_products = self.df_man_ven_matched_products[(self.df_man_ven_matched_products['Filter'] != 'New')]
 
             if len(self.df_product_remains_new.columns) > 0:
-                drop_new = ['Filter', 'ProductId', 'ProductPriceId', 'db_IsDiscontinued', 'ECATProductPriceId',
+                drop_new = ['Filter', 'ProductId', 'ProductPriceId', 'db_IsDiscontinued','db_FyIsDiscontinued', 'ECATProductPriceId',
                             'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId','BaseProductPriceId']
                 self.df_product_remains_new = self.df_product_remains_new.drop(columns=drop_new)
 
@@ -434,8 +434,8 @@ class BasicProcessObject:
 
         # here we are going to match everything called new to the existing manufcaturer parts
         # this is to indicate the difference between the ingestable new products and updatable products
-        if 'db_IsDiscontinued' in self.df_product.columns:
-            self.df_product.loc[(self.df_product['db_IsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued'
+        if 'db_FyIsDiscontinued' in self.df_product.columns:
+            self.df_product.loc[(self.df_product['db_FyIsDiscontinued'] == 'Y'), 'Alert'] = 'This product is currently discontinued'
 
 
     def eval_cases(self):
@@ -743,7 +743,7 @@ class BasicProcessObject:
             df_to_clean_case_6['ManufacturerPartNumber'] = df_to_clean_case_6[['ManufacturerPartNumber_x']]
 
         drop_6 = ['ProductPriceId','BaseProductPriceId','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
-                  'db_IsDiscontinued',
+                  'db_IsDiscontinued', 'db_FyIsDiscontinued',
                   'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_x','ManufacturerPartNumber_y',
                   'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
         df_to_clean_case_6 = df_to_clean_case_6.drop(columns = drop_6)

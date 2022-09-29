@@ -758,30 +758,30 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.min_product_price_cap(self.product_collector)
 
-    def insert_product_price(self, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes):
+    def insert_product_price(self, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued):
         if (len(self.product_insert_collector) > self.load_limit):
-            self.product_insert_collector.append((newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes))
+            self.product_insert_collector.append((newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued))
             self.obDal.min_product_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
             self.product_insert_collector.append((newFyProductNumber, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
-                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes))
+                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued))
 
     def insert_product_price_cleanup(self):
         if self.product_insert_collector != []:
             self.obDal.min_product_price_insert(self.product_insert_collector)
 
 
-    def update_product_price(self, newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId,FyProductNotes):
+    def update_product_price(self, newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId,FyProductNotes,IsDiscontinued):
         if (len(self.product_update_collector) > self.load_limit):
-            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes))
+            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes,IsDiscontinued))
             self.obDal.min_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newProductPriceId, newFyProductNumber, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
-                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes))
+                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes,IsDiscontinued))
 
     def update_product_price_cleanup(self):
         if self.product_update_collector != []:
@@ -791,15 +791,15 @@ class IngestionObject:
 
     def update_product_price_nouoi(self, newProductPriceId, newFyProductNumber,newFyPartNumber,
                                    newProductTaxClass,newVendorPartNumber, newProductId,
-                                   newVendorId, newProductDescriptionId, FyProductNotes):
+                                   newVendorId, newProductDescriptionId, FyProductNotes, IsDiscontinued):
         if (len(self.product_update_nouoi_collector) > self.load_limit):
-            self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId, newProductDescriptionId, FyProductNotes))
+            self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId, newProductDescriptionId, FyProductNotes, IsDiscontinued))
             self.obDal.min_product_price_nouoi_update(self.product_update_nouoi_collector)
             self.product_update_nouoi_collector = []
         else:
             self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
-                                                newProductDescriptionId, FyProductNotes))
+                                                newProductDescriptionId, FyProductNotes, IsDiscontinued))
 
     def update_product_price_nouoi_cleanup(self):
         if self.product_update_nouoi_collector != []:
@@ -1204,15 +1204,15 @@ class IngestionObject:
 
 
 
-    def set_bc_update_toggles(self, prod_desc_id, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle):
+    def set_bc_update_toggles(self, prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle):
         if (len(self.product_bc_toggle_collector) > self.load_limit):
-            self.product_bc_toggle_collector.append((prod_desc_id, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
+            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
             self.product_bc_toggle_collector.sort(key=lambda x:x[0], reverse=True)
             self.obDal.set_bc_toggles(self.product_bc_toggle_collector)
             self.product_bc_toggle_collector = []
 
         else:
-            self.product_bc_toggle_collector.append((prod_desc_id, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
+            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
 
     def set_bc_update_toggles_cleanup(self):
         if self.product_bc_toggle_collector != []:

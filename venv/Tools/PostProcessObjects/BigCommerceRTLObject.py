@@ -13,7 +13,7 @@ from Tools.BasicProcess import BasicProcessObject
 class BigCommerceRTLObject(BasicProcessObject):
     req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
 
-    sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
+    sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','HTMETOnContract','HTMEPricingApproved','HTMEProductNotes',
                   'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes']
 
@@ -33,7 +33,7 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.df_ready_products = self.df_product[(self.df_product['Filter'] == 'Ready')].copy()
         self.df_product = self.df_product[(self.df_product['Filter'] != 'Ready')]
 
-        self.df_ready_products = self.df_ready_products.drop(columns=['db_IsDiscontinued'])
+        self.df_ready_products = self.df_ready_products.drop(columns=['db_FyIsDiscontinued'])
         # toggle setup
         self.df_current_toggles = self.obDal.get_toggles_full()
 
@@ -141,10 +141,24 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 update_asset = -1
 
-            is_discontinued = -1
-            success, is_discontinued = self.process_boolean(row, 'FyIsDiscontinued')
+            fy_is_discontinued = -1
+            success, fy_is_discontinued = self.process_boolean(row, 'FyIsDiscontinued')
             if success:
-                df_collect_product_base_data['FyIsDiscontinued'] = [is_discontinued]
+                df_collect_product_base_data['FyIsDiscontinued'] = [fy_is_discontinued]
+            else:
+                fy_is_discontinued = -1
+
+            db_fy_is_discontinued = -1
+            success, db_fy_is_discontinued = self.process_boolean(row, 'db_FyIsDiscontinued')
+            if success:
+                df_collect_product_base_data['db_FyIsDiscontinued'] = [db_fy_is_discontinued]
+            else:
+                db_fy_is_discontinued = -1
+
+            is_discontinued = -1
+            success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+            if success:
+                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
             else:
                 is_discontinued = -1
 
@@ -202,9 +216,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_is_discontinued == 0 and is_discontinued == 1 and db_ecat_contract == 1 and db_ecat_approved == 1 and ecat_approved != 1:
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_ecat_contract == 1 and db_ecat_approved == 1 and ecat_approved != 1:
                     ecat_pending_del_flag = 1
-                    is_discontinued = 0
+                    fy_is_discontinued = 0
                     ecat_approved = 0
 
                     if 'ending contract deletion,' not in fy_product_notes:
@@ -270,9 +284,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_is_discontinued == 0 and is_discontinued == 1 and db_htme_contract == 1 and db_htme_approved == 1 and htme_approved != 1:
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_htme_contract == 1 and db_htme_approved == 1 and htme_approved != 1:
                     htme_pending_del_flag = 1
-                    is_discontinued = 0
+                    fy_is_discontinued = 0
                     htme_approved = 0
 
                     if 'ending contract deletion,' not in fy_product_notes:
@@ -338,9 +352,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_is_discontinued == 0 and is_discontinued == 1 and db_gsa_contract == 1 and db_gsa_approved == 1 and gsa_approved != 1:
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_gsa_contract == 1 and db_gsa_approved == 1 and gsa_approved != 1:
                     gsa_pending_del_flag = 1
-                    is_discontinued = 0
+                    fy_is_discontinued = 0
                     gsa_approved = 0
 
                     if 'ending contract deletion,' not in fy_product_notes:
@@ -406,9 +420,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_is_discontinued == 0 and is_discontinued == 1 and db_va_contract == 1 and db_va_approved == 1 and va_approved != 1:
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_va_contract == 1 and db_va_approved == 1 and va_approved != 1:
                     va_pending_del_flag = 1
-                    is_discontinued = 0
+                    fy_is_discontinued = 0
                     va_approved = 0
 
                     if 'ending contract deletion,' not in fy_product_notes:
@@ -451,8 +465,8 @@ class BigCommerceRTLObject(BasicProcessObject):
                 data_toggle = 1
                 df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
 
-                is_discontinued = 0
-                df_collect_product_base_data['FyIsDiscontinued'] = [is_discontinued]
+                fy_is_discontinued = 0
+                df_collect_product_base_data['FyIsDiscontinued'] = [fy_is_discontinued]
 
                 allow_purchases = 1
                 df_collect_product_base_data['FyAllowPurchases'] = [allow_purchases]
@@ -491,7 +505,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
 
         # at this point we've evaluated all the data
-        if (price_toggle != -1 or data_toggle != -1 or is_discontinued != -1 or allow_purchases != -1 or is_visible != -1):
+        if (price_toggle != -1 or data_toggle != -1 or is_discontinued != -1 or fy_is_discontinued != -1 or allow_purchases != -1 or is_visible != -1):
             # this needs to be better
             try:
                 prod_desc_id = int(row['ProductDescriptionId'])
@@ -503,11 +517,14 @@ class BigCommerceRTLObject(BasicProcessObject):
             db_price_toggle = int(row['db_BCPriceUpdateToggle'])
             db_data_toggle = int(row['db_BCPriceUpdateToggle'])
             db_is_visible = int(row['db_IsVisible'])
+            price_id = -1
+            if 'ProductPriceId' in row:
+                price_id = int(row['ProductPriceId'])
 
             if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_allow_purchases != allow_purchases or db_is_visible != is_visible:
-                self.obIngester.set_bc_update_toggles(prod_desc_id, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
+                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
             elif self.full_run:
-                self.obIngester.set_bc_update_toggles(prod_desc_id, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
+                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
 
 
         if (update_asset != -1):

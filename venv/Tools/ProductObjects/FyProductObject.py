@@ -21,7 +21,7 @@ class FyProductUpdate(BasicProcessObject):
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost',
                   'Landed Cost','FyLandedCostMarkupPercent_FYSell','FyLandedCostMarkupPercent_FYList',
-                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
+                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','IsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
     att_fields = []
     gen_fields = []
 
@@ -345,7 +345,7 @@ class FyProductUpdate(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','IsDiscontinued','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
@@ -850,12 +850,12 @@ class FyProductUpdate(BasicProcessObject):
             fy_product_notes = str(row['FyProductNotes'])
 
         # note that these will get set automatically
-        is_discontinued = -1
-        success, is_discontinued = self.process_boolean(row, 'FyIsDiscontinued')
+        fy_is_discontinued = -1
+        success, fy_is_discontinued = self.process_boolean(row, 'FyIsDiscontinued')
         if success:
-            df_collect_product_base_data['FyIsDiscontinued'] = [is_discontinued]
+            df_collect_product_base_data['FyIsDiscontinued'] = [fy_is_discontinued]
         else:
-            is_discontinued = 0
+            fy_is_discontinued = 0
 
         is_visible = -1
         success, is_visible = self.process_boolean(row, 'FyIsVisible')
@@ -955,7 +955,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
-                                                          fy_list_price, is_discontinued, is_visible, allow_purchases,
+                                                          fy_list_price, fy_is_discontinued, is_visible, allow_purchases,
                                                           price_toggle, data_toggle, date_catalog_received, catalog_provided_by)
 
             return True, df_collect_product_base_data
@@ -1222,7 +1222,7 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_product_notes = str(row['FyProductNotes'])
 
-        is_discontinued = row['FyIsDiscontinued']
+        fy_is_discontinued = row['FyIsDiscontinued']
         is_visible = row['FyIsVisible']
         allow_purchases = row['FyAllowPurchases']
 
@@ -1255,7 +1255,7 @@ class FyProductUpdate(BasicProcessObject):
 
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
-                or is_discontinued != -1 or is_visible != -1 or allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
+                or fy_is_discontinued != -1 or is_visible != -1 or allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
@@ -1263,7 +1263,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
-                                                          is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle, date_catalog_received, catalog_provided_by)
+                                                          fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle, date_catalog_received, catalog_provided_by)
 
         return True, df_collect_product_base_data
 

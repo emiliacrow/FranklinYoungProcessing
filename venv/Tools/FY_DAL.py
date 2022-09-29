@@ -719,7 +719,7 @@ class DalObject:
     def get_product_action_review_lookup(self):
         proc_name = 'sequoia.get_ProductActionReview6_lookup'
         column_names = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber', 'db_ProductNumberOverride', 'ProductPriceId',
-                        'FyProductNumber','VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued','db_FyProductNotes',
+                        'FyProductNumber','VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued','db_FyIsDiscontinued','db_FyProductNotes',
                         'db_VAProductNotes', 'db_GSAProductNotes', 'db_HTMEProductNotes', 'db_ECATProductNotes',
                         'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
         df_product_lookup = self.get_lookup(proc_name,column_names)
@@ -876,7 +876,7 @@ class DalObject:
 
     def get_toggles_full(self):
         proc_name = 'sequoia.get_Toggles5'
-        column_names = ['FyProductNumber', 'ProductDescriptionId', 'db_IsDiscontinued','db_AllowPurchases',
+        column_names = ['FyProductNumber', 'ProductDescriptionId', 'db_FyIsDiscontinued','db_AllowPurchases',
                         'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
                         'db_ECATOnContract', 'db_ECATModNumber', 'db_ECATPricingApproved',
                         'db_HTMEOnContract', 'db_HTMEModNumber', 'db_HTMEPricingApproved',
@@ -965,7 +965,7 @@ class DalObject:
 
     def set_bc_toggles(self, lst_bc_toggles):
         proc_name = 'sequoia.set_BC_toggles2'
-        proc_statement = 'CALL `sequoia`.`set_BC_toggles2`(%s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`set_BC_toggles2`(%s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)
         runner.start()
