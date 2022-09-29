@@ -81,9 +81,9 @@ class HeaderTranslator():
                             'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],
                             'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
 
-                            'FyIsDiscontinued':['IsDiscontinued','FyIsDiscontinued','Discontinued','is discontinued',
-                                                'fy is discontinued','Is Discontinued','Fy Is Discontinued','is_discontinued',
-                                                'fy_is_discontinued','Is_Discontinued','Fy_Is_Discontinued'],
+                            'IsDiscontinued':['IsDiscontinued', 'Discontinued', 'is discontinued','Is Discontinued', 'is_discontinued', 'Is_Discontinued'],
+
+                            'FyIsDiscontinued':['FyIsDiscontinued','fy is discontinued','Fy Is Discontinued','fy_is_discontinued','Fy_Is_Discontinued'],
                             'FyIsVisible':['IsVisible','Is Visible','is_visible','is visible','FyIsVisible','Fy Is Visible','fy_is_visible','fy is visible'],
                             'FyAllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?','FyAllowPurchases','Fy Allow Purchases','Fy Allow Purchases?'],
 
