@@ -1095,6 +1095,12 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_is_hazardous = -1
 
+        if 'FyManufacturerPartNumber' in row:
+            fy_manufacturer_part_number = str(row['FyManufacturerPartNumber'])
+        else:
+            fy_manufacturer_part_number = ''
+
+
         if 'PrimaryVendorId' in row:
             primary_vendor_id = int(row['PrimaryVendorId'])
         elif 'VendorId' in row:
@@ -1253,11 +1259,11 @@ class FyProductUpdate(BasicProcessObject):
             catalog_provided_by = ''
 
 
-        if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
+        if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
                 or fy_is_discontinued != -1 or is_visible != -1 or allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
-                                                          fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
+                                                          fy_coo_id, fy_manufacturer_part_number, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
                                                           fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
