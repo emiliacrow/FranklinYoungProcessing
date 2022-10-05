@@ -576,8 +576,8 @@ class DalObject:
 
 
     def set_product_notes(self, lst_product_notes):
-        proc_name = 'sequoia.set_product_notes'
-        proc_statement = 'CALL `sequoia`.`set_product_notes`(%s, %s);'
+        proc_name = 'sequoia.set_product_notes2'
+        proc_statement = 'CALL `sequoia`.`set_product_notes`(%s, %s, %s, %s);'
         self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_notes)
         runner.start()
