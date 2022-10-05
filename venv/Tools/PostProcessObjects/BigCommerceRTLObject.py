@@ -527,7 +527,7 @@ class BigCommerceRTLObject(BasicProcessObject):
             if 'ProductPriceId' in row:
                 price_id = int(row['ProductPriceId'])
 
-            if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_allow_purchases != allow_purchases or db_is_visible != is_visible:
+            if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_fy_is_discontinued != fy_is_discontinued or db_allow_purchases != allow_purchases or db_is_visible != is_visible:
                 self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
             elif self.full_run:
                 self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
