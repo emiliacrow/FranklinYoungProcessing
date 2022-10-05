@@ -1135,13 +1135,13 @@ class IngestionObject:
             self.obDal.va_product_price_update(self.product_update_collector)
 
 
-    def set_product_notes(self,ProductPriceId, FyProductNotes):
+    def set_product_notes(self,ProductDescriptionId, FyProductNotes,ProductPriceId, ProductNotes):
         if (len(self.product_notes_collector) > self.load_limit):
-            self.product_notes_collector.append((ProductPriceId, FyProductNotes))
+            self.product_notes_collector.append((ProductDescriptionId, FyProductNotes,ProductPriceId, ProductNotes))
             self.obDal.set_product_notes(self.product_notes_collector)
             self.product_notes_collector = []
         else:
-            self.product_notes_collector.append((ProductPriceId, FyProductNotes))
+            self.product_notes_collector.append((ProductDescriptionId, FyProductNotes,ProductPriceId, ProductNotes))
 
     def set_product_notes_cleanup(self):
         if self.product_notes_collector != []:

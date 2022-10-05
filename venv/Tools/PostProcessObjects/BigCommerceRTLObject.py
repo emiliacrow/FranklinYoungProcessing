@@ -15,7 +15,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','HTMETOnContract','HTMEPricingApproved','HTMEProductNotes',
-                  'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes']
+                  'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes','ProductNotes']
 
     att_fields = []
     gen_fields = []
@@ -180,6 +180,11 @@ class BigCommerceRTLObject(BasicProcessObject):
                 fy_product_notes = row['FyProductNotes']
                 fy_product_notes = fy_product_notes.replace('NULL', '')
 
+            product_notes = ''
+            if 'ProductNotes' in row:
+                product_notes = row['ProductNotes']
+                product_notes = product_notes.replace('NULL', '')
+
 
             str_now = datetime.datetime.today().strftime('%d, %b %Y')
 
@@ -221,11 +226,11 @@ class BigCommerceRTLObject(BasicProcessObject):
                     is_discontinued = 0
                     ecat_approved = 0
 
-                    if 'ending contract deletion,' not in fy_product_notes:
-                        if fy_product_notes == '':
-                            fy_product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                    if 'ending contract deletion,' not in product_notes:
+                        if product_notes == '':
+                            product_notes = 'Pending contract deletion, {0}'.format(str_now)
                         else:
-                            fy_product_notes = '{0}, pending contract deletion, {1}'.format(fy_product_notes, str_now)
+                            product_notes = '{0}, pending contract deletion, {1}'.format(product_notes, str_now)
 
                 # if we're actually deleting from contract, we can add the notes
                 elif db_ecat_contract == 1 and ecat_contract == 0 and ecat_approved == 1:
@@ -289,11 +294,11 @@ class BigCommerceRTLObject(BasicProcessObject):
                     is_discontinued = 0
                     htme_approved = 0
 
-                    if 'ending contract deletion,' not in fy_product_notes:
-                        if fy_product_notes == '':
-                            fy_product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                    if 'ending contract deletion,' not in product_notes:
+                        if product_notes == '':
+                            product_notes = 'Pending contract deletion, {0}'.format(str_now)
                         else:
-                            fy_product_notes = '{0}, pending contract deletion, {1}'.format(fy_product_notes, str_now)
+                            product_notes = '{0}, pending contract deletion, {1}'.format(product_notes, str_now)
 
                 # if we're actually deleting from contract, we can add the notes
                 elif db_htme_contract == 1 and htme_contract == 0 and htme_approved == 1:
@@ -357,11 +362,11 @@ class BigCommerceRTLObject(BasicProcessObject):
                     is_discontinued = 0
                     gsa_approved = 0
 
-                    if 'ending contract deletion,' not in fy_product_notes:
-                        if fy_product_notes == '':
-                            fy_product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                    if 'ending contract deletion,' not in product_notes:
+                        if product_notes == '':
+                            product_notes = 'Pending contract deletion, {0}'.format(str_now)
                         else:
-                            fy_product_notes = '{0}, pending contract deletion, {1}'.format(fy_product_notes, str_now)
+                            product_notes = '{0}, pending contract deletion, {1}'.format(product_notes, str_now)
 
                 # if we're actually deleting from contract, we can add the notes
                 elif db_gsa_contract == 1 and gsa_contract == 0 and gsa_approved == 1:
@@ -425,11 +430,11 @@ class BigCommerceRTLObject(BasicProcessObject):
                     is_discontinued = 0
                     va_approved = 0
 
-                    if 'ending contract deletion,' not in fy_product_notes:
-                        if fy_product_notes == '':
-                            fy_product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                    if 'ending contract deletion,' not in product_notes:
+                        if product_notes == '':
+                            product_notes = 'Pending contract deletion, {0}'.format(str_now)
                         else:
-                            fy_product_notes = '{0}, pending contract deletion, {1}'.format(fy_product_notes, str_now)
+                            product_notes = '{0}, pending contract deletion, {1}'.format(product_notes, str_now)
 
                 # if we're actually deleting from contract, we can add the notes
                 elif db_va_contract == 1 and va_contract == 0 and va_approved == 1:
@@ -563,8 +568,8 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 self.obReporter.update_report('Alert', 'No change to VA toggles')
 
-        if (fy_product_notes != ''):
-            self.obIngester.set_product_notes(price_id, fy_product_notes)
+        if (product_notes != '' or fy_product_notes != ''):
+            self.obIngester.set_product_notes(prod_desc_id, fy_product_notes, price_id, product_notes)
 
 
         return True, df_collect_product_base_data
