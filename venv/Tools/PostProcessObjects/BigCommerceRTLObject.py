@@ -13,7 +13,7 @@ from Tools.BasicProcess import BasicProcessObject
 class BigCommerceRTLObject(BasicProcessObject):
     req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
 
-    sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','IsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
+    sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','VendorIsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','HTMETOnContract','HTMEPricingApproved','HTMEProductNotes',
                   'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes','ProductNotes']
 
@@ -156,9 +156,9 @@ class BigCommerceRTLObject(BasicProcessObject):
                 db_fy_is_discontinued = -1
 
             is_discontinued = -1
-            success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+            success, is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
             if success:
-                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+                df_collect_product_base_data['VendorIsDiscontinued'] = [is_discontinued]
             else:
                 is_discontinued = -1
 
@@ -471,7 +471,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                 df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
 
                 is_discontinued = 0
-                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+                df_collect_product_base_data['VendorIsDiscontinued'] = [is_discontinued]
 
                 allow_purchases = 1
                 df_collect_product_base_data['FyAllowPurchases'] = [allow_purchases]

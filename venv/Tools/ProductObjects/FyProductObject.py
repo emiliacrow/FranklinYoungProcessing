@@ -21,7 +21,7 @@ class FyProductUpdate(BasicProcessObject):
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost',
                   'Landed Cost','FyLandedCostMarkupPercent_FYSell','FyLandedCostMarkupPercent_FYList',
-                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','IsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
+                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
     att_fields = []
     gen_fields = []
 
@@ -345,7 +345,7 @@ class FyProductUpdate(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','IsDiscontinued','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
