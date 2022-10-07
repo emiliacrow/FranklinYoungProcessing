@@ -192,9 +192,9 @@ class DalObject:
         return df_country_lookup
 
 
-    def manufacturer_cap(self,ManufacturerName,SupplierName,FyManufacturerPrefix = -1):
+    def manufacturer_cap(self,ManufacturerName,SupplierName, DirectVendorName = '', FyManufacturerPrefix = -1):
         proc_name = 'sequoia.Manufacturer_capture_wrap'
-        proc_args = (ManufacturerName, SupplierName, FyManufacturerPrefix)
+        proc_args = (ManufacturerName, SupplierName, FyManufacturerPrefix, DirectVendorName)
         return_id = self.id_cap(proc_name, proc_args)
 
         return return_id
