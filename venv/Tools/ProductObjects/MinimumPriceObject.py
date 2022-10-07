@@ -561,10 +561,10 @@ class MinimumProductPrice(BasicProcessObject):
             if 'FyPartNumber' in row:
                 fy_part_number = row['FyPartNumber']
 
-            if 'FyProductNotes' in row:
-                fy_product_notes = row['FyProductNotes']
-                fy_product_notes = fy_product_notes.replace('NULL','')
-                fy_product_notes = fy_product_notes.replace(';','')
+            if 'ProductNotes' in row:
+                product_notes = row['ProductNotes']
+                product_notes = product_notes.replace('NULL','')
+                product_notes = product_notes.replace(';','')
 
             product_tax_class = row['ProductTaxClass']
             vendor_part_number = row['VendorPartNumber']
@@ -579,9 +579,9 @@ class MinimumProductPrice(BasicProcessObject):
             product_description_id = row['ProductDescriptionId']
 
             is_discontinued = -1
-            success, is_discontinued = self.process_boolean(row, 'IsDiscontinued')
+            success, is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
             if success:
-                df_collect_product_base_data['IsDiscontinued'] = [is_discontinued]
+                df_collect_product_base_data['VendorIsDiscontinued'] = [is_discontinued]
             else:
                 is_discontinued = -1
 
@@ -589,7 +589,7 @@ class MinimumProductPrice(BasicProcessObject):
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
                 self.obIngester.insert_product_price(fy_product_number, fy_part_number,
                                                      product_tax_class, vendor_part_number, product_id, vendor_id,
-                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, fy_product_notes,is_discontinued)
+                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, product_notes,is_discontinued)
             else:
                 self.obReporter.update_report('Fail','Check UOI, QTY, UOM')
 
