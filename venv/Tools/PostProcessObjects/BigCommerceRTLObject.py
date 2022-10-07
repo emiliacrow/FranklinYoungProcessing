@@ -578,8 +578,6 @@ class BigCommerceRTLObject(BasicProcessObject):
 
     def trigger_ingest_cleanup(self):
         self.obIngester.set_bc_update_toggles_cleanup()
-        self.obIngester.set_is_discon_allow_purchase_cleanup()
-        self.obIngester.set_is_visible_cleanup()
         self.obIngester.set_update_asset_cleanup()
         self.obIngester.set_ecat_toggles_cleanup()
         self.obIngester.set_htme_toggles_cleanup()
