@@ -15,7 +15,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','VendorIsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','HTMETOnContract','HTMEPricingApproved','HTMEProductNotes',
-                  'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes','ProductNotes']
+                  'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes','ProductNotes',
+                  'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
+                  'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate']
 
     att_fields = []
     gen_fields = []
@@ -527,10 +529,64 @@ class BigCommerceRTLObject(BasicProcessObject):
             if 'ProductPriceId' in row:
                 price_id = int(row['ProductPriceId'])
 
+            deny_gsa_date = -1
+            if 'FyDenyGSAContractDate' in row:
+                try:
+                    deny_gsa_date = int(row['FyDenyGSAContractDate'])
+                    deny_gsa_date = (xlrd.xldate_as_datetime(deny_gsa_date, 0)).date()
+                except ValueError:
+                    deny_gsa_date = str(row['FyDenyGSAContractDate'])
+
+            success, deny_va = self.process_boolean(row, 'FyDenyVAContract')
+            if success:
+                df_collect_product_base_data['FyDenyVAContract'] = [deny_va]
+            else:
+                deny_va = -1
+
+            deny_va_date = -1
+            if 'FyDenyVAContractDate' in row:
+                try:
+                    deny_va_date = int(row['FyDenyVAContractDate'])
+                    deny_va_date = (xlrd.xldate_as_datetime(deny_va_date, 0)).date()
+                except ValueError:
+                    deny_va_date = str(row['FyDenyVAContractDate'])
+
+            success, deny_ecat = self.process_boolean(row, 'FyDenyECATContract')
+            if success:
+                df_collect_product_base_data['FyDenyECATContract'] = [deny_ecat]
+            else:
+                deny_ecat = -1
+
+            deny_ecat_date = -1
+            if 'FyDenyECATContractDate' in row:
+                try:
+                    deny_ecat_date = int(row['FyDenyECATContractDate'])
+                    deny_ecat_date = (xlrd.xldate_as_datetime(deny_ecat_date, 0)).date()
+                except ValueError:
+                    deny_ecat_date = str(row['FyDenyECATContractDate'])
+
+            success, deny_htme = self.process_boolean(row, 'FyDenyHTMEContractDate')
+            if success:
+                df_collect_product_base_data['FyDenyHTMEContractDate'] = [deny_htme]
+            else:
+                deny_htme = -1
+
+            deny_htme_date = -1
+            if 'FyDenyHTMEContractDate' in row:
+                try:
+                    deny_htme_date = int(row['FyDenyHTMEContractDate'])
+                    deny_htme_date = (xlrd.xldate_as_datetime(deny_htme_date, 0)).date()
+                except ValueError:
+                    deny_htme_date = str(row['FyDenyHTMEContractDate'])
+
             if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_fy_is_discontinued != fy_is_discontinued or db_allow_purchases != allow_purchases or db_is_visible != is_visible:
-                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
+                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date)
             elif self.full_run:
-                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle)
+                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date)
 
 
         if (update_asset != -1):
