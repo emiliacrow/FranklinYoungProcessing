@@ -88,7 +88,7 @@ class HeaderTranslator():
                             'FyDenyVAContractDate':['FyDenyVAContractDate','DenyVAContractDate','Deny VA Contract Date','Deny VA Date','Fy Deny VA Contract Date','Fy Deny VA Date'],
                             'FyDenyECATContract':['FyDenyECATContract','DenyECATContract','Deny ECAT Contract','Deny ECAT','Fy Deny ECAT Contract','Fy Deny ECAT'],
                             'FyDenyECATContractDate':['FyDenyECATContractDate','DenyECATContractDate','Deny ECAT Contract Date','Deny ECAT Date','Fy Deny ECAT Contract Date','Fy Deny ECAT Date'],
-                            'FyDenyHTMEContractDate':['FyDenyHTMEContract','DenyHTMEContract','Deny HTME Contract','Deny HTME','Fy Deny HTME Contract','Fy Deny HTME'],
+                            'FyDenyHTMEContract':['FyDenyHTMEContract','DenyHTMEContract','Deny HTME Contract','Deny HTME','Fy Deny HTME Contract','Fy Deny HTME'],
                             'FyDenyHTMEContractDate':['FyDenyHTMEContractDate','DenyHTMEContractDate','Deny HTME Contract Date','Deny HTME Date','Fy Deny HTME Contract Date','Fy Deny HTME Date'],
 
                             'VendorIsDiscontinued':['IsDiscontinued', 'VendorIsDiscontinued', 'Discontinued', 'is discontinued','Is Discontinued', 'is_discontinued', 'vendor_is_discontinued', 'Vendor_Is_Discontinued'],
