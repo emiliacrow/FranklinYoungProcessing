@@ -82,6 +82,15 @@ class HeaderTranslator():
                             'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],
                             'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
 
+                            'FyDenyGSAContract':['FyDenyGSAContract','DenyGSAContract','Deny GSA Contract','Deny GSA','Fy Deny GSA Contract','Fy Deny GSA'],
+                            'FyDenyGSAContractDate':['FyDenyGSAContractDate','DenyGSAContractDate','Deny GSA Contract Date','Deny GSA Date','Fy Deny GSA Contract Date','Fy Deny GSA Date'],
+                            'FyDenyVAContract':['FyDenyVAContract','DenyVAContract','Deny VA Contract','Deny VA','Fy Deny VA Contract','Fy Deny VA'],
+                            'FyDenyVAContractDate':['FyDenyVAContractDate','DenyVAContractDate','Deny VA Contract Date','Deny VA Date','Fy Deny VA Contract Date','Fy Deny VA Date'],
+                            'FyDenyECATContract':['FyDenyECATContract','DenyECATContract','Deny ECAT Contract','Deny ECAT','Fy Deny ECAT Contract','Fy Deny ECAT'],
+                            'FyDenyECATContractDate':['FyDenyECATContractDate','DenyECATContractDate','Deny ECAT Contract Date','Deny ECAT Date','Fy Deny ECAT Contract Date','Fy Deny ECAT Date'],
+                            'FyDenyHTMEContractDate':['FyDenyHTMEContract','DenyHTMEContract','Deny HTME Contract','Deny HTME','Fy Deny HTME Contract','Fy Deny HTME'],
+                            'FyDenyHTMEContractDate':['FyDenyHTMEContractDate','DenyHTMEContractDate','Deny HTME Contract Date','Deny HTME Date','Fy Deny HTME Contract Date','Fy Deny HTME Date'],
+
                             'VendorIsDiscontinued':['IsDiscontinued', 'VendorIsDiscontinued', 'Discontinued', 'is discontinued','Is Discontinued', 'is_discontinued', 'vendor_is_discontinued', 'Vendor_Is_Discontinued'],
 
                             'FyIsDiscontinued':['FyIsDiscontinued','fy is discontinued','Fy Is Discontinued','fy_is_discontinued','Fy_Is_Discontinued'],
