@@ -529,6 +529,12 @@ class BigCommerceRTLObject(BasicProcessObject):
             if 'ProductPriceId' in row:
                 price_id = int(row['ProductPriceId'])
 
+            success, deny_gsa = self.process_boolean(row, 'FyDenyGSAContract')
+            if success:
+                df_collect_product_base_data['FyDenyGSAContract'] = [deny_gsa]
+            else:
+                deny_gsa = -1
+
             deny_gsa_date = -1
             if 'FyDenyGSAContractDate' in row:
                 try:

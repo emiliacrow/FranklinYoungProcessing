@@ -1234,15 +1234,21 @@ class IngestionObject:
 
 
 
-    def set_bc_update_toggles(self, prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle):
+    def set_bc_update_toggles(self, prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date):
         if (len(self.product_bc_toggle_collector) > self.load_limit):
-            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
+            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date))
             self.product_bc_toggle_collector.sort(key=lambda x:x[0], reverse=True)
             self.obDal.set_bc_toggles(self.product_bc_toggle_collector)
             self.product_bc_toggle_collector = []
 
         else:
-            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle))
+            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date))
 
     def set_bc_update_toggles_cleanup(self):
         if self.product_bc_toggle_collector != []:
