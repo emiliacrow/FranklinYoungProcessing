@@ -933,6 +933,38 @@ class FyProductUpdate(BasicProcessObject):
         else:
             estimated_freight = 0
 
+
+        success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
+        if success:
+            df_collect_product_base_data['WebsiteOnly'] = [b_website_only]
+        else:
+            b_website_only = -1
+
+        success, va_eligible = self.process_boolean(row, 'VAEligible')
+        if success:
+            df_collect_product_base_data['VAEligible'] = [va_eligible]
+        else:
+            va_eligible = -1
+
+        success, gsa_eligible = self.process_boolean(row, 'GSAEligible')
+        if success:
+            df_collect_product_base_data['GSAEligible'] = [gsa_eligible]
+        else:
+            gsa_eligible = -1
+
+        success, htme_eligible = self.process_boolean(row, 'HTMEEligible')
+        if success:
+            df_collect_product_base_data['HTMEEligible'] = [htme_eligible]
+        else:
+            htme_eligible = -1
+
+        success, ecat_eligible = self.process_boolean(row, 'ECATEligible')
+        if success:
+            df_collect_product_base_data['ECATEligible'] = [ecat_eligible]
+        else:
+            ecat_eligible = -1
+
+
         success, deny_gsa = self.process_boolean(row, 'FyDenyGSAContract')
         if success:
             df_collect_product_base_data['FyDenyGSAContract'] = [deny_gsa]
@@ -1001,6 +1033,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                           fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                           fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                          b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                           vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                           fy_list_price, fy_is_discontinued, is_visible, allow_purchases,
