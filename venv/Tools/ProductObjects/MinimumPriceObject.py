@@ -287,6 +287,7 @@ class MinimumProductPrice(BasicProcessObject):
             else:
                 if 'ProductDescriptionId' not in row:
                     self.obReporter.update_report('Alert', 'Ingest in FyProductDescription')
+                    df_collect_product_base_data['ProductDescriptionId'] = [-1]
 
                     ### DEPRICATE ###
                     #success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
@@ -302,6 +303,13 @@ class MinimumProductPrice(BasicProcessObject):
                     self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
                     df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
 
+        is_discontinued = -1
+        success, is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
+        if success:
+            df_collect_product_base_data['VendorIsDiscontinued'] = [is_discontinued]
+        else:
+            is_discontinued = -1
+            df_collect_product_base_data['VendorIsDiscontinued'] = [is_discontinued]
 
         success, df_collect_product_base_data = self.minimum_product_price(df_collect_product_base_data)
 
@@ -561,6 +569,7 @@ class MinimumProductPrice(BasicProcessObject):
             if 'FyPartNumber' in row:
                 fy_part_number = row['FyPartNumber']
 
+            product_notes = ''
             if 'ProductNotes' in row:
                 product_notes = row['ProductNotes']
                 product_notes = product_notes.replace('NULL','')
@@ -578,12 +587,8 @@ class MinimumProductPrice(BasicProcessObject):
 
             product_description_id = row['ProductDescriptionId']
 
-            is_discontinued = -1
-            success, is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
-            if success:
-                df_collect_product_base_data['VendorIsDiscontinued'] = [is_discontinued]
-            else:
-                is_discontinued = -1
+            is_discontinued = row['VendorIsDiscontinued']
+
 
         if str(row['Filter']) in ['Partial','ConfigurationChange']:
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):

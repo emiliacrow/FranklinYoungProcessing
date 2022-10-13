@@ -718,7 +718,8 @@ class IngestionObject:
             self.obDal.fy_product_description_insert(self.product_description_insert_collector)
 
 
-    def update_fy_product_description(self, fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_manufacturer_part_number, fy_uoi_id, fy_uom_id, fy_uoi_qty,
+    def update_fy_product_description(self, fy_product_desc_id, fy_product_name, fy_product_description,
+                                      fy_coo_id, fy_manufacturer_part_number, fy_uoi_id, fy_uom_id, fy_uoi_qty,
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
@@ -726,9 +727,9 @@ class IngestionObject:
                                       fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                       fy_list_price, is_discontinued, is_visible, allow_purchases,
                                       price_toggle, data_toggle,
-                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
-                                                              date_catalog_received, catalog_provided_by):
+                                      deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                      date_catalog_received, catalog_provided_by):
         if (len(self.product_description_update_collector) > self.load_limit):
             self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_manufacturer_part_number,fy_uoi_id, fy_uom_id, fy_uoi_qty,
                                                               fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,

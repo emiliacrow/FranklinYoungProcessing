@@ -1410,9 +1410,9 @@ class FyProductUpdate(BasicProcessObject):
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
-                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
-                                                              date_catalog_received, catalog_provided_by)
+                                                          deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                                          deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                          date_catalog_received, catalog_provided_by)
 
         return True, df_collect_product_base_data
 
