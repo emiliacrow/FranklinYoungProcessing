@@ -372,9 +372,9 @@ class DalObject:
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 
-    def naics_code_cap(self,newNAICSCode, newNAICSCodeDesc = ''):
+    def naics_code_cap(self,newNAICSCode, newNAICSCodeDesc = '',newDefaultCategory=''):
         proc_name = 'sequoia.NAICSCode_capture_wrap'
-        proc_args = (newNAICSCodeDesc,newNAICSCode)
+        proc_args = (newNAICSCodeDesc,newNAICSCode, newDefaultCategory)
         return_id = self.id_cap(proc_name, proc_args)
         return return_id
 

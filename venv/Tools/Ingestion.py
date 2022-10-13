@@ -336,8 +336,8 @@ class IngestionObject:
             return -1
 
     # NAICS functions
-    def ingest_naics_code(self, naics_code, naics_name=''):
-        return_id = self.obDal.naics_code_cap(naics_code, naics_name)
+    def ingest_naics_code(self, naics_code, naics_name='', default_category = ''):
+        return_id = self.obDal.naics_code_cap(naics_code, naics_name, default_category)
         return return_id
 
     def ingest_naics_codes(self, df_naics_codes):
@@ -360,7 +360,8 @@ class IngestionObject:
 
     def manual_ingest_naics_code(self, atmp_code = '', atmp_name = ''):
         lst_req_fields = [['NAICSCode',45,'This is a numeric value<br>like "32532"',atmp_code,'required'],
-                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"',atmp_name,'required']]
+                          ['NAICSName',128,'This is the description<br>like "Pesticide and Other Agricultural Chemical Manufacturing (See also 325320.)"',atmp_name,'required'],
+                          ['DefaultCategory', 128, 'If there is a category assigned to this code','','']]
 
         obTextBox = TextBoxObject(lst_req_fields, title='NAICS Code entry')
         obTextBox.exec()
@@ -369,11 +370,12 @@ class IngestionObject:
         if ('NAICSCode' in entered_values.keys()) and ('NAICSName' in entered_values.keys()):
             naics_code = entered_values['NAICSCode']
             naics_name = entered_values['NAICSName']
+            default_category = entered_values['DefaultCategory']
         else:
             return 0
 
         if (naics_code != '') and (naics_name != ''):
-            naics_id = self.obDal.naics_code_cap(naics_code, naics_name)
+            naics_id = self.obDal.naics_code_cap(naics_code, naics_name, default_category)
             return naics_id
         else:
             return -1
