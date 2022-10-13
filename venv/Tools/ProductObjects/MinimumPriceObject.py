@@ -221,6 +221,10 @@ class MinimumProductPrice(BasicProcessObject):
             self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return False
 
+        elif row['Filter'] == 'check_vendor':
+            self.obReporter.update_report('Alert', 'Filtered as check vendor, please review')
+            return True
+
         elif row['Filter'] in ['Ready', 'Partial', 'Base Pricing','ConfigurationChange']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
@@ -589,8 +593,7 @@ class MinimumProductPrice(BasicProcessObject):
 
             is_discontinued = row['VendorIsDiscontinued']
 
-
-        if str(row['Filter']) in ['Partial','ConfigurationChange']:
+        if str(row['Filter']) in ['Partial','ConfigurationChange','check_vendor']:
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
                 self.obIngester.insert_product_price(fy_product_number, fy_part_number,
                                                      product_tax_class, vendor_part_number, product_id, vendor_id,

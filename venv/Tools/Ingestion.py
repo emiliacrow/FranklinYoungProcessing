@@ -451,7 +451,8 @@ class IngestionObject:
     def manual_ingest_unspsc_code(self, atmp_unspsc = '', atmp_title = '', atmp_desc = ''):
         lst_req_fields = [['UNSPSC', 45, 'This is the code<br>like "11101705"',atmp_unspsc,'required'],
                           ['UNSPSCTitle', 45, 'This is name<br>like "Aluminum"',atmp_title,'required'],
-                          ['UNSPSCDescription', 128, 'This is any other info<br>like "This is aluminum metal"',atmp_desc,'required']]
+                          ['UNSPSCDescription', 128, 'This is any other info<br>like "This is aluminum metal"',atmp_desc,''],
+                          ['DefaultCategory', 128, 'If there is a category assigned to this code','','']]
 
         obTextBox = TextBoxObject(lst_req_fields, title= 'UNSPSC title entry')
         obTextBox.exec()
@@ -461,11 +462,12 @@ class IngestionObject:
             unspsc = entered_values['UNSPSC']
             unspsc_title = entered_values['UNSPSCTitle']
             unspsc_desc = entered_values['UNSPSCDescription']
+            default_category = entered_values['DefaultCategory']
         else:
             return 0
 
         if (unspsc != '') and (unspsc_title != '') and (unspsc_desc != ''):
-            unspsc_id = self.obDal.unspsc_code_cap(unspsc, unspsc_title, unspsc_desc)
+            unspsc_id = self.obDal.unspsc_code_cap(unspsc, unspsc_title, unspsc_desc, default_category)
             return unspsc_id
         else:
             return -1
