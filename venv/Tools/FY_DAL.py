@@ -923,7 +923,7 @@ class DalObject:
 
     def get_fy_product_vendor_prices(self):
         proc_name = 'sequoia.get_FyProductVendorPrices'
-        column_names = ['FyProductNumber', 'PrimaryVendorId', 'PrimaryVendorListPrice', 'PrimaryDiscount','PrimaryFyCost','PrimaryEstimatedFreight']
+        column_names = ['FyProductNumber', 'PrimaryVendorId', 'db_PrimaryVendorListPrice', 'db_PrimaryDiscount','db_PrimaryFyCost','db_PrimaryEstimatedFreight']
         df_descriptions = self.get_lookup(proc_name,column_names)
         return df_descriptions
 

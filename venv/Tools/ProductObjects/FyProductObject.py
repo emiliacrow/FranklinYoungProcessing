@@ -19,7 +19,7 @@ class FyProductUpdate(BasicProcessObject):
                   'ManufacturerPartNumber', 'ManufacturerName', 'VendorPartNumber','DateCatalogReceived',
                   'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
-                  'FyProductNotes', 'VendorListPrice','FyCost',
+                  'FyProductNotes', 'VendorListPrice','FyCost', 'PrimaryVendorListPrice','PrimaryFyCost',
                   'Landed Cost','FyLandedCostMarkupPercent_FYSell','FyLandedCostMarkupPercent_FYList',
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
@@ -434,18 +434,25 @@ class FyProductUpdate(BasicProcessObject):
                 vlp_success, vendor_list_price = self.float_check(vendor_list_price,'VendorListPrice')
                 df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
             else:
+
                 vlp_success, vendor_list_price = self.row_check(row, 'PrimaryVendorListPrice')
                 if vlp_success:
                     vlp_success, vendor_list_price = self.float_check(vendor_list_price,'PrimaryVendorListPrice')
                     df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
                 else:
-                    vlp_success, vendor_list_price = self.row_check(row, 'CurrentVendorListPrice')
+
+                    vlp_success, vendor_list_price = self.row_check(row, 'db_PrimaryVendorListPrice')
                     if vlp_success:
-                        vlp_success, vendor_list_price = self.float_check(vendor_list_price,'CurrentVendorListPrice')
+                        vlp_success, vendor_list_price = self.float_check(vendor_list_price,'db_PrimaryVendorListPrice')
                         df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
                     else:
-                        vendor_list_price = -1
-                        df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+                        vlp_success, vendor_list_price = self.row_check(row, 'CurrentVendorListPrice')
+                        if vlp_success:
+                            vlp_success, vendor_list_price = self.float_check(vendor_list_price,'CurrentVendorListPrice')
+                            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+                        else:
+                            vendor_list_price = -1
+                            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
             if vlp_success:
                 discount_success, fy_discount_percent = self.row_check(row,'Discount')
@@ -458,14 +465,20 @@ class FyProductUpdate(BasicProcessObject):
                         discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'PrimaryDiscount')
                         df_collect_product_base_data['Discount'] = [fy_discount_percent]
                     else:
-                        discount_success, fy_discount_percent = self.row_check(row, 'CurrentDiscount')
+                        discount_success, fy_discount_percent = self.row_check(row, 'db_PrimaryDiscount')
                         if discount_success:
                             discount_success, fy_discount_percent = self.float_check(fy_discount_percent,
-                                                                                     'CurrentDiscount')
+                                                                                     'db_PrimaryDiscount')
                             df_collect_product_base_data['Discount'] = [fy_discount_percent]
                         else:
-                            fy_discount_percent = -1
-                            df_collect_product_base_data['Discount'] = [fy_discount_percent]
+                            discount_success, fy_discount_percent = self.row_check(row, 'CurrentDiscount')
+                            if discount_success:
+                                discount_success, fy_discount_percent = self.float_check(fy_discount_percent,
+                                                                                         'CurrentDiscount')
+                                df_collect_product_base_data['Discount'] = [fy_discount_percent]
+                            else:
+                                fy_discount_percent = -1
+                                df_collect_product_base_data['Discount'] = [fy_discount_percent]
             else:
                 discount_success = False
 
@@ -479,15 +492,20 @@ class FyProductUpdate(BasicProcessObject):
                     success, fy_cost = self.float_check(fy_cost, 'PrimaryFyCost')
                     df_collect_product_base_data['FyCost'] = [fy_cost]
                 else:
-                    success, fy_cost = self.row_check(row, 'CurrentFyCost')
+                    success, fy_cost = self.row_check(row, 'db_PrimaryFyCost')
                     if success:
-                        success, fy_cost = self.float_check(fy_cost, 'CurrentFyCost')
+                        success, fy_cost = self.float_check(fy_cost, 'db_PrimaryFyCost')
                         df_collect_product_base_data['FyCost'] = [fy_cost]
                     else:
-                        # fail line if missing
-                        self.obReporter.update_report('Alert', 'FyCost was missing')
-                        fy_cost = -1
-                        df_collect_product_base_data['FyCost'] = [fy_cost]
+                        success, fy_cost = self.row_check(row, 'CurrentFyCost')
+                        if success:
+                            success, fy_cost = self.float_check(fy_cost, 'CurrentFyCost')
+                            df_collect_product_base_data['FyCost'] = [fy_cost]
+                        else:
+                            # fail line if missing
+                            self.obReporter.update_report('Alert', 'FyCost was missing')
+                            fy_cost = -1
+                            df_collect_product_base_data['FyCost'] = [fy_cost]
 
 
             if vlp_success and not discount_success:
@@ -511,14 +529,19 @@ class FyProductUpdate(BasicProcessObject):
                     success, estimated_freight = self.float_check(estimated_freight,'PrimaryEstimatedFrieght')
                     df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
                 else:
-                    success, estimated_freight = self.row_check(row, 'CurrentEstimatedFrieght')
+                    success, estimated_freight = self.row_check(row, 'db_PrimaryEstimatedFrieght')
                     if success:
-                        success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFrieght')
+                        success, estimated_freight = self.float_check(estimated_freight,'db_PrimaryEstimatedFrieght')
                         df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
                     else:
-                        estimated_freight = 0
-                        df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
-                        self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
+                        success, estimated_freight = self.row_check(row, 'CurrentEstimatedFrieght')
+                        if success:
+                            success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFrieght')
+                            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+                        else:
+                            estimated_freight = 0
+                            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+                            self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
 
 
             fy_landed_cost = fy_cost + estimated_freight
