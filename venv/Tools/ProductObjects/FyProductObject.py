@@ -1230,8 +1230,8 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_cost = -1
 
-        if 'EstimatedFreight' in row:
-            estimated_freight = float(row['EstimatedFreight'])
+        if 'Estimated Freight' in row:
+            estimated_freight = float(row['Estimated Freight'])
         else:
             estimated_freight = -1
 

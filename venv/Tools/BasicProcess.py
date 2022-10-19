@@ -867,8 +867,8 @@ class BasicProcessObject:
             units = 'BX'
         elif units in ['CARTON','CARTONS']:
             units = 'CT'
-        elif units in ['CASE','CASES']:
-            units = 'CS'
+        elif units in ['CS','CASE','CASES']:
+            units = 'CA'
         elif units in ['EACH','EACHES','ITEM','ITEMS','TEST','TESTS','TST','TSTS']:
             units = 'EA'
         elif units in ['JAR','JARS']:
