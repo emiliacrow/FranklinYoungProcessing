@@ -483,33 +483,21 @@ class MinimumProduct(BasicProcessObject):
 
 
     def process_long_desc(self, df_collect_product_base_data, row):
-        product_description = ''
+        vendor_product_description = ''
         fy_product_description = ''
-        product_name = ''
+        vendor_product_name = ''
         fy_product_name = ''
-        if 'ProductDescription' in row:
-            product_description = str(row['ProductDescription'])
-            product_description = self.obValidator.clean_description(product_description)
-            df_collect_product_base_data['ProductDescription'] = [product_description]
-        if 'FyProductDescription' in row:
-            fy_product_description = str(row['FyProductDescription'])
-            fy_product_description = self.obValidator.clean_description(fy_product_description)
-            df_collect_product_base_data['FyProductDescription'] = [fy_product_description]
-        if product_description == '' and fy_product_description != '':
-            product_description = fy_product_description
-            df_collect_product_base_data['ProductDescription'] = [product_description]
 
-        if 'ProductName' in row:
-            product_name = str(row['ProductName'])
-            product_name = self.obValidator.clean_description(product_name)
-            df_collect_product_base_data['ProductName'] = [product_name]
-        if 'FyProductName' in row:
-            fy_product_name = str(row['FyProductName'])
-            fy_product_name = self.obValidator.clean_description(fy_product_name)
-            df_collect_product_base_data['FyProductName'] = [fy_product_name]
-        if product_name == '' and fy_product_name != '':
-            fy_product_name = fy_product_name
-            df_collect_product_base_data['ProductName'] = [fy_product_name]
+        if 'VendorProductDescription' in row:
+            vendor_product_description = str(row['VendorProductDescription'])
+            vendor_product_description = self.obValidator.clean_description(vendor_product_description)
+            df_collect_product_base_data['VendorProductDescription'] = [vendor_product_description]
+
+
+        if 'VendorProductName' in row:
+            vendor_product_name = str(row['VendorProductName'])
+            vendor_product_name = self.obValidator.clean_description(vendor_product_name)
+            df_collect_product_base_data['VendorProductName'] = [vendor_product_name]
 
 
         # processing/cleaning
@@ -585,16 +573,15 @@ class MinimumProduct(BasicProcessObject):
                 b_override = 1
 
             try:
-                product_name = row['ProductName']
-                product_name = self.obValidator.clean_description(product_name)
+                vendor_product_name = row['VendorProductName']
             except:
-                product_name = ''
+                vendor_product_name = ''
 
             try:
-                product_description = row['ProductDescription']
-                product_description = self.obValidator.clean_description(product_description)
+                vendor_product_description = row['VendorProductDescription']
+                vendor_product_description = self.obValidator.clean_description(vendor_product_description)
             except:
-                product_description = ''
+                vendor_product_description = ''
 
             try:
                 long_desc = row['LongDescription']
@@ -628,15 +615,18 @@ class MinimumProduct(BasicProcessObject):
                 self.obReporter.update_report('Fail','Missing CountryOfOrigin')
                 return df_line_product
 
-            if (product_name == ''):
-                self.obReporter.update_report('Fail','Missing ProductName')
-                return df_line_product
-            if (product_description == ''):
+            if (vendor_product_name == '') and 'FyProductName' in row:
+                vendor_product_name = str(row['FyProductName'])
+
+            if (vendor_product_description == '') and 'FyProductDescription' in row:
+                vendor_product_description = row['FyProductDescription']
+
+            if (vendor_product_description == ''):
                 self.obReporter.update_report('Fail','Missing ProductDescription')
                 return df_line_product
             else:
                 if fy_catalog_number not in self.inserted_products:
-                    self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, product_description,
+                    self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, vendor_product_description,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
@@ -646,7 +636,7 @@ class MinimumProduct(BasicProcessObject):
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Partial' or str(row['Filter']) == 'Base Pricing':
             product_id = row['ProductId']
-            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, product_name, product_description,
+            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, product_description,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
