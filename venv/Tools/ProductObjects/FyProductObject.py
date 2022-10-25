@@ -216,29 +216,37 @@ class FyProductUpdate(BasicProcessObject):
 
 
     def batch_process_category(self):
-        print('Batch process category')
+        print('Batch processing Categories')
         # this needs to be handled better
-        if 'FyCategory' in self.df_product.columns:
-            df_attribute = self.df_product[['FyCategory']]
-            df_attribute = df_attribute.drop_duplicates(subset=['FyCategory'])
+        if 'Category' in self.df_product.columns:
+            df_attribute = self.df_product[['Category']]
+            df_attribute = df_attribute.drop_duplicates(subset=['Category'])
             lst_ids = []
             for colName, row in df_attribute.iterrows():
-                category = str(row['FyCategory']).strip()
+                category = str(row['Category']).strip()
+
+                while '/ ' in category:
+                    category = category.replace('/ ', '/')
+
+                while ' /' in category:
+                    category = category.replace(' /', '/')
+
                 category_name = (category.rpartition('/')[2]).strip()
 
-                category = category.replace('/ ', '/')
-                category = category.replace(' /', '/')
-
-                category_name = category_name.strip()
-                category = category.strip()
+                self.df_category_names['CategoryNameLower'] = self.df_category_names['CategoryName'].str.lower()
 
                 if category_name in self.df_category_names['CategoryName'].values:
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
 
+                elif category_name.lower() in self.df_category_names['CategoryNameLower'].values:
+                    new_category_id = self.df_category_names.loc[
+                        (self.df_category_names['CategoryNameLower'] == category_name.lower()), 'CategoryId'].values[0]
+
                 elif category in self.df_category_names['Category'].values:
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
+
                 else:
                     categories_to_ship = []
                     if (category != '') and (category_name != '') and ('All Products/' in category):
@@ -253,6 +261,12 @@ class FyProductUpdate(BasicProcessObject):
                         while ('/' in category):
                             category_name = category_name.strip()
                             category = category.strip()
+
+                            if category_name in self.df_category_names['CategoryName'].values:
+                                break
+                            elif category in self.df_category_names['Category'].values:
+                                break
+
                             categories_to_ship.append([category_name, category])
 
                             # we set the name of the category
@@ -270,10 +284,10 @@ class FyProductUpdate(BasicProcessObject):
 
                 lst_ids.append(new_category_id)
 
-            df_attribute['FyCategoryId'] = lst_ids
+            df_attribute['CategoryId'] = lst_ids
 
             self.df_product = self.df_product.merge(df_attribute,
-                                                     how='left', on=['FyCategory'])
+                                                     how='left', on=['Category'])
         else:
             self.df_fill_category = self.obDal.get_product_category()
             self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['ProductId'])

@@ -105,9 +105,15 @@ class MinimumProduct(BasicProcessObject):
 
                 category_name = (category.rpartition('/')[2]).strip()
 
+                self.df_category_names['CategoryNameLower'] = self.df_category_names['CategoryName'].str.lower()
+
                 if category_name in self.df_category_names['CategoryName'].values:
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
+
+                elif category_name.lower() in self.df_category_names['CategoryNameLower'].values:
+                    new_category_id = self.df_category_names.loc[
+                        (self.df_category_names['CategoryNameLower'] == category_name.lower()), 'CategoryId'].values[0]
 
                 elif category in self.df_category_names['Category'].values:
                     new_category_id = self.df_category_names.loc[
@@ -630,7 +636,6 @@ class MinimumProduct(BasicProcessObject):
                 return df_line_product
             else:
                 if fy_catalog_number not in self.inserted_products:
-                    print('Insert product {0}'.format(fy_catalog_number))
                     self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, product_description,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
