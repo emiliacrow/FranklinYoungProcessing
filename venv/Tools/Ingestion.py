@@ -570,6 +570,7 @@ class IngestionObject:
                                                newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
                                                newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
 
+            self.product_insert_collector.sort(key=lambda x:x[0], reverse = True)
             self.obDal.min_product_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:

@@ -498,9 +498,9 @@ class BasicProcessObject:
         self.df_product.loc[(self.df_product['Filter'] == 'Base Pricing'), 'TakePriority'] = 'B'
         self.df_product.loc[(self.df_product['Filter'] == 'Ready'), 'TakePriority'] = 'A'
 
-        self.df_product.sort_values(by=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber','TakePriority'] , inplace = True)
+        self.df_product.sort_values(by=['FyCatalogNumber','FyProductNumber','VendorName','VendorPartNumber','ManufacturerName','ManufacturerPartNumber','TakePriority'] , inplace = True)
 
-        self.df_product.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'] , ignore_index = True, inplace = True)
+        self.df_product.drop_duplicates(['FyCatalogNumber','FyProductNumber','VendorName','VendorPartNumber','ManufacturerName','ManufacturerPartNumber'] , ignore_index = True, inplace = True)
 
 
     def man_ven_cleanup(self):

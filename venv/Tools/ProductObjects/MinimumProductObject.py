@@ -46,6 +46,8 @@ class MinimumProduct(BasicProcessObject):
 
         self.df_product.sort_values(by=['FyCatalogNumber'], inplace=True)
 
+        self.inserted_products = []
+
         return self.df_product
 
     def remove_private_headers(self):
@@ -86,6 +88,7 @@ class MinimumProduct(BasicProcessObject):
 
 
     def batch_process_category(self):
+
         # this needs to be handled better
         if 'Category' in self.df_product.columns:
             df_attribute = self.df_product[['Category']]
@@ -93,13 +96,14 @@ class MinimumProduct(BasicProcessObject):
             lst_ids = []
             for colName, row in df_attribute.iterrows():
                 category = str(row['Category']).strip()
+
+                while '/ ' in category:
+                    category = category.replace('/ ', '/')
+
+                while ' /' in category:
+                    category = category.replace(' /', '/')
+
                 category_name = (category.rpartition('/')[2]).strip()
-
-                category = category.replace('/ ', '/')
-                category = category.replace(' /', '/')
-
-                category_name = category_name.strip()
-                category = category.strip()
 
                 if category_name in self.df_category_names['CategoryName'].values:
                     new_category_id = self.df_category_names.loc[
@@ -108,6 +112,7 @@ class MinimumProduct(BasicProcessObject):
                 elif category in self.df_category_names['Category'].values:
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
+
                 else:
                     categories_to_ship = []
                     if (category != '') and (category_name != '') and ('All Products/' in category):
@@ -122,6 +127,12 @@ class MinimumProduct(BasicProcessObject):
                         while ('/' in category):
                             category_name = category_name.strip()
                             category = category.strip()
+
+                            if category_name in self.df_category_names['CategoryName'].values:
+                                break
+                            elif category in self.df_category_names['Category'].values:
+                                break
+
                             categories_to_ship.append([category_name, category])
 
                             # we set the name of the category
@@ -618,10 +629,15 @@ class MinimumProduct(BasicProcessObject):
                 self.obReporter.update_report('Fail','Missing ProductDescription')
                 return df_line_product
             else:
-                self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, product_description,
+                if fy_catalog_number not in self.inserted_products:
+                    print('Insert product {0}'.format(fy_catalog_number))
+                    self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, product_name, product_description,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
+                    self.inserted_products.append(fy_catalog_number)
+                else:
+                    print('Skippi product {0}'.format(fy_catalog_number))
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Partial' or str(row['Filter']) == 'Base Pricing':
             product_id = row['ProductId']
