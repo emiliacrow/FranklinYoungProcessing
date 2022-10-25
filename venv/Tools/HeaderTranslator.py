@@ -26,8 +26,12 @@ class HeaderTranslator():
                             'FyPartNumber':['FYPartNumber', 'FyPartNumber', 'fy_part_number', 'fy_part_no', 'Product Code/SKU'],
                             'RecommendedStorage':['shelf_life_months','RecommendedStorage','StorageInstruction'],
 
-                            'ProductName':['ProductName','Product Name','product_name','vendor_product_name','primary_vendor_product_name'],
-                            'ProductDescription':['ProductDescription','Product Description','product_description','ProductDesc','Product Desc','product_desc', 'prodname'],
+                            'ProductName':['ProductName', 'Product Name', 'product_name','prodname'],
+                            'VendorProductName':['VendorProductName','Vendor Product Name','vendor_product_name','primary_vendor_product_name'],
+
+                            'ProductDescription':['ProductDescription', 'Product Description', 'product_description',
+                                                  'ProductDesc', 'Product Desc', 'product_desc'],
+                            'VendorProductDescription':['VendorProductDescription','Vendor Product Description','vendor_product_description','VendorProductDesc','Vendor Product Desc','vendor_product_desc'],
                             'ShortDescription':['ShortDescription','Short Description','short_description','short_desc','ShortDesc','Short Desc'],
                             'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
