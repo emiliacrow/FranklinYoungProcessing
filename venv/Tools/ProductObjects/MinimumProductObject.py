@@ -636,7 +636,7 @@ class MinimumProduct(BasicProcessObject):
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Partial' or str(row['Filter']) == 'Base Pricing':
             product_id = row['ProductId']
-            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, product_description,
+            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, vendor_product_description,
                                                  long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
