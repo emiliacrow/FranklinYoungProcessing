@@ -75,7 +75,7 @@ class FyProductUpdate(BasicProcessObject):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
                            'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
-                           'VendorId','VendorId_x','VendorId_y',
+                           'VendorId','VendorId_x','VendorId_y','UpdateManufacturerName','ManufacturerId',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription'}
         current_headers = set(self.df_product.columns)
