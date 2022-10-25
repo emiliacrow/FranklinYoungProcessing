@@ -886,6 +886,13 @@ class DalObject:
         return df_toggles
 
 
+    def fy_product_description_insert_short(self, lst_descriptions):
+        proc_name = 'sequoia.ProductDescription_insert3'
+        proc_statement = 'CALL `sequoia`.`ProductDescription_insert3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection(runner_limit = 15)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
+        runner.start()
+
     def fy_product_description_insert(self, lst_descriptions):
         proc_name = 'sequoia.ProductDescription_insert7'
         proc_statement = 'CALL `sequoia`.`ProductDescription_insert7`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'

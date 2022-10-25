@@ -675,6 +675,18 @@ class IngestionObject:
         return_id = self.obDal.species_cap(species_sci_name,species_name)
         return return_id
 
+    def insert_fy_product_description_short(self, fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id):
+        if (len(self.product_description_insert_collector) > self.load_limit):
+            self.product_description_insert_collector.append((fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id))
+            self.obDal.fy_product_description_insert_short(self.product_description_insert_collector)
+            self.product_description_insert_collector = []
+        else:
+            self.product_description_insert_collector.append((fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id))
+
+    def insert_fy_product_description_short_cleanup(self):
+        if self.product_description_insert_collector != []:
+            self.obDal.fy_product_description_insert_short(self.product_description_insert_collector)
+
 
     def insert_fy_product_description(self, fy_catalog_number, manufacturer_part_number, is_product_number_override, manufacturer_id,
                                       fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,

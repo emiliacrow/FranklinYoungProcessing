@@ -290,17 +290,17 @@ class MinimumProductPrice(BasicProcessObject):
 
             else:
                 if 'ProductDescriptionId' not in row:
-                    self.obReporter.update_report('Alert', 'Ingest in FyProductDescription')
-                    df_collect_product_base_data['ProductDescriptionId'] = [-1]
+                    #self.obReporter.update_report('Alert', 'Ingest in FyProductDescription')
+                    #df_collect_product_base_data['ProductDescriptionId'] = [-1]
 
                     ### DEPRICATE ###
-                    #success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
-                    #if success:
-                    #    self.next_fy_description_id += 1
-                    #    df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
-                    #    self.dct_fy_product_description[fy_product_number] = self.next_fy_description_id
-                    #else:
-                    #    df_collect_product_base_data['ProductDescriptionId'] = [-1]
+                    success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
+                    if success:
+                        self.next_fy_description_id += 1
+                        df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
+                        self.dct_fy_product_description[fy_product_number] = self.next_fy_description_id
+                    else:
+                        df_collect_product_base_data['ProductDescriptionId'] = [-1]
                     ### DEPRICATE ###
                 else:
                     fy_product_desc_id = row['ProductDescriptionId']
@@ -441,6 +441,11 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             fy_lead_time = -1
 
+        if 'ManufacturerPartNumber' in row:
+            fy_manufacturer_part_number = str(row['ManufacturerPartNumber'])
+        else:
+            fy_manufacturer_part_number = ''
+
         if len(fy_product_name) > 80:
             self.obReporter.update_report('Alert','FyProductName might be too long for some contracts.')
 
@@ -468,8 +473,10 @@ class MinimumProductPrice(BasicProcessObject):
 
         # for speed sake this is a one-off
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1):
-            lst_descriptions = [(fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)]
-            self.obDal.fy_product_description_insert(lst_descriptions)
+            #lst_descriptions = [(fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)]
+            #self.obDal.fy_product_description_insert_short(lst_descriptions)
+            self.obIngester.insert_fy_product_description_short(fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)
+
             return True, df_collect_product_base_data
         else:
             return False, df_collect_product_base_data
@@ -623,6 +630,7 @@ class MinimumProductPrice(BasicProcessObject):
         self.obIngester.update_product_price_cleanup()
         self.obIngester.insert_product_price_cleanup()
         self.obIngester.update_fy_product_description_short_cleanup()
+        self.obIngester.insert_fy_product_description_short_cleanup()
 
 
 class UpdateMinimumProductPrice(MinimumProductPrice):
