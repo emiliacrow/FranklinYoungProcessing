@@ -218,12 +218,12 @@ class FyProductUpdate(BasicProcessObject):
     def batch_process_category(self):
         print('Batch processing Categories')
         # this needs to be handled better
-        if 'Category' in self.df_product.columns:
-            df_attribute = self.df_product[['Category']]
-            df_attribute = df_attribute.drop_duplicates(subset=['Category'])
+        if 'FyCategory' in self.df_product.columns:
+            df_attribute = self.df_product[['FyCategory']]
+            df_attribute = df_attribute.drop_duplicates(subset=['FyCategory'])
             lst_ids = []
             for colName, row in df_attribute.iterrows():
-                category = str(row['Category']).strip()
+                category = str(row['FyCategory']).strip()
 
                 while '/ ' in category:
                     category = category.replace('/ ', '/')
@@ -284,10 +284,10 @@ class FyProductUpdate(BasicProcessObject):
 
                 lst_ids.append(new_category_id)
 
-            df_attribute['CategoryId'] = lst_ids
+            df_attribute['FyCategoryId'] = lst_ids
 
             self.df_product = self.df_product.merge(df_attribute,
-                                                     how='left', on=['Category'])
+                                                     how='left', on=['FyCategory'])
         else:
             self.df_fill_category = self.obDal.get_product_category()
             self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['ProductId'])
