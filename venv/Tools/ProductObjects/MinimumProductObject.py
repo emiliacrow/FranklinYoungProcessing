@@ -212,7 +212,7 @@ class MinimumProduct(BasicProcessObject):
             self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=['CountryOfOrigin'])
 
-        if 'CountryOfOriginId' not in self.df_product.columns and 'FyCountryOfOrigin' in self.df_product.columns:
+        if 'FyCountryOfOriginId' not in self.df_product.columns and 'FyCountryOfOrigin' in self.df_product.columns:
 
             df_attribute = self.df_product[['FyCountryOfOrigin']]
             df_attribute = df_attribute.drop_duplicates(subset=['FyCountryOfOrigin'])
@@ -253,7 +253,7 @@ class MinimumProduct(BasicProcessObject):
                 else:
                     lst_ids.append(-1)
 
-            df_attribute['CountryOfOriginId'] = lst_ids
+            df_attribute['FyCountryOfOriginId'] = lst_ids
             self.df_product = self.df_product.merge(df_attribute,
                                                               how='left', on=['FyCountryOfOrigin'])
 

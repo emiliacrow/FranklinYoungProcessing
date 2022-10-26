@@ -305,7 +305,7 @@ class MinimumProductPrice(BasicProcessObject):
                 else:
                     fy_product_desc_id = row['ProductDescriptionId']
                     self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
-                    df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
+                    # df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
 
         is_discontinued = -1
         success, is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
