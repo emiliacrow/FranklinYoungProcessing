@@ -34,6 +34,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
 
+
         # and do something with them
         # like what if we could predict the next ID from this and
         # do the insert blind?
@@ -296,9 +297,7 @@ class MinimumProductPrice(BasicProcessObject):
                     ### DEPRICATE ###
                     success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
                     if success:
-                        self.next_fy_description_id += 1
-                        df_collect_product_base_data['ProductDescriptionId'] = [self.next_fy_description_id]
-                        self.dct_fy_product_description[fy_product_number] = self.next_fy_description_id
+                        df_collect_product_base_data['ProductDescriptionId'] = [-1]
                     else:
                         df_collect_product_base_data['ProductDescriptionId'] = [-1]
                     ### DEPRICATE ###
