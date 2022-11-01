@@ -577,7 +577,7 @@ class DalObject:
 
     def set_product_notes(self, lst_product_notes):
         proc_name = 'sequoia.set_product_notes2'
-        proc_statement = 'CALL `sequoia`.`set_product_notes`(%s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`set_product_notes2`(%s, %s, %s, %s);'
         self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product_notes)
         runner.start()
@@ -695,7 +695,7 @@ class DalObject:
 
     def min_product_insert(self, lst_product):
         proc_name = 'sequoia.MinimumProduct_insert2'
-        proc_statement = 'CALL `sequoia`.`MinimumProduct_insert`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`MinimumProduct_insert2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=5)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_product)
         runner.start()
@@ -941,12 +941,6 @@ class DalObject:
         return df_description_id
 
 
-    def get_featured_products(self):
-        proc_name = 'sequoia.get_FeaturedProducts'
-        column_names = ['old_ProductPriceId', 'old_FyProductNumber', 'ProductSortOrder']
-        df_descriptions = self.get_lookup(proc_name,column_names)
-        return df_descriptions
-
     def get_fy_featured_products(self):
         proc_name = 'sequoia.get_FeaturedProducts2'
         column_names = ['old_ProductDescriptionId', 'old_FyProductNumber', 'ProductSortOrder']
@@ -977,13 +971,6 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)
         runner.start()
 
-
-    def set_discon(self, lst_discon_toggles):
-        proc_name = 'sequoia.set_is_discon_allow_purchase'
-        proc_statement = 'CALL `sequoia`.`set_is_discon_allow_purchase`(%s, %s, %s, %s);'
-        self.open_connection(runner_limit=30)
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_discon_toggles)
-        runner.start()
 
     def set_is_visible(self, lst_is_vis_toggles):
         proc_name = 'sequoia.set_is_visible'

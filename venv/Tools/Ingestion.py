@@ -603,27 +603,6 @@ class IngestionObject:
         if self.product_update_collector != []:
             self.obDal.min_product_update(self.product_update_collector)
 
-    def ingest_product(self, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newVendorProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled=0, newIsDisposable=0, newIsGreen=0, newIsLatexFree=0, newIsRX=0, newIsHazardous=0):
-        # if this is the last to join, or if the size has hit the limit, send a runner
-        if (len(self.product_collector) > self.load_limit):
-            self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newVendorProductName, newShortDescription,
-                                               newLongDescription, newECommerceLongDescription,
-                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
-                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
-                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX, newIsHazardous))
-
-            self.obDal.min_product_cap(self.product_collector)
-            self.product_collector = []
-        else:
-            self.product_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newProductName, newShortDescription,
-                                               newLongDescription, newECommerceLongDescription,
-                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
-                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId, newIsControlled,
-                                               newIsDisposable, newIsGreen, newIsLatexFree, newIsRX, newIsHazardous))
-
-    def ingest_product_cleanup(self):
-        if self.product_collector != []:
-            self.obDal.min_product_cap(self.product_collector)
 
     def set_discon_product_price(self, price_id, is_discontinued):
         # if this is the last to join, or if the size has hit the limit, send a runner
@@ -1275,20 +1254,6 @@ class IngestionObject:
         if self.product_bc_toggle_collector != []:
             self.product_bc_toggle_collector.sort(key=lambda x:x[0], reverse=True)
             self.obDal.set_bc_toggles(self.product_bc_toggle_collector)
-
-
-    def set_is_discon_allow_purchase(self, price_id, fy_product_number, is_discontinued, allow_purchases):
-        if (len(self.product_discon_collector) > self.load_limit):
-            self.product_discon_collector.append((price_id, fy_product_number, is_discontinued, allow_purchases))
-            self.obDal.set_discon(self.product_discon_collector)
-            self.product_discon_collector = []
-
-        else:
-            self.product_discon_collector.append((price_id, fy_product_number, is_discontinued, allow_purchases))
-
-    def set_is_discon_allow_purchase_cleanup(self):
-        if self.product_discon_collector != []:
-            self.obDal.set_discon(self.product_discon_collector)
 
 
     def set_is_visible(self, base_id, is_visible):

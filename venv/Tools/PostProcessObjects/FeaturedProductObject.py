@@ -25,7 +25,7 @@ class FeaturedProductObject(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
+        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions_short()
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
         self.identify_current_featured_products()
 

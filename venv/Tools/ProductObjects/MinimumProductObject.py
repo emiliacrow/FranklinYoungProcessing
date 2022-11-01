@@ -584,10 +584,10 @@ class MinimumProduct(BasicProcessObject):
                 vendor_product_description = ''
 
             try:
-                long_desc = row['LongDescription']
-                long_desc = self.obValidator.clean_description(long_desc)
+                short_desc = row['ShortDescription']
+                short_desc = self.obValidator.clean_description(short_desc)
             except:
-                long_desc = ''
+                short_desc = ''
 
             try:
                 ec_long_desc = row['ECommerceLongDescription']
@@ -622,12 +622,13 @@ class MinimumProduct(BasicProcessObject):
                 vendor_product_description = row['FyProductDescription']
 
             if (vendor_product_description == ''):
-                self.obReporter.update_report('Fail','Missing ProductDescription')
+                self.obReporter.update_report('Fail','Missing VendorProductDescription')
                 return df_line_product
+
             else:
                 if fy_catalog_number not in self.inserted_products:
-                    self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, vendor_product_description,
-                                                 long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
+                    self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, short_desc,
+                                                   vendor_product_description, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
                     self.inserted_products.append(fy_catalog_number)
@@ -636,8 +637,8 @@ class MinimumProduct(BasicProcessObject):
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Partial' or str(row['Filter']) == 'Base Pricing':
             product_id = row['ProductId']
-            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, vendor_product_description,
-                                                 long_desc, ec_long_desc, country_of_origin_id, manufacturer_id,
+            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, short_desc,
+                                           vendor_product_description, ec_long_desc, country_of_origin_id, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
 

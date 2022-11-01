@@ -28,9 +28,8 @@ class HeaderTranslator():
 
                             'VendorProductName':['VendorProductName','Vendor Product Name','vendor_product_name','primary_vendor_product_name','ProductName', 'Product Name', 'product_name','prodname'],
                             'VendorProductDescription':['VendorProductDescription','Vendor Product Description','vendor_product_description','VendorProductDesc','Vendor Product Desc','vendor_product_desc','ProductDescription', 'Product Description', 'product_description',
-                                                  'ProductDesc', 'Product Desc', 'product_desc'],
+                                                  'ProductDesc', 'Product Desc', 'product_desc','LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ShortDescription':['ShortDescription','Short Description','short_description','short_desc','ShortDesc','Short Desc'],
-                            'LongDescription':['LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
                             'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
 
                             'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue','QtyUOI','Qty UOI','Qty','UnitOfIssueByQuantity'],
