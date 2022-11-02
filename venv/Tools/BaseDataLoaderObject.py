@@ -94,77 +94,7 @@ class BaseDataLoader(BasicProcessObject):
         return 'Ingested {} countries.'.format(str(len(ingested_set)))
 
 
-    def run_loads(self, selection):
-        if selection == 'Category':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestCategory.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_categories(df_items)
-            return_str = 'Ingested {} categories.'.format(str(len(ingested_set)))
-            df_items = None
 
-        elif selection == 'Manufacturer':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestManufacturer.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_manufacturers(df_items)
-            return_str = 'Ingested {} manufacturers.'.format(str(len(ingested_set)))
-            df_items = None
 
-        elif selection == 'Vendor':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestVendor.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_vendors(df_items)
-            return_str = 'Ingested {} vendors.'.format(str(len(ingested_set)))
-            df_items = None
 
-        elif selection == 'Country':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestCountry.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_countries(df_items)
-            return_str = 'Ingested {} countries.'.format(str(len(ingested_set)))
-            df_items = None
-
-        elif selection == 'UNSPSC Codes':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUNSPSCCode.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_unspscs(df_items)
-            return_str = 'Ingested {} codes.'.format(str(len(ingested_set)))
-            df_items = None
-
-        elif selection == 'FSC Codes':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestFSCCode.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_fscs(df_items)
-            return_str = 'Ingested {} codes.'.format(str(len(ingested_set)))
-            df_items = None
-
-        elif selection == 'Hazardous Code':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestHazardCode.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_hazard_codes(df_items)
-            return_str = 'Ingested {} codes.'.format(str(len(ingested_set)))
-            df_items = None
-
-        elif selection == 'NAICS Code':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestNaicsCode.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_naics_codes(df_items)
-            return_str = 'Ingested {} codes.'.format(str(len(ingested_set)))
-            df_items = None
-
-        elif selection == 'Unit of Issue-Symbol':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUOISymbol.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_uoi_symbols(df_items)
-            return_str = 'Ingested {} symbols.'.format(str(len(ingested_set)))
-            df_items = None
-
-        elif selection == 'Unit of Issue':
-            initial_ingest_file = 'C:\\Users\ImGav\Documents\FranklinYoungFiles\DBIngestion\IngestUOI.xlsx'
-            df_items = self.obFileFinder.read_xlsx(initial_ingest_file)
-            ingested_set = self.obIngester.ingest_uois(df_items)
-            return_str = 'Ingested {} containers.'.format(str(len(ingested_set)))
-            df_items = None
-        else:
-            return False, 'No valid selection'
-
-        return True, return_str
+## end ##
