@@ -538,19 +538,19 @@ class FyProductUpdate(BasicProcessObject):
                 df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
 
             else:
-                success, estimated_freight = self.row_check(row, 'PrimaryEstimatedFrieght')
+                success, estimated_freight = self.row_check(row, 'PrimaryEstimatedFreight')
                 if success:
-                    success, estimated_freight = self.float_check(estimated_freight,'PrimaryEstimatedFrieght')
+                    success, estimated_freight = self.float_check(estimated_freight,'PrimaryEstimatedFreight')
                     df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
                 else:
-                    success, estimated_freight = self.row_check(row, 'db_PrimaryEstimatedFrieght')
+                    success, estimated_freight = self.row_check(row, 'db_PrimaryEstimatedFreight')
                     if success:
-                        success, estimated_freight = self.float_check(estimated_freight,'db_PrimaryEstimatedFrieght')
+                        success, estimated_freight = self.float_check(estimated_freight,'db_PrimaryEstimatedFreight')
                         df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
                     else:
-                        success, estimated_freight = self.row_check(row, 'CurrentEstimatedFrieght')
+                        success, estimated_freight = self.row_check(row, 'CurrentEstimatedFreight')
                         if success:
-                            success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFrieght')
+                            success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFreight')
                             df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
                         else:
                             estimated_freight = 0

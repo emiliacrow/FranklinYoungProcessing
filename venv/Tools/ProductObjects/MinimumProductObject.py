@@ -434,8 +434,10 @@ class MinimumProduct(BasicProcessObject):
             if ('CountryOfOriginId' not in row):
                 self.obReporter.update_report('Fail','Failed in process country of origin')
                 return False, df_collect_product_base_data
-            elif (row['CountryOfOriginId'] == 259):
-                self.obReporter.update_report('Alert','Country of origin unknown')
+
+            if (row['CountryOfOriginId'] == 259):
+                df_collect_product_base_data['CountryOfOrigin'] = ['']
+
 
             if ('CategoryId' not in row):
                 self.obReporter.update_report('Alert','No category assigned.')
