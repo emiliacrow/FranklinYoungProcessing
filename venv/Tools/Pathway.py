@@ -29,7 +29,6 @@ from Tools.CategoryProcessingObject import CategoryProcessor
 from Tools.PostProcessObjects.BigCommerceRTLObject import BigCommerceRTLObject as BC_RTL_Object
 from Tools.PostProcessObjects.FeaturedProductObject import FeaturedProductObject
 
-from Tools.PostProcessObjects.DiscontinuationObject import DiscontinueObject
 from Tools.PostProcessObjects.ProcessProductAssetObject import ProcessProductAssetObject
 
 # product objects
@@ -891,13 +890,6 @@ class Pathways():
             self.success, self.message = self.obBCRTL.begin_process()
             self.df_product = self.obBCRTL.get_df()
             self.obFileFinder.write_xlsx(self.df_product, 'BC_RTL')
-            return self.success, self.message
-
-        elif contract_selected == 'Discontinue Products':
-            self.obDiscon = DiscontinueObject(self.df_product, self.user, self.password, is_testing)
-            self.success, self.message = self.obDiscon.begin_process()
-            self.df_product = self.obDiscon.get_df()
-            self.obFileFinder.write_xlsx(self.df_product, 'discon')
             return self.success, self.message
 
         elif contract_selected == 'Process Product Assets':
