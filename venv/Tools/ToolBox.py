@@ -102,7 +102,7 @@ class FileFinder():
 
         self.obProgressBar.close()
 
-        for each_capped_header in ['FyCatalogNumber', 'FyProductNumber', 'ManufacturerName', 'VendorName', 'ManufacturerPartNumber', 'VendorPartNumber']:
+        for each_capped_header in ['FyCatalogNumber', 'FyProductNumber', 'ManufacturerName', 'VendorName', 'PrimaryVendorName', 'SecondaryVendorName', 'ManufacturerPartNumber', 'VendorPartNumber', 'PrimaryVendorPartNumber', 'SecondaryVendorPartNumber']:
             if each_capped_header in excel_dataframe.columns:
                 excel_dataframe[each_capped_header] = excel_dataframe[each_capped_header].str.strip()
                 excel_dataframe[each_capped_header] = excel_dataframe[each_capped_header].str.upper()
@@ -199,6 +199,7 @@ def process_file(obFileFinder, file_action_selected):
 class BaseDataLoader():
     def __init__(self):
         self.name = 'Lou Gehrig'
+        self.explain = 'Because Lou Gehrig was a Base Loader, get it?'
 
     def set_file_finder(self, obFileFinder):
         self.obFileFinder = obFileFinder
