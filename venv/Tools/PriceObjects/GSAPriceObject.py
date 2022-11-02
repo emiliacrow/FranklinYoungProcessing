@@ -194,9 +194,9 @@ class GSAPrice(BasicProcessObject):
             else:
                 sin = ''
 
-            product_notes = ''
+            gsa_product_notes = ''
             if 'GSAProductNotes' in row:
-                product_notes = str(row['GSAProductNotes'])
+                gsa_product_notes = str(row['GSAProductNotes'])
 
             gsa_product_price_id = -1
             if 'GSAProductPriceId' in row:
@@ -210,13 +210,13 @@ class GSAPrice(BasicProcessObject):
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
                                               approved_price_date, approved_percent, mfc_percent,
-                                              sin, product_notes)
+                                              sin, gsa_product_notes)
         else:
             self.obIngester.gsa_product_price_update(gsa_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
                                               approved_price_date, approved_percent, mfc_percent,
-                                              sin, product_notes)
+                                              sin, gsa_product_notes)
 
 
         return success, return_df_line_product
