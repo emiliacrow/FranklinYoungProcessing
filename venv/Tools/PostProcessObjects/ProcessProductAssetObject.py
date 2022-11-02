@@ -361,7 +361,8 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
 def test_frame():
-    print('I do things')
+    print('I don\'t just do things')
+    print('You have to write some test code first.')
 
 
 # Press the green button in the gutter to run the script.
