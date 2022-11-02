@@ -471,6 +471,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
             # if it's on contract we want to make sure they show
             if (ecat_approved == 1 and ecat_contract == 1) or (htme_approved == 1 and htme_contract == 1) or (gsa_approved == 1 and gsa_contract == 1) or (va_approved == 1 and va_contract == 1):
+                self.obReporter.update_report('Alert','Toggles set based on contract status')
                 price_toggle = 1
                 df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
 
@@ -515,13 +516,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     is_visible = -1
 
-        # this needs to be better
-        try:
-            prod_desc_id = int(row['ProductDescriptionId'])
-        except KeyError:
-            print(row)
-            self.obReporter.update_report('Fail','No ProductDescriptionId')
-            return True, df_collect_product_base_data
 
         # at this point we've evaluated all the data
         if (price_toggle != -1 or data_toggle != -1 or is_discontinued != -1 or fy_is_discontinued != -1 or allow_purchases != -1 or is_visible != -1):
