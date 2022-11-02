@@ -114,7 +114,12 @@ class BigCommerceRTLObject(BasicProcessObject):
                 self.obReporter.update_report('Alert','BaseProductPriceId Missing')
                 return False, df_collect_product_base_data
 
-            # product description
+            try:
+                base_id = row['ProductDescriptionId']
+            except KeyError:
+                self.obReporter.update_report('Alert','ProductDescriptionId Missing')
+                return False, df_collect_product_base_data
+
 
             # check if the product has contract records
             ecat_id = -1
