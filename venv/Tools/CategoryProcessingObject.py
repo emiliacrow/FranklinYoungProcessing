@@ -27,13 +27,13 @@ class CategoryProcessor(BasicProcessObject):
 
     def header_viability(self):
         if self.proc_to_run == 'Category Picker':
-            self.req_fields = ['ManufacturerPartNumber', 'ShortDescription']
+            self.req_fields = ['ManufacturerPartNumber', 'VendorProductDescription']
 
         if self.proc_to_run == 'Category Training':
             self.req_fields = ['Word1','Word2','Category','IsGood']
 
         if self.proc_to_run == 'Category Assignment':
-            self.req_fields = ['FyProductNumber', 'ManufacturerPartNumber', 'ShortDescription']
+            self.req_fields = ['FyProductNumber', 'ManufacturerPartNumber', 'VendorProductDescription']
 
         # inital file viability check
         product_headers = set(self.lst_product_headers)
@@ -121,14 +121,11 @@ class CategoryProcessor(BasicProcessObject):
                 continue
 
             description = ''
-            description = str(row['ShortDescription'])
+            description = str(row['VendorProductDescription'])
 
             # combine
-            if 'LongDescription' in row:
-                description = description+' - '+row['LongDescription']
-
-            if 'ProductDescription' in row:
-                description = description+' - '+row['ProductDescription']
+            if 'VendorProductName' in row:
+                description = description+' - '+row['VendorProductName']
 
             # tokenize
 
@@ -139,7 +136,7 @@ class CategoryProcessor(BasicProcessObject):
             description = description.replace('  ',' ')
             description = description.lower()
 
-            description = self.obValidator.clean_country_name(description, leave_gap = True)
+            description = self.obValidator.clean_description(description)
 
             lst_description = description.split()
             lst_description = list(dict.fromkeys(lst_description))
@@ -457,14 +454,11 @@ class CategoryProcessor(BasicProcessObject):
         lst_out_categories = []
         df_collect_product_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            description = str(row['ShortDescription'])
+            description = str(row['VendorProductDescription'])
 
             # combine
-            if 'LongDescription' in row:
-                description = description+' '+row['LongDescription']
-
-            if 'ProductDescription' in row:
-                description = description+' '+row['ProductDescription']
+            if 'VendorProductName' in row:
+                description = description+' '+row['VendorProductName']
 
             # tokenize
             lst_description = description.split()
@@ -499,12 +493,6 @@ class CategoryProcessor(BasicProcessObject):
 
                 if (len(word_1) > 2) and (len(word_2) > 2):
                     return_id = self.obDal.set_word_category_associations(word_1, word_2, assigned_category, 1)
-
-
-
-
-
-
 
 
         return True, df_collect_product_data

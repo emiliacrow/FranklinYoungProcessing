@@ -15,7 +15,7 @@ class Extractor:
         self.pat_for_fractions = '(\d{0,3}[-/]?\d{0,3}[-/]?\d{1,4})'
         self.pat_for_drop_val = '(?<=[\D,^])(\s?0{1,3})(?!\.\d)'
 
-        self.pat_for_uom = '(CS|BX|CT|DZ|EA|MO|PK|RL|RM|TB|BG|GR|JR|KT|PR)'
+        self.pat_for_uom = '(CA|BX|CT|DZ|EA|MO|PK|RL|RM|TB|BG|GR|JR|KT|PR)'
         self.pat_for_uom_word = '(refill|piece|card|pack|case|each|bag|box|ctn|tip)'
         self.pat_for_uom_words = '(refills|pieces|eaches|boxes|packs|cases|cards|bags|tips|pcs)'
         self.pat_for_uom_all_words = '(refills|refill|pieces|eaches|piece|boxes|packs|cases|cards|card|pack|case|each|bags|tips|bag|box|ctn|tip|pcs)'
