@@ -186,9 +186,9 @@ class VAPrice(BasicProcessObject):
             else:
                 sin = ''
 
-            product_notes = ''
+            va_product_notes = ''
             if 'VAProductNotes' in row:
-                product_notes = str(row['VAProductNotes'])
+                va_product_notes = str(row['VAProductNotes'])
 
             va_product_price_id = -1
             if 'VAProductPriceId' in row:
@@ -202,14 +202,14 @@ class VAPrice(BasicProcessObject):
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
                                              approved_price_date, approved_percent,
-                                             mfc_percent, sin, product_notes)
+                                             mfc_percent, sin, va_product_notes)
         else:
             # this may need to collect a reason why it's being put off contract
             self.obIngester.va_product_price_update(va_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
                                              approved_price_date, approved_percent,
-                                             mfc_percent, sin, product_notes)
+                                             mfc_percent, sin, va_product_notes)
 
         return success, return_df_line_product
 
