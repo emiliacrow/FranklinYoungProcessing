@@ -8,33 +8,38 @@ class HeaderTranslator():
     def __init__(self):
         self.name = 'Translator Teddy'
         # I would prefer this get read from elsewhere so it doesn't live in code
-        # that's stupid
         self.dct_headers = {'VendorName':['VendorName','Vendor Name','primary_vendor_name'],
                             'VendorCode':['VendorCode', 'Vendor Code', 'primary_vendor_code'],
-                            'PrimaryVendorName':['PrimaryVendorCode', 'Primary Vendor Code', 'primary_vendor_code','PrimaryVendor','Primary Vendor'],
-                            'SecondaryVendorName':['SecondaryVendorCode', 'Secondary Vendor Code', 'secondary_vendor_code','SecondaryVendor','Secondary Vendor'],
+                            'VendorPartNumber':['VendorPartNumber','Vendor Part Number','primary_vendor_part_no','Thomas Item #','vendor_part_no'],
+
                             'ManufacturerName':['ManufacturerName','Manufacturer Name','Manu Name','manufacturer_name','Manufacturer Standard Name'],
                             'SupplierName':['SupplierName','Supplier Name','supplier name','supplier_name'],
 
-                            'VendorPartNumber':['VendorPartNumber','Vendor Part Number','primary_vendor_part_no','Thomas Item #','vendor_part_no'],
-                            'CountryOfOrigin':['CountryOfOrigin','CountryCode','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
-
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber','manufacturer_part_no','Supplier Part # '],
                             'ContractedManufacturerPartNumber':['ContractedManufacturerPartNumber','Contracted Manufacturer Part Number','ContractedManufacturerNumber','Contracted Manufacturer Number','ContractedPartNumber','Contracted Part Number'],
-                            'FyProductNumber':['FyProductNumber','FyProduct#', 'FYProductNumber', 'Fy Product Number', 'FY Product Number'],
-                            'FyCatalogNumber':['FyCatalogNumber','FyCatalog#', 'FYCatalogNumber', 'Fy Catalog Number', 'FY Catalog Number'],
-                            'FyPartNumber':['FYPartNumber', 'FyPartNumber', 'fy_part_number', 'fy_part_no', 'Product Code/SKU'],
-                            'RecommendedStorage':['shelf_life_months','RecommendedStorage','StorageInstruction'],
 
-                            'VendorProductName':['VendorProductName','Vendor Product Name','vendor_product_name','primary_vendor_product_name','ProductName', 'Product Name', 'product_name','prodname'],
-                            'VendorProductDescription':['VendorProductDescription','Vendor Product Description','vendor_product_description','VendorProductDesc','Vendor Product Desc','vendor_product_desc','ProductDescription', 'Product Description', 'product_description',
-                                                  'ProductDesc', 'Product Desc', 'product_desc','LongDescription','Long Description','long_description','long_desc','LongDesc','Long Desc'],
-                            'ShortDescription':['ShortDescription','Short Description','short_description','short_desc','ShortDesc','Short Desc'],
-                            'ECommerceLongDescription':['ECommerceLongDescription','ECommerce Long Description','ecommerce_long_description'],
+                            'CountryOfOrigin':['CountryOfOrigin','CountryCode','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
+
+                            'VendorProductName':['VendorProductName', 'Vendor Product Name', 'vendor_product_name',
+                                                 'primary_vendor_product_name', 'ProductName', 'Product Name',
+                                                 'product_name', 'prodname'],
+                            'VendorProductDescription':['VendorProductDescription', 'Vendor Product Description',
+                                                        'vendor_product_description', 'VendorProductDesc',
+                                                        'Vendor Product Desc', 'vendor_product_desc',
+                                                        'ProductDescription', 'Product Description',
+                                                        'product_description',
+                                                        'ProductDesc', 'Product Desc', 'product_desc',
+                                                        'LongDescription', 'Long Description', 'long_description',
+                                                        'long_desc', 'LongDesc', 'Long Desc'],
+                            'ShortDescription':['ShortDescription', 'Short Description', 'short_description',
+                                                'short_desc', 'ShortDesc', 'Short Desc'],
+                            'ECommerceLongDescription':['ECommerceLongDescription', 'ECommerce Long Description',
+                                                        'ecommerce_long_description'],
 
                             'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue','QtyUOI','Qty UOI','Qty','UnitOfIssueByQuantity'],
                             'UnitOfIssue':['UnitOfIssue', 'Unit Of Issue', 'UnitOfIssueSymbol', 'Unit Of Issue Symbol', 'UOI', 'uoi','unit_of_issue','unit of issue'],
                             'UnitOfMeasure':['UnitOfMeasure','Unit Of Measure','UnitOfMeasureSymbol','Unit Of Measure Symbol','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
+
                             'IsHazardous':['IsHazardous','Is Hazardous','Hazardous','is_hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
                             'LeadTime':['LeadTime','LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
@@ -44,43 +49,46 @@ class HeaderTranslator():
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent','FyDiscByVendor'],
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
                             'Estimated Freight':['Estimated Freight','EstimatedFreight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
+                            'ProductNotes':['ProductNotes', 'Product Notes','VendorProductNotes','Vendor Product Notes'],
+
+                            'WebsiteOnly':['WebsiteOnly', 'Website Only', 'Web Only'],
+                            'GSAEligible':['GSAEligible', 'GSA Eligible', 'GSA Is Eligible', 'GSA IsEligible'],
+                            'VAEligible':['VAEligible', 'VA Eligible', 'VA Is Eligible', 'VA IsEligible'],
+                            'ECATEligible':['ECATEligible', 'ECAT Eligible', 'ECAT Is Eligible', 'ECAT IsEligible'],
+                            'HTMEEligible':['HTMEEligible', 'HTME Eligible', 'HTME Is Eligible', 'HTME IsEligible'],
+                            'VendorIsDiscontinued':['IsDiscontinued', 'VendorIsDiscontinued', 'Discontinued', 'is discontinued','Is Discontinued', 'is_discontinued', 'vendor_is_discontinued', 'Vendor_Is_Discontinued'],
+
+
+                            ## FyDeclaredValues
+                            'FyCatalogNumber':['FyCatalogNumber', 'FyCatalog#', 'FYCatalogNumber', 'Fy Catalog Number',
+                                               'FY Catalog Number'],
+                            'FyProductNumber':['FyProductNumber', 'FyProduct#', 'FYProductNumber', 'Fy Product Number',
+                                               'FY Product Number'],
+                            'PrimaryVendorName':['PrimaryVendorCode', 'Primary Vendor Code', 'primary_vendor_code','PrimaryVendor','Primary Vendor'],
+                            'SecondaryVendorName':['SecondaryVendorCode', 'Secondary Vendor Code', 'secondary_vendor_code','SecondaryVendor','Secondary Vendor'],
+
+                            'FyPartNumber':['FYPartNumber', 'FyPartNumber', 'fy_part_number', 'fy_part_no', 'Product Code/SKU'],
+                            'FyCategory':['FyCategory','CategoryRecommendation', 'Category', 'category'],
+                            'FyProductName':['FyProductName', 'Fy Product Name','Fy ProductName'],
+                            'FyProductDescription':['FyProductDescription', 'Fy Product Description', 'Fy ProductDescription','FyProductDesc', 'Fy Product Desc', 'Fy ProductDesc'],
+                            'FyCountryOfOrigin':['FY_CountryOfOrigin', 'FyCountryOfOrigin', 'Fy Country of Origin', 'Fy CountryOfOrigin','FyCOO', 'Fy COO', 'Fy_COO','FyCountryCode','Fy Country Code'],
+
+                            'FyUnitOfIssue':['FY_UOI', 'FyUnitOfIssue', 'Fy Unit Of Issue', 'Fy UnitOfIssue','FyUOI', 'Fy UOI', 'Fy_UOI'],
+                            'FyUnitOfIssueQuantity':['FY_UOIQTY', 'FyUOIQTY', 'FyUnitOfIssueQuantity', 'FyUnitOfIssueByQuantity', 'Fy Unit Of Issue Quantity', 'Fy Unit Of Issue By Quantity', 'Fy UOIQuantity','Fy_UOIQuantity','FyUOIQuantity','Fy UnitOfIssueQuantity','FyQTY', 'Fy QTY', 'Fy_QTY'],
+                            'FyUnitOfMeasure':['FY_UOM', 'FyUnitOfMeasure', 'Fy Unit Of Measure', 'Fy UnitOfMeasure', 'FyUOM',
+                                             'Fy UOM', 'Fy_UOM'],
+
+                            'RecommendedStorage':['shelf_life_months','RecommendedStorage','StorageInstruction'],
+
                             'Landed Cost':['FyLandedCost','LandedCost','Fy Landed Cost','Landed Cost'],
                             'LandedCostMarkupPercent_FYSell':['FyLandedCostMarkupPercent_FYSell', 'FyLandedCostMarkupPercent_FySell', 'LandedCostMarkupPercent_FYSell', 'LandedCostMarkupPercent_FySell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
                             'Sell Price':['FySellPrice','FyPrice','BC Sell Price','Ecom Sell Price'],
                             'LandedCostMarkupPercent_FYList':['FyLandedCostMarkupPercent_FYList','FyLandedCostMarkupPercent_FyList','LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FyList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
-                            'OnContract':['OnContract', 'On Contract'],
-                            'FyProductNumberOverride':['FyProductNumberOverride', 'Fy Product Number Override','IsProductNumberOverride', 'ProductNumberOverride', 'Product Number Override'],
-                            'ProductNotes':['ProductNotes', 'Product Notes','VendorProductNotes','Vendor Product Notes'],
                             'FyProductNotes':['FyProductNotes', 'Fy Product Notes', 'InternalProductNotes', 'Internal Product Notes', 'FYProductNotes', 'FY Product Notes'],
-                            'GSAProductNotes':['GSAProductNotes', 'GSA Product Notes', 'GSA ProductNotes', 'GSA Product Notes'],
-                            'VAProductNotes':['VAProductNotes', 'VA Product Notes', 'VA ProductNotes',
-                                               'VA Product Notes'],
-                            'ECATProductNotes':['ECATProductNotes', 'ECAT Product Notes', 'ECAT ProductNotes',
-                                               'ECAT Product Notes'],
-                            'HTMEProductNotes':['HTMEProductNotes', 'HTME Product Notes', 'HTME ProductNotes',
-                                               'HTME Product Notes'],
 
-                            'FyProductName':['FyProductName', 'Fy Product Name','Fy ProductName'],
-                            'FyProductDescription':['FyProductDescription', 'Fy Product Description', 'Fy ProductDescription','FyProductDesc', 'Fy Product Desc', 'Fy ProductDesc'],
-                            'FyCountryOfOrigin':['FY_CountryOfOrigin', 'FyCountryOfOrigin', 'Fy Country of Origin', 'Fy CountryOfOrigin','FyCOO', 'Fy COO', 'Fy_COO','FyCountryCode','Fy Country Code'],
-                            'FyUnitOfIssue':['FY_UOI', 'FyUnitOfIssue', 'Fy Unit Of Issue', 'Fy UnitOfIssue','FyUOI', 'Fy UOI', 'Fy_UOI'],
-                            'FyUnitOfMeasure':['FY_UOM', 'FyUnitOfMeasure', 'Fy Unit Of Measure', 'Fy UnitOfMeasure', 'FyUOM',
-                                             'Fy UOM', 'Fy_UOM'],
-                            'FyUnitOfIssueQuantity':['FY_UOIQTY', 'FyUOIQTY', 'FyUnitOfIssueQuantity', 'FyUnitOfIssueByQuantity', 'Fy Unit Of Issue Quantity', 'Fy Unit Of Issue By Quantity', 'Fy UOIQuantity','Fy_UOIQuantity','FyUOIQuantity','Fy UnitOfIssueQuantity','FyQTY', 'Fy QTY', 'Fy_QTY'],
                             'FyLeadTime':['Fy_lead_time', 'FyLeadTime', 'Fy Lead Time', 'Fy LeadTime', 'fy lead time', 'fy lead_time', 'fy_lead_time','Fy_lead_times', 'FyLeadTimes', 'Fy Lead Times', 'Fy LeadTimes', 'fy lead times', 'fy lead_times', 'fy_lead_times'],
-
-                            'WebsiteOnly':['WebsiteOnly', 'Website Only', 'Web Only'],
-                            'ECATEligible':['ECATEligible', 'ECAT Eligible', 'ECAT Is Eligible', 'ECAT IsEligible'],
-                            'HTMEEligible':['HTMEEligible', 'HTME Eligible', 'HTME Is Eligible', 'HTME IsEligible'],
-                            'GSAEligible':['GSAEligible', 'GSA Eligible', 'GSA Is Eligible', 'GSA IsEligible'],
-                            'VAEligible':['VAEligible', 'VA Eligible', 'VA Is Eligible', 'VA IsEligible'],
-
-                            'ECATOnContract':['ECATOnContract', 'ECAT On Contract', 'ECAT On Contract'],
-                            'HTMEOnContract':['HTMEOnContract', 'HTME On Contract', 'HTME On Contract'],
-                            'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],
-                            'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
 
                             'FyDenyGSAContract':['FyDenyGSAContract','DenyGSAContract','Deny GSA Contract','Deny GSA','Fy Deny GSA Contract','Fy Deny GSA'],
                             'FyDenyGSAContractDate':['FyDenyGSAContractDate','DenyGSAContractDate','Deny GSA Contract Date','Deny GSA Date','Fy Deny GSA Contract Date','Fy Deny GSA Date'],
@@ -91,11 +99,42 @@ class HeaderTranslator():
                             'FyDenyHTMEContract':['FyDenyHTMEContract','DenyHTMEContract','Deny HTME Contract','Deny HTME','Fy Deny HTME Contract','Fy Deny HTME'],
                             'FyDenyHTMEContractDate':['FyDenyHTMEContractDate','DenyHTMEContractDate','Deny HTME Contract Date','Deny HTME Date','Fy Deny HTME Contract Date','Fy Deny HTME Date'],
 
-                            'VendorIsDiscontinued':['IsDiscontinued', 'VendorIsDiscontinued', 'Discontinued', 'is discontinued','Is Discontinued', 'is_discontinued', 'vendor_is_discontinued', 'Vendor_Is_Discontinued'],
+                            'FyIsDiscontinued':['FyIsDiscontinued', 'fy is discontinued', 'Fy Is Discontinued',
+                                                'fy_is_discontinued', 'Fy_Is_Discontinued'],
+                            'FyIsVisible':['IsVisible', 'Is Visible', 'is_visible', 'is visible', 'FyIsVisible',
+                                           'Fy Is Visible', 'fy_is_visible', 'fy is visible'],
+                            'FyAllowPurchases':['AllowPurchases', 'Allow Purchases', 'Allow Purchases?',
+                                                'FyAllowPurchases', 'Fy Allow Purchases', 'Fy Allow Purchases?'],
 
-                            'FyIsDiscontinued':['FyIsDiscontinued','fy is discontinued','Fy Is Discontinued','fy_is_discontinued','Fy_Is_Discontinued'],
-                            'FyIsVisible':['IsVisible','Is Visible','is_visible','is visible','FyIsVisible','Fy Is Visible','fy_is_visible','fy is visible'],
-                            'FyAllowPurchases':['AllowPurchases','Allow Purchases','Allow Purchases?','FyAllowPurchases','Fy Allow Purchases','Fy Allow Purchases?'],
+                            'DateCatalogReceived':['DateCatalogRecieved', 'DateCatelogReceived', 'DateCatalogReceived',
+                                                   'Date Catalog Recieved', 'date_catalog_received','DateCatalogRcvd'],
+                            'ProductTaxClass':['ProductTaxClass','Product Tax Class','Tax Class'],
+
+                            'ImageUrl':['ImageUrl', 'ProductImageUrl', 'Image Url', 'Product Image Url',
+                                        'product_photo_url'],
+                            'ImageName':['ImageName','ProductImageName','Image Name','Product Image Name','product_photo_Name'],
+                            'ProductUrl':['URL','url','Product URL','Product Url','ProductUrl','product_url'],
+
+                            'BCPriceUpdateToggle':['BCPriceUpdateToggle','BCPriceToggle','BC Price Update Toggle','BC Price Toggle'],
+                            'BCDataUpdateToggle':['BCDataUpdateToggle','BCDataToggle','BC Data Update Toggle','BC Data Toggle'],
+
+
+                            # contract values
+                            'GSAProductNotes':['GSAProductNotes', 'GSA Product Notes', 'GSA ProductNotes', 'GSA Product Notes'],
+                            'VAProductNotes':['VAProductNotes', 'VA Product Notes', 'VA ProductNotes',
+                                               'VA Product Notes'],
+                            'ECATProductNotes':['ECATProductNotes', 'ECAT Product Notes', 'ECAT ProductNotes',
+                                               'ECAT Product Notes'],
+                            'HTMEProductNotes':['HTMEProductNotes', 'HTME Product Notes', 'HTME ProductNotes',
+                                               'HTME Product Notes'],
+
+                            'ECATOnContract':['ECATOnContract', 'ECAT On Contract', 'ECAT On Contract'],
+                            'HTMEOnContract':['HTMEOnContract', 'HTME On Contract', 'HTME On Contract'],
+                            'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],
+                            'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
+
+
+
 
 # GSA
                             'GSAApprovedListPrice':['GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
@@ -142,19 +181,11 @@ class HeaderTranslator():
                                                   'approved MFC per','VA_MFC_Discount','GSA_MFC_Discount'],
                             'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
 
-                            'DateCatalogReceived':['DateCatalogRecieved', 'DateCatelogReceived', 'DateCatalogReceived',
-                                                   'Date Catalog Recieved', 'date_catalog_received','DateCatalogRcvd'],
 
-                            'ProductTaxClass':['ProductTaxClass','Product Tax Class','Tax Class'],
-                            'Category':['CategoryRecommendation','Category','category'],
+                            'FyProductNumberOverride':['FyProductNumberOverride', 'Fy Product Number Override','IsProductNumberOverride', 'ProductNumberOverride', 'Product Number Override']
 
-                            'ImageUrl':['ImageUrl', 'ProductImageUrl', 'Image Url', 'Product Image Url',
-                                        'product_photo_url'],
-                            'ImageName':['ImageName','ProductImageName','Image Name','Product Image Name','product_photo_Name'],
-                            'ProductUrl':['URL','url','Product URL','Product Url','ProductUrl','product_url'],
-                            'BCPriceUpdateToggle':['BCPriceUpdateToggle','BCPriceToggle','BC Price Update Toggle','BC Price Toggle'],
-                            'BCDataUpdateToggle':['BCDataUpdateToggle','BCDataToggle','BC Data Update Toggle','BC Data Toggle']
                             }
+        # that's stupid
         self.build_trans_dct()
 
     def build_trans_dct(self):
