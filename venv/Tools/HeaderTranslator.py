@@ -51,6 +51,8 @@ class HeaderTranslator():
                             'Estimated Freight':['Estimated Freight','EstimatedFreight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
                             'ProductNotes':['ProductNotes', 'Product Notes','VendorProductNotes','Vendor Product Notes'],
 
+                            'ProductSortOrder':['ProductSortOrder','Product Sort Order','FyProductSortOrder','Fy Product Sort Order'],
+
                             'WebsiteOnly':['WebsiteOnly', 'Website Only', 'Web Only'],
                             'GSAEligible':['GSAEligible', 'GSA Eligible', 'GSA Is Eligible', 'GSA IsEligible'],
                             'VAEligible':['VAEligible', 'VA Eligible', 'VA Is Eligible', 'VA IsEligible'],
