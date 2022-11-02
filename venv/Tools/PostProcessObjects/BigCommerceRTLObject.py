@@ -223,9 +223,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_is_discontinued == 0 and is_discontinued == 1 and db_ecat_contract == 1 and db_ecat_approved == 1 and ecat_approved != 1:
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_ecat_contract == 1 and db_ecat_approved == 1 and ecat_approved != 1:
                     ecat_pending_del_flag = 1
-                    is_discontinued = 0
+                    fy_is_discontinued = 0
                     ecat_approved = 0
 
                     if 'ending contract deletion,' not in product_notes:
@@ -291,9 +291,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_is_discontinued == 0 and is_discontinued == 1 and db_htme_contract == 1 and db_htme_approved == 1 and htme_approved != 1:
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_htme_contract == 1 and db_htme_approved == 1 and htme_approved != 1:
                     htme_pending_del_flag = 1
-                    is_discontinued = 0
+                    fy_is_discontinued = 0
                     htme_approved = 0
 
                     if 'ending contract deletion,' not in product_notes:
@@ -359,9 +359,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_is_discontinued == 0 and is_discontinued == 1 and db_gsa_contract == 1 and db_gsa_approved == 1 and gsa_approved != 1:
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_gsa_contract == 1 and db_gsa_approved == 1 and gsa_approved != 1:
                     gsa_pending_del_flag = 1
-                    is_discontinued = 0
+                    fy_is_discontinued = 0
                     gsa_approved = 0
 
                     if 'ending contract deletion,' not in product_notes:
@@ -427,9 +427,9 @@ class BigCommerceRTLObject(BasicProcessObject):
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_is_discontinued == 0 and is_discontinued == 1 and db_va_contract == 1 and db_va_approved == 1 and va_approved != 1:
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_va_contract == 1 and db_va_approved == 1 and va_approved != 1:
                     va_pending_del_flag = 1
-                    is_discontinued = 0
+                    fy_is_discontinued = 0
                     va_approved = 0
 
                     if 'ending contract deletion,' not in product_notes:
@@ -472,8 +472,8 @@ class BigCommerceRTLObject(BasicProcessObject):
                 data_toggle = 1
                 df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
 
-                is_discontinued = 0
-                df_collect_product_base_data['VendorIsDiscontinued'] = [is_discontinued]
+                fy_is_discontinued = 0
+                df_collect_product_base_data['FyIsDiscontinued'] = [fy_is_discontinued]
 
                 allow_purchases = 1
                 df_collect_product_base_data['FyAllowPurchases'] = [allow_purchases]
