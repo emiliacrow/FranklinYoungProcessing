@@ -145,9 +145,9 @@ class HTMEPrice(BasicProcessObject):
 
             max_markup = row['HTMEMaxMarkup']
 
-            product_notes = ''
+            htme_product_notes = ''
             if 'HTMEProductNotes' in row:
-                product_notes = str(row['HTMEProductNotes'])
+                htme_product_notes = str(row['HTMEProductNotes'])
 
             htme_product_price_id = -1
             if 'HTMEProductPriceId' in row:
@@ -157,14 +157,14 @@ class HTMEPrice(BasicProcessObject):
             self.obIngester.htme_product_price_insert(base_product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date,max_markup,product_notes)
+                                               approved_price_date,max_markup,htme_product_notes)
         else:
             product_price_id = int(row['ProductPriceId'])
             self.obIngester.htme_product_price_cap()
             self.obIngester.htme_product_price_update(base_product_price_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date,max_markup,product_notes)
+                                               approved_price_date,max_markup,htme_product_notes)
 
         return success, return_df_line_product
 
