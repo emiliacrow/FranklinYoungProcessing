@@ -32,11 +32,11 @@ class FileProcessor(BasicProcessObject):
     def header_viability(self):
         if self.proc_to_run == 'Extract Attributes':
             self.req_fields = []
-            self.sup_fields = ['ProductName','FyProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription','FyProductDescription']
+            self.sup_fields = ['FyProductName','VendorProductName','FyProductDescription','VendorProductDescription']
 
         if self.proc_to_run == 'Extract Configuration':
             self.req_fields = []
-            self.sup_fields = ['ProductName','LongDesc', 'ShortDesc','ProductDesc']
+            self.sup_fields = ['FyProductName','VendorProductName','FyProductDescription','VendorProductDescription']
 
         if self.proc_to_run == 'Assign FyPartNumbers':
             self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber','UnitOfIssue']
@@ -44,12 +44,7 @@ class FileProcessor(BasicProcessObject):
 
         if self.proc_to_run == 'Unicode Correction':
             self.req_fields = []
-            self.sup_fields = ['ProductName','FyProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription','FyProductDescription']
-
-        if self.proc_to_run == 'Test Data Load File':
-            self.req_fields = ['FyCatalogNumber','FyProductNumber', 'ManufacturerPartNumber','ManufacturerName',
-                               'VendorPartNumber','VendorName']
-            self.sup_fields = []
+            self.sup_fields = ['FyProductName','VendorProductName','FyProductDescription','VendorProductDescription']
 
         if self.proc_to_run == 'Load Manufacturer Default Image':
             self.req_fields = ['ManufacturerName', 'ImagePath']
@@ -103,9 +98,6 @@ class FileProcessor(BasicProcessObject):
         elif self.proc_to_run == 'Extract Configuration':
             self.success, df_line_product = self.extract_configuration(df_line_product)
 
-        elif self.proc_to_run == 'Test Data Load File':
-            self.success, df_line_product = self.test_load_file(df_line_product)
-
         elif self.proc_to_run == 'Load Manufacturer Default Image':
             self.success, df_line_product = self.manufacturer_default_images(df_line_product)
 
@@ -118,7 +110,7 @@ class FileProcessor(BasicProcessObject):
 
     def correct_bad_unicode(self, df_line_product):
         self.success = True
-        clean_up_columns = ['ProductName','FyProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription','FyProductDescription']
+        clean_up_columns = ['FyProductName','VendorProductName','VendorProductDescription','FyProductDescription']
         df_collect_line = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             for each_column_to_clean in clean_up_columns:
@@ -227,7 +219,7 @@ class FileProcessor(BasicProcessObject):
     def extract_configuration(self, df_line_product):
         self.success = True
         df_collect_attribute_data = df_line_product.copy()
-        extract_set = ['ProductName','FyProductName','LongDescription','ShortDescription','ECommerceLongDescription','ProductDescription','FyProductDescription']
+        extract_set = ['FyProductName','VendorProductName','FyProductDescription','VendorProductDescription']
 
         for each_col in extract_set:
             if each_col in df_line_product.columns:
@@ -404,25 +396,26 @@ class FileProcessor(BasicProcessObject):
 
 
     def extract_attributes(self, df_line_product):
-        self.success = True
+        success = True
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            if 'ProductName' in row:
-                self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['ProductName'])
-                long_desc = self.obExtractor.reinject_phrase(long_desc)
-                df_collect_attribute_data['ProductName'] = [long_desc]
-            if 'LongDescription' in row:
-                self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['LongDescription'])
-                long_desc = self.obExtractor.reinject_phrase(long_desc)
-                df_collect_attribute_data['LongDescription'] = [long_desc]
-            if 'ShortDescription' in row:
-                self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['ShortDescription'])
-                long_desc = self.obExtractor.reinject_phrase(long_desc)
-                df_collect_attribute_data['ShortDescription'] = [long_desc]
-            if 'ProductDescription' in row:
-                self.success, df_collect_attribute_data, long_desc = self.process_long_desc(df_collect_attribute_data, row, row['ProductDescription'])
-                long_desc = self.obExtractor.reinject_phrase(long_desc)
-                df_collect_attribute_data['ProductDescription'] = [long_desc]
+            if 'FyProductName' in row:
+                success, df_collect_attribute_data, fy_product_name = self.process_long_desc(df_collect_attribute_data, row, row['FyProductName'])
+                fy_product_name = self.obExtractor.reinject_phrase(fy_product_name)
+                df_collect_attribute_data['FyProductName'] = [fy_product_name]
+
+            if 'VendorProductName' in row:
+                success, df_collect_attribute_data, vendor_product_name = self.process_long_desc(df_collect_attribute_data, row, row['VendorProductName'])
+                vendor_product_name = self.obExtractor.reinject_phrase(long_desc)
+                df_collect_attribute_data['VendorProductName'] = [vendor_product_name]
+            if 'FyProductDescription' in row:
+                success, df_collect_attribute_data, fy_product_description = self.process_long_desc(df_collect_attribute_data, row, row['FyProductDescription'])
+                fy_product_description = self.obExtractor.reinject_phrase(fy_product_description)
+                df_collect_attribute_data['FyProductDescription'] = [fy_product_description]
+            if 'VendorProductDescription' in row:
+                success, df_collect_attribute_data, vendor_product_description = self.process_long_desc(df_collect_attribute_data, row, row['VendorProductDescription'])
+                vendor_product_description = self.obExtractor.reinject_phrase(vendor_product_description)
+                df_collect_attribute_data['VendorProductDescription'] = [vendor_product_description]
 
 
         return True, df_collect_attribute_data
@@ -610,51 +603,6 @@ class FileProcessor(BasicProcessObject):
                 df_collect_product_base_data['UnitOfIssue'] = attribute
 
         return True, df_collect_product_base_data, container_str
-
-
-    def test_load_file(self, df_line_product):
-        df_collect_attribute_data = df_line_product.copy()
-        for colName, row in df_line_product.iterrows():
-            if 'ProductName' in row:
-                product_name = str(row['ProductName'])
-                if len(product_name) > 40:
-
-                    # maybe take the configuration out here?
-                    success, df_collect_attribute_data, product_name = self.process_configuration(df_collect_attribute_data, row, product_name)
-                    product_name = self.obExtractor.wipe_injection(product_name)
-
-                    product_name = product_name[:40]
-                    df_collect_attribute_data['ProductNumber_40'] = product_name
-                    self.obReporter.update_report('Alert','Product Name was trimmed.')
-
-            elif 'ShortDescription' in row:
-                self.obReporter.update_report('Alert','Product Name missing')
-                short_desc = str(row['ShortDescription'])
-                if len(short_desc) > 40:
-                    success, df_collect_attribute_data, short_desc = self.process_configuration(df_collect_attribute_data, row, short_desc)
-                    short_desc = self.obExtractor.wipe_injection(short_desc)
-
-                    product_name = short_desc[:40]
-                    df_collect_attribute_data['ProductNumber_40'] = product_name
-                    self.obReporter.update_report('Alert','Short Description was trimmed for ProductName')
-
-            elif 'LongDescription' in row:
-                self.obReporter.update_report('Alert','Product Name missing')
-                long_desc = str(row['LongDescription'])
-                if len(long_desc) > 40:
-                    success, df_collect_attribute_data, long_desc = self.process_configuration(df_collect_attribute_data, row, long_desc)
-                    long_desc = self.obExtractor.wipe_injection(long_desc)
-
-                    product_name = long_desc[:40]
-                    df_collect_attribute_data['ProductNumber_40'] = product_name
-                    self.obReporter.update_report('Alert','Long Description was trimmed for ProductName')
-
-
-
-        return True, df_collect_attribute_data
-
-
-
 
 
 
