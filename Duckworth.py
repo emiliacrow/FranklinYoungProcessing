@@ -283,12 +283,12 @@ class DuckworthWindow(QWidget):
         # all the stuffing for file processing actions
         self.all_file_action_options = ['Assign FyPartNumbers', 'File Appender Tool','File Merger Tool', 'Category Training',
                                         'Category Assignment', 'Category Picker', 'Extract Attributes', 'Unicode Correction',
-                                        'Extract Configuration', 'Test Data Load File', 'File Splitter Tool',
+                                        'Extract Configuration', 'File Splitter Tool',
                                         'Load Image Files', 'Product Action Review']
 
         self.file_action_options = ['Assign FyPartNumbers', 'File Appender Tool','File Merger Tool', 'Category Training',
                                     'Category Assignment', 'Extract Attributes','Load Manufacturer Default Image',
-                                    'Unicode Correction', 'Extract Configuration', 'Test Data Load File', 'File Splitter Tool',
+                                    'Unicode Correction', 'Extract Configuration', 'File Splitter Tool',
                                     'Product Action Review']
 
         self.file_action_options.sort()
