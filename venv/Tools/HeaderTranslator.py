@@ -112,7 +112,7 @@ class HeaderTranslator():
 
                             'ImageUrl':['ImageUrl', 'ProductImageUrl', 'Image Url', 'Product Image Url',
                                         'product_photo_url'],
-                            'ImageName':['ImageName','ProductImageName','Image Name','Product Image Name','product_photo_Name'],
+                            'ImageCaption':['ImageCaption','Image Caption','ImageDescription','Image Description','ImageName','ProductImageName','Image Name','Product Image Name','product_photo_Name'],
                             'ProductUrl':['URL','url','Product URL','Product Url','ProductUrl','product_url'],
 
                             'BCPriceUpdateToggle':['BCPriceUpdateToggle','BCPriceToggle','BC Price Update Toggle','BC Price Toggle'],
