@@ -940,11 +940,21 @@ class FyProductUpdate(BasicProcessObject):
 
         date_catalog_received = -1
         if 'DateCatalogReceived' in row:
+            date_catalog_received = row['DateCatalogReceived']
             try:
-                date_catalog_received = int(row['DateCatalogReceived'])
-                date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
+                date_catalog_received = int(date_catalog_received)
+                date_catalog_received = xlrd.xldate_as_datetime(date_catalog_received, 0)
             except ValueError:
                 date_catalog_received = str(row['DateCatalogReceived'])
+
+            if isinstance(date_catalog_received, datetime.datetime) == False:
+                try:
+                    date_catalog_received = datetime.datetime.strptime(date_catalog_received, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    date_catalog_received = str(row['DateCatalogReceived'])
+                    self.obReporter.update_report('Alert','Check DateCatalogReceived')
+                except TypeError:
+                    self.obReporter.update_report('Alert','Check DateCatalogReceived')
 
         catalog_provided_by = ''
         if 'CatalogProvidedBy' in row:
