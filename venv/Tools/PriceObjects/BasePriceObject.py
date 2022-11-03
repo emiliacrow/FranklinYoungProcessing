@@ -453,18 +453,30 @@ class BasePrice(BasicProcessObject):
             else:
                 ecommerce_discount = row['ECommerceDiscount']
 
+            # we check if there's a value
             if 'DateCatalogReceived' in row:
-                try:
-                    date_catalog_received = int(row['DateCatalogReceived'])
-                    date_catalog_received = (xlrd.xldate_as_datetime(date_catalog_received, 0)).date()
-                except ValueError:
-                    date_catalog_received = str(row['DateCatalogReceived'])
-
+                date_catalog_received = row['db_DateCatalogReceived']
             elif 'db_DateCatalogReceived' in row:
                 date_catalog_received = str(row['db_DateCatalogReceived'])
             else:
                 self.obReporter.update_report('Fail','Catalog received date missing')
                 return False, df_line_product
+
+            # we format the value
+            try:
+                date_catalog_received = int(date_catalog_received)
+                date_catalog_received = xlrd.xldate_as_datetime(date_catalog_received, 0)
+            except ValueError:
+                date_catalog_received = str(row['DateCatalogReceived'])
+            if isinstance(date_catalog_received, datetime.datetime) == False:
+                try:
+                    date_catalog_received = datetime.datetime.strptime(date_catalog_received, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    date_catalog_received = str(row['DateCatalogReceived'])
+                    self.obReporter.update_report('Alert','Check DateCatalogReceived')
+                except TypeError:
+                    self.obReporter.update_report('Alert','Check DateCatalogReceived')
+
 
             if 'CatalogProvidedBy' in row:
                 catalog_provided_by = str(row['CatalogProvidedBy'])
