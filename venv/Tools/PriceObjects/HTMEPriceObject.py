@@ -127,11 +127,23 @@ class HTMEPrice(BasicProcessObject):
             contract_mod_number = row['HTMEContractModificationNumber']
             is_pricing_approved = row['HTMEPricingApproved']
 
-            try:
-                approved_price_date = int(row['HTMEApprovedPriceDate'])
-                approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
-            except ValueError:
-                approved_price_date = str(row['HTMEApprovedPriceDate'])
+            htme_approved_price_date = -1
+            if 'HTMEApprovedPriceDate' in row:
+                htme_approved_price_date = row['HTMEApprovedPriceDate']
+                try:
+                    htme_approved_price_date = int(htme_approved_price_date)
+                    htme_approved_price_date = xlrd.xldate_as_datetime(htme_approved_price_date, 0)
+                except ValueError:
+                    htme_approved_price_date = str(row['HTMEApprovedPriceDate'])
+
+                if isinstance(htme_approved_price_date, datetime.datetime) == False:
+                    try:
+                        htme_approved_price_date = datetime.datetime.strptime(htme_approved_price_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        htme_approved_price_date = str(row['HTMEApprovedPriceDate'])
+                        self.obReporter.update_report('Alert','Check HTMEApprovedPriceDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check HTMEApprovedPriceDate')
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 

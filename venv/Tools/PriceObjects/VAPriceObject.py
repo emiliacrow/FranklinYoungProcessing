@@ -144,14 +144,23 @@ class VAPrice(BasicProcessObject):
             else:
                 is_pricing_approved = -1
 
+            va_approved_price_date = -1
             if 'VAApprovedPriceDate' in row:
+                va_approved_price_date = row['VAApprovedPriceDate']
                 try:
-                    approved_price_date = int(row['VAApprovedPriceDate'])
-                    approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
+                    va_approved_price_date = int(va_approved_price_date)
+                    va_approved_price_date = xlrd.xldate_as_datetime(va_approved_price_date, 0)
                 except ValueError:
-                    approved_price_date = str(row['VAApprovedPriceDate'])
-            else:
-                approved_price_date = '0000-00-00 00:00:00'
+                    va_approved_price_date = str(row['VAApprovedPriceDate'])
+
+                if isinstance(va_approved_price_date, datetime.datetime) == False:
+                    try:
+                        va_approved_price_date = datetime.datetime.strptime(va_approved_price_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        va_approved_price_date = str(row['VAApprovedPriceDate'])
+                        self.obReporter.update_report('Alert','Check VAApprovedPriceDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check VAApprovedPriceDate')
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
@@ -201,14 +210,14 @@ class VAPrice(BasicProcessObject):
             self.obIngester.va_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
-                                             approved_price_date, approved_percent,
+                                             va_approved_price_date, approved_percent,
                                              mfc_percent, sin, va_product_notes)
         else:
             # this may need to collect a reason why it's being put off contract
             self.obIngester.va_product_price_update(va_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
                                              approved_sell_price, approved_list_price, contract_manu_number,
                                              contract_number, contract_mod_number, is_pricing_approved,
-                                             approved_price_date, approved_percent,
+                                             va_approved_price_date, approved_percent,
                                              mfc_percent, sin, va_product_notes)
 
         return success, return_df_line_product

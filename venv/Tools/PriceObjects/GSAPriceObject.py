@@ -152,14 +152,23 @@ class GSAPrice(BasicProcessObject):
             else:
                 is_pricing_approved = -1
 
+            gsa_approved_price_date = -1
             if 'GSAApprovedPriceDate' in row:
+                gsa_approved_price_date = row['GSAApprovedPriceDate']
                 try:
-                    approved_price_date = int(row['GSAApprovedPriceDate'])
-                    approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
+                    gsa_approved_price_date = int(gsa_approved_price_date)
+                    gsa_approved_price_date = xlrd.xldate_as_datetime(gsa_approved_price_date, 0)
                 except ValueError:
-                    approved_price_date = str(row['GSAApprovedPriceDate'])
-            else:
-                approved_price_date = '0000-00-00 00:00:00'
+                    gsa_approved_price_date = str(row['GSAApprovedPriceDate'])
+
+                if isinstance(gsa_approved_price_date, datetime.datetime) == False:
+                    try:
+                        gsa_approved_price_date = datetime.datetime.strptime(gsa_approved_price_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        gsa_approved_price_date = str(row['GSAApprovedPriceDate'])
+                        self.obReporter.update_report('Alert','Check GSAApprovedPriceDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check GSAApprovedPriceDate')
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
@@ -209,13 +218,13 @@ class GSAPrice(BasicProcessObject):
             self.obIngester.gsa_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
-                                              approved_price_date, approved_percent, mfc_percent,
+                                              gsa_approved_price_date, approved_percent, mfc_percent,
                                               sin, gsa_product_notes)
         else:
             self.obIngester.gsa_product_price_update(gsa_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
                                               approved_sell_price, approved_list_price, contract_manu_number,
                                               contract_number, contract_mod_number, is_pricing_approved,
-                                              approved_price_date, approved_percent, mfc_percent,
+                                              gsa_approved_price_date, approved_percent, mfc_percent,
                                               sin, gsa_product_notes)
 
 

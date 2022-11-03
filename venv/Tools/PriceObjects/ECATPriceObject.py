@@ -146,14 +146,23 @@ class ECATPrice(BasicProcessObject):
             else:
                 is_pricing_approved = -1
 
+            ecat_approved_price_date = -1
             if 'ECATApprovedPriceDate' in row:
+                ecat_approved_price_date = row['ECATApprovedPriceDate']
                 try:
-                    approved_price_date = int(row['ECATApprovedPriceDate'])
-                    approved_price_date = (xlrd.xldate_as_datetime(approved_price_date, 0)).date()
+                    ecat_approved_price_date = int(ecat_approved_price_date)
+                    ecat_approved_price_date = xlrd.xldate_as_datetime(ecat_approved_price_date, 0)
                 except ValueError:
-                    approved_price_date = str(row['ECATApprovedPriceDate'])
-            else:
-                approved_price_date = '0000-00-00 00:00:00'
+                    ecat_approved_price_date = str(row['ECATApprovedPriceDate'])
+
+                if isinstance(ecat_approved_price_date, datetime.datetime) == False:
+                    try:
+                        ecat_approved_price_date = datetime.datetime.strptime(ecat_approved_price_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        ecat_approved_price_date = str(row['ECATApprovedPriceDate'])
+                        self.obReporter.update_report('Alert','Check ECATApprovedPriceDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check ECATApprovedPriceDate')
 
             contract_manu_number = row['ContractedManufacturerPartNumber']
 
@@ -187,12 +196,12 @@ class ECATPrice(BasicProcessObject):
             self.obIngester.ecat_product_price_insert(product_description_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, max_markup, ecat_product_notes)
+                                               ecat_approved_price_date, max_markup, ecat_product_notes)
         else:
             self.obIngester.ecat_product_price_update(ecat_product_price_id, product_description_id, fy_product_number, on_contract,
                                                approved_sell_price, approved_list_price, contract_manu_number,
                                                contract_number, contract_mod_number, is_pricing_approved,
-                                               approved_price_date, max_markup, ecat_product_notes)
+                                               ecat_approved_price_date, max_markup, ecat_product_notes)
 
         return success, return_df_line_product
 
