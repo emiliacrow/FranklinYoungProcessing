@@ -115,7 +115,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                 return False, df_collect_product_base_data
 
             try:
-                base_id = row['ProductDescriptionId']
+                prod_desc_id = row['ProductDescriptionId']
             except KeyError:
                 self.obReporter.update_report('Alert','ProductDescriptionId Missing')
                 return False, df_collect_product_base_data
