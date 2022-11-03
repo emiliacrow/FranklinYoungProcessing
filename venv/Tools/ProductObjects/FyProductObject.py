@@ -433,135 +433,133 @@ class FyProductUpdate(BasicProcessObject):
 
 
     def process_pricing(self, df_collect_product_base_data, row):
-        # from the file
-        success, fy_landed_cost = self.row_check(row,'Landed Cost')
 
-        if success:
-            success, fy_landed_cost = self.float_check(fy_landed_cost, 'Landed Cost')
-            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+        vlp_success, vendor_list_price = self.row_check(row, 'VendorListPrice')
+        if vlp_success:
+            vlp_success, vendor_list_price = self.float_check(vendor_list_price, 'VendorListPrice')
+            print('vendor list as vendor list')
+            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+        else:
 
-        if not success:
-            # we could try to perform the calculations here
-            self.obReporter.update_report('Alert', 'Landed Cost not provided')
-            vlp_success, vendor_list_price = self.row_check(row, 'VendorListPrice')
+            vlp_success, vendor_list_price = self.row_check(row, 'PrimaryVendorListPrice')
             if vlp_success:
-                vlp_success, vendor_list_price = self.float_check(vendor_list_price,'VendorListPrice')
+                vlp_success, vendor_list_price = self.float_check(vendor_list_price, 'PrimaryVendorListPrice')
+                print('vendor list as primary vendor list')
                 df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
             else:
-
-                vlp_success, vendor_list_price = self.row_check(row, 'PrimaryVendorListPrice')
+                vlp_success, vendor_list_price = self.row_check(row, 'db_PrimaryVendorListPrice')
                 if vlp_success:
-                    vlp_success, vendor_list_price = self.float_check(vendor_list_price,'PrimaryVendorListPrice')
+                    vlp_success, vendor_list_price = self.float_check(vendor_list_price, 'db_PrimaryVendorListPrice')
+                    print('vendor list as primary db vendor list')
                     df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
                 else:
-
-                    vlp_success, vendor_list_price = self.row_check(row, 'db_PrimaryVendorListPrice')
+                    vlp_success, vendor_list_price = self.row_check(row, 'CurrentVendorListPrice')
                     if vlp_success:
-                        vlp_success, vendor_list_price = self.float_check(vendor_list_price,'db_PrimaryVendorListPrice')
+                        vlp_success, vendor_list_price = self.float_check(vendor_list_price, 'CurrentVendorListPrice')
+                        print('vendor list as primary current vendor list')
                         df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
                     else:
-                        vlp_success, vendor_list_price = self.row_check(row, 'CurrentVendorListPrice')
-                        if vlp_success:
-                            vlp_success, vendor_list_price = self.float_check(vendor_list_price,'CurrentVendorListPrice')
-                            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
-                        else:
-                            vendor_list_price = -1
-                            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+                        vendor_list_price = -1
+                        df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
-            if vlp_success:
-                discount_success, fy_discount_percent = self.row_check(row,'Discount')
+        discount_success, fy_discount_percent = self.row_check(row, 'Discount')
+        if discount_success:
+            discount_success, fy_discount_percent = self.float_check(fy_discount_percent, 'Discount')
+            print('discount from file')
+            df_collect_product_base_data['Discount'] = [fy_discount_percent]
+        else:
+            discount_success, fy_discount_percent = self.row_check(row, 'PrimaryDiscount')
+            if discount_success:
+                discount_success, fy_discount_percent = self.float_check(fy_discount_percent, 'PrimaryDiscount')
+                print('primary discount')
+                df_collect_product_base_data['Discount'] = [fy_discount_percent]
+            else:
+                discount_success, fy_discount_percent = self.row_check(row, 'db_PrimaryDiscount')
                 if discount_success:
-                    discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'Discount')
+                    discount_success, fy_discount_percent = self.float_check(fy_discount_percent,
+                                                                             'db_PrimaryDiscount')
+                    print('db primary discount')
                     df_collect_product_base_data['Discount'] = [fy_discount_percent]
                 else:
-                    discount_success, fy_discount_percent = self.row_check(row,'PrimaryDiscount')
+                    discount_success, fy_discount_percent = self.row_check(row, 'CurrentDiscount')
                     if discount_success:
-                        discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'PrimaryDiscount')
+                        discount_success, fy_discount_percent = self.float_check(fy_discount_percent,
+                                                                                 'CurrentDiscount')
+                        print('current discount')
                         df_collect_product_base_data['Discount'] = [fy_discount_percent]
                     else:
-                        discount_success, fy_discount_percent = self.row_check(row, 'db_PrimaryDiscount')
-                        if discount_success:
-                            discount_success, fy_discount_percent = self.float_check(fy_discount_percent,
-                                                                                     'db_PrimaryDiscount')
-                            df_collect_product_base_data['Discount'] = [fy_discount_percent]
-                        else:
-                            discount_success, fy_discount_percent = self.row_check(row, 'CurrentDiscount')
-                            if discount_success:
-                                discount_success, fy_discount_percent = self.float_check(fy_discount_percent,
-                                                                                         'CurrentDiscount')
-                                df_collect_product_base_data['Discount'] = [fy_discount_percent]
-                            else:
-                                fy_discount_percent = -1
-                                df_collect_product_base_data['Discount'] = [fy_discount_percent]
-            else:
-                discount_success = False
+                        fy_discount_percent = -1
+                        df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
-
-            success, fy_cost = self.row_check(row,'FyCost')
-            if success:
-                success, fy_cost = self.float_check(fy_cost, 'FyCost')
+        fy_cost_success, fy_cost = self.row_check(row, 'FyCost')
+        if fy_cost_success:
+            fy_cost_success, fy_cost = self.float_check(fy_cost, 'FyCost')
+            print('fy cost')
+        else:
+            fy_cost_success, fy_cost = self.row_check(row, 'PrimaryFyCost')
+            if fy_cost_success:
+                fy_cost_success, fy_cost = self.float_check(fy_cost, 'PrimaryFyCost')
+                print('primary fy cost')
+                df_collect_product_base_data['FyCost'] = [fy_cost]
             else:
-                success, fy_cost = self.row_check(row, 'PrimaryFyCost')
-                if success:
-                    success, fy_cost = self.float_check(fy_cost, 'PrimaryFyCost')
+                fy_cost_success, fy_cost = self.row_check(row, 'db_PrimaryFyCost')
+                if fy_cost_success:
+                    fy_cost_success, fy_cost = self.float_check(fy_cost, 'db_PrimaryFyCost')
+                    print('db primary cost')
                     df_collect_product_base_data['FyCost'] = [fy_cost]
                 else:
-                    success, fy_cost = self.row_check(row, 'db_PrimaryFyCost')
-                    if success:
-                        success, fy_cost = self.float_check(fy_cost, 'db_PrimaryFyCost')
+                    fy_cost_success, fy_cost = self.row_check(row, 'CurrentFyCost')
+                    if fy_cost_success:
+                        fy_cost_success, fy_cost = self.float_check(fy_cost, 'CurrentFyCost')
+                        print('current fy cost')
                         df_collect_product_base_data['FyCost'] = [fy_cost]
                     else:
-                        success, fy_cost = self.row_check(row, 'CurrentFyCost')
-                        if success:
-                            success, fy_cost = self.float_check(fy_cost, 'CurrentFyCost')
-                            df_collect_product_base_data['FyCost'] = [fy_cost]
-                        else:
-                            # fail line if missing
-                            self.obReporter.update_report('Alert', 'FyCost was missing')
-                            fy_cost = -1
-                            df_collect_product_base_data['FyCost'] = [fy_cost]
+                        # fail line if missing
+                        self.obReporter.update_report('Alert', 'FyCost was missing')
+                        fy_cost = -1
+                        df_collect_product_base_data['FyCost'] = [fy_cost]
 
+        x = input('before estimated freight')
+        # checks for shipping costs
+        freight_success, estimated_freight = self.row_check(row, 'Estimated Freight')
+        if freight_success:
+            freight_success, estimated_freight = self.float_check(estimated_freight,'Estimated Freight')
+            print('estimated freight')
+            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
 
-            if vlp_success and not discount_success:
-                fy_discount_percent = self.set_vendor_discount(fy_cost, vendor_list_price)
-                df_collect_product_base_data['Discount'] = [fy_discount_percent]
-
-            elif not vlp_success and discount_success:
-                vendor_list_price = self.set_vendor_list(fy_cost, fy_discount_percent)
-                df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
-
-
-            # checks for shipping costs
-            success, estimated_freight = self.row_check(row, 'Estimated Freight')
-            if success:
-                success, estimated_freight = self.float_check(estimated_freight,'Estimated Freight')
+        else:
+            freight_success, estimated_freight = self.row_check(row, 'PrimaryEstimatedFreight')
+            if freight_success:
+                freight_success, estimated_freight = self.float_check(estimated_freight,'PrimaryEstimatedFreight')
+                print('bingo', estimated_freight)
                 df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
-
             else:
-                success, estimated_freight = self.row_check(row, 'PrimaryEstimatedFreight')
-                if success:
-                    success, estimated_freight = self.float_check(estimated_freight,'PrimaryEstimatedFreight')
+                freight_success, estimated_freight = self.row_check(row, 'db_PrimaryEstimatedFreight')
+                if freight_success:
+                    freight_success, estimated_freight = self.float_check(estimated_freight,'db_PrimaryEstimatedFreight')
+                    print('bango', estimated_freight)
                     df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
                 else:
-                    success, estimated_freight = self.row_check(row, 'db_PrimaryEstimatedFreight')
-                    if success:
-                        success, estimated_freight = self.float_check(estimated_freight,'db_PrimaryEstimatedFreight')
+                    freight_success, estimated_freight = self.row_check(row, 'CurrentEstimatedFreight')
+                    if freight_success:
+                        freight_success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFreight')
+                        print('bongo', estimated_freight)
                         df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
                     else:
-                        success, estimated_freight = self.row_check(row, 'CurrentEstimatedFreight')
-                        if success:
-                            success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFreight')
-                            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
-                        else:
-                            estimated_freight = 0
-                            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
-                            self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
-
-
+                        estimated_freight = 0
+                        print('ZERO', estimated_freight)
+                        df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+                        self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
+        print(row)
+        x = input('before landed cost')
+        if 'Landed Cost' in row:
+            fy_landed_cost = row['Landed Cost']
+        elif fy_cost_success and freight_success:
             fy_landed_cost = fy_cost + estimated_freight
             self.obReporter.update_report('Alert', 'Landed Cost was calculated')
             df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
-
+        else:
+            fy_landed_cost = -1
 
 
         # we get the values from the DB because that's what we rely on
@@ -1322,7 +1320,6 @@ class FyProductUpdate(BasicProcessObject):
             estimated_freight = float(row['Estimated Freight'])
         else:
             estimated_freight = -1
-
 
         if 'SecondaryVendorId' in row:
             secondary_vendor_id = int(row['SecondaryVendorId'])
