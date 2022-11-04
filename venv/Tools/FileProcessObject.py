@@ -39,8 +39,8 @@ class FileProcessor(BasicProcessObject):
             self.sup_fields = ['FyProductName','VendorProductName','FyProductDescription','VendorProductDescription']
 
         if self.proc_to_run == 'Assign FyPartNumbers':
-            self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber','UnitOfIssue']
-            self.sup_fields = []
+            self.req_fields = ['ManufacturerName', 'ManufacturerPartNumber']
+            self.sup_fields = ['FyUnitOfIssue','UnitOfIssue']
 
         if self.proc_to_run == 'Unicode Correction':
             self.req_fields = []
@@ -362,6 +362,8 @@ class FileProcessor(BasicProcessObject):
 
             if 'UnitOfIssue' in row:
                 unit_of_issue = self.normalize_units(row['UnitOfIssue'])
+            elif 'FyUnitOfIssue' in row:
+                unit_of_issue = self.normalize_units(row['FyUnitOfIssue'])
             else:
                 return False, df_collect_attribute_data
 
