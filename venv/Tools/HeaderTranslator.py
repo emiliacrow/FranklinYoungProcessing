@@ -48,7 +48,7 @@ class HeaderTranslator():
                             'VendorListPrice':['Vendor List Price','VendorListPrice','VendorList','Vendor List','List Price','primary_vendor_list_price','vendor_list_price'],
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent','FyDiscByVendor'],
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
-                            'Estimated Freight':['Estimated Freight','EstimatedFreight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
+                            'Estimated Freight':['EstimatedFrieght','Estimated Freight','EstimatedFreight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
                             'ProductNotes':['ProductNotes', 'Product Notes','VendorProductNotes','Vendor Product Notes'],
 
                             'ProductSortOrder':['ProductSortOrder','Product Sort Order','FyProductSortOrder','Fy Product Sort Order'],
