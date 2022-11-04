@@ -455,7 +455,7 @@ class BasePrice(BasicProcessObject):
 
             # we check if there's a value
             if 'DateCatalogReceived' in row:
-                date_catalog_received = row['db_DateCatalogReceived']
+                date_catalog_received = row['DateCatalogReceived']
             elif 'db_DateCatalogReceived' in row:
                 date_catalog_received = str(row['db_DateCatalogReceived'])
             else:

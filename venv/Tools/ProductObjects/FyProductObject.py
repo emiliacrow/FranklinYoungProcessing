@@ -33,6 +33,8 @@ class FyProductUpdate(BasicProcessObject):
 
 
     def batch_preprocessing(self):
+
+
         self.remove_private_headers()
         self.df_uois_lookup = self.obDal.get_unit_of_issue_symbol_lookup()
         if 'FyCountryOfOrigin' in self.df_product.columns:
