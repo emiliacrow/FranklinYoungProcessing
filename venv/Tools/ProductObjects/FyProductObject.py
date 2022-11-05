@@ -509,6 +509,14 @@ class FyProductUpdate(BasicProcessObject):
                         fy_cost = -1
                         df_collect_product_base_data['FyCost'] = [fy_cost]
 
+        if (fy_cost_success and vlp_success) and (not discount_success or fy_discount_percent == 0):
+            fy_discount_percent = self.set_vendor_discount(fy_cost, vendor_list_price)
+            df_collect_product_base_data['Discount'] = [fy_discount_percent]
+
+        elif (fy_cost_success and discount_success) and not vlp_success:
+            vendor_list_price = self.set_vendor_list(fy_cost, fy_discount_percent)
+            df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
+
         # checks for shipping costs
         freight_success, estimated_freight = self.row_check(row, 'Estimated Freight')
         if freight_success:
@@ -948,6 +956,8 @@ class FyProductUpdate(BasicProcessObject):
 
         if 'Discount' in row:
             fy_discount_percent = float(row['Discount'])
+            if fy_discount_percent == float(-1):
+                fy_discount_percent = 0
         else:
             fy_discount_percent = 0
 
