@@ -275,21 +275,21 @@ class BasePrice(BasicProcessObject):
             df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
         # checks for shipping costs
-        success, estimated_freight = self.row_check(row, 'Estimated Freight')
+        success, estimated_freight = self.row_check(row, 'EstimatedFreight')
         if success:
-            success, estimated_freight = self.float_check(estimated_freight,'Estimated Freight')
-            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+            success, estimated_freight = self.float_check(estimated_freight,'EstimatedFreight')
+            df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
 
         if not success:
             success, estimated_freight = self.row_check(row, 'db_shipping_cost')
             if success:
                 success, estimated_freight = self.float_check(estimated_freight,'db_shipping_cost')
-                df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
+                df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
 
         if not success:
             estimated_freight = 0
-            df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
-            self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
+            df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+            self.obReporter.update_report('Alert', 'EstimatedFreight value was set to 0')
 
         success, fy_landed_cost = self.row_check(row,'FyLandedCost')
         if success:
@@ -419,7 +419,7 @@ class BasePrice(BasicProcessObject):
             vendor_list_price = row['VendorListPrice']
             fy_discount_percent = row['Discount']
             fy_cost = row['FyCost']
-            estimated_freight = row['Estimated Freight']
+            estimated_freight = row['EstimatedFreight']
             fy_landed_cost = row['FyLandedCost']
 
             try:
