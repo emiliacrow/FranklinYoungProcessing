@@ -365,8 +365,8 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             fy_uoi_qty = -1
 
-        if 'FyLeadTime' in row:
-            fy_lead_time = int(row['FyLeadTime'])
+        if 'FyLeadTimes' in row:
+            fy_lead_time = int(row['FyLeadTimes'])
         else:
             fy_lead_time = -1
 
@@ -435,8 +435,8 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             fy_uoi_qty = -1
 
-        if 'FyLeadTime' in row:
-            fy_lead_time = int(row['FyLeadTime'])
+        if 'FyLeadTimes' in row:
+            fy_lead_time = int(row['FyLeadTimes'])
         else:
             fy_lead_time = -1
 

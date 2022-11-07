@@ -15,7 +15,7 @@ from Tools.BasicProcess import BasicProcessObject
 class FyProductUpdate(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = ['FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
-                  'FyUnitOfIssueByQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'VendorName', 'PrimaryVendorName', 'SecondaryVendorName',
+                  'FyUnitOfIssueByQuantity','FyUnitOfMeasure','FyLeadTimes', 'FyIsHazardous', 'VendorName', 'PrimaryVendorName', 'SecondaryVendorName',
                   'ManufacturerPartNumber', 'ManufacturerName', 'VendorPartNumber','DateCatalogReceived',
                   'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
@@ -735,8 +735,8 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_uoi_qty = -1
 
-        if 'FyLeadTime' in row:
-            fy_lead_time = int(row['FyLeadTime'])
+        if 'FyLeadTimes' in row:
+            fy_lead_time = int(row['FyLeadTimes'])
         else:
             fy_lead_time = -1
 
@@ -884,12 +884,12 @@ class FyProductUpdate(BasicProcessObject):
         else:
             is_visible = 1
 
-        allow_purchases = -1
-        success, allow_purchases = self.process_boolean(row, 'FyAllowPurchases')
+        fy_allow_purchases = -1
+        success, fy_allow_purchases = self.process_boolean(row, 'FyAllowPurchases')
         if success:
-            df_collect_product_base_data['FyAllowPurchases'] = [allow_purchases]
+            df_collect_product_base_data['FyAllowPurchases'] = [fy_allow_purchases]
         else:
-            allow_purchases = 1
+            fy_allow_purchases = 1
 
         success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
         if success:
@@ -1139,7 +1139,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                           vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
-                                                          fy_list_price, fy_is_discontinued, is_visible, allow_purchases,
+                                                          fy_list_price, fy_is_discontinued, is_visible, fy_allow_purchases,
                                                           price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                               deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
@@ -1183,9 +1183,9 @@ class FyProductUpdate(BasicProcessObject):
 
         if fy_lead_time == -1:
             if report != '':
-                report = report + ', FyLeadTime'
+                report = report + ', FyLeadTimes'
             else:
-                report = 'Missing FyLeadTime'
+                report = 'Missing FyLeadTimes'
 
         if primary_vendor_id == -1:
             if report != '':
@@ -1262,8 +1262,8 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_uoi_qty = -1
 
-        if 'FyLeadTime' in row:
-            fy_lead_time = int(row['FyLeadTime'])
+        if 'FyLeadTimes' in row:
+            fy_lead_time = int(row['FyLeadTimes'])
         else:
             fy_lead_time = -1
 
@@ -1416,7 +1416,7 @@ class FyProductUpdate(BasicProcessObject):
 
         fy_is_discontinued = row['FyIsDiscontinued']
         is_visible = row['FyIsVisible']
-        allow_purchases = row['FyAllowPurchases']
+        fy_allow_purchases = row['FyAllowPurchases']
 
         success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
         if success:
@@ -1578,7 +1578,7 @@ class FyProductUpdate(BasicProcessObject):
 
         if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
-                or fy_is_discontinued != -1 or is_visible != -1 or allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
+                or fy_is_discontinued != -1 or is_visible != -1 or fy_allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_manufacturer_part_number, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
@@ -1586,7 +1586,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
-                                                          fy_is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                                          fy_is_discontinued, is_visible, fy_allow_purchases, price_toggle, data_toggle,
                                                           deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                           deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
                                                           date_catalog_received, catalog_provided_by)
@@ -1602,7 +1602,7 @@ class FyProductUpdate(BasicProcessObject):
 
 class FyProductIngest(FyProductUpdate):
     req_fields = ['FyProductNumber', 'FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
-                  'FyUnitOfIssueByQuantity','FyLeadTime', 'ManufacturerPartNumber',
+                  'FyUnitOfIssueByQuantity','FyLeadTimes', 'ManufacturerPartNumber',
                   'ManufacturerName', 'VendorPartNumber','DateCatalogReceived']
 
     sup_fields = ['VendorName', 'PrimaryVendorName', 'SecondaryVendorName', 'FyIsHazardous',

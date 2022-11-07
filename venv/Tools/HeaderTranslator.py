@@ -16,7 +16,6 @@ class HeaderTranslator():
                             'SupplierName':['SupplierName','Supplier Name','supplier name','supplier_name'],
 
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber','manufacturer_part_no','Supplier Part # '],
-                            'ContractedManufacturerPartNumber':['ContractedManufacturerPartNumber','Contracted Manufacturer Part Number','ContractedManufacturerNumber','Contracted Manufacturer Number','ContractedPartNumber','Contracted Part Number'],
 
                             'CountryOfOrigin':['CountryOfOrigin','CountryCode','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
 
@@ -68,6 +67,7 @@ class HeaderTranslator():
                                                'FY Product Number'],
                             'PrimaryVendorName':['PrimaryVendorCode', 'Primary Vendor Code', 'primary_vendor_code','PrimaryVendor','Primary Vendor'],
                             'SecondaryVendorName':['SecondaryVendorCode', 'Secondary Vendor Code', 'secondary_vendor_code','SecondaryVendor','Secondary Vendor'],
+                            'FyManufacturerPartNumber':['FyManufacturerPartNumber','ContractedManufacturerPartNumber','Contracted Manufacturer Part Number','ContractedManufacturerNumber','Contracted Manufacturer Number','ContractedPartNumber', 'Contracted Part Number'],
 
                             'FyPartNumber':['FYPartNumber', 'FyPartNumber', 'fy_part_number', 'fy_part_no', 'Product Code/SKU'],
                             'FyCategory':['FyCategory','CategoryRecommendation', 'Category', 'category'],
@@ -90,7 +90,7 @@ class HeaderTranslator():
 
                             'FyProductNotes':['FyProductNotes', 'Fy Product Notes', 'InternalProductNotes', 'Internal Product Notes', 'FYProductNotes', 'FY Product Notes'],
 
-                            'FyLeadTime':['Fy_lead_time', 'FyLeadTime', 'Fy Lead Time', 'Fy LeadTime', 'fy lead time', 'fy lead_time', 'fy_lead_time','Fy_lead_times', 'FyLeadTimes', 'Fy Lead Times', 'Fy LeadTimes', 'fy lead times', 'fy lead_times', 'fy_lead_times'],
+                            'FyLeadTimes':['FyLeadTimes','Fy_lead_time', 'FyLeadTime', 'Fy Lead Time', 'Fy LeadTime', 'fy lead time', 'fy lead_time', 'fy_lead_time','Fy_lead_times', 'FyLeadTimes', 'Fy Lead Times', 'Fy LeadTimes', 'fy lead times', 'fy lead_times', 'fy_lead_times'],
 
                             'FyDenyGSAContract':['FyDenyGSAContract','DenyGSAContract','Deny GSA Contract','Deny GSA','Fy Deny GSA Contract','Fy Deny GSA'],
                             'FyDenyGSAContractDate':['FyDenyGSAContractDate','DenyGSAContractDate','Deny GSA Contract Date','Deny GSA Date','Fy Deny GSA Contract Date','Fy Deny GSA Date'],

@@ -326,12 +326,12 @@ class MinimumProduct(BasicProcessObject):
                 df_attribute['ExpectedLeadTimeId'] = lst_ids
                 self.df_product = self.df_product.merge(df_attribute,how='left', on=['LeadTime'])
 
-            elif 'FyLeadTime' in self.df_product.columns:
-                df_attribute = self.df_product[['FyLeadTime']]
-                df_attribute = df_attribute.drop_duplicates(subset=['FyLeadTime'])
+            elif 'FyLeadTimes' in self.df_product.columns:
+                df_attribute = self.df_product[['FyLeadTimes']]
+                df_attribute = df_attribute.drop_duplicates(subset=['FyLeadTimes'])
                 lst_ids = []
                 for colName, row in df_attribute.iterrows():
-                    lead_time = row['FyLeadTime']
+                    lead_time = row['FyLeadTimes']
                     success, lead_time = self.float_check(lead_time, 'lead time')
                     if success:
                         lead_time = int(lead_time)
@@ -371,9 +371,9 @@ class MinimumProduct(BasicProcessObject):
                             expedited_lead_time = lead_time
 
 
-                        if lead_time in self.df_lead_times['FyLeadTime'].tolist():
+                        if lead_time in self.df_lead_times['LeadTime'].tolist():
                             new_lead_time_id = self.df_lead_times.loc[
-                                (self.df_lead_times['FyLeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
+                                (self.df_lead_times['LeadTime'] == lead_time), 'ExpectedLeadTimeId'].values[0]
 
                         else:
                             new_lead_time_id = self.obIngester.ingest_expected_lead_times(lead_time, expedited_lead_time)
@@ -385,7 +385,7 @@ class MinimumProduct(BasicProcessObject):
                     lst_ids.append(new_lead_time_id)
 
                 df_attribute['ExpectedLeadTimeId'] = lst_ids
-                self.df_product = self.df_product.merge(df_attribute,how='left', on=['FyLeadTime'])
+                self.df_product = self.df_product.merge(df_attribute,how='left', on=['FyLeadTimes'])
             else:
                 self.df_product['ExpectedLeadTimeId'] = -1
 
