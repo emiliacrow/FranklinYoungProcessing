@@ -36,7 +36,7 @@ class HeaderTranslator():
                             'ECommerceLongDescription':['ECommerceLongDescription', 'ECommerce Long Description',
                                                         'ecommerce_long_description'],
 
-                            'Conv Factor/QTY UOM':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue','QtyUOI','Qty UOI','Qty','UnitOfIssueByQuantity'],
+                            'UnitOfIssueByQuantity':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue','QtyUOI','Qty UOI','Qty','UnitOfIssueByQuantity'],
                             'UnitOfIssue':['UnitOfIssue', 'Unit Of Issue', 'UnitOfIssueSymbol', 'Unit Of Issue Symbol', 'UOI', 'uoi','unit_of_issue','unit of issue'],
                             'UnitOfMeasure':['UnitOfMeasure','Unit Of Measure','UnitOfMeasureSymbol','Unit Of Measure Symbol','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
 
@@ -82,11 +82,11 @@ class HeaderTranslator():
 
                             'RecommendedStorage':['shelf_life_months','RecommendedStorage','StorageInstruction'],
 
-                            'Landed Cost':['FyLandedCost','LandedCost','Fy Landed Cost','Landed Cost'],
+                            'FyLandedCost':['FyLandedCost','LandedCost','Fy Landed Cost','Landed Cost'],
                             'FyLandedCostMarkupPercent_FySell':['FyLandedCostMarkupPercent_FYSell', 'FyLandedCostMarkupPercent_FySell', 'LandedCostMarkupPercent_FYSell', 'LandedCostMarkupPercent_FySell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
-                            'Sell Price':['FySellPrice','FyPrice','BC Sell Price','Ecom Sell Price'],
+                            'FySellPrice':['FySellPrice','FyPrice','BC Sell Price','Ecom Sell Price'],
                             'FyLandedCostMarkupPercent_FyList':['FyLandedCostMarkupPercent_FYList','FyLandedCostMarkupPercent_FyList','LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FyList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
-                            'Retail Price':['Retail Price','FyListPrice','FyList'],
+                            'FyListPrice':['Retail Price','FyListPrice','FyList'],
 
                             'FyProductNotes':['FyProductNotes', 'Fy Product Notes', 'InternalProductNotes', 'Internal Product Notes', 'FYProductNotes', 'FY Product Notes'],
 
@@ -136,13 +136,11 @@ class HeaderTranslator():
                             'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
 
 
-
-
 # GSA
                             'GSAApprovedListPrice':['GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
                                                     'GSAApprovedFYListPrice'],
-                            'GSAApprovedPercent':['GSAChannelDiscount', 'GSADiscount', 'GSA Channel Discount',
-                                                  'GSA Discount', 'gsa_channel_discount', 'GSA Approved Channel%','GSADiscountPercent'],
+                            'GSADiscountPercent':['GSAApprovedPercent','GSAChannelDiscount', 'GSADiscount', 'GSA Channel Discount',
+                                                  'GSA Discount', 'gsa_channel_discount', 'GSA Approved Channel%','GSADiscountPercent','GSA disc%'],
                             'GSABasePrice':['GSABasePrice', 'GSA Base Price'],
                             'GSASellPrice':['GSASellPrice', 'GSA Sell Price','current_gsa_price'],
                             'GSAContractModificationNumber':['GSAContractModificationNumber','GSAModificationNumber',
@@ -154,7 +152,7 @@ class HeaderTranslator():
 # VA
                             'VAApprovedListPrice':['ChannelApprovedFYListPrice__value', 'ChannelApprovedFYListPrice',
                                                     'ApprovedFYListPrice'],
-                            'VAApprovedPercent':['VAChannelDiscount', 'VADiscount', 'VA Channel Discount',
+                            'VADiscountPercent':['VAApprovedPercent','VAChannelDiscount', 'VADiscount', 'VA Channel Discount',
                                                   'VA Discount', 'va_channel_discount', 'VA Approved Channel%','VADiscountPercent'],
                             'VABasePrice':['VABasePrice', 'VA Base Price'],
                             'VASellPrice':['VASellPrice', 'VA Sell Price'],
@@ -168,7 +166,7 @@ class HeaderTranslator():
 # ECAT
                             'ECATApprovedListPrice':['ECATApprovedFYListPrice__value', 'ECATApprovedFYListPrice',
                                                    'ECATApprovedFYListPrice'],
-                            'ECATApprovedPercent':['ECATChannelDiscount', 'ECATDiscount', 'ECAT Channel Discount',
+                            'ECATDiscountPercent':['ECATApprovedPercent','ECATChannelDiscount', 'ECATDiscount', 'ECATDiscountPercent', 'ECAT Channel Discount',
                                                  'ECAT Discount', 'ecat_channel_discount', 'ECAT Approved Channel%'],
                             'ECATBasePrice':['ECATBasePrice', 'ECAT Base Price'],
                             'ECATSellPrice':['ECATSellPrice', 'ECAT Sell Price'],
@@ -180,7 +178,7 @@ class HeaderTranslator():
 
 
                             'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)',
-                                                  'approved MFC per','VA_MFC_Discount','GSA_MFC_Discount'],
+                                                  'approved MFC per','VA_MFC_Discount','GSA_MFC_Discount','MFC %'],
                             'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
 
 

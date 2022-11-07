@@ -15,12 +15,12 @@ from Tools.BasicProcess import BasicProcessObject
 class FyProductUpdate(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = ['FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
-                  'FyUnitOfIssueQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'VendorName', 'PrimaryVendorName', 'SecondaryVendorName',
+                  'FyUnitOfIssueByQuantity','FyUnitOfMeasure','FyLeadTime', 'FyIsHazardous', 'VendorName', 'PrimaryVendorName', 'SecondaryVendorName',
                   'ManufacturerPartNumber', 'ManufacturerName', 'VendorPartNumber','DateCatalogReceived',
                   'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost', 'PrimaryVendorListPrice','PrimaryFyCost',
-                  'Landed Cost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
+                  'FyLandedCost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
                   'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate']
@@ -543,12 +543,12 @@ class FyProductUpdate(BasicProcessObject):
                         df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
                         self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
 
-        if 'Landed Cost' in row:
-            fy_landed_cost = row['Landed Cost']
+        if 'FyLandedCost' in row:
+            fy_landed_cost = row['FyLandedCost']
         elif fy_cost_success and freight_success:
             fy_landed_cost = fy_cost + estimated_freight
-            self.obReporter.update_report('Alert', 'Landed Cost was calculated')
-            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+            self.obReporter.update_report('Alert', 'FyLandedCost was calculated')
+            df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
         else:
             fy_landed_cost = -1
 
@@ -672,7 +672,7 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_sell_price = round(fy_sell_price, 2)
 
-        df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+        df_collect_product_base_data['FySellPrice'] = [fy_sell_price]
 
         # do math
         fy_list_price_long = float(fy_landed_cost * markup_list)
@@ -691,7 +691,7 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_list_price = round(fy_list_price, 2)
 
-        df_collect_product_base_data['Retail Price'] = [fy_list_price]
+        df_collect_product_base_data['FyListPrice'] = [fy_list_price]
 
         return df_collect_product_base_data
 
@@ -729,8 +729,8 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_uom_id = -1
 
-        if 'FyUnitOfIssueQuantity' in row:
-            fy_uoi_qty = int(row['FyUnitOfIssueQuantity'])
+        if 'FyUnitOfIssueByQuantity' in row:
+            fy_uoi_qty = int(row['FyUnitOfIssueByQuantity'])
         else:
             fy_uoi_qty = -1
 
@@ -767,7 +767,7 @@ class FyProductUpdate(BasicProcessObject):
             secondary_vendor_id = -1
 
         is_hot_price = False
-        fy_landed_cost = row['Landed Cost']
+        fy_landed_cost = row['FyLandedCost']
         if fy_landed_cost != 0:
             is_hot_price = True
 
@@ -777,11 +777,11 @@ class FyProductUpdate(BasicProcessObject):
         else:
             markup_percent_fy_sell = float(row['FyLandedCostMarkupPercent_FySell'])
 
-        if 'Sell Price' not in row:
-            df_collect_product_base_data['Sell Price'] = [0]
+        if 'FySellPrice' not in row:
+            df_collect_product_base_data['FySellPrice'] = [0]
             fy_sell_price = 0
         else:
-            fy_sell_price = row['Sell Price']
+            fy_sell_price = row['FySellPrice']
 
         if is_hot_price and fy_sell_price == 0:
             self.obReporter.update_report('Fail','Sell price did not calculate')
@@ -793,11 +793,11 @@ class FyProductUpdate(BasicProcessObject):
         else:
             markup_percent_fy_list = float(row['FyLandedCostMarkupPercent_FyList'])
 
-        if 'Retail Price' not in row:
-            df_collect_product_base_data['Retail Price'] = [0]
+        if 'FyListPrice' not in row:
+            df_collect_product_base_data['FyListPrice'] = [0]
             fy_list_price = 0
         else:
-            fy_list_price = float(row['Retail Price'])
+            fy_list_price = float(row['FyListPrice'])
 
         if is_hot_price and fy_list_price == 0:
             self.obReporter.update_report('Fail','Retail price did not calculate')
@@ -1176,9 +1176,9 @@ class FyProductUpdate(BasicProcessObject):
 
         if fy_uoi_qty == -1:
             if report != '':
-                report = report + ', FyUnitOfIssueQuantity'
+                report = report + ', FyUnitOfIssueByQuantity'
             else:
-                report = 'Missing FyUnitOfIssueQuantity'
+                report = 'Missing FyUnitOfIssueByQuantity'
 
         if fy_lead_time == -1:
             if report != '':
@@ -1256,8 +1256,8 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_uom_id = -1
 
-        if 'FyUnitOfIssueQuantity' in row:
-            fy_uoi_qty = int(row['FyUnitOfIssueQuantity'])
+        if 'FyUnitOfIssueByQuantity' in row:
+            fy_uoi_qty = int(row['FyUnitOfIssueByQuantity'])
         else:
             fy_uoi_qty = -1
 
@@ -1319,7 +1319,7 @@ class FyProductUpdate(BasicProcessObject):
         else:
             secondary_vendor_id = -1
 
-        fy_landed_cost = row['Landed Cost']
+        fy_landed_cost = row['FyLandedCost']
         try:
             markup_percent_fy_sell = row['FyLandedCostMarkupPercent_FySell']
         except KeyError:
@@ -1331,19 +1331,19 @@ class FyProductUpdate(BasicProcessObject):
             print('fail', reports[2])
             x = input('Markup failure is a mystery, this shouldn\'t happen')
 
-        if 'Sell Price' not in row:
-            df_collect_product_base_data['Sell Price'] = [0]
+        if 'FySellPrice' not in row:
+            df_collect_product_base_data['FySellPrice'] = [0]
             fy_sell_price = 0
         else:
-            fy_sell_price = row['Sell Price']
+            fy_sell_price = row['FySellPrice']
 
         markup_percent_fy_list = row['FyLandedCostMarkupPercent_FyList']
 
-        if 'Retail Price' not in row:
-            df_collect_product_base_data['Retail Price'] = [0]
+        if 'FyListPrice' not in row:
+            df_collect_product_base_data['FyListPrice'] = [0]
             fy_list_price = 0
         else:
-            fy_list_price = float(row['Retail Price'])
+            fy_list_price = float(row['FyListPrice'])
 
 
         if 'FyCategoryId' not in row:
@@ -1601,14 +1601,14 @@ class FyProductUpdate(BasicProcessObject):
 
 class FyProductIngest(FyProductUpdate):
     req_fields = ['FyProductNumber', 'FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
-                  'FyUnitOfIssueQuantity','FyLeadTime', 'ManufacturerPartNumber',
+                  'FyUnitOfIssueByQuantity','FyLeadTime', 'ManufacturerPartNumber',
                   'ManufacturerName', 'VendorPartNumber','DateCatalogReceived']
 
     sup_fields = ['VendorName', 'PrimaryVendorName', 'SecondaryVendorName', 'FyIsHazardous',
                   'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost','FyUnitOfMeasure',
-                  'Landed Cost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
+                  'FyLandedCost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
     att_fields = []
     gen_fields = []

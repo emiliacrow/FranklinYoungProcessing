@@ -483,11 +483,11 @@ class MinimumProductPrice(BasicProcessObject):
 
     def identify_units(self, df_collect_product_base_data, row):
         # set quantities
-        if 'Conv Factor/QTY UOM' in row:
-            unit_of_issue_quantity = row['Conv Factor/QTY UOM']
+        if 'UnitOfIssueByQuantity' in row:
+            unit_of_issue_quantity = row['UnitOfIssueByQuantity']
         else:
             unit_of_issue_quantity = -1
-            df_collect_product_base_data['Conv Factor/QTY UOM'] = [unit_of_issue_quantity]
+            df_collect_product_base_data['UnitOfIssueByQuantity'] = [unit_of_issue_quantity]
 
 
         if 'FyUnitOfIssueQuantity' in row:
@@ -497,7 +497,7 @@ class MinimumProductPrice(BasicProcessObject):
 
         if unit_of_issue_quantity == -1 and fy_unit_of_issue_quantity != -1:
             unit_of_issue_quantity = fy_unit_of_issue_quantity
-            df_collect_product_base_data['Conv Factor/QTY UOM'] = [unit_of_issue_quantity]
+            df_collect_product_base_data['UnitOfIssueByQuantity'] = [unit_of_issue_quantity]
 
 
         if 'UnitOfMeasure' not in row:
@@ -593,7 +593,7 @@ class MinimumProductPrice(BasicProcessObject):
 
             unit_of_issue_symbol_id = row['UnitOfIssueSymbolId']
             unit_of_measure_symbol_id = row['UnitOfMeasureSymbolId']
-            unit_of_issue_quantity = row['Conv Factor/QTY UOM']
+            unit_of_issue_quantity = row['UnitOfIssueByQuantity']
 
             product_description_id = row['ProductDescriptionId']
 

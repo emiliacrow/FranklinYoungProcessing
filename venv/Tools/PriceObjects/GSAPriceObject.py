@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 class GSAPrice(BasicProcessObject):
     req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorName','VendorPartNumber',
-                  'GSAOnContract', 'GSAApprovedListPrice', 'GSAApprovedPercent', 'MfcDiscountPercent',
+                  'GSAOnContract', 'GSAApprovedListPrice', 'GSADiscountPercent', 'MfcDiscountPercent',
                   'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
     sup_fields = []
     att_fields = []
@@ -121,8 +121,8 @@ class GSAPrice(BasicProcessObject):
             # this is where we should try to capture the string literal '10.00%'
             # and make it what it should be
             # I think there's some code for this in base price
-            if 'GSAApprovedPercent' in row:
-                approved_percent = float(row['GSAApprovedPercent'])
+            if 'GSADiscountPercent' in row:
+                approved_percent = float(row['GSADiscountPercent'])
 
 
         return success, return_df_line_product
@@ -188,8 +188,8 @@ class GSAPrice(BasicProcessObject):
                 approved_list_price = -1
 
 
-            if 'GSAApprovedPercent' in row:
-                approved_percent = float(row['GSAApprovedPercent'])
+            if 'GSADiscountPercent' in row:
+                approved_percent = float(row['GSADiscountPercent'])
             else:
                 approved_percent = -1
 
@@ -240,7 +240,7 @@ class UpdateGSAPrice(GSAPrice):
     req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorName','VendorPartNumber']
     sup_fields = []
     att_fields = []
-    gen_fields = ['GSAOnContract', 'GSAApprovedListPrice', 'GSAApprovedPercent', 'MfcDiscountPercent',
+    gen_fields = ['GSAOnContract', 'GSAApprovedListPrice', 'GSADiscountPercent', 'MfcDiscountPercent',
                   'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved','ContractedManufacturerPartNumber']
 
     def __init__(self,df_product, user, password, is_testing):

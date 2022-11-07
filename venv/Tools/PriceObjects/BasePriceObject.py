@@ -128,7 +128,7 @@ class BasePrice(BasicProcessObject):
         sell_margin = list_margin * self.fallback_margin
         fy_sell_price = fy_landed_cost + sell_margin
 
-        self.obReporter.update_report('Alert', 'Sell Price was calculated with fallback margin')
+        self.obReporter.update_report('Alert', 'FySellPrice was calculated with fallback margin')
         return fy_sell_price
 
 
@@ -158,7 +158,7 @@ class BasePrice(BasicProcessObject):
         else:
             fy_sell_price = round(fy_sell_price, 2)
 
-        df_collect_product_base_data['Sell Price'] = [fy_sell_price]
+        df_collect_product_base_data['FySellPrice'] = [fy_sell_price]
 
         # do math
         fy_list_price_long = float(fy_landed_cost * markup_list)
@@ -177,7 +177,7 @@ class BasePrice(BasicProcessObject):
         else:
             fy_list_price = round(fy_list_price, 2)
 
-        df_collect_product_base_data['Retail Price'] = [fy_list_price]
+        df_collect_product_base_data['FyListPrice'] = [fy_list_price]
 
         # TODO check that this is working right
         try:
@@ -291,15 +291,15 @@ class BasePrice(BasicProcessObject):
             df_collect_product_base_data['Estimated Freight'] = [estimated_freight]
             self.obReporter.update_report('Alert', 'Estimated Freight value was set to 0')
 
-        success, fy_landed_cost = self.row_check(row,'Landed Cost')
+        success, fy_landed_cost = self.row_check(row,'FyLandedCost')
         if success:
-            success, fy_landed_cost = self.float_check(fy_landed_cost, 'Landed Cost')
-            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+            success, fy_landed_cost = self.float_check(fy_landed_cost, 'FyLandedCost')
+            df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
 
         if not success:
             fy_landed_cost = fy_cost + estimated_freight
-            self.obReporter.update_report('Alert', 'Landed Cost was calculated')
-            df_collect_product_base_data['Landed Cost'] = [fy_landed_cost]
+            self.obReporter.update_report('Alert', 'FyLandedCost was calculated')
+            df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
 
 
         # we get the values from the DB because that's what we rely on
@@ -420,7 +420,7 @@ class BasePrice(BasicProcessObject):
             fy_discount_percent = row['Discount']
             fy_cost = row['FyCost']
             estimated_freight = row['Estimated Freight']
-            fy_landed_cost = row['Landed Cost']
+            fy_landed_cost = row['FyLandedCost']
 
             try:
                 markup_percent_fy_sell = row['FyLandedCostMarkupPercent_FySell']
@@ -433,19 +433,19 @@ class BasePrice(BasicProcessObject):
                 print('fail',reports[2])
                 x = input('Markup failure is a mystery, this shouldn\'t happen')
 
-            if 'Sell Price' not in row:
-                df_collect_product_base_data['Sell Price'] = [0]
+            if 'FySellPrice' not in row:
+                df_collect_product_base_data['FySellPrice'] = [0]
                 fy_sell_price = 0
             else:
-                fy_sell_price = row['Sell Price']
+                fy_sell_price = row['FySellPrice']
 
             markup_percent_fy_list = row['FyLandedCostMarkupPercent_FyList']
 
-            if 'Retail Price' not in row:
-                df_collect_product_base_data['Retail Price'] = [0]
+            if 'FyListPrice' not in row:
+                df_collect_product_base_data['FyListPrice'] = [0]
                 fy_list_price = 0
             else:
-                fy_list_price = float(row['Retail Price'])
+                fy_list_price = float(row['FyListPrice'])
 
             if 'ECommerceDiscount' not in row:
                 df_collect_product_base_data['ECommerceDiscount'] = [0]

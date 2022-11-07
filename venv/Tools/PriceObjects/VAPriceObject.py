@@ -10,7 +10,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 class VAPrice(BasicProcessObject):
     req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber',
-                  'VAOnContract', 'VAApprovedListPrice', 'VAApprovedPercent', 'MfcDiscountPercent',
+                  'VAOnContract', 'VAApprovedListPrice', 'VADiscountPercent', 'MfcDiscountPercent',
                   'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved']
     sup_fields = []
     att_fields = []
@@ -180,8 +180,8 @@ class VAPrice(BasicProcessObject):
                 approved_list_price = -1
 
 
-            if 'VAApprovedPercent' in row:
-                approved_percent = float(row['VAApprovedPercent'])
+            if 'VADiscountPercent' in row:
+                approved_percent = float(row['VADiscountPercent'])
             else:
                 approved_percent = -1
 
@@ -235,7 +235,7 @@ class UpdateVAPrice(VAPrice):
     req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber']
     sup_fields = []
     att_fields = []
-    gen_fields = ['VAOnContract', 'VAApprovedListPrice', 'VAApprovedPercent', 'MfcDiscountPercent',
+    gen_fields = ['VAOnContract', 'VAApprovedListPrice', 'VADiscountPercent', 'MfcDiscountPercent',
                   'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','ContractedManufacturerPartNumber','VAPricingApproved']
 
     def __init__(self,df_product, user, password, is_testing):
