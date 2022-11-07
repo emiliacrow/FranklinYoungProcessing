@@ -402,6 +402,7 @@ class FyProductUpdate(BasicProcessObject):
             fy_unit_of_issue = self.normalize_units(row['FyUnitOfIssue'])
             df_collect_product_base_data['FyUnitOfIssue'] = [fy_unit_of_issue]
 
+        # if it tries to look it up and it doesn't work, we set it -1
         if fy_unit_of_issue == -1:
             fy_unit_of_issue_symbol_id = -1
         else:

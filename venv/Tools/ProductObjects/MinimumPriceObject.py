@@ -490,8 +490,8 @@ class MinimumProductPrice(BasicProcessObject):
             df_collect_product_base_data['UnitOfIssueByQuantity'] = [unit_of_issue_quantity]
 
 
-        if 'FyUnitOfIssueQuantity' in row:
-            fy_unit_of_issue_quantity = row['FyUnitOfIssueQuantity']
+        if 'FyUnitOfIssueByQuantity' in row:
+            fy_unit_of_issue_quantity = row['FyUnitOfIssueByQuantity']
         else:
             fy_unit_of_issue_quantity = -1
 
