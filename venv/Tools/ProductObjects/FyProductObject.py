@@ -887,12 +887,12 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_is_discontinued = 0
 
-        is_visible = -1
-        success, is_visible = self.process_boolean(row, 'FyIsVisible')
+        fy_is_visible = -1
+        success, fy_is_visible = self.process_boolean(row, 'FyIsVisible')
         if success:
-            df_collect_product_base_data['FyIsVisible'] = [is_visible]
+            df_collect_product_base_data['FyIsVisible'] = [fy_is_visible]
         else:
-            is_visible = 1
+            fy_is_visible = 1
 
         fy_allow_purchases = -1
         success, fy_allow_purchases = self.process_boolean(row, 'FyAllowPurchases')
@@ -1149,7 +1149,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                           vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
-                                                          fy_list_price, fy_is_discontinued, is_visible, fy_allow_purchases,
+                                                          fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
                                                           price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                               deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
@@ -1425,7 +1425,7 @@ class FyProductUpdate(BasicProcessObject):
             fy_product_notes = str(row['FyProductNotes'])
 
         fy_is_discontinued = row['FyIsDiscontinued']
-        is_visible = row['FyIsVisible']
+        fy_is_visible = row['FyIsVisible']
         fy_allow_purchases = row['FyAllowPurchases']
 
         success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
@@ -1588,7 +1588,7 @@ class FyProductUpdate(BasicProcessObject):
 
         if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
-                or fy_is_discontinued != -1 or is_visible != -1 or fy_allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
+                or fy_is_discontinued != -1 or fy_is_visible != -1 or fy_allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_manufacturer_part_number, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
@@ -1596,7 +1596,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
-                                                          fy_is_discontinued, is_visible, fy_allow_purchases, price_toggle, data_toggle,
+                                                          fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
                                                           deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                           deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
                                                           date_catalog_received, catalog_provided_by)
