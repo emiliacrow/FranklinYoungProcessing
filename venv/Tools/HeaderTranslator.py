@@ -83,9 +83,9 @@ class HeaderTranslator():
                             'RecommendedStorage':['shelf_life_months','RecommendedStorage','StorageInstruction'],
 
                             'Landed Cost':['FyLandedCost','LandedCost','Fy Landed Cost','Landed Cost'],
-                            'LandedCostMarkupPercent_FYSell':['FyLandedCostMarkupPercent_FYSell', 'FyLandedCostMarkupPercent_FySell', 'LandedCostMarkupPercent_FYSell', 'LandedCostMarkupPercent_FySell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
+                            'FyLandedCostMarkupPercent_FySell':['FyLandedCostMarkupPercent_FYSell', 'FyLandedCostMarkupPercent_FySell', 'LandedCostMarkupPercent_FYSell', 'LandedCostMarkupPercent_FySell', 'Markup', 'M/U Ron', 'MarkUp Ron', 'Mark Up Ron','M/U Ron'],
                             'Sell Price':['FySellPrice','FyPrice','BC Sell Price','Ecom Sell Price'],
-                            'LandedCostMarkupPercent_FYList':['FyLandedCostMarkupPercent_FYList','FyLandedCostMarkupPercent_FyList','LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FyList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
+                            'FyLandedCostMarkupPercent_FyList':['FyLandedCostMarkupPercent_FYList','FyLandedCostMarkupPercent_FyList','LandedCostMarkupPercent_FYList','LandedCostMarkupPercent_FyList','M/U Linda','MarkUp Linda','Mark Up Linda','M/U Linda','landed_cost_mark_up(%)'],
                             'Retail Price':['Retail Price','FyListPrice','FyList'],
 
                             'FyProductNotes':['FyProductNotes', 'Fy Product Notes', 'InternalProductNotes', 'Internal Product Notes', 'FYProductNotes', 'FY Product Notes'],

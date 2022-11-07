@@ -20,7 +20,7 @@ class FyProductUpdate(BasicProcessObject):
                   'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost', 'PrimaryVendorListPrice','PrimaryFyCost',
-                  'Landed Cost','FyLandedCostMarkupPercent_FYSell','FyLandedCostMarkupPercent_FYList',
+                  'Landed Cost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
                   'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate']
@@ -575,9 +575,9 @@ class FyProductUpdate(BasicProcessObject):
                 self.obReporter.update_report('Alert','DB Markup List too low')
 
         # get the markups from the file
-        mus_success, markup_sell = self.row_check(row, 'LandedCostMarkupPercent_FYSell')
+        mus_success, markup_sell = self.row_check(row, 'FyLandedCostMarkupPercent_FySell')
         if mus_success:
-            mus_success, markup_sell = self.float_check(markup_sell, 'LandedCostMarkupPercent_FYSell')
+            mus_success, markup_sell = self.float_check(markup_sell, 'FyLandedCostMarkupPercent_FySell')
             if markup_sell <= 0:
                 mus_success = False
                 self.obReporter.update_report('Alert','Markup Sell negative')
@@ -585,16 +585,16 @@ class FyProductUpdate(BasicProcessObject):
                 mus_success = False
                 self.obReporter.update_report('Alert','Markup Sell too low')
             else:
-                df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
+                df_collect_product_base_data['FyLandedCostMarkupPercent_FySell'] = [markup_sell]
 
         if not mus_success and db_mus_success:
             markup_sell = db_markup_sell
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [db_markup_sell]
+            df_collect_product_base_data['FyLandedCostMarkupPercent_FySell'] = [db_markup_sell]
 
 
-        mul_success, markup_list = self.row_check(row, 'LandedCostMarkupPercent_FYList')
+        mul_success, markup_list = self.row_check(row, 'FyLandedCostMarkupPercent_FyList')
         if mul_success:
-            mul_success, markup_list = self.float_check(markup_list, 'LandedCostMarkupPercent_FYList')
+            mul_success, markup_list = self.float_check(markup_list, 'FyLandedCostMarkupPercent_FyList')
             if markup_list <= 0:
                 mul_success = False
                 self.obReporter.update_report('Alert','Markup List negative')
@@ -602,26 +602,26 @@ class FyProductUpdate(BasicProcessObject):
                 mul_success = False
                 self.obReporter.update_report('Alert','Markup List too low')
             else:
-                df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+                df_collect_product_base_data['FyLandedCostMarkupPercent_FyList'] = [markup_list]
 
         if not mul_success and db_mul_success:
             markup_list = db_markup_list
-            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [db_markup_list]
+            df_collect_product_base_data['FyLandedCostMarkupPercent_FyList'] = [db_markup_list]
 
         # let's report if they're both missing
         if (not db_mus_success and not mus_success) and (not db_mul_success and not mul_success):
             self.obReporter.update_report('Fail', 'No markups not present')
             markup_sell = 0
             markup_list = 0
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
-            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+            df_collect_product_base_data['FyLandedCostMarkupPercent_FySell'] = [markup_sell]
+            df_collect_product_base_data['FyLandedCostMarkupPercent_FyList'] = [markup_list]
 
         elif (db_mus_success and not mus_success) and (db_mul_success and not mul_success):
             self.obReporter.update_report('Alert', 'DB markups were used')
             markup_sell = db_markup_sell
             markup_list = db_markup_list
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [markup_sell]
-            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [markup_list]
+            df_collect_product_base_data['FyLandedCostMarkupPercent_FySell'] = [markup_sell]
+            df_collect_product_base_data['FyLandedCostMarkupPercent_FyList'] = [markup_list]
 
         elif (db_mus_success and mus_success) and (db_mul_success and mul_success):
             if (markup_list != db_markup_list) or (markup_sell != db_markup_sell):
@@ -771,11 +771,11 @@ class FyProductUpdate(BasicProcessObject):
         if fy_landed_cost != 0:
             is_hot_price = True
 
-        if 'LandedCostMarkupPercent_FYSell' not in row:
-            df_collect_product_base_data['LandedCostMarkupPercent_FYSell'] = [0]
+        if 'FyLandedCostMarkupPercent_FySell' not in row:
+            df_collect_product_base_data['FyLandedCostMarkupPercent_FySell'] = [0]
             markup_percent_fy_sell = 0
         else:
-            markup_percent_fy_sell = float(row['LandedCostMarkupPercent_FYSell'])
+            markup_percent_fy_sell = float(row['FyLandedCostMarkupPercent_FySell'])
 
         if 'Sell Price' not in row:
             df_collect_product_base_data['Sell Price'] = [0]
@@ -787,11 +787,11 @@ class FyProductUpdate(BasicProcessObject):
             self.obReporter.update_report('Fail','Sell price did not calculate')
             return False, df_collect_product_base_data
 
-        if 'LandedCostMarkupPercent_FYList' not in row:
-            df_collect_product_base_data['LandedCostMarkupPercent_FYList'] = [0]
+        if 'FyLandedCostMarkupPercent_FyList' not in row:
+            df_collect_product_base_data['FyLandedCostMarkupPercent_FyList'] = [0]
             markup_percent_fy_list = 0
         else:
-            markup_percent_fy_list = float(row['LandedCostMarkupPercent_FYList'])
+            markup_percent_fy_list = float(row['FyLandedCostMarkupPercent_FyList'])
 
         if 'Retail Price' not in row:
             df_collect_product_base_data['Retail Price'] = [0]
@@ -1321,7 +1321,7 @@ class FyProductUpdate(BasicProcessObject):
 
         fy_landed_cost = row['Landed Cost']
         try:
-            markup_percent_fy_sell = row['LandedCostMarkupPercent_FYSell']
+            markup_percent_fy_sell = row['FyLandedCostMarkupPercent_FySell']
         except KeyError:
             for colName2, row2 in df_collect_product_base_data.iterrows():
                 print(row2)
@@ -1337,7 +1337,7 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_sell_price = row['Sell Price']
 
-        markup_percent_fy_list = row['LandedCostMarkupPercent_FYList']
+        markup_percent_fy_list = row['FyLandedCostMarkupPercent_FyList']
 
         if 'Retail Price' not in row:
             df_collect_product_base_data['Retail Price'] = [0]
@@ -1608,7 +1608,7 @@ class FyProductIngest(FyProductUpdate):
                   'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost','FyUnitOfMeasure',
-                  'Landed Cost','FyLandedCostMarkupPercent_FYSell','FyLandedCostMarkupPercent_FYList',
+                  'Landed Cost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
     att_fields = []
     gen_fields = []
