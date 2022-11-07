@@ -41,6 +41,7 @@ class MinimumProductPrice(BasicProcessObject):
         # in the current situation there's a a max ID of 1
         # so the next insert would be 2
         # we can prep accordingly and pre assign 2 to the next insert
+        # no, this approach is rubbishly slow. does that scan? Rubbishly? yeah.
 
         self.df_next_fy_description_id = self.obDal.get_next_fy_product_description_id()
         self.next_fy_description_id = int(self.df_next_fy_description_id['AUTO_INCREMENT'].iloc[0])
