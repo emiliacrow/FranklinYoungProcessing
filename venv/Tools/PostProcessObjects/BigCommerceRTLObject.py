@@ -484,8 +484,8 @@ class BigCommerceRTLObject(BasicProcessObject):
                 fy_allow_purchases = 1
                 df_collect_product_base_data['FyAllowPurchases'] = [fy_allow_purchases]
 
-                is_visible = 1
-                df_collect_product_base_data['FyIsVisible'] = [is_visible]
+                fy_is_visible = 1
+                df_collect_product_base_data['FyIsVisible'] = [fy_is_visible]
 
 
 
@@ -509,21 +509,21 @@ class BigCommerceRTLObject(BasicProcessObject):
                 else:
                     fy_allow_purchases = -1
 
-                is_visible = -1
-                success, is_visible = self.process_boolean(row, 'FyIsVisible')
+                fy_is_visible = -1
+                success, fy_is_visible = self.process_boolean(row, 'FyIsVisible')
                 if success:
-                    df_collect_product_base_data['FyIsVisible'] = [is_visible]
+                    df_collect_product_base_data['FyIsVisible'] = [fy_is_visible]
                 else:
-                    is_visible = -1
+                    fy_is_visible = -1
 
 
         # at this point we've evaluated all the data
-        if (price_toggle != -1 or data_toggle != -1 or is_discontinued != -1 or fy_is_discontinued != -1 or fy_allow_purchases != -1 or is_visible != -1):
+        if (price_toggle != -1 or data_toggle != -1 or is_discontinued != -1 or fy_is_discontinued != -1 or fy_allow_purchases != -1 or fy_is_visible != -1):
 
 
             db_price_toggle = int(row['db_BCPriceUpdateToggle'])
             db_data_toggle = int(row['db_BCPriceUpdateToggle'])
-            db_is_visible = int(row['db_IsVisible'])
+            db_fy_is_visible = int(row['db_IsVisible'])
             price_id = -1
             if 'ProductPriceId' in row:
                 price_id = int(row['ProductPriceId'])
@@ -648,12 +648,12 @@ class BigCommerceRTLObject(BasicProcessObject):
                 except ValueError:
                     deny_htme_date = str(row['FyDenyHTMEContractDate'])
 
-            if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_fy_is_discontinued != fy_is_discontinued or db_fy_allow_purchases != fy_allow_purchases or db_is_visible != is_visible:
-                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, fy_allow_purchases, price_toggle, data_toggle,
+            if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_fy_is_discontinued != fy_is_discontinued or db_fy_allow_purchases != fy_allow_purchases or db_fy_is_visible != fy_is_visible:
+                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                               deny_ecat, deny_ecat_date, deny_htme, deny_htme_date)
             elif self.full_run:
-                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, is_visible, fy_allow_purchases, price_toggle, data_toggle,
+                self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                               deny_ecat, deny_ecat_date, deny_htme, deny_htme_date)
 

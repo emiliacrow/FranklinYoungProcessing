@@ -88,12 +88,12 @@ class BasePrice(BasicProcessObject):
             if self.filter_check_in(row) == False:
                 return False, df_collect_product_base_data
 
-            success, return_val = self.process_boolean(row, 'IsVisible')
+            success, return_val = self.process_boolean(row, 'FyIsVisible')
             if success:
-                df_collect_product_base_data['IsVisible'] = [return_val]
+                df_collect_product_base_data['FyIsVisible'] = [return_val]
             else:
-                self.obReporter.update_report('Alert', '{0} was set to 0'.format('IsVisible'))
-                df_collect_product_base_data['IsVisible'] = [1]
+                self.obReporter.update_report('Alert', '{0} was set to 0'.format('FyIsVisible'))
+                df_collect_product_base_data['FyIsVisible'] = [1]
 
             success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data, row)
             if success == False:
@@ -399,7 +399,7 @@ class BasePrice(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            is_visible = row['IsVisible']
+            is_visible = row['FyIsVisible']
 
             if 'VAProductPriceId' in row:
                 va_product_price_id = row['VAProductPriceId']

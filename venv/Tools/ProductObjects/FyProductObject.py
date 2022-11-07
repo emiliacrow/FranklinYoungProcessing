@@ -657,7 +657,12 @@ class FyProductUpdate(BasicProcessObject):
 
     def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
         # do math
-        fy_sell_price_long = fy_landed_cost * markup_sell
+        try:
+            fy_sell_price_long = float(fy_landed_cost) * markup_sell
+        except TypeError:
+            print('landed cost', fy_landed_cost)
+            print('markup', markup_sell)
+            x = input('x')
 
         # initial rounding and formatting
         fy_sell_price = round(fy_sell_price_long, 4)
@@ -676,7 +681,12 @@ class FyProductUpdate(BasicProcessObject):
         df_collect_product_base_data['FySellPrice'] = [fy_sell_price]
 
         # do math
-        fy_list_price_long = float(fy_landed_cost * markup_list)
+        try:
+            fy_list_price_long = float(fy_landed_cost) * markup_list
+        except TypeError:
+            print('landed cost', fy_landed_cost)
+            print('mark up', markup_list)
+            x = input('x')
 
         # initial rounding and formatting
         fy_list_price = round(fy_list_price_long, 4)
