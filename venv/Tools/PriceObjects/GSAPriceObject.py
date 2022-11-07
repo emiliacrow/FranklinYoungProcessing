@@ -194,7 +194,7 @@ class GSAPrice(BasicProcessObject):
                 approved_percent = -1
 
             if 'MfcDiscountPercent' in row:
-                mfc_percent = row['MfcDiscountPercent']
+                mfc_percent = float(row['MfcDiscountPercent'])
             else:
                 mfc_percent = -1
 

@@ -486,7 +486,7 @@ class DalObject:
 
     def gsa_product_price_update(self,lst_gsa_product_price):
         proc_name = 'sequoia.GSAProductPrice_update3'
-        proc_statement = 'CALL `sequoia`.`GSAProductPrice_update2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`GSAProductPrice_update3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_product_price)
         runner.start()
@@ -494,7 +494,7 @@ class DalObject:
     def get_gsa_price_lookup(self):
         proc_name = 'sequoia.get_GSAPrice_lookup'
         column_names = ['FyProductNumber','VendorPartNumber','GSAOnContract','db_ContractedManufacturerPartNumber', 'GSAApprovedListPrice',
-                         'GSAApprovedPercent', 'MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
+                         'GSAApprovedPercent', 'db_MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
         df_gsa_price_lookup = self.get_lookup(proc_name,column_names)
         return df_gsa_price_lookup
 
@@ -564,7 +564,7 @@ class DalObject:
     def get_va_price_lookup(self):
         proc_name = 'sequoia.get_VAPrice_lookup'
         column_names = ['FyProductNumber','VendorPartNumber','VAOnContract','db_ContractedManufacturerPartNumber', 'VAApprovedListPrice',
-                         'VAApprovedPercent', 'MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
+                         'VAApprovedPercent', 'db_MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
 

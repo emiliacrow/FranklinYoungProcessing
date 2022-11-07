@@ -25,7 +25,7 @@ class MinimumProductPrice(BasicProcessObject):
         if 'VendorId' not in self.df_product.columns:
             self.batch_process_vendor()
 
-        if 'FyCountryOfOrigin' in self.df_product.columns:
+        if 'FyCountryOfOrigin' in self.df_product.columns and 'FyCountryOfOriginId' not in self.df_product.columns:
             self.batch_process_country()
 
         self.define_new()
@@ -33,18 +33,6 @@ class MinimumProductPrice(BasicProcessObject):
         self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions_short()
 
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
-
-
-        # and do something with them
-        # like what if we could predict the next ID from this and
-        # do the insert blind?
-        # in the current situation there's a a max ID of 1
-        # so the next insert would be 2
-        # we can prep accordingly and pre assign 2 to the next insert
-        # no, this approach is rubbishly slow. does that scan? Rubbishly? yeah.
-
-        self.df_next_fy_description_id = self.obDal.get_next_fy_product_description_id()
-        self.next_fy_description_id = int(self.df_next_fy_description_id['AUTO_INCREMENT'].iloc[0])
 
         self.df_product.sort_values(by=['FyProductNumber'], inplace=True)
 
@@ -292,20 +280,14 @@ class MinimumProductPrice(BasicProcessObject):
 
             else:
                 if 'ProductDescriptionId' not in row:
-                    #self.obReporter.update_report('Alert', 'Ingest in FyProductDescription')
-                    #df_collect_product_base_data['ProductDescriptionId'] = [-1]
-
-                    ### DEPRICATE ###
                     success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
                     if success:
                         df_collect_product_base_data['ProductDescriptionId'] = [-1]
                     else:
                         df_collect_product_base_data['ProductDescriptionId'] = [-1]
-                    ### DEPRICATE ###
                 else:
                     fy_product_desc_id = row['ProductDescriptionId']
                     self.dct_fy_product_description[fy_product_number] = fy_product_desc_id
-                    # df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
 
         is_discontinued = -1
         success, is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
