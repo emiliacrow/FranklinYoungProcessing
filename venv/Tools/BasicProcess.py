@@ -838,6 +838,8 @@ class BasicProcessObject:
         if self.is_viable:
             self.success, self.message = self.run_process()
         elif self.message == 'No message':
+            fail_report = ''
+            fail_message = ''
 
             if len(self.lst_untranslated_headers) > 0:
                 untranslated_string = str(self.lst_untranslated_headers)
