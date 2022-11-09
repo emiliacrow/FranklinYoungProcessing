@@ -23,7 +23,8 @@ class FyProductUpdate(BasicProcessObject):
                   'FyLandedCost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
-                  'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate']
+                  'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate',
+                  'GSA_Sin','VA_Sin', 'GSADiscountPercent','VADiscountPercent','MfcDiscountPercent']
     att_fields = []
     gen_fields = []
 

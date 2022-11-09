@@ -181,7 +181,7 @@ class HeaderTranslator():
                                                              'GSAContractModification', 'GSA Contract Modification','GSA Modification Number'],
                             'GSAApprovedPriceDate':['GSAApprovedPriceDate', 'GSA Approved Price Date',
                                                     'GSA Approved Date'],
-                            'GSA_Sin':['GSA_Sin', 'GSA_SIN', 'GSA Sin', 'GSA SIN', 'GSASin','GSA Sin #'],
+                            'GSA_Sin':['GSA_Sin', 'GSA_SIN', 'GSA Sin', 'GSA SIN', 'GSASin','GSA Sin #','GSASin#'],
 # VA
                             'VAApprovedListPrice':['ChannelApprovedFYListPrice__value', 'ChannelApprovedFYListPrice',
                                                     'ApprovedFYListPrice'],
@@ -195,7 +195,7 @@ class HeaderTranslator():
                             'VAApprovedPriceDate':['VAApprovedPriceDate', 'VA Approved Price Date',
                                                     'VA Approved Date'],
 
-                            'VA_Sin':['VA_Sin','VA_SIN','VA Sin','VA SIN','VASin','VA Sin #'],
+                            'VA_Sin':['VA_Sin','VA_SIN','VA Sin','VA SIN','VASin','VA Sin #','VASin#'],
 # ECAT
                             'ECATApprovedListPrice':['ECATApprovedFYListPrice__value', 'ECATApprovedFYListPrice',
                                                    'ECATApprovedFYListPrice'],
