@@ -856,13 +856,17 @@ class BasicProcessObject:
                 self.df_product['Missing Headers'] = missing_string
 
             if len(missing_heads) == 1:
+                self.df_product['Fail'] = 'Failed due to missing headers'
                 self.message = 'The file is missing a product field: {0}, see output'.format(missing_heads[0])
             elif len(missing_heads) != 0:
+                self.df_product['Fail'] = 'Failed due to missing headers'
                 self.message = 'The file is missing product fields: {0} and {1} more, see output'.format(missing_heads[0],
                                                                                      str(len(missing_heads) - 1))
             elif len(self.lst_untranslated_headers) > 0:
+                self.df_product['Fail'] = 'Failed due to untranslated headers'
                 self.message = 'The file has untranslatable headers, see output'
             else:
+                self.df_product['Fail'] = 'Failed due to missing headers'
                 self.message = 'The file is missing at least 1 supporting field, see output'
 
         return self.success, self.message
