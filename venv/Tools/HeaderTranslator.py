@@ -9,6 +9,26 @@ class HeaderTranslator():
         self.name = 'Translator Teddy'
         # I would prefer this get read from elsewhere so it doesn't live in code
         self.dct_headers = {'VendorName':['VendorName','Vendor Name','primary_vendor_name'],
+
+                            'PrimaryVendorPartNumber':['PrimaryVendorPartNumber'],
+                            'PrimaryVendorListPrice':['PrimaryVendorListPrice'],
+                            'PrimaryFyCost':['PrimaryFyCost'],
+                            'PrimaryFyDiscountPercent':['PrimaryFyDiscountPercent'],
+                            'PrimaryEstimatedFreight':['PrimaryEstimatedFreight'],
+
+                            'SecondaryVendorPartNumber':['SecondaryVendorPartNumber'],
+                            'SecondaryVendorListPrice':['SecondaryVendorListPrice'],
+                            'SecondaryVendorFyCost':['SecondaryVendorFyCost'],
+                            'SecondaryFOBOrigin':['SecondaryFOBOrigin'],
+
+                            'IsFeaturedProduct':['IsFeaturedProduct'],
+                            'VendorFyProductNumber':['VendorFyProductNumber'],
+
+                            'TAA Compliant':['TAA Compliant'],
+
+
+
+
                             'VendorCode':['VendorCode', 'Vendor Code', 'primary_vendor_code'],
                             'VendorPartNumber':['VendorPartNumber','Vendor Part Number','primary_vendor_part_no','Thomas Item #','vendor_part_no'],
 
@@ -39,7 +59,7 @@ class HeaderTranslator():
                             'UnitOfIssue':['UnitOfIssue', 'Unit Of Issue', 'UnitOfIssueSymbol', 'Unit Of Issue Symbol', 'UOI', 'uoi','unit_of_issue','unit of issue'],
                             'UnitOfMeasure':['UnitOfMeasure','Unit Of Measure','UnitOfMeasureSymbol','Unit Of Measure Symbol','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
 
-                            'FyIsHazardous':['IsHazardous','Is Hazardous','Hazardous','is_hazardous','FyIsHazardous'],
+                            'FyIsHazardous':['IsHazardous','Is Hazardous','Hazardous','is_hazardous','FyIsHazardous','fy_is_hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
                             'LeadTime':['LeadTimes','LeadTime','LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
                             'LeadTimeExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
@@ -49,6 +69,10 @@ class HeaderTranslator():
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
                             'EstimatedFreight':['EstimatedFrieght','Estimated Freight','EstimatedFreight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
                             'ProductNotes':['ProductNotes', 'Product Notes','VendorProductNotes','Vendor Product Notes'],
+
+                            'ECommerceDiscount':['ECommerceDiscount'],
+                            'FySellGrossMargin':['FySellGrossMargin'],
+                            'FySellGrossMarginPercent':['FySellGrossMarginPercent'],
 
                             'ProductSortOrder':['ProductSortOrder','Product Sort Order','FyProductSortOrder','Fy Product Sort Order'],
 
@@ -65,8 +89,8 @@ class HeaderTranslator():
                                                'FY Catalog Number'],
                             'FyProductNumber':['FyProductNumber', 'FyProduct#', 'FYProductNumber', 'Fy Product Number',
                                                'FY Product Number'],
-                            'PrimaryVendorName':['PrimaryVendorCode', 'Primary Vendor Code', 'primary_vendor_code','PrimaryVendor','Primary Vendor'],
-                            'SecondaryVendorName':['SecondaryVendorCode', 'Secondary Vendor Code', 'secondary_vendor_code','SecondaryVendor','Secondary Vendor'],
+                            'PrimaryVendorName':['PrimaryVendorName','PrimaryVendorCode', 'Primary Vendor Code', 'primary_vendor_code','PrimaryVendor','Primary Vendor'],
+                            'SecondaryVendorName':['SecondaryVendorName','SecondaryVendorCode', 'Secondary Vendor Code', 'secondary_vendor_code','SecondaryVendor','Secondary Vendor'],
                             'FyManufacturerPartNumber':['FyManufacturerPartNumber','ContractedManufacturerPartNumber','Contracted Manufacturer Part Number','ContractedManufacturerNumber','Contracted Manufacturer Number','ContractedPartNumber', 'Contracted Part Number'],
 
                             'FyPartNumber':['FYPartNumber', 'FyPartNumber', 'fy_part_number', 'fy_part_no', 'Product Code/SKU'],
@@ -110,6 +134,8 @@ class HeaderTranslator():
 
                             'DateCatalogReceived':['DateCatalogRecieved', 'DateCatelogReceived', 'DateCatalogReceived',
                                                    'Date Catalog Recieved', 'date_catalog_received','DateCatalogRcvd'],
+                            'CatalogProvidedBy':['CatalogProvidedBy','Catalog Provided By'],
+
                             'ProductTaxClass':['ProductTaxClass','Product Tax Class','Tax Class'],
 
                             'ImageUrl':['ImageUrl', 'ProductImageUrl', 'Image Url', 'Product Image Url',
@@ -134,6 +160,13 @@ class HeaderTranslator():
                             'HTMEOnContract':['HTMEOnContract', 'HTME On Contract', 'HTME On Contract'],
                             'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],
                             'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
+
+                            'GSAApprovedGrossMarginPercent':['GSAApprovedGrossMarginPercent'],
+                            'GSAProposedGrossMarginPercent':['GSAProposedGrossMarginPercent'],
+                            'VAApprovedGrossMarginPercent':['VAApprovedGrossMarginPercent'],
+                            'VAProposedGrossMarginPercent':['VAProposedGrossMarginPercent'],
+                            'ECATApprovedGrossMarginPercent':['ECATApprovedGrossMarginPercent'],
+                            'ECATProposedGrossMarginPercent':['ECATProposedGrossMarginPercent'],
 
 
 # GSA
@@ -181,9 +214,52 @@ class HeaderTranslator():
                                                   'approved MFC per','VA_MFC_Discount','GSA_MFC_Discount','MFC %'],
                             'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
 
+                            'ChangedDate':['ChangedDate'],
+                            'ChangedBy':['ChangedBy'],
 
-                            'FyProductNumberOverride':['FyProductNumberOverride', 'Fy Product Number Override','IsProductNumberOverride', 'ProductNumberOverride', 'Product Number Override']
+                            'FyProductNumberOverride':['FyProductNumberOverride', 'Fy Product Number Override','IsProductNumberOverride', 'ProductNumberOverride', 'Product Number Override'],
 
+                            'ProductId':['ProductId'],
+                            'ProductPriceId':['ProductPriceId'],
+                            'PrimaryProductPriceId':['PrimaryProductPriceId'],
+                            'SecondaryProductPriceId':['SecondaryProductPriceId'],
+                            'ProductDescriptionId':['ProductDescriptionId'],
+
+                            'Pass':['Pass'],
+                            'Alert':['Alert'],
+                            'Fail':['Fail'],
+                            'ProductDescriptionId':['ProductDescriptionId'],'VendorId':['VendorId'],
+
+                            'ManufacturerId':['ManufacturerId'],
+                            'UpdateManufacturerName':['UpdateManufacturerName'],
+                            'BaseProductPriceId':['BaseProductPriceId'],
+                            'db_IsDiscontinued':['db_IsDiscontinued'],
+                            'db_FyIsDiscontinued':['db_FyIsDiscontinued'],
+                            'ECATProductPriceId':['ECATProductPriceId'],
+                            'HTMEProductPriceId':['HTMEProductPriceId'],
+                            'GSAProductPriceId':['GSAProductPriceId'],
+                            'VAProductPriceId':['VAProductPriceId'],
+                            'Filter':['Filter'],
+                            'TakePriority':['TakePriority'],
+                            'db_ProductNumberOverride':['db_ProductNumberOverride'],
+                            'db_FyProductNotes':['db_FyProductNotes'],
+                            'db_GSAProductNotes':['db_GSAProductNotes'],
+                            'db_ECATProductNotes':['db_ECATProductNotes'],
+                            'CategoryId':['CategoryId'],
+                            'RecommendedStorageId':['RecommendedStorageId'],
+                            'CountryOfOriginId':['CountryOfOriginId'],
+                            'FyCountryOfOriginId':['FyCountryOfOriginId'],
+                            'ExpectedLeadTimeId':['ExpectedLeadTimeId'],
+                            'IsFreeShipping':['IsFreeShipping'],
+                            'IsColdChain':['IsColdChain'],
+                            'ShippingInstructionsId':['ShippingInstructionsId'],
+                            'db_FyProductName':['db_FyProductName'],
+                            'db_FyProductDescription':['db_FyProductDescription'],
+                            'FyUnitOfIssueSymbolId':['FyUnitOfIssueSymbolId'],
+                            'UnitOfIssueSymbolId':['UnitOfIssueSymbolId'],
+                            'UnitOfMeasureSymbolId':['UnitOfMeasureSymbolId'],
+                            'PrimaryVendorId':['PrimaryVendorId'],
+                            'SecondaryVendorId':['SecondaryVendorId'],
                             }
         # that's stupid
         self.build_trans_dct()
@@ -197,6 +273,7 @@ class HeaderTranslator():
 
     def translate_headers(self,lst_in_heads):
         lst_out_heads = []
+        lst_unmatched_headers = []
         for each_header in lst_in_heads:
             clean_head = str(each_header).strip()
             clean_head = clean_head.lower()
@@ -206,11 +283,13 @@ class HeaderTranslator():
                     lst_out_heads.append(self.translator_dict[clean_head])
                 else:
                     lst_out_heads.append(each_header)
+                    lst_unmatched_headers.append(each_header)
 
             else:
                 lst_out_heads.append(each_header)
+                lst_unmatched_headers.append(each_header)
 
-        return lst_out_heads
+        return lst_out_heads, lst_unmatched_headers
 
 
 ## end ##

@@ -39,7 +39,7 @@ class BasicProcessObject:
         self.df_product = df_product
         self.obHeaderTranslator = HeaderTranslator()
 
-        self.lst_product_headers = self.obHeaderTranslator.translate_headers(list(self.df_product.columns))
+        self.lst_product_headers, self.lst_untranslated_headers = self.obHeaderTranslator.translate_headers(list(self.df_product.columns))
         self.df_product.columns = self.lst_product_headers
 
         # remove duplicated columns by headers
@@ -61,23 +61,26 @@ class BasicProcessObject:
 
     def header_viability(self):
         # if there are required headers we check if they're all there
-        product_headers = set(self.lst_product_headers)
-        if len(self.req_fields) > 0:
-            required_headers = set(self.req_fields)
-            self.is_viable = required_headers.issubset(product_headers)
-            # if it passes and there are support headers we check them
-            if (len(self.sup_fields) > 0) and self.is_viable:
-                support_headers = set(self.sup_fields)
-                if len(product_headers.intersection(support_headers)) == 0:
-                    self.is_viable = False
-
-        # there aren't required headers, but there are support headers
-        elif len(self.sup_fields) > 0:
-            support_headers = set(self.sup_fields)
-            if len(product_headers.intersection(support_headers)) > 0:
-                self.is_viable = True
+        if len(self.lst_untranslated_headers) > 0:
+            self.is_viable = False
         else:
-            self.is_viable = True
+            product_headers = set(self.lst_product_headers)
+            if len(self.req_fields) > 0:
+                required_headers = set(self.req_fields)
+                self.is_viable = required_headers.issubset(product_headers)
+                # if it passes and there are support headers we check them
+                if (len(self.sup_fields) > 0) and self.is_viable:
+                    support_headers = set(self.sup_fields)
+                    if len(product_headers.intersection(support_headers)) == 0:
+                        self.is_viable = False
+
+            # there aren't required headers, but there are support headers
+            elif len(self.sup_fields) > 0:
+                support_headers = set(self.sup_fields)
+                if len(product_headers.intersection(support_headers)) > 0:
+                    self.is_viable = True
+            else:
+                self.is_viable = True
 
     def get_missing_heads(self):
         product_headers = set(self.lst_product_headers)
@@ -835,20 +838,32 @@ class BasicProcessObject:
         if self.is_viable:
             self.success, self.message = self.run_process()
         elif self.message == 'No message':
-            missing_heads = self.get_missing_heads()
-            missing_string = str(missing_heads)
-            missing_string = missing_string.replace(']','')
-            missing_string = missing_string.replace('[','')
-            missing_string = missing_string.replace('\'','')
 
-            self.df_product['Missing Headers'] = missing_string
+            if len(self.lst_untranslated_headers) > 0:
+                untranslated_string = str(self.lst_untranslated_headers)
+                untranslated_string = untranslated_string.replace(']','')
+                untranslated_string = untranslated_string.replace('[','')
+                untranslated_string = untranslated_string.replace('\'','')
+                self.df_product['Untranslated Headers'] = untranslated_string
+                self.message = 'The file has untranslatable headers, see output'
+
+            missing_heads = self.get_missing_heads()
+            if len(missing_heads) > 0:
+                missing_string = str(missing_heads)
+                missing_string = missing_string.replace(']','')
+                missing_string = missing_string.replace('[','')
+                missing_string = missing_string.replace('\'','')
+                self.df_product['Missing Headers'] = missing_string
+
             if len(missing_heads) == 1:
-                self.message = 'The file is missing a product field: ' + missing_heads[0]
+                self.message = 'The file is missing a product field: {0}, see output'.format(missing_heads[0])
             elif len(missing_heads) != 0:
-                self.message = 'The file is missing product fields: {} and {} more'.format(missing_heads[0],
+                self.message = 'The file is missing product fields: {0} and {1} more, see output'.format(missing_heads[0],
                                                                                      str(len(missing_heads) - 1))
+            elif len(self.lst_untranslated_headers) > 0:
+                self.message = 'The file has untranslatable headers, see output'
             else:
-                self.message = 'The file is missing at least 1 supporting field.'
+                self.message = 'The file is missing at least 1 supporting field, see output'
 
         return self.success, self.message
 
