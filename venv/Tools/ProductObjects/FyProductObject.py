@@ -1590,7 +1590,7 @@ class FyProductUpdate(BasicProcessObject):
         if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
                 or fy_is_discontinued != -1 or fy_is_visible != -1 or fy_allow_purchases != -1 or price_toggle != -1 or data_toggle != -1 or date_catalog_received != -1):
-            print(date_catalog_received, catalog_provided_by)
+            #print(date_catalog_received, catalog_provided_by)
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_manufacturer_part_number, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
