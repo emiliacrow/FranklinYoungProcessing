@@ -15,7 +15,7 @@ from Tools.BasicProcess import BasicProcessObject
 class FyProductUpdate(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = ['FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
-                  'FyUnitOfIssueByQuantity','FyUnitOfMeasure','FyLeadTimes', 'FyIsHazardous', 'VendorName', 'PrimaryVendorName', 'SecondaryVendorName',
+                  'FyUnitOfIssueQuantity','FyUnitOfMeasure','FyLeadTimes', 'FyIsHazardous', 'VendorName', 'PrimaryVendorName', 'SecondaryVendorName',
                   'ManufacturerPartNumber', 'ManufacturerName', 'VendorPartNumber','DateCatalogReceived',
                   'FyCategory', 'FyNAICSCode', 'FyUNSPSCCode', 'FyHazardousSpecialHandlingCode',
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
@@ -741,8 +741,8 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_uom_id = -1
 
-        if 'FyUnitOfIssueByQuantity' in row:
-            fy_uoi_qty = int(row['FyUnitOfIssueByQuantity'])
+        if 'FyUnitOfIssueQuantity' in row:
+            fy_uoi_qty = int(row['FyUnitOfIssueQuantity'])
         else:
             fy_uoi_qty = -1
 
@@ -1188,9 +1188,9 @@ class FyProductUpdate(BasicProcessObject):
 
         if fy_uoi_qty == -1:
             if report != '':
-                report = report + ', FyUnitOfIssueByQuantity'
+                report = report + ', FyUnitOfIssueQuantity'
             else:
-                report = 'Missing FyUnitOfIssueByQuantity'
+                report = 'Missing FyUnitOfIssueQuantity'
 
         if fy_lead_time == -1:
             if report != '':
@@ -1268,8 +1268,8 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_uom_id = -1
 
-        if 'FyUnitOfIssueByQuantity' in row:
-            fy_uoi_qty = int(row['FyUnitOfIssueByQuantity'])
+        if 'FyUnitOfIssueQuantity' in row:
+            fy_uoi_qty = int(row['FyUnitOfIssueQuantity'])
         else:
             fy_uoi_qty = -1
 
@@ -1589,7 +1589,8 @@ class FyProductUpdate(BasicProcessObject):
 
         if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
-                or fy_is_discontinued != -1 or fy_is_visible != -1 or fy_allow_purchases != -1 or price_toggle != -1 or data_toggle != -1):
+                or fy_is_discontinued != -1 or fy_is_visible != -1 or fy_allow_purchases != -1 or price_toggle != -1 or data_toggle != -1 or date_catalog_received != -1):
+            print(date_catalog_received, catalog_provided_by)
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_manufacturer_part_number, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
                                                           primary_vendor_id, secondary_vendor_id,
@@ -1613,7 +1614,7 @@ class FyProductUpdate(BasicProcessObject):
 
 class FyProductIngest(FyProductUpdate):
     req_fields = ['FyProductNumber', 'FyProductName', 'FyProductDescription', 'FyCountryOfOrigin', 'FyUnitOfIssue',
-                  'FyUnitOfIssueByQuantity','FyLeadTimes', 'ManufacturerPartNumber',
+                  'FyUnitOfIssueQuantity','FyLeadTimes', 'ManufacturerPartNumber',
                   'ManufacturerName', 'VendorPartNumber','DateCatalogReceived']
 
     sup_fields = ['VendorName', 'PrimaryVendorName', 'SecondaryVendorName', 'FyIsHazardous',
