@@ -24,7 +24,7 @@ class FyProductUpdate(BasicProcessObject):
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
                   'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate',
-                  'GSA_Sin','VA_Sin', 'GSADiscountPercent','VADiscountPercent','MfcDiscountPercent']
+                  'GSA_Sin','VA_Sin', 'GSADiscountPercent','VADiscountPercent','MfcDiscountPercent','WebsiteOnly']
     att_fields = []
     gen_fields = []
 
@@ -726,8 +726,6 @@ class FyProductUpdate(BasicProcessObject):
 
         if 'FyCountryOfOriginId' in row:
             fy_coo_id = int(row['FyCountryOfOriginId'])
-            if fy_coo_id == 259:
-                fy_coo_id = -1
         else:
             fy_coo_id = -1
 
