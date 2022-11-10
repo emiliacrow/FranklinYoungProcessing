@@ -10,7 +10,6 @@ import xlrd
 from Tools.ProgressBar import YesNoDialog
 from Tools.BasicProcess import BasicProcessObject
 
-# handle date catalog recieved for primary here?
 
 class FyProductUpdate(BasicProcessObject):
     req_fields = ['FyProductNumber']
@@ -24,7 +23,9 @@ class FyProductUpdate(BasicProcessObject):
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
                   'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate',
-                  'GSA_Sin','VA_Sin', 'GSADiscountPercent','VADiscountPercent','MfcDiscountPercent','WebsiteOnly']
+                  'GSA_Sin','VA_Sin', 'GSADiscountPercent','VADiscountPercent','MfcDiscountPercent',
+                  'WebsiteOnly','GSAEligible','VAEligible','ECATEligible','HTMEEligible',
+                  'VendorIsDiscontinued','VendorProductNotes']
     att_fields = []
     gen_fields = []
 
@@ -364,6 +365,12 @@ class FyProductUpdate(BasicProcessObject):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            fy_product_number = row['FyProductNumber']
+            if self.test_product_number(fy_product_number) == False:
+                self.obReporter.update_report('Fail','There\'s an error in your product number')
+                return False, df_collect_product_base_data
+
+
             for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
@@ -982,6 +989,17 @@ class FyProductUpdate(BasicProcessObject):
             estimated_freight = 0
 
 
+        vendor_product_notes = ''
+        if 'VendorProductNotes' in row:
+            vendor_product_notes = str(row['VendorProductNotes'])
+
+        success, vendor_is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
+        if success:
+            df_collect_product_base_data['VendorIsDiscontinued'] = [vendor_is_discontinued]
+        else:
+            vendor_is_discontinued = -1
+
+
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
         if success:
             df_collect_product_base_data['WebsiteOnly'] = [b_website_only]
@@ -1145,6 +1163,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                           fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                           fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                          vendor_product_notes, vendor_is_discontinued,
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                           vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                           markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1457,11 +1476,51 @@ class FyProductUpdate(BasicProcessObject):
                 except TypeError:
                     self.obReporter.update_report('Alert','Check DateCatalogReceived')
 
-
         if 'CatalogProvidedBy' in row:
             catalog_provided_by = str(row['CatalogProvidedBy'])
         else:
             catalog_provided_by = ''
+
+        vendor_product_notes = ''
+        if 'VendorProductNotes' in row:
+            vendor_product_notes = str(row['VendorProductNotes'])
+
+        success, vendor_is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
+        if success:
+            df_collect_product_base_data['VendorIsDiscontinued'] = [vendor_is_discontinued]
+        else:
+            vendor_is_discontinued = -1
+
+
+        success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
+        if success:
+            df_collect_product_base_data['WebsiteOnly'] = [b_website_only]
+        else:
+            b_website_only = -1
+
+        success, va_eligible = self.process_boolean(row, 'VAEligible')
+        if success:
+            df_collect_product_base_data['VAEligible'] = [va_eligible]
+        else:
+            va_eligible = -1
+
+        success, gsa_eligible = self.process_boolean(row, 'GSAEligible')
+        if success:
+            df_collect_product_base_data['GSAEligible'] = [gsa_eligible]
+        else:
+            gsa_eligible = -1
+
+        success, htme_eligible = self.process_boolean(row, 'HTMEEligible')
+        if success:
+            df_collect_product_base_data['HTMEEligible'] = [htme_eligible]
+        else:
+            htme_eligible = -1
+
+        success, ecat_eligible = self.process_boolean(row, 'ECATEligible')
+        if success:
+            df_collect_product_base_data['ECATEligible'] = [ecat_eligible]
+        else:
+            ecat_eligible = -1
 
 
         success, deny_gsa = self.process_boolean(row, 'FyDenyGSAContract')
@@ -1594,6 +1653,8 @@ class FyProductUpdate(BasicProcessObject):
                                                           primary_vendor_id, secondary_vendor_id,
                                                           fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                          vendor_product_notes, vendor_is_discontinued,
+                                                          b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
@@ -1620,7 +1681,9 @@ class FyProductIngest(FyProductUpdate):
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost','FyUnitOfMeasure',
                   'FyLandedCost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
-                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible']
+                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
+                  'WebsiteOnly','GSAEligible','VAEligible','ECATEligible','HTMEEligible',
+                  'VendorIsDiscontinued','VendorProductNotes']
     att_fields = []
     gen_fields = []
 

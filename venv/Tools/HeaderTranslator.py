@@ -68,7 +68,7 @@ class HeaderTranslator():
                             'Discount':['Discount','VendorDiscount','Vendor Discount','Vendor Discount to FY','FyDiscountPercent','FyDiscByVendor'],
                             'FyCost':['Cost Price','Your Price','FyCost','Fy Cost','primary_vendor_fy_cost'],
                             'EstimatedFreight':['EstimatedFrieght','Estimated Freight','EstimatedFreight','Estimated Shipping','EstimatedShipping','primary_vendor_estimated_freight($)'],
-                            'ProductNotes':['ProductNotes', 'Product Notes','VendorProductNotes','Vendor Product Notes'],
+                            'VendorProductNotes':['ProductNotes', 'Product Notes','VendorProductNotes','Vendor Product Notes'],
 
                             'ECommerceDiscount':['ECommerceDiscount'],
                             'FySellGrossMargin':['FySellGrossMargin'],

@@ -376,14 +376,14 @@ class BasePrice(BasicProcessObject):
         elif (not db_mus_success and mus_success) and (not db_mul_success and mul_success):
             self.obReporter.update_report('Alert', 'File markups were used')
 
-        if 'ProductNotes' in row and 'ProductPriceId' in row:
-            product_notes = row['ProductNotes']
-            if (product_notes != ''):
+        if 'VendorProductNotes' in row and 'ProductPriceId' in row:
+            vendor_product_notes = row['VendorProductNotes']
+            if (vendor_product_notes != ''):
                 product_price_id = int(row['ProductPriceId'])
-                product_notes = product_notes.replace('NULL','')
-                product_notes = product_notes.replace(';','')
+                vendor_product_notes = vendor_product_notes.replace('NULL','')
+                vendor_product_notes = vendor_product_notes.replace(';','')
 
-                self.obIngester.set_product_notes(-1,'', product_price_id, product_notes)
+                self.obIngester.set_product_notes(-1,'', product_price_id, vendor_product_notes)
 
         df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)
         return True, df_collect_product_base_data

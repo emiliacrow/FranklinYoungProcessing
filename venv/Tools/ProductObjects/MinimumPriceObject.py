@@ -556,17 +556,17 @@ class MinimumProductPrice(BasicProcessObject):
 
     def minimum_product_price(self, df_line_product):
         fy_part_number = ''
-        fy_product_notes = ''
+        vendor_product_notes = ''
         for colName, row in df_line_product.iterrows():
             fy_product_number = row['FyProductNumber']
             if 'FyPartNumber' in row:
                 fy_part_number = row['FyPartNumber']
 
-            product_notes = ''
-            if 'ProductNotes' in row:
-                product_notes = row['ProductNotes']
-                product_notes = product_notes.replace('NULL','')
-                product_notes = product_notes.replace(';','')
+            vendor_product_notes = ''
+            if 'VendorProductNotes' in row:
+                vendor_product_notes = row['VendorProductNotes']
+                vendor_product_notes = vendor_product_notes.replace('NULL','')
+                vendor_product_notes = vendor_product_notes.replace(';','')
 
             product_tax_class = row['ProductTaxClass']
             vendor_part_number = row['VendorPartNumber']
@@ -586,7 +586,7 @@ class MinimumProductPrice(BasicProcessObject):
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
                 self.obIngester.insert_product_price(fy_product_number, fy_part_number,
                                                      product_tax_class, vendor_part_number, product_id, vendor_id,
-                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, product_notes,is_discontinued)
+                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, vendor_product_notes,is_discontinued)
             else:
                 self.obReporter.update_report('Fail','Check UOI, QTY, UOM')
 
@@ -594,14 +594,14 @@ class MinimumProductPrice(BasicProcessObject):
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price_nouoi(price_id, fy_product_number, fy_part_number,
                                                  product_tax_class, vendor_part_number, product_id, vendor_id,
-                                                 product_description_id, fy_product_notes,is_discontinued)
+                                                 product_description_id, vendor_product_notes,is_discontinued)
 
         # this pathway will be needed at some point I'm sure
         elif 'DEPRICATED' == 'UNIT CHANGE PATH':
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price(price_id, fy_product_number, fy_part_number,
                                                  product_tax_class, vendor_part_number, product_id, vendor_id,
-                                                 unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, fy_product_notes,is_discontinued)
+                                                 unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, vendor_product_notes,is_discontinued)
 
 
 

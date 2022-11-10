@@ -39,6 +39,8 @@ class BasicProcessObject:
         self.df_product = df_product
         self.obHeaderTranslator = HeaderTranslator()
 
+        self.valid_product_units = ['BT','BX','CT','CA','JR','KT','PK','PR','RL','ST']
+
         self.lst_product_headers, self.lst_untranslated_headers = self.obHeaderTranslator.translate_headers(list(self.df_product.columns))
         self.df_product.columns = self.lst_product_headers
 
@@ -1195,6 +1197,18 @@ class BasicProcessObject:
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
 
             return True, df_collect_product_base_data, new_prefix
+
+
+    def test_product_number(self, fy_product_number):
+        if ' ' not in fy_product_number:
+            return True
+        else:
+            test_unit = fy_product_number.partition(' ')[2]
+            if test_unit not in self.valid_product_units:
+                return False
+
+        return True
+
 
 
     def build_part_number(self, row, manufacturer_part_number, fy_manufacturer_prefix, unit_of_issue, b_override):
