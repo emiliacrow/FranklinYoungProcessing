@@ -260,6 +260,9 @@ class HeaderTranslator():
                             'UnitOfMeasureSymbolId':['UnitOfMeasureSymbolId'],
                             'PrimaryVendorId':['PrimaryVendorId'],
                             'SecondaryVendorId':['SecondaryVendorId'],
+                            'AssetPath':['AssetPath'],
+                            'AssetType':['AssetType'],
+                            'AssetPreference':['AssetPreference'],
                             }
         # that's stupid
         self.build_trans_dct()
