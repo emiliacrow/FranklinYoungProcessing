@@ -39,7 +39,7 @@ class BasicProcessObject:
         self.df_product = df_product
         self.obHeaderTranslator = HeaderTranslator()
 
-        self.valid_product_units = ['BT','BX','CT','CA','JR','KT','PK','PR','RL','ST']
+        self.valid_product_units = ['BG','BO','BT','BX','CA','CT','DA','DR','DZ','FT','GA','GL','GM','GR','HR','IN','JR','KG','KT','LB','MO','MR','OZ','PC','PK','PL','PR','PT','RK','RL','RM','SE','SP','ST','TB','UN','VI','YD','YR']
 
         self.lst_product_headers, self.lst_untranslated_headers = self.obHeaderTranslator.translate_headers(list(self.df_product.columns))
         self.df_product.columns = self.lst_product_headers
