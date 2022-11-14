@@ -3,8 +3,9 @@
 # Updated: 20220318
 # CreateFor: Franklin Young International
 
-import pandas
 import xlrd
+import pandas
+import datetime
 
 from Tools.BasicProcess import BasicProcessObject
 
@@ -34,7 +35,7 @@ class GSAPrice(BasicProcessObject):
         private_headers = {'ProductId','ProductId_y','ProductId_x',
                            'ProductPriceId','ProductPriceId_y','ProductPriceId_x',
                            'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
-                           'db_GSAProductPriceId','GSAProductPriceId','GSAProductPriceId_x','GSAProductPriceId_y',
+                           'ProductDescriptionId','db_GSAProductPriceId','GSAProductPriceId','GSAProductPriceId_x','GSAProductPriceId_y',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter'}
