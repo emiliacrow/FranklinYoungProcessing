@@ -13,7 +13,10 @@ from Tools.BasicProcess import BasicProcessObject
 class HTMEPrice(BasicProcessObject):
     req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber',
                   'HTMEOnContract', 'HTMEApprovedListPrice', 'HTMEMaxMarkup', 'HTMEContractModificationNumber',
-                  'HTMEApprovedPriceDate','HTMEPricingApproved']
+                  'HTMEApprovedPriceDate','HTMEPricingApproved'
+                  'VendorId','VendorId_x','VendorId_y',
+                  'CategoryId','CategoryId_x','CategoryId_y',
+                  'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription']
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']

@@ -3,9 +3,9 @@
 # Updated: 20220815
 # CreateFor: Franklin Young International
 
+import xlrd
 import pandas
 import datetime
-import xlrd
 
 from Tools.ProgressBar import YesNoDialog
 from Tools.BasicProcess import BasicProcessObject

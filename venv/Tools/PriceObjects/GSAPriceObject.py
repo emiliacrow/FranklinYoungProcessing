@@ -38,7 +38,7 @@ class GSAPrice(BasicProcessObject):
                            'ProductDescriptionId','db_GSAProductPriceId','GSAProductPriceId','GSAProductPriceId_x','GSAProductPriceId_y',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'Report','Filter'}
+                           'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:

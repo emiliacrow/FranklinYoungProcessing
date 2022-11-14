@@ -12,7 +12,10 @@ from Tools.BasicProcess import BasicProcessObject
 class VAPrice(BasicProcessObject):
     req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber',
                   'VAOnContract', 'VAApprovedListPrice', 'VADiscountPercent', 'MfcDiscountPercent',
-                  'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved']
+                  'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved',
+                  'VendorId','VendorId_x','VendorId_y',
+                  'CategoryId','CategoryId_x','CategoryId_y',
+                  'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription']
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']

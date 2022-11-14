@@ -12,7 +12,10 @@ from Tools.BasicProcess import BasicProcessObject
 class ECATPrice(BasicProcessObject):
     req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber',
                   'ECATOnContract', 'ECATApprovedListPrice', 'ECATMaxMarkup', 'ECATContractModificationNumber',
-                  'ECATApprovedPriceDate','ECATPricingApproved']
+                  'ECATApprovedPriceDate','ECATPricingApproved',
+                   'VendorId','VendorId_x','VendorId_y',
+                   'CategoryId','CategoryId_x','CategoryId_y',
+                   'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription']
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']
