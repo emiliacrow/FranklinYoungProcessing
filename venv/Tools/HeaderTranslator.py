@@ -27,8 +27,6 @@ class HeaderTranslator():
                             'TAA Compliant':['TAA Compliant'],
 
 
-
-
                             'VendorCode':['VendorCode', 'Vendor Code', 'primary_vendor_code'],
                             'VendorPartNumber':['VendorPartNumber','Vendor Part Number','primary_vendor_part_no','Thomas Item #','vendor_part_no'],
 
@@ -55,7 +53,7 @@ class HeaderTranslator():
                             'ECommerceLongDescription':['ECommerceLongDescription', 'ECommerce Long Description',
                                                         'ecommerce_long_description'],
 
-                            'UnitOfIssueQuantity':['Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue','QtyUOI','Qty UOI','Qty','UnitOfIssueByQuantity'],
+                            'UnitOfIssueQuantity':['UnitOfIssueQuantity','Conv Factor/QTY UOM', 'Conv Factor', 'Conversion Factor','UnitOfIssueCount', 'Unit Of Issue Count','unit_of_issue_qty','quantity','Quantity','unit_of_issue_qty_1','UOIQuantity','Quantity per Unit of Issue','QtyUOI','Qty UOI','Qty','UnitOfIssueByQuantity'],
                             'UnitOfIssue':['UnitOfIssue', 'Unit Of Issue', 'UnitOfIssueSymbol', 'Unit Of Issue Symbol', 'UOI', 'uoi','unit_of_issue','unit of issue'],
                             'UnitOfMeasure':['UnitOfMeasure','Unit Of Measure','UnitOfMeasureSymbol','Unit Of Measure Symbol','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
 
@@ -170,12 +168,14 @@ class HeaderTranslator():
 
 
 # GSA
-                            'GSAApprovedListPrice':['GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
+                            'GSAApprovedListPrice':['GSAApprovedListPrice','GSAApprovedFYListPrice__value', 'GSAApprovedFYListPrice',
                                                     'GSAApprovedFYListPrice'],
                             'GSADiscountPercent':['GSAApprovedPercent','GSAChannelDiscount', 'GSADiscount', 'GSA Channel Discount',
                                                   'GSA Discount', 'gsa_channel_discount', 'GSA Approved Channel%','GSADiscountPercent','GSA disc%'],
                             'GSABasePrice':['GSABasePrice', 'GSA Base Price'],
                             'GSASellPrice':['GSASellPrice', 'GSA Sell Price','current_gsa_price'],
+                            'GSAContractNumber':['GSAContractNumber'],
+                            'GSAPricingApproved':['GSAPricingApproved'],
                             'GSAContractModificationNumber':['GSAContractModificationNumber','GSAModificationNumber',
                                                              'GSA Contract Modification Number',
                                                              'GSAContractModification', 'GSA Contract Modification','GSA Modification Number'],
@@ -189,6 +189,8 @@ class HeaderTranslator():
                                                   'VA Discount', 'va_channel_discount', 'VA Approved Channel%','VADiscountPercent'],
                             'VABasePrice':['VABasePrice', 'VA Base Price'],
                             'VASellPrice':['VASellPrice', 'VA Sell Price'],
+                            'VAContractNumber':['VAContractNumber'],
+                            'VAPricingApproved':['VAPricingApproved'],
                             'VAContractModificationNumber':['VAContractModificationNumber',
                                                              'VA Contract Modification Number',
                                                              'VAContractModification', 'VA Contract Modification','VAModificationNumber','VA Modification Number'],
@@ -203,6 +205,8 @@ class HeaderTranslator():
                                                  'ECAT Discount', 'ecat_channel_discount', 'ECAT Approved Channel%'],
                             'ECATBasePrice':['ECATBasePrice', 'ECAT Base Price'],
                             'ECATSellPrice':['ECATSellPrice', 'ECAT Sell Price'],
+                            'ECATContractNumber':['ECATContractNumber'],
+                            'ECATPricingApproved':['ECATPricingApproved'],
                             'ECATContractModificationNumber':['ECATContractModificationNumber',
                                                             'ECAT Contract Modification Number',
                                                             'ECATContractModification', 'ECAT Contract Modification','ECATModificationNumber','ECAT Modification Number'],
@@ -212,7 +216,7 @@ class HeaderTranslator():
 
                             'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)',
                                                   'approved MFC per','VA_MFC_Discount','GSA_MFC_Discount','MFC %'],
-                            'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
+                            'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price','MFCPercent'],
 
                             'ChangedDate':['ChangedDate'],
                             'ChangedBy':['ChangedBy'],
@@ -262,6 +266,8 @@ class HeaderTranslator():
                             'SecondaryVendorId':['SecondaryVendorId'],
                             'AssetPath':['AssetPath'],
                             'AssetType':['AssetType'],
+                            'AssetPreference':['AssetPreference'],
+                            'CurrentFyProductNumber':['CurrentFyProductNumber'],
                             'AssetPreference':['AssetPreference'],
                             }
         # that's stupid
