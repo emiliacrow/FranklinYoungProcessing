@@ -1673,9 +1673,6 @@ class FyProductUpdate(BasicProcessObject):
                                                           date_catalog_received, catalog_provided_by)
 
 
-        # either way, we have to handle contract data here, regardless of if we moved some values to fy table
-        # GSA_SIN , GSADiscountPercent, VA DiscountPercent, MFC Discountpercent
-        # I guess update could be copy/paste, that's easy
 
         gsa_sin = ''
         if (gsa_sin != ''):
@@ -1889,8 +1886,8 @@ class FyProductUpdate(BasicProcessObject):
         self.obIngester.insert_gsa_product_price_cleanup()
         self.obIngester.update_gsa_product_price_cleanup()
 
-        self.obIngester.insert_va_product_price_cleanup()
-        self.obIngester.update_va_product_price_cleanup()
+        self.obIngester.va_product_price_insert_cleanup()
+        self.obIngester.va_product_price_update_cleanup()
 
 
 
