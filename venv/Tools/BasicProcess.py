@@ -1045,7 +1045,6 @@ class BasicProcessObject:
         try:
             test_val = row[isCol]
         except KeyError:
-            self.obReporter.update_report('Alert','{0} missing'.format(isCol))
             return False, isCol
 
         try:

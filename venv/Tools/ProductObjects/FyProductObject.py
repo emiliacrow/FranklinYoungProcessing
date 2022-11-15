@@ -81,7 +81,8 @@ class FyProductUpdate(BasicProcessObject):
                            'BaseProductPriceId','BaseProductPriceId_y','BaseProductPriceId_x',
                            'VendorId','VendorId_x','VendorId_y','UpdateManufacturerName','ManufacturerId',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription'}
+                           'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription',
+                           'GSAProductPriceId','VAProductPriceId','ECATProductPriceId','HTMEProductPriceId'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
@@ -371,7 +372,8 @@ class FyProductUpdate(BasicProcessObject):
                 return False, df_collect_product_base_data
 
 
-            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle',
+                              'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
@@ -399,6 +401,10 @@ class FyProductUpdate(BasicProcessObject):
             # check if it is update or not
             if 'ProductDescriptionId' in df_line_product.columns:
                 success, df_collect_product_base_data  = self.update_fy_description(df_collect_product_base_data, row)
+                if success:
+                    self.gsa_product_price(row)
+                    self.va_product_price(row)
+
 
         return success, df_collect_product_base_data
 
@@ -1151,6 +1157,11 @@ class FyProductUpdate(BasicProcessObject):
             except ValueError:
                 deny_htme_date = str(row['FyDenyHTMEContractDate'])
 
+        if 'GSA' == 1:
+            print("this is where gsa processing could happen for true ingests")
+
+
+
         report = ''
         if (fy_product_name != '' and fy_product_description != '' and fy_coo_id != -1 and fy_uoi_id != -1 and
                 fy_uom_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1 and manufacturer_part_number != '' and
@@ -1248,7 +1259,6 @@ class FyProductUpdate(BasicProcessObject):
 
         self.obReporter.update_report('Fail', report)
         return False, df_collect_product_base_data
-
 
 
     def update_fy_description(self, df_collect_product_base_data, row):
@@ -1662,12 +1672,225 @@ class FyProductUpdate(BasicProcessObject):
                                                           deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
                                                           date_catalog_received, catalog_provided_by)
 
+
+        # either way, we have to handle contract data here, regardless of if we moved some values to fy table
+        # GSA_SIN , GSADiscountPercent, VA DiscountPercent, MFC Discountpercent
+        # I guess update could be copy/paste, that's easy
+
+        gsa_sin = ''
+        if (gsa_sin != ''):
+            self.obIngester.gsa_product_price_update()
+
+        va_sin = ''
+        if (va_sin != ''):
+            self.obIngester.va_product_price_update()
+
+
         return True, df_collect_product_base_data
+
+
+    def gsa_product_price(self, row):
+        product_description_id = row['ProductDescriptionId']
+        fy_product_number = row['FyProductNumber']
+        contract_manu_number = ''
+        contract_number = 'GS-07F-0636W'
+
+        if 'GSAOnContract' in row:
+            on_contract = row['GSAOnContract']
+        else:
+            on_contract = -1
+
+        if 'GSAContractModificationNumber' in row:
+            contract_mod_number = row['GSAContractModificationNumber']
+        else:
+            contract_mod_number = ''
+
+        if 'GSAPricingApproved' in row:
+            is_pricing_approved = float(row['GSAPricingApproved'])
+        else:
+            is_pricing_approved = -1
+
+        gsa_approved_price_date = -1
+        if 'GSAApprovedPriceDate' in row:
+            gsa_approved_price_date = row['GSAApprovedPriceDate']
+            try:
+                gsa_approved_price_date = int(gsa_approved_price_date)
+                gsa_approved_price_date = xlrd.xldate_as_datetime(gsa_approved_price_date, 0)
+            except ValueError:
+                gsa_approved_price_date = str(row['GSAApprovedPriceDate'])
+
+            if isinstance(gsa_approved_price_date, datetime.datetime) == False:
+                try:
+                    gsa_approved_price_date = datetime.datetime.strptime(gsa_approved_price_date, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    gsa_approved_price_date = str(row['GSAApprovedPriceDate'])
+                    self.obReporter.update_report('Alert','Check GSAApprovedPriceDate')
+                except TypeError:
+                    self.obReporter.update_report('Alert','Check GSAApprovedPriceDate')
+
+
+        if 'GSAApprovedBasePrice' in row:
+            approved_base_price = float(row['GSAApprovedBasePrice'])
+        else:
+            approved_base_price = -1
+
+        if 'GSAApprovedSellPrice' in row:
+            approved_sell_price = float(row['GSAApprovedSellPrice'])
+        else:
+            approved_sell_price = -1
+
+        if 'GSAApprovedListPrice' in row:
+            approved_list_price = float(row['GSAApprovedListPrice'])
+        else:
+            approved_list_price = -1
+
+
+        if 'GSADiscountPercent' in row:
+            approved_percent = float(row['GSADiscountPercent'])
+        else:
+            approved_percent = -1
+
+        if 'MfcDiscountPercent' in row:
+            mfc_percent = float(row['MfcDiscountPercent'])
+        else:
+            mfc_percent = -1
+
+        if 'GSA_Sin' in row:
+            sin = row['GSA_Sin']
+        else:
+            sin = ''
+
+        gsa_product_notes = ''
+        if 'GSAProductNotes' in row:
+            gsa_product_notes = str(row['GSAProductNotes'])
+
+        gsa_product_price_id = -1
+        if 'GSAProductPriceId' in row:
+            gsa_product_price_id = int(row['GSAProductPriceId'])
+
+
+        if (on_contract != -1 or contract_mod_number != '' or is_pricing_approved != -1 or gsa_approved_price_date != -1
+                or approved_base_price != -1 or approved_sell_price != -1 or approved_list_price != -1 or approved_percent != -1
+                or mfc_percent != -1 or sin != '' or gsa_product_notes != ''):
+            if gsa_product_price_id == -1:
+                self.obIngester.gsa_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
+                                                  approved_sell_price, approved_list_price, contract_manu_number,
+                                                  contract_number, contract_mod_number, is_pricing_approved,
+                                                  gsa_approved_price_date, approved_percent, mfc_percent,
+                                                  sin, gsa_product_notes)
+            else:
+                self.obIngester.gsa_product_price_update(gsa_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
+                                                  approved_sell_price, approved_list_price, contract_manu_number,
+                                                  contract_number, contract_mod_number, is_pricing_approved,
+                                                  gsa_approved_price_date, approved_percent, mfc_percent,
+                                                  sin, gsa_product_notes)
+
+
+    def va_product_price(self, row):
+        product_description_id = row['ProductDescriptionId']
+        fy_product_number = row['FyProductNumber']
+        contract_manu_number = ''
+        contract_number = 'GS-07F-0636W'
+
+        if 'VAOnContract' in row:
+            on_contract = row['VAOnContract']
+        else:
+            on_contract = -1
+
+        if 'VAContractModificationNumber' in row:
+            contract_mod_number = row['VAContractModificationNumber']
+        else:
+            contract_mod_number = ''
+
+        if 'VAPricingApproved' in row:
+            is_pricing_approved = float(row['VAPricingApproved'])
+        else:
+            is_pricing_approved = -1
+
+        va_approved_price_date = -1
+        if 'VAApprovedPriceDate' in row:
+            va_approved_price_date = row['VAApprovedPriceDate']
+            try:
+                va_approved_price_date = int(va_approved_price_date)
+                va_approved_price_date = xlrd.xldate_as_datetime(va_approved_price_date, 0)
+            except ValueError:
+                va_approved_price_date = str(row['VAApprovedPriceDate'])
+
+            if isinstance(va_approved_price_date, datetime.datetime) == False:
+                try:
+                    va_approved_price_date = datetime.datetime.strptime(va_approved_price_date, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    va_approved_price_date = str(row['VAApprovedPriceDate'])
+                    self.obReporter.update_report('Alert','Check VAApprovedPriceDate')
+                except TypeError:
+                    self.obReporter.update_report('Alert','Check VAApprovedPriceDate')
+
+
+        if 'VAApprovedBasePrice' in row:
+            approved_base_price = float(row['VAApprovedBasePrice'])
+        else:
+            approved_base_price = -1
+
+        if 'VAApprovedSellPrice' in row:
+            approved_sell_price = float(row['VAApprovedSellPrice'])
+        else:
+            approved_sell_price = -1
+
+        if 'VAApprovedListPrice' in row:
+            approved_list_price = float(row['VAApprovedListPrice'])
+        else:
+            approved_list_price = -1
+
+
+        if 'VADiscountPercent' in row:
+            approved_percent = float(row['VADiscountPercent'])
+        else:
+            approved_percent = -1
+
+        if 'MfcDiscountPercent' in row:
+            mfc_percent = float(row['MfcDiscountPercent'])
+        else:
+            mfc_percent = -1
+
+        if 'VA_Sin' in row:
+            sin = row['VA_Sin']
+        else:
+            sin = ''
+
+        va_product_notes = ''
+        if 'VAProductNotes' in row:
+            va_product_notes = str(row['VAProductNotes'])
+
+        va_product_price_id = -1
+        if 'VAProductPriceId' in row:
+            va_product_price_id = int(row['VAProductPriceId'])
+
+        if (on_contract != -1 or contract_mod_number != '' or is_pricing_approved != -1 or va_approved_price_date != -1
+                or approved_base_price != -1 or approved_sell_price != -1 or approved_list_price != -1 or approved_percent != -1
+                or mfc_percent != -1 or sin != '' or va_product_notes != ''):
+            if va_product_price_id == -1:
+                self.obIngester.va_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
+                                                  approved_sell_price, approved_list_price, contract_manu_number,
+                                                  contract_number, contract_mod_number, is_pricing_approved,
+                                                  va_approved_price_date, approved_percent, mfc_percent,
+                                                  sin, va_product_notes)
+            else:
+                self.obIngester.va_product_price_update(va_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
+                                                  approved_sell_price, approved_list_price, contract_manu_number,
+                                                  contract_number, contract_mod_number, is_pricing_approved,
+                                                  va_approved_price_date, approved_percent, mfc_percent,
+                                                  sin, va_product_notes)
 
 
     def trigger_ingest_cleanup(self):
         self.obIngester.insert_fy_product_description_cleanup()
         self.obIngester.update_fy_product_description_cleanup()
+
+        self.obIngester.insert_gsa_product_price_cleanup()
+        self.obIngester.update_gsa_product_price_cleanup()
+
+        self.obIngester.insert_va_product_price_cleanup()
+        self.obIngester.update_va_product_price_cleanup()
 
 
 
