@@ -4,6 +4,7 @@
 # CreateFor: Franklin Young International
 
 import xlrd
+import time
 import pandas
 import datetime
 
@@ -67,6 +68,14 @@ class FyProductUpdate(BasicProcessObject):
 
         self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
+
+        self.df_gsa_contract_ids = self.obDal.get_gsa_contract_ids()
+        self.df_product = self.df_product.merge(self.df_gsa_contract_ids,how='left',on=['FyProductNumber'])
+
+        self.df_va_contract_ids = self.obDal.get_va_contract_ids()
+        self.df_product = self.df_product.merge(self.df_va_contract_ids,how='left',on=['FyProductNumber'])
+
+
 
         if 'PrimaryVendorId' in self.df_product.columns:
             self.df_fy_vendor_price_lookup = self.obDal.get_fy_product_vendor_prices()
@@ -1765,10 +1774,13 @@ class FyProductUpdate(BasicProcessObject):
         if 'GSAProductPriceId' in row:
             gsa_product_price_id = int(row['GSAProductPriceId'])
 
+        if gsa_product_price_id == -1 and 'db_GSAProductPriceId' in row:
+            gsa_product_price_id = int(row['db_GSAProductPriceId'])
+
 
         if (on_contract != -1 or contract_mod_number != '' or is_pricing_approved != -1 or gsa_approved_price_date != -1
                 or approved_base_price != -1 or approved_sell_price != -1 or approved_list_price != -1 or approved_percent != -1
-                or mfc_percent != -1 or sin != '' or gsa_product_notes != ''):
+                or sin != '' or gsa_product_notes != ''):
             if gsa_product_price_id == -1:
                 self.obIngester.gsa_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
                                                   approved_sell_price, approved_list_price, contract_manu_number,
@@ -1862,9 +1874,12 @@ class FyProductUpdate(BasicProcessObject):
         if 'VAProductPriceId' in row:
             va_product_price_id = int(row['VAProductPriceId'])
 
+        if va_product_price_id == -1 and 'db_VAProductPriceId' in row:
+            va_product_price_id = int(row['db_VAProductPriceId'])
+
         if (on_contract != -1 or contract_mod_number != '' or is_pricing_approved != -1 or va_approved_price_date != -1
                 or approved_base_price != -1 or approved_sell_price != -1 or approved_list_price != -1 or approved_percent != -1
-                or mfc_percent != -1 or sin != '' or va_product_notes != ''):
+                or sin != '' or va_product_notes != ''):
             if va_product_price_id == -1:
                 self.obIngester.va_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
                                                   approved_sell_price, approved_list_price, contract_manu_number,
@@ -1882,10 +1897,10 @@ class FyProductUpdate(BasicProcessObject):
     def trigger_ingest_cleanup(self):
         self.obIngester.insert_fy_product_description_cleanup()
         self.obIngester.update_fy_product_description_cleanup()
-
+        time.sleep(1)
         self.obIngester.insert_gsa_product_price_cleanup()
         self.obIngester.update_gsa_product_price_cleanup()
-
+        time.sleep(1)
         self.obIngester.va_product_price_insert_cleanup()
         self.obIngester.va_product_price_update_cleanup()
 
