@@ -91,7 +91,8 @@ class FyProductUpdate(BasicProcessObject):
                            'VendorId','VendorId_x','VendorId_y','UpdateManufacturerName','ManufacturerId',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription',
-                           'GSAProductPriceId','VAProductPriceId','ECATProductPriceId','HTMEProductPriceId'}
+                           'GSAProductPriceId','VAProductPriceId','ECATProductPriceId','HTMEProductPriceId',
+                           'db_GSAProductPriceId','db_VAProductPriceId','db_ECATProductPriceId','db_HTMEProductPriceId'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
@@ -1166,36 +1167,205 @@ class FyProductUpdate(BasicProcessObject):
             except ValueError:
                 deny_htme_date = str(row['FyDenyHTMEContractDate'])
 
-        if 'GSA' == 1:
-            print("this is where gsa processing could happen for true ingests")
 
 
-
-        report = ''
         if (fy_product_name != '' and fy_product_description != '' and fy_coo_id != -1 and fy_uoi_id != -1 and
                 fy_uom_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1 and manufacturer_part_number != '' and
                 manufacturer_id != -1 and vendor_part_number != '' and date_catalog_received != -1):
-            # this needs to proper ingest the info
-            self.obIngester.insert_fy_product_description(fy_catalog_number, manufacturer_part_number, is_product_number_override,
-                                                          manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
-                                                          fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
-                                                          vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
-                                                          secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
-                                                          fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
-                                                          fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                          vendor_product_notes, vendor_is_discontinued,
-                                                          b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
-                                                          vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
-                                                          markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
-                                                          fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
-                                                          price_toggle, data_toggle,
-                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
-                                                              date_catalog_received, catalog_provided_by)
 
-            return True, df_collect_product_base_data
+            success, gsa_on_contract = self.process_boolean(row, 'GSAOnContract')
+            if success:
+                df_collect_product_base_data['GSAOnContract'] = [gsa_on_contract]
+            else:
+                gsa_on_contract = -1
+
+            gsa_contract_number = 'GS-07F-0636W'
+
+            if 'GSAContractModificationNumber' in row:
+                gsa_contract_mod_number = row['GSAContractModificationNumber']
+            else:
+                gsa_contract_mod_number = ''
+
+            if 'GSAPricingApproved' in row:
+                gsa_is_pricing_approved = float(row['GSAPricingApproved'])
+            else:
+                gsa_is_pricing_approved = -1
+
+            gsa_approved_price_date = -1
+            if 'GSAApprovedPriceDate' in row:
+                gsa_approved_price_date = row['GSAApprovedPriceDate']
+                try:
+                    gsa_approved_price_date = int(gsa_approved_price_date)
+                    gsa_approved_price_date = xlrd.xldate_as_datetime(gsa_approved_price_date, 0)
+                except ValueError:
+                    gsa_approved_price_date = str(row['GSAApprovedPriceDate'])
+
+                if isinstance(gsa_approved_price_date, datetime.datetime) == False:
+                    try:
+                        gsa_approved_price_date = datetime.datetime.strptime(gsa_approved_price_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        gsa_approved_price_date = str(row['GSAApprovedPriceDate'])
+                        self.obReporter.update_report('Alert','Check GSAApprovedPriceDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check GSAApprovedPriceDate')
+
+            if 'GSAApprovedBasePrice' in row:
+                gsa_approved_base_price = float(row['GSAApprovedBasePrice'])
+            else:
+                gsa_approved_base_price = -1
+
+            if 'GSAApprovedSellPrice' in row:
+                gsa_approved_sell_price = float(row['GSAApprovedSellPrice'])
+            else:
+                gsa_approved_sell_price = -1
+
+            if 'GSAApprovedListPrice' in row:
+                gsa_approved_list_price = float(row['GSAApprovedListPrice'])
+            else:
+                gsa_approved_list_price = -1
 
 
+            if 'GSADiscountPercent' in row:
+                gsa_approved_percent = float(row['GSADiscountPercent'])
+            else:
+                gsa_approved_percent = -1
+
+            if 'MfcDiscountPercent' in row:
+                mfc_percent = float(row['MfcDiscountPercent'])
+            else:
+                mfc_percent = -1
+
+            if 'GSA_Sin' in row:
+                gsa_sin = row['GSA_Sin']
+            else:
+                gsa_sin = ''
+
+            gsa_product_notes = ''
+            if 'GSAProductNotes' in row:
+                gsa_product_notes = str(row['GSAProductNotes'])
+
+
+            success, va_on_contract = self.process_boolean(row, 'VAOnContract')
+            if success:
+                df_collect_product_base_data['VAOnContract'] = [va_on_contract]
+            else:
+                va_on_contract = -1
+
+            va_contract_number = 'VA797H-16-D-0024/SPE2D1-16-D-0019'
+            if 'VAContractModificationNumber' in row:
+                va_contract_mod_number = row['VAContractModificationNumber']
+            else:
+                va_contract_mod_number = ''
+
+            if 'VAPricingApproved' in row:
+                va_is_pricing_approved = float(row['VAPricingApproved'])
+            else:
+                va_is_pricing_approved = -1
+
+            va_approved_price_date = -1
+            if 'VAApprovedPriceDate' in row:
+                va_approved_price_date = row['VAApprovedPriceDate']
+                try:
+                    va_approved_price_date = int(va_approved_price_date)
+                    va_approved_price_date = xlrd.xldate_as_datetime(va_approved_price_date, 0)
+                except ValueError:
+                    va_approved_price_date = str(row['VAApprovedPriceDate'])
+
+                if isinstance(va_approved_price_date, datetime.datetime) == False:
+                    try:
+                        va_approved_price_date = datetime.datetime.strptime(va_approved_price_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        va_approved_price_date = str(row['VAApprovedPriceDate'])
+                        self.obReporter.update_report('Alert','Check VAApprovedPriceDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check VAApprovedPriceDate')
+
+            if 'VAApprovedBasePrice' in row:
+                va_approved_base_price = float(row['VAApprovedBasePrice'])
+            else:
+                va_approved_base_price = -1
+
+            if 'VAApprovedSellPrice' in row:
+                va_approved_sell_price = float(row['VAApprovedSellPrice'])
+            else:
+                va_approved_sell_price = -1
+
+            if 'VAApprovedListPrice' in row:
+                va_approved_list_price = float(row['VAApprovedListPrice'])
+            else:
+                va_approved_list_price = -1
+
+            if 'VADiscountPercent' in row:
+                va_approved_percent = float(row['VADiscountPercent'])
+            else:
+                va_approved_percent = -1
+
+            if 'VA_Sin' in row:
+                va_sin = row['VA_Sin']
+            else:
+                va_sin = ''
+
+            va_product_notes = ''
+            if 'VAProductNotes' in row:
+                va_product_notes = str(row['VAProductNotes'])
+
+
+            if (mfc_percent != -1 or gsa_approved_percent != -1 or va_approved_percent != -1 or gsa_sin != '' or va_sin != ''):
+                self.obIngester.insert_fy_product_description_contract(fy_catalog_number, manufacturer_part_number, is_product_number_override,
+                                                                        manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
+                                                                        fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
+                                                                        vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
+                                                                        secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
+                                                                        fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
+                                                                        fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                                        vendor_product_notes, vendor_is_discontinued,
+                                                                        b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                                        vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
+                                                                        markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
+                                                                        fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
+                                                                        price_toggle, data_toggle,
+                                                                        deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                                                        deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                                        date_catalog_received, catalog_provided_by,
+
+                                                                        gsa_on_contract, gsa_approved_base_price,
+                                                                        gsa_approved_sell_price, gsa_approved_list_price,
+                                                                        gsa_contract_number, gsa_contract_mod_number,
+                                                                        gsa_is_pricing_approved,
+                                                                        gsa_approved_price_date, gsa_approved_percent,
+                                                                        mfc_percent, gsa_sin, gsa_product_notes,
+
+                                                                        va_on_contract, va_approved_base_price,
+                                                                        va_approved_sell_price, va_approved_list_price,
+                                                                        va_contract_number, va_contract_mod_number,
+                                                                        va_is_pricing_approved,
+                                                                        va_approved_price_date, va_approved_percent,
+                                                                        va_sin, va_product_notes
+
+                                                                       )
+                return True, df_collect_product_base_data
+            else:
+                # this needs to proper ingest the info
+                self.obIngester.insert_fy_product_description(fy_catalog_number, manufacturer_part_number, is_product_number_override,
+                                                              manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
+                                                              fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
+                                                              vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
+                                                              secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
+                                                              fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
+                                                              fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                              vendor_product_notes, vendor_is_discontinued,
+                                                              b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                              vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
+                                                              markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
+                                                              fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
+                                                              price_toggle, data_toggle,
+                                                                  deny_gsa, deny_gsa_date, deny_va, deny_va_date,
+                                                                  deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                                  date_catalog_received, catalog_provided_by)
+
+                return True, df_collect_product_base_data
+
+        report = ''
         if fy_product_name == '':
             report = 'Missing FyProductName'
 
@@ -1895,6 +2065,7 @@ class FyProductUpdate(BasicProcessObject):
 
 
     def trigger_ingest_cleanup(self):
+        self.obIngester.insert_fy_product_description_contract_cleanup()
         self.obIngester.insert_fy_product_description_cleanup()
         self.obIngester.update_fy_product_description_cleanup()
         time.sleep(1)
