@@ -24,11 +24,13 @@ class GSAPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.define_new()
-        self.assign_contract_ids()
 
-        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions_short()
+
+        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
+
+        self.df_gsa_contract_ids = self.obDal.get_gsa_contract_ids()
+        self.df_product = self.df_product.merge(self.df_gsa_contract_ids,how='left',on=['FyProductNumber'])
 
 
     def remove_private_headers(self):
@@ -45,33 +47,12 @@ class GSAPrice(BasicProcessObject):
             self.df_product = self.df_product.drop(columns=remove_headers)
 
 
-    def assign_contract_ids(self):
-        self.df_contract_ids = self.obDal.get_gsa_contract_ids()
-        self.df_product = self.df_product.merge(self.df_contract_ids, how='left', on=['FyProductNumber'])
-
-
-    def filter_check_in(self, row):
-        filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
-
-        if row['Filter'] == 'New':
-            self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
-            return False
-
-        elif row['Filter'] in ['Partial', 'Base Pricing']:
-            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
-            return False
-
-        elif row['Filter'] == 'Ready':
-            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
-            return True
-
-        elif row['Filter'] == 'Possible Duplicate':
-            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
-            return False
-
+    def filter_check_in(self, df_line_product):
+        if 'ProductDescriptionId' in df_line_product.columns:
+            self.obReporter.update_report('Pass', 'This is an FyProduct update')
         else:
-            self.obReporter.update_report('Fail', 'Failed filtering')
-            return False
+            self.obReporter.update_report('Fail', 'This is an FyProduct insert')
+            return False, df_collect_product_base_data
 
 
     def process_product_line(self, df_line_product):
