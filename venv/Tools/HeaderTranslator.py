@@ -269,7 +269,6 @@ class HeaderTranslator():
                             'UpdateAssets':['UpdateAssets'],
                             'AssetPreference':['AssetPreference'],
                             'CurrentFyProductNumber':['CurrentFyProductNumber'],
-                            'AssetPreference':['AssetPreference'],
                             }
         # that's stupid
         self.build_trans_dct()
