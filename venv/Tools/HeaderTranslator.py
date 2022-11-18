@@ -266,6 +266,7 @@ class HeaderTranslator():
                             'SecondaryVendorId':['SecondaryVendorId'],
                             'AssetPath':['AssetPath'],
                             'AssetType':['AssetType'],
+                            'UpdateAssets':['UpdateAssets'],
                             'AssetPreference':['AssetPreference'],
                             'CurrentFyProductNumber':['CurrentFyProductNumber'],
                             'AssetPreference':['AssetPreference'],
