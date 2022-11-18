@@ -11,12 +11,7 @@ from Tools.BasicProcess import BasicProcessObject
 
 
 class HTMEPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber',
-                  'HTMEOnContract', 'HTMEApprovedListPrice', 'HTMEMaxMarkup', 'HTMEContractModificationNumber',
-                  'HTMEApprovedPriceDate','HTMEPricingApproved'
-                  'VendorId','VendorId_x','VendorId_y',
-                  'CategoryId','CategoryId_x','CategoryId_y',
-                  'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription']
+    req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']
@@ -28,7 +23,12 @@ class HTMEPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.define_new()
+
+        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
+        self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
+
+        self.df_htme_contract_ids = self.obDal.get_htme_contract_ids()
+        self.df_product = self.df_product.merge(self.df_htme_contract_ids,how='left',on=['FyProductNumber'])
 
 
     def remove_private_headers(self):
@@ -38,7 +38,7 @@ class HTMEPrice(BasicProcessObject):
                            'HTMEProductPriceId','HTMEProductPriceId_x','HTMEProductPriceId_y',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'Report','Filter'}
+                           'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
@@ -46,26 +46,11 @@ class HTMEPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
-        filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
-
-        if row['Filter'] == 'New':
-            self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
-            return False
-
-        elif row['Filter'] in ['Partial', 'Base Pricing']:
-            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
-            return False
-
-        elif row['Filter'] == 'Ready':
-            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+        if 'ProductDescriptionId' in row:
+            self.obReporter.update_report('Pass', 'This is an FyProduct update')
             return True
-
-        elif row['Filter'] == 'Possible Duplicate':
-            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
-            return False
-
         else:
-            self.obReporter.update_report('Fail', 'Failed filtering')
+            self.obReporter.update_report('Fail', 'This is an FyProduct insert')
             return False
 
 
@@ -168,6 +153,9 @@ class HTMEPrice(BasicProcessObject):
             htme_product_price_id = -1
             if 'HTMEProductPriceId' in row:
                 htme_product_price_id = int(row['HTMEProductPriceId'])
+
+            if 'db_HTMEProductPriceId' in row and htme_product_price_id == -1:
+                htme_product_price_id = int(row['db_HTMEProductPriceId'])
 
         if htme_product_price_id == -1:
             self.obIngester.htme_product_price_insert(base_product_price_id, fy_product_number, on_contract,
