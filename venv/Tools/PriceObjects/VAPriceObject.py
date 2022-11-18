@@ -10,12 +10,7 @@ import datetime
 from Tools.BasicProcess import BasicProcessObject
 
 class VAPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber',
-                  'VAOnContract', 'VAApprovedListPrice', 'VADiscountPercent', 'MfcDiscountPercent',
-                  'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved',
-                  'VendorId','VendorId_x','VendorId_y',
-                  'CategoryId','CategoryId_x','CategoryId_y',
-                  'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription']
+    req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']
@@ -27,11 +22,13 @@ class VAPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.define_new()
-        self.assign_contract_ids()
 
-        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions_short()
+        self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
+
+        self.df_va_contract_ids = self.obDal.get_va_contract_ids()
+        self.df_product = self.df_product.merge(self.df_va_contract_ids,how='left',on=['FyProductNumber'])
+
 
 
     def remove_private_headers(self):
@@ -41,39 +38,19 @@ class VAPrice(BasicProcessObject):
                            'db_VAProductPriceId','VAProductPriceId','VAProductPriceId_x','VAProductPriceId_y',
                            'VendorId','VendorId_x','VendorId_y',
                            'CategoryId','CategoryId_x','CategoryId_y',
-                           'Report','Filter'}
+                           'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
             self.df_product = self.df_product.drop(columns=remove_headers)
 
 
-    def assign_contract_ids(self):
-        self.df_contract_ids = self.obDal.get_va_contract_ids()
-        self.df_product = self.df_product.merge(self.df_contract_ids, how='left', on=['FyProductNumber'])
-
-
     def filter_check_in(self, row):
-        filter_options = ['Base Pricing', 'New', 'Partial', 'Possible Duplicate', 'Ready', 'case_1','case_4']
-
-        if row['Filter'] == 'New':
-            self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
-            return False
-
-        elif row['Filter'] in ['Partial', 'Base Pricing']:
-            self.obReporter.update_report('Alert', 'Passed filtering as partial product')
-            return False
-
-        elif row['Filter'] == 'Ready':
-            self.obReporter.update_report('Alert', 'Passed filtering as updatable')
+        if 'ProductDescriptionId' in row:
+            self.obReporter.update_report('Pass', 'This is an FyProduct update')
             return True
-
-        elif row['Filter'] == 'Possible Duplicate':
-            self.obReporter.update_report('Alert', 'Review product numbers for possible duplicates')
-            return False
-
         else:
-            self.obReporter.update_report('Fail', 'Failed filtering')
+            self.obReporter.update_report('Fail', 'This is an FyProduct insert')
             return False
 
 
@@ -236,7 +213,7 @@ class VAPrice(BasicProcessObject):
 
 
 class UpdateVAPrice(VAPrice):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName', 'ManufacturerPartNumber','VendorName','VendorPartNumber']
+    req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
     gen_fields = ['VAOnContract', 'VAApprovedListPrice', 'VADiscountPercent', 'MfcDiscountPercent',
