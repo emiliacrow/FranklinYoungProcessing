@@ -10,9 +10,7 @@ import datetime
 from Tools.BasicProcess import BasicProcessObject
 
 class GSAPrice(BasicProcessObject):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorName','VendorPartNumber',
-                  'GSAOnContract', 'GSAApprovedListPrice', 'GSADiscountPercent', 'MfcDiscountPercent',
-                  'GSAContractModificationNumber', 'GSA_Sin','GSAApprovedPriceDate','GSAPricingApproved']
+    req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
     gen_fields = ['ContractedManufacturerPartNumber']
@@ -47,12 +45,13 @@ class GSAPrice(BasicProcessObject):
             self.df_product = self.df_product.drop(columns=remove_headers)
 
 
-    def filter_check_in(self, df_line_product):
-        if 'ProductDescriptionId' in df_line_product.columns:
+    def filter_check_in(self, row):
+        if 'ProductDescriptionId' in row:
             self.obReporter.update_report('Pass', 'This is an FyProduct update')
+            return True
         else:
             self.obReporter.update_report('Fail', 'This is an FyProduct insert')
-            return False, df_collect_product_base_data
+            return False
 
 
     def process_product_line(self, df_line_product):
@@ -219,7 +218,7 @@ class GSAPrice(BasicProcessObject):
 
 
 class UpdateGSAPrice(GSAPrice):
-    req_fields = ['FyCatalogNumber','FyProductNumber','ManufacturerName','ManufacturerPartNumber','VendorName','VendorPartNumber']
+    req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
     gen_fields = ['GSAOnContract', 'GSAApprovedListPrice', 'GSADiscountPercent', 'MfcDiscountPercent',
