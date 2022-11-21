@@ -40,8 +40,7 @@ class FyProductUpdate(BasicProcessObject):
 
         self.remove_private_headers()
         self.df_uois_lookup = self.obDal.get_unit_of_issue_symbol_lookup()
-        if 'FyCountryOfOrigin' in self.df_product.columns:
-            self.batch_process_country()
+        self.batch_process_country()
 
         if 'ManufacturerName' in self.df_product.columns:
             self.batch_process_manufacturer()
@@ -75,8 +74,6 @@ class FyProductUpdate(BasicProcessObject):
         self.df_va_contract_ids = self.obDal.get_va_contract_ids()
         self.df_product = self.df_product.merge(self.df_va_contract_ids,how='left',on=['FyProductNumber'])
 
-
-
         if 'PrimaryVendorId' in self.df_product.columns:
             self.df_fy_vendor_price_lookup = self.obDal.get_fy_product_vendor_prices()
             self.df_product = self.df_product.merge(self.df_fy_vendor_price_lookup,how='left',on=['FyProductNumber','PrimaryVendorId'])
@@ -100,49 +97,95 @@ class FyProductUpdate(BasicProcessObject):
 
 
     def batch_process_country(self):
-        print('Batch process country')
-        df_attribute = self.df_product[['FyCountryOfOrigin']]
-        df_attribute = df_attribute.drop_duplicates(subset=['FyCountryOfOrigin'])
-        lst_ids = []
-        for colName, row in df_attribute.iterrows():
-            country = row['FyCountryOfOrigin']
-            country = self.obValidator.clean_country_name(country)
-            country = country.upper()
-            if (len(country) == 2):
-                if country in self.df_country_translator['CountryCode'].tolist():
-                    new_country_of_origin_id = self.df_country_translator.loc[
-                        (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
-                    lst_ids.append(new_country_of_origin_id)
-                elif country in ['XX','ZZ']:
-                    # unknown
+        if 'CountryOfOriginId' not in self.df_product.columns and 'CountryOfOrigin' in self.df_product.columns:
+
+            df_attribute = self.df_product[['CountryOfOrigin']]
+            df_attribute = df_attribute.drop_duplicates(subset=['CountryOfOrigin'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                country = row['CountryOfOrigin']
+                country = self.obValidator.clean_country_name(country)
+                country = country.upper()
+                if (len(country) == 2):
+                    if country in self.df_country_translator['CountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    elif country in ['XX','ZZ']:
+                        # unknown
+                        lst_ids.append(-1)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
+                        lst_ids.append(coo_id)
+
+                elif (len(country) == 3):
+                    if country in self.df_country_translator['ECATCountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(ecat_code = country)
+                        lst_ids.append(coo_id)
+
+                elif (len(country) > 3):
+                    if country in self.df_country_translator['CountryName'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
+                        lst_ids.append(coo_id)
+                else:
                     lst_ids.append(-1)
-                else:
-                    coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
-                    lst_ids.append(coo_id)
 
-            elif (len(country) == 3):
-                if country in self.df_country_translator['ECATCountryCode'].tolist():
-                    new_country_of_origin_id = self.df_country_translator.loc[
-                        (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
-                    lst_ids.append(new_country_of_origin_id)
-                else:
-                    coo_id = self.obIngester.manual_ingest_country(ecat_code = country)
-                    lst_ids.append(coo_id)
+            df_attribute['CountryOfOriginId'] = lst_ids
+            self.df_product = self.df_product.merge(df_attribute,
+                                                              how='left', on=['CountryOfOrigin'])
 
-            elif (len(country) > 3):
-                if country in self.df_country_translator['CountryName'].tolist():
-                    new_country_of_origin_id = self.df_country_translator.loc[
-                        (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
-                    lst_ids.append(new_country_of_origin_id)
-                else:
-                    coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
-                    lst_ids.append(coo_id)
-            else:
-                lst_ids.append(-1)
+        if 'FyCountryOfOrigin' in self.df_product.columns:
 
-        df_attribute['FyCountryOfOriginId'] = lst_ids
-        self.df_product = self.df_product.merge(df_attribute,
-                                                          how='left', on=['FyCountryOfOrigin'])
+            df_attribute = self.df_product[['FyCountryOfOrigin']]
+            df_attribute = df_attribute.drop_duplicates(subset=['FyCountryOfOrigin'])
+            lst_ids = []
+            for colName, row in df_attribute.iterrows():
+                country = row['FyCountryOfOrigin']
+                country = self.obValidator.clean_country_name(country)
+                country = country.upper()
+                if (len(country) == 2):
+                    if country in self.df_country_translator['CountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    elif country in ['XX','ZZ']:
+                        # unknown
+                        lst_ids.append(-1)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
+                        lst_ids.append(coo_id)
+
+                elif (len(country) == 3):
+                    if country in self.df_country_translator['ECATCountryCode'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(ecat_code = country)
+                        lst_ids.append(coo_id)
+
+                elif (len(country) > 3):
+                    if country in self.df_country_translator['CountryName'].tolist():
+                        new_country_of_origin_id = self.df_country_translator.loc[
+                            (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
+                        lst_ids.append(new_country_of_origin_id)
+                    else:
+                        coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
+                        lst_ids.append(coo_id)
+                else:
+                    lst_ids.append(-1)
+
+            df_attribute['FyCountryOfOriginId'] = lst_ids
+            self.df_product = self.df_product.merge(df_attribute,
+                                                              how='left', on=['FyCountryOfOrigin'])
 
 
     def batch_process_primary_vendor(self):
@@ -1015,6 +1058,18 @@ class FyProductUpdate(BasicProcessObject):
         else:
             vendor_is_discontinued = -1
 
+        if 'VendorProductName' in row:
+            vendor_product_name = str(row['VendorProductName'])
+        else:
+            vendor_product_name = ''
+        if 'VendorProductDescription' in row:
+            vendor_product_description = str(row['VendorProductDescription'])
+        else:
+            vendor_product_description = ''
+        if 'CountryOfOriginId' in row:
+            country_of_origin_id = int(row['CountryOfOriginId'])
+        else:
+            country_of_origin_id = -1
 
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
         if success:
@@ -1318,7 +1373,7 @@ class FyProductUpdate(BasicProcessObject):
                                                                         secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                                         fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                         fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                                        vendor_product_notes, vendor_is_discontinued,
+                                                                        vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
                                                                         b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                                         vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                         markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1353,7 +1408,7 @@ class FyProductUpdate(BasicProcessObject):
                                                               secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                               fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                               fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                              vendor_product_notes, vendor_is_discontinued,
+                                                              vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
                                                               b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                               vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                               markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1680,6 +1735,19 @@ class FyProductUpdate(BasicProcessObject):
         else:
             vendor_is_discontinued = -1
 
+        if 'VendorProductName' in row:
+            vendor_product_name = str(row['VendorProductName'])
+        else:
+            vendor_product_name = ''
+        if 'VendorProductDescription' in row:
+            vendor_product_description = str(row['VendorProductDescription'])
+        else:
+            vendor_product_description = ''
+        if 'CountryOfOriginId' in row:
+            country_of_origin_id = int(row['CountryOfOriginId'])
+        else:
+            country_of_origin_id = -1
+
 
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
         if success:
@@ -1842,7 +1910,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           primary_vendor_id, secondary_vendor_id,
                                                           fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                          vendor_product_notes, vendor_is_discontinued,
+                                                          vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,

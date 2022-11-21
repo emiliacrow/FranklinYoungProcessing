@@ -674,7 +674,7 @@ class IngestionObject:
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                      vendor_product_notes, vendor_is_discontinued,
+                                      vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
@@ -689,7 +689,7 @@ class IngestionObject:
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                      vendor_product_notes, vendor_is_discontinued,
+                                      vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
@@ -705,7 +705,7 @@ class IngestionObject:
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                      vendor_product_notes, vendor_is_discontinued,
+                                      vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
@@ -725,7 +725,7 @@ class IngestionObject:
                                                                     secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                                     fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                     fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                                    vendor_product_notes, vendor_is_discontinued,
+                                                                    vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                                                     b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                                     vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -756,7 +756,7 @@ class IngestionObject:
                                                                     secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                                     fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                     fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                                    vendor_product_notes, vendor_is_discontinued,
+                                                                    vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                                                     b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                                     vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -789,7 +789,7 @@ class IngestionObject:
                                                                     secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                                     fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                     fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                                    vendor_product_notes, vendor_is_discontinued,
+                                                                    vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                                                     b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                                     vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -824,7 +824,7 @@ class IngestionObject:
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                      vendor_product_notes, vendor_is_discontinued,
+                                      vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight,
                                       fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -838,7 +838,7 @@ class IngestionObject:
                                                               fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
                                                               fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                               fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                              vendor_product_notes, vendor_is_discontinued,
+                                                              vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                                               b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                               vendor_list_price, discount, fy_cost, estimated_freight,
                                                               fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -854,7 +854,7 @@ class IngestionObject:
                                                               fy_lead_time, fy_is_hazardous,primary_vendor_id, secondary_vendor_id,
                                                               fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                               fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                              vendor_product_notes, vendor_is_discontinued,
+                                                              vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                                               b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
                                                               vendor_list_price, discount, fy_cost, estimated_freight,
                                                               fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -899,30 +899,30 @@ class IngestionObject:
         if self.product_collector != []:
             self.obDal.min_product_price_cap(self.product_collector)
 
-    def insert_product_price(self, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued):
+    def insert_product_price(self, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId):
         if (len(self.product_insert_collector) > self.load_limit):
-            self.product_insert_collector.append((newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued))
+            self.product_insert_collector.append((newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId))
             self.obDal.min_product_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
             self.product_insert_collector.append((newFyProductNumber, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
-                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued))
+                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId, FyProductNotes, IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId))
 
     def insert_product_price_cleanup(self):
         if self.product_insert_collector != []:
             self.obDal.min_product_price_insert(self.product_insert_collector)
 
 
-    def update_product_price(self, newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId,FyProductNotes,IsDiscontinued):
+    def update_product_price(self, newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber, newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity, newProductDescriptionId,FyProductNotes,IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId):
         if (len(self.product_update_collector) > self.load_limit):
-            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes,IsDiscontinued))
+            self.product_update_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId,newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes,IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId))
             self.obDal.min_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newProductPriceId, newFyProductNumber, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
-                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes,IsDiscontinued))
+                                                newUnitOfIssueSymbolId,newUnitOfMeasureSymbolId,newUnitOfIssueQuantity,newProductDescriptionId, FyProductNotes,IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId))
 
     def update_product_price_cleanup(self):
         if self.product_update_collector != []:
@@ -932,15 +932,15 @@ class IngestionObject:
 
     def update_product_price_nouoi(self, newProductPriceId, newFyProductNumber,newFyPartNumber,
                                    newProductTaxClass,newVendorPartNumber, newProductId,
-                                   newVendorId, newProductDescriptionId, FyProductNotes, IsDiscontinued):
+                                   newVendorId, newProductDescriptionId, FyProductNotes, IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId):
         if (len(self.product_update_nouoi_collector) > self.load_limit):
-            self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId, newProductDescriptionId, FyProductNotes, IsDiscontinued))
+            self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber,newFyPartNumber,newProductTaxClass,newVendorPartNumber,newProductId,newVendorId, newProductDescriptionId, FyProductNotes, IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId))
             self.obDal.min_product_price_nouoi_update(self.product_update_nouoi_collector)
             self.product_update_nouoi_collector = []
         else:
             self.product_update_nouoi_collector.append((newProductPriceId, newFyProductNumber, newFyPartNumber,
                                                 newProductTaxClass, newVendorPartNumber, newProductId, newVendorId,
-                                                newProductDescriptionId, FyProductNotes, IsDiscontinued))
+                                                newProductDescriptionId, FyProductNotes, IsDiscontinued, VendorProductName, VendorProductDescription, CountryOfOriginId))
 
     def update_product_price_nouoi_cleanup(self):
         if self.product_update_nouoi_collector != []:

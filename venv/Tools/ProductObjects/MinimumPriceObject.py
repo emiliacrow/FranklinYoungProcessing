@@ -453,11 +453,25 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             secondary_vendor_id = -1
 
+        if 'VendorProductName' in row:
+            vendor_product_name = str(row['VendorProductName'])
+        else:
+            vendor_product_name = ''
+        if 'VendorProductDescription' in row:
+            vendor_product_description = str(row['VendorProductDescription'])
+        else:
+            vendor_product_description = ''
+        if 'CountryOfOriginId' in row:
+            country_of_origin_id = int(row['CountryOfOriginId'])
+        else:
+            country_of_origin_id = -1
+
+
         # for speed sake this is a one-off
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1):
             #lst_descriptions = [(fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)]
             #self.obDal.fy_product_description_insert_short(lst_descriptions)
-            self.obIngester.insert_fy_product_description_short(fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)
+            self.obIngester.insert_fy_product_description_short(fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id, vendor_product_name, vendor_product_description, country_of_origin_id)
 
             return True, df_collect_product_base_data
         else:
@@ -582,11 +596,25 @@ class MinimumProductPrice(BasicProcessObject):
 
             is_discontinued = row['VendorIsDiscontinued']
 
+            if 'VendorProductName' in row:
+                vendor_product_name = str(row['VendorProductName'])
+            else:
+                vendor_product_name = ''
+            if 'VendorProductDescription' in row:
+                vendor_product_description = str(row['VendorProductDescription'])
+            else:
+                vendor_product_description = ''
+            if 'CountryOfOriginId' in row:
+                country_of_origin_id = int(row['CountryOfOriginId'])
+            else:
+                country_of_origin_id = -1
+
+
         if str(row['Filter']) in ['Partial','ConfigurationChange','check_vendor']:
             if (unit_of_issue_symbol_id != -1) and (unit_of_measure_symbol_id != -1) and (unit_of_issue_quantity != -1):
                 self.obIngester.insert_product_price(fy_product_number, fy_part_number,
                                                      product_tax_class, vendor_part_number, product_id, vendor_id,
-                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, vendor_product_notes,is_discontinued)
+                                                     unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, vendor_product_notes,is_discontinued, vendor_product_name, vendor_product_description, country_of_origin)
             else:
                 self.obReporter.update_report('Fail','Check UOI, QTY, UOM')
 
@@ -594,14 +622,14 @@ class MinimumProductPrice(BasicProcessObject):
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price_nouoi(price_id, fy_product_number, fy_part_number,
                                                  product_tax_class, vendor_part_number, product_id, vendor_id,
-                                                 product_description_id, vendor_product_notes,is_discontinued)
+                                                 product_description_id, vendor_product_notes,is_discontinued, vendor_product_name, vendor_product_description, country_of_origin)
 
         # this pathway will be needed at some point I'm sure
         elif 'DEPRICATED' == 'UNIT CHANGE PATH':
             price_id = row['ProductPriceId']
             self.obIngester.update_product_price(price_id, fy_product_number, fy_part_number,
                                                  product_tax_class, vendor_part_number, product_id, vendor_id,
-                                                 unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, vendor_product_notes,is_discontinued)
+                                                 unit_of_issue_symbol_id, unit_of_measure_symbol_id, unit_of_issue_quantity, product_description_id, vendor_product_notes,is_discontinued, vendor_product_name, vendor_product_description, country_of_origin)
 
 
 
