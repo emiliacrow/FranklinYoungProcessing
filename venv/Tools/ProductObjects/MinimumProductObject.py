@@ -14,14 +14,13 @@ class MinimumProduct(BasicProcessObject):
                   'VendorPartNumber']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
-    gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'IsFreeShipping', 'IsColdChain',
+    gen_fields = ['ManufacturerId', 'FyManufacturerPrefix', 'IsFreeShipping', 'IsColdChain',
                   'ShippingInstructionsId', 'RecommendedStorageId', 'ExpectedLeadTimeId']
 
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Minimum Product'
-        self.quick_country = {}
         self.previous_fy_catalog_number = -1
 
 
@@ -466,14 +465,13 @@ class UpdateMinimumProduct(MinimumProduct):
     req_fields = ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName','VendorPartNumber']
     sup_fields = []
     att_fields = ['RecommendedStorage', 'Sterility', 'SurfaceTreatment', 'Precision']
-    gen_fields = ['CountryOfOriginId', 'ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
+    gen_fields = ['ManufacturerId', 'FyManufacturerPrefix', 'FyCatalogNumber',
                                 'IsFreeShipping', 'IsColdChain', 'ShippingInstructionsId', 'RecommendedStorageId',
                                 'ExpectedLeadTimeId']
 
     def __init__(self,df_product, user, password, is_testing, full_process=False):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Update Minimum Product'
-        self.quick_country = {}
         self.full_process = full_process
 
 

@@ -452,25 +452,11 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             secondary_vendor_id = -1
 
-        if 'VendorProductName' in row:
-            vendor_product_name = str(row['VendorProductName'])
-        else:
-            vendor_product_name = ''
-        if 'VendorProductDescription' in row:
-            vendor_product_description = str(row['VendorProductDescription'])
-        else:
-            vendor_product_description = ''
-        if 'CountryOfOriginId' in row:
-            country_of_origin_id = int(row['CountryOfOriginId'])
-        else:
-            country_of_origin_id = -1
-
-
         # for speed sake this is a one-off
         if (fy_product_name != '' or fy_product_description != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1):
             #lst_descriptions = [(fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)]
             #self.obDal.fy_product_description_insert_short(lst_descriptions)
-            self.obIngester.insert_fy_product_description_short(fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id, vendor_product_name, vendor_product_description, country_of_origin_id)
+            self.obIngester.insert_fy_product_description_short(fy_product_number, fy_product_name, fy_manufacturer_part_number, fy_product_description, fy_coo_id, fy_uoi_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id)
 
             return True, df_collect_product_base_data
         else:
@@ -603,6 +589,7 @@ class MinimumProductPrice(BasicProcessObject):
                 vendor_product_description = str(row['VendorProductDescription'])
             else:
                 vendor_product_description = ''
+
             if 'CountryOfOriginId' in row:
                 country_of_origin_id = int(row['CountryOfOriginId'])
             else:
