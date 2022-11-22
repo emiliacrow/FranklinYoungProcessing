@@ -36,12 +36,7 @@ class MinimumProduct(BasicProcessObject):
             self.df_product['RecommendedStorage'].replace(to_replace = '',value='No storage info.',inplace=True)
             self.batch_process_attribute('RecommendedStorage')
 
-        if 'CountryOfOrigin' not in self.df_product.columns:
-            self.df_product['CountryOfOrigin'] = 'UNKNOWN'
-        else:
-            self.df_product['CountryOfOrigin'].replace(to_replace = '',value='UNKNOWN',inplace=True)
 
-        self.batch_process_country()
         self.batch_process_lead_time()
 
         self.df_product.sort_values(by=['FyCatalogNumber'], inplace=True)
@@ -164,98 +159,6 @@ class MinimumProduct(BasicProcessObject):
             self.df_fill_category = self.obDal.get_product_category()
             self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['ProductId'])
             del self.df_fill_category
-
-
-    def batch_process_country(self):
-        if 'CountryOfOriginId' not in self.df_product.columns and 'CountryOfOrigin' in self.df_product.columns:
-
-            df_attribute = self.df_product[['CountryOfOrigin']]
-            df_attribute = df_attribute.drop_duplicates(subset=['CountryOfOrigin'])
-            lst_ids = []
-            for colName, row in df_attribute.iterrows():
-                country = row['CountryOfOrigin']
-                country = self.obValidator.clean_country_name(country)
-                country = country.upper()
-                if (len(country) == 2):
-                    if country in self.df_country_translator['CountryCode'].tolist():
-                        new_country_of_origin_id = self.df_country_translator.loc[
-                            (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
-                        lst_ids.append(new_country_of_origin_id)
-                    elif country in ['XX','ZZ']:
-                        # unknown
-                        lst_ids.append(-1)
-                    else:
-                        coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
-                        lst_ids.append(coo_id)
-
-                elif (len(country) == 3):
-                    if country in self.df_country_translator['ECATCountryCode'].tolist():
-                        new_country_of_origin_id = self.df_country_translator.loc[
-                            (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
-                        lst_ids.append(new_country_of_origin_id)
-                    else:
-                        coo_id = self.obIngester.manual_ingest_country(ecat_code = country)
-                        lst_ids.append(coo_id)
-
-                elif (len(country) > 3):
-                    if country in self.df_country_translator['CountryName'].tolist():
-                        new_country_of_origin_id = self.df_country_translator.loc[
-                            (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
-                        lst_ids.append(new_country_of_origin_id)
-                    else:
-                        coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
-                        lst_ids.append(coo_id)
-                else:
-                    lst_ids.append(-1)
-
-            df_attribute['CountryOfOriginId'] = lst_ids
-            self.df_product = self.df_product.merge(df_attribute,
-                                                              how='left', on=['CountryOfOrigin'])
-
-        if 'FyCountryOfOriginId' not in self.df_product.columns and 'FyCountryOfOrigin' in self.df_product.columns:
-
-            df_attribute = self.df_product[['FyCountryOfOrigin']]
-            df_attribute = df_attribute.drop_duplicates(subset=['FyCountryOfOrigin'])
-            lst_ids = []
-            for colName, row in df_attribute.iterrows():
-                country = row['FyCountryOfOrigin']
-                country = self.obValidator.clean_country_name(country)
-                country = country.upper()
-                if (len(country) == 2):
-                    if country in self.df_country_translator['CountryCode'].tolist():
-                        new_country_of_origin_id = self.df_country_translator.loc[
-                            (self.df_country_translator['CountryCode'] == country), 'CountryOfOriginId'].values[0]
-                        lst_ids.append(new_country_of_origin_id)
-                    elif country in ['XX','ZZ']:
-                        # unknown
-                        lst_ids.append(-1)
-                    else:
-                        coo_id = self.obIngester.manual_ingest_country(atmp_code = country)
-                        lst_ids.append(coo_id)
-
-                elif (len(country) == 3):
-                    if country in self.df_country_translator['ECATCountryCode'].tolist():
-                        new_country_of_origin_id = self.df_country_translator.loc[
-                            (self.df_country_translator['ECATCountryCode'] == country), 'CountryOfOriginId'].values[0]
-                        lst_ids.append(new_country_of_origin_id)
-                    else:
-                        coo_id = self.obIngester.manual_ingest_country(ecat_code = country)
-                        lst_ids.append(coo_id)
-
-                elif (len(country) > 3):
-                    if country in self.df_country_translator['CountryName'].tolist():
-                        new_country_of_origin_id = self.df_country_translator.loc[
-                            (self.df_country_translator['CountryName'] == country), 'CountryOfOriginId'].values[0]
-                        lst_ids.append(new_country_of_origin_id)
-                    else:
-                        coo_id = self.obIngester.manual_ingest_country(atmp_name = country)
-                        lst_ids.append(coo_id)
-                else:
-                    lst_ids.append(-1)
-
-            df_attribute['FyCountryOfOriginId'] = lst_ids
-            self.df_product = self.df_product.merge(df_attribute,
-                                                              how='left', on=['FyCountryOfOrigin'])
 
 
     def batch_process_lead_time(self):
@@ -426,18 +329,6 @@ class MinimumProduct(BasicProcessObject):
             if 'FyCatalogNumber' not in row:
                 success, df_collect_product_base_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_product_base_data, row)
 
-            success, df_collect_product_base_data = self.process_long_desc(df_collect_product_base_data, row)
-            if success == False:
-                self.obReporter.update_report('Fail','Failed in process long description')
-                return success, df_collect_product_base_data
-
-            if ('CountryOfOriginId' not in row):
-                self.obReporter.update_report('Fail','Failed in process country of origin')
-                return False, df_collect_product_base_data
-
-            if (row['CountryOfOriginId'] == 259):
-                df_collect_product_base_data['CountryOfOrigin'] = ['']
-
 
             if ('CategoryId' not in row):
                 self.obReporter.update_report('Alert','No category assigned.')
@@ -482,48 +373,6 @@ class MinimumProduct(BasicProcessObject):
         self.previous_fy_catalog_number = fy_catalog_number
 
         return True, return_df_line_product
-
-
-    def process_long_desc(self, df_collect_product_base_data, row):
-        vendor_product_description = ''
-        fy_product_description = ''
-        vendor_product_name = ''
-        fy_product_name = ''
-
-        if 'VendorProductDescription' in row:
-            vendor_product_description = str(row['VendorProductDescription'])
-            vendor_product_description = self.obValidator.clean_description(vendor_product_description)
-            df_collect_product_base_data['VendorProductDescription'] = [vendor_product_description]
-
-
-        if 'VendorProductName' in row:
-            vendor_product_name = str(row['VendorProductName'])
-            vendor_product_name = self.obValidator.clean_description(vendor_product_name)
-            df_collect_product_base_data['VendorProductName'] = [vendor_product_name]
-
-
-        # processing/cleaning
-        if 'LongDescription' in row:
-            long_desc = str(row['LongDescription'])
-            long_desc = self.obValidator.clean_description(long_desc)
-            df_collect_product_base_data['LongDescription'] = [long_desc]
-        else:
-            long_desc = ''
-
-        if 'ECommerceLongDescription' in row:
-            ec_long_desc = str(row['ECommerceLongDescription'])
-            ec_long_desc = self.obValidator.clean_description(ec_long_desc)
-            df_collect_product_base_data['ECommerceLongDescription'] = [ec_long_desc]
-        else:
-            ec_long_desc = ''
-
-        if len(ec_long_desc) > 700:
-            ec_long_desc = ec_long_desc[:700]
-
-        df_collect_product_base_data['ECommerceLongDescription'] = [ec_long_desc]
-        df_collect_product_base_data['LongDescription'] = [long_desc]
-
-        return True, df_collect_product_base_data
 
 
     def process_shipping(self, df_collect_product_base_data, row):
@@ -574,31 +423,6 @@ class MinimumProduct(BasicProcessObject):
             if success and return_val == 1:
                 b_override = 1
 
-            try:
-                vendor_product_name = row['VendorProductName']
-            except:
-                vendor_product_name = ''
-
-            try:
-                vendor_product_description = row['VendorProductDescription']
-                vendor_product_description = self.obValidator.clean_description(vendor_product_description)
-            except:
-                vendor_product_description = ''
-
-            try:
-                short_desc = row['ShortDescription']
-                short_desc = self.obValidator.clean_description(short_desc)
-            except:
-                short_desc = ''
-
-            try:
-                ec_long_desc = row['ECommerceLongDescription']
-                ec_long_desc = self.obValidator.clean_description(ec_long_desc)
-            except:
-                ec_long_desc = ''
-
-            country_of_origin_id = row['CountryOfOriginId']
-
             manufacturer_id = row['ManufacturerId']
             try:
                 category_id = int(row['CategoryId'])
@@ -613,24 +437,10 @@ class MinimumProduct(BasicProcessObject):
             if (expected_lead_time_id == -1):
                 self.obReporter.update_report('Fail','Missing LeadTime')
                 return df_line_product
-            if (country_of_origin_id == -1):
-                self.obReporter.update_report('Fail','Missing CountryOfOrigin')
-                return df_line_product
-
-            if (vendor_product_name == '') and 'FyProductName' in row:
-                vendor_product_name = str(row['FyProductName'])
-
-            if (vendor_product_description == '') and 'FyProductDescription' in row:
-                vendor_product_description = row['FyProductDescription']
-
-            if (vendor_product_description == ''):
-                self.obReporter.update_report('Fail','Missing VendorProductDescription')
-                return df_line_product
 
             else:
                 if fy_catalog_number not in self.inserted_products:
-                    self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, short_desc,
-                                                   vendor_product_description, ec_long_desc, country_of_origin_id, manufacturer_id,
+                    self.obIngester.insert_product(fy_catalog_number, manufacturer_part_number, b_override, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
                     self.inserted_products.append(fy_catalog_number)
@@ -639,16 +449,17 @@ class MinimumProduct(BasicProcessObject):
 
         elif str(row['Filter']) == 'Ready' or str(row['Filter']) == 'Partial' or str(row['Filter']) == 'Base Pricing':
             product_id = row['ProductId']
-            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, vendor_product_name, short_desc,
-                                           vendor_product_description, ec_long_desc, country_of_origin_id, manufacturer_id,
+            self.obIngester.update_product(product_id, fy_catalog_number, manufacturer_part_number, b_override, manufacturer_id,
                                                  shipping_instructions_id, recommended_storage_id,
                                                  expected_lead_time_id, category_id)
 
         return df_line_product
 
+
     def trigger_ingest_cleanup(self):
         self.obIngester.insert_product_cleanup()
         self.obIngester.update_product_cleanup()
+
 
 
 class UpdateMinimumProduct(MinimumProduct):

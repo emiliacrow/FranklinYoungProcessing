@@ -584,21 +584,19 @@ class IngestionObject:
         if self.product_insert_collector != []:
             self.obDal.min_product_insert(self.product_insert_collector)
 
-    def update_product(self, newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newVendorProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId):
+    def update_product(self, newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId):
         # if this is the last to join, or if the size has hit the limit, send a runner
         if (len(self.product_update_collector) > self.load_limit):
-            self.product_update_collector.append((newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newVendorProductName, newShortDescription,
-                                               newLongDescription, newECommerceLongDescription,
-                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
-                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
+            self.product_update_collector.append((newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride,
+                                                  newManufacturerId, newShippingInstructionsId,
+                                                  newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
 
             self.obDal.min_product_update(self.product_update_collector)
             self.product_update_collector = []
         else:
-            self.product_update_collector.append((newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newVendorProductName, newShortDescription,
-                                               newLongDescription, newECommerceLongDescription,
-                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
-                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
+            self.product_update_collector.append((newProductId, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride,
+                                                  newManufacturerId, newShippingInstructionsId,
+                                                  newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
 
     def update_product_cleanup(self):
         if self.product_update_collector != []:

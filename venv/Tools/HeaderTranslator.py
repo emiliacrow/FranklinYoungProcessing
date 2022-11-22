@@ -35,7 +35,7 @@ class HeaderTranslator():
 
                             'ManufacturerPartNumber':['GPS Manufacturer Part Number','ManufacturerPartNumber','manufacturer_part_number','manufacturer_part_no','Manufacturer Part Number','Manu Part #','MFR/Supplier Part#','Supplier Part#','SupplierPartNumber','manufacturer_part_no','Supplier Part # '],
 
-                            'CountryOfOrigin':['CountryOfOrigin','CountryCode','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
+                            'CountryOfOrigin':['CountryOfOrigin','CountryCode','VendorCountryCode','VendorCountryOfOrigin','Country of Origin', 'Country Of Origin','COO','Country','country_of_origin_code','country_of_origin'],
 
                             'VendorProductName':['VendorProductName', 'Vendor Product Name', 'vendor_product_name',
                                                  'primary_vendor_product_name', 'ProductName', 'Product Name',
