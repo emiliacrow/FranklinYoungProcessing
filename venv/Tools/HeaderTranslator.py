@@ -20,6 +20,8 @@ class HeaderTranslator():
                             'SecondaryVendorListPrice':['SecondaryVendorListPrice'],
                             'SecondaryVendorFyCost':['SecondaryVendorFyCost'],
                             'SecondaryFOBOrigin':['SecondaryFOBOrigin'],
+                            'FOBOrigin':['FOBOrigin'],
+                            'DirectVendorCheck':['DirectVendorCheck'],
 
                             'IsFeaturedProduct':['IsFeaturedProduct'],
                             'VendorFyProductNumber':['VendorFyProductNumber'],
