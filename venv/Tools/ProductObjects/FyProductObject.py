@@ -1066,6 +1066,7 @@ class FyProductUpdate(BasicProcessObject):
             vendor_product_description = str(row['VendorProductDescription'])
         else:
             vendor_product_description = ''
+
         if 'CountryOfOriginId' in row:
             country_of_origin_id = int(row['CountryOfOriginId'])
         else:
