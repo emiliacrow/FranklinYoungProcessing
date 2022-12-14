@@ -563,22 +563,19 @@ class IngestionObject:
 
         return ingested_set
 
-    def insert_product(self, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newVendorProductName, newShortDescription, newLongDescription, newECommerceLongDescription, newCountryOfOriginId, newManufacturerId, newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId):
+    def insert_product(self, newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newManufacturerId,
+                       newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId):
         # if this is the last to join, or if the size has hit the limit, send a runner
         if (len(self.product_insert_collector) > self.load_limit):
-            self.product_insert_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newVendorProductName, newShortDescription,
-                                               newLongDescription, newECommerceLongDescription,
-                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
-                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
+            self.product_insert_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newManufacturerId,
+                       newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
 
             self.product_insert_collector.sort(key=lambda x:x[0], reverse = True)
             self.obDal.min_product_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
-            self.product_insert_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newVendorProductName, newShortDescription,
-                                               newLongDescription, newECommerceLongDescription,
-                                               newCountryOfOriginId, newManufacturerId, newShippingInstructionsId,
-                                               newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
+            self.product_insert_collector.append((newFYCatalogNumber, newManufacturerPartNumber, newIsProductNumberOverride, newManufacturerId,
+                       newShippingInstructionsId, newRecommendedStorageId, newExpectedLeadTimeId, newCategoryId))
 
     def insert_product_cleanup(self):
         if self.product_insert_collector != []:
