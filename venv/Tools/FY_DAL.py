@@ -874,6 +874,7 @@ class DalObject:
         df_toggles = self.get_lookup(proc_name,column_names)
         return df_toggles
 
+
     def get_toggles_full(self):
         proc_name = 'sequoia.get_Toggles5'
         column_names = ['FyProductNumber', 'ProductDescriptionId', 'db_FyIsDiscontinued','db_AllowPurchases',
