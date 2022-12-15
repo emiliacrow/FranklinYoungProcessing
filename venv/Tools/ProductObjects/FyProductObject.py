@@ -987,6 +987,10 @@ class FyProductUpdate(BasicProcessObject):
         if 'ManufacturerPartNumber' in row:
             manufacturer_part_number = str(row['ManufacturerPartNumber'])
 
+        fy_manufacturer_part_number = manufacturer_part_number
+        if 'FyManufacturerPartNumber' in row:
+            fy_manufacturer_part_number = str(row['FyManufacturerPartNumber']) + ' ' + str(row['UnitOfIssue'])
+
         manufacturer_id = -1
         if 'ManufacturerId' in row:
             manufacturer_id = int(row['ManufacturerId'])
@@ -1367,7 +1371,7 @@ class FyProductUpdate(BasicProcessObject):
 
 
             if (mfc_percent != -1 or gsa_approved_percent != -1 or va_approved_percent != -1 or gsa_sin != '' or va_sin != ''):
-                self.obIngester.insert_fy_product_description_contract(fy_catalog_number, manufacturer_part_number, is_product_number_override,
+                self.obIngester.insert_fy_product_description_contract(fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
                                                                         manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
                                                                         fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
                                                                         vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
@@ -1402,7 +1406,7 @@ class FyProductUpdate(BasicProcessObject):
                 return True, df_collect_product_base_data
             else:
                 # this needs to proper ingest the info
-                self.obIngester.insert_fy_product_description(fy_catalog_number, manufacturer_part_number, is_product_number_override,
+                self.obIngester.insert_fy_product_description(fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
                                                               manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
                                                               fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
                                                               vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
