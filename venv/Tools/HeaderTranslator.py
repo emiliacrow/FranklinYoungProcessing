@@ -201,7 +201,7 @@ class HeaderTranslator():
 
                             'VA_Sin':['VA_Sin','VA_SIN','VA Sin','VA SIN','VASin','VA Sin #','VASin#'],
 # ECAT
-                            'ECATApprovedListPrice':['ECATApprovedFYListPrice__value', 'ECATApprovedFYListPrice',
+                            'ECATApprovedListPrice':['ECATApprovedListPrice','ECATApprovedFYListPrice__value', 'ECATApprovedFYListPrice',
                                                    'ECATApprovedFYListPrice'],
                             'ECATDiscountPercent':['ECATApprovedPercent','ECATChannelDiscount', 'ECATDiscount', 'ECATDiscountPercent', 'ECAT Channel Discount',
                                                  'ECAT Discount', 'ecat_channel_discount', 'ECAT Approved Channel%'],
@@ -214,6 +214,8 @@ class HeaderTranslator():
                                                             'ECATContractModification', 'ECAT Contract Modification','ECATModificationNumber','ECAT Modification Number'],
                             'ECATApprovedPriceDate':['ECATApprovedPriceDate', 'ECAT Approved Price Date',
                                                    'ECAT Approved Date'],
+                            'ECATMaxMarkup':['ECATMaxMarkup', 'ECAT MaxMarkup',
+                                                   'ECAT Max Markup'],
 
 
                             'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)',
