@@ -108,6 +108,7 @@ class FileProcessor(BasicProcessObject):
 
         return self.success, df_line_product
 
+
     def correct_bad_unicode(self, df_line_product):
         self.success = True
         clean_up_columns = ['FyProductName','VendorProductName','VendorProductDescription','FyProductDescription']
