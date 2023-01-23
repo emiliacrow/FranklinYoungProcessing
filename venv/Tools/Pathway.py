@@ -126,6 +126,7 @@ class Pathways():
         # this doesn't behave like the rest of them
         if file_action_selected == 'File Appender Tool':
             self.success, self.message = self.file_appender_tool()
+
         elif file_action_selected == 'File Merger Tool':
             self.success, self.message = self.file_merger_tool()
 
@@ -273,10 +274,14 @@ class Pathways():
 
     def file_appender_tool(self):
         self.full_file_count = 1
+        print(self.start_path)
         file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.', path = self.start_path)
 
         if file_ident_success:
             first_file = message_or_path.pop()
+            self.start_path = (first_file.rpartition('\\')[0]).replace('\\\\', '\\')
+            print('File name: ', self.start_path)
+            self.set_perm_file()
 
             self.df_second_product = self.obFileFinder.read_xlsx(first_file)
 
@@ -296,8 +301,6 @@ class Pathways():
             self.obFileFinder.write_xlsx(self.df_second_product, '(appended-results)', False)
             self.message = '{} files have been combined.'.format(self.full_file_count)
 
-            self.start_path = (first_file.rpartition('\\')[0]).replace('\\\\', '\\')
-            self.set_perm_file()
             return file_ident_success, self.message
         else:
             return file_ident_success, message_or_path

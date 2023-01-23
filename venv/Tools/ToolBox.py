@@ -19,9 +19,9 @@ class FileFinder():
         self.selected_file = None
 
     # akin to openFileNameDialog
-    def ident_file(self,window_title='Please select a file',path = ''):
+    def ident_file(self,window_title='Please select a file', start_path = ''):
 
-        obFileDialog = FileDialogObject('file_dialog', window_title, path=path)
+        obFileDialog = FileDialogObject('file_dialog', window_title, path = start_path)
 
         file_name = obFileDialog.get_file_name()
         if len(file_name) > 0:
@@ -41,9 +41,8 @@ class FileFinder():
         else:
             return False, 'No file selected'
 
-    def ident_files(self, window_title='Please select a file',path = ''):
-
-        obFileDialog = FileDialogObject('files_dialog', window_title)
+    def ident_files(self, window_title='Please select a file', path = ''):
+        obFileDialog = FileDialogObject('files_dialog', window_title, path = path)
         file_names = obFileDialog.get_file_names()
         file_set = []
 
