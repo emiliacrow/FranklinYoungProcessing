@@ -41,8 +41,8 @@ class FileFinder():
         else:
             return False, 'No file selected'
 
-    def ident_files(self, window_title='Please select a file', path = ''):
-        obFileDialog = FileDialogObject('files_dialog', window_title, path = path)
+    def ident_files(self, window_title='Please select a file', start_path = ''):
+        obFileDialog = FileDialogObject('files_dialog', window_title, path = start_path)
         file_names = obFileDialog.get_file_names()
         file_set = []
 
@@ -67,8 +67,8 @@ class FileFinder():
 
     # this will be depricated
     # it's only used for images, and that's a stupid way to do it
-    def ident_directory(self, window_title = 'Please select files', path = ''):
-        obFileDialog = FileDialogObject('files_dialog', window_title, path = path)
+    def ident_directory(self, window_title = 'Please select files', start_path = ''):
+        obFileDialog = FileDialogObject('files_dialog', window_title, path = start_path)
         file_names = obFileDialog.get_file_names()
         file_set = []
 

@@ -133,7 +133,7 @@ class Pathways():
         elif file_action_selected == 'File Splitter Tool':
             self.success, self.message = self.file_splitter_tool()
         else:
-            file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected, path = self.start_path)
+            file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to process: '+file_action_selected, start_path = self.start_path)
             if file_ident_success == False:
                 return file_ident_success, message_or_path
 
@@ -187,7 +187,7 @@ class Pathways():
         self.message = 'It\'s finished'
 
         # which file you wanna split
-        file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to split.', path = self.start_path)
+        file_ident_success, message_or_path = self.obFileFinder.ident_file('Select file to split.', start_path = self.start_path)
         if file_ident_success == False:
             return file_ident_success, message_or_path
 
@@ -274,13 +274,11 @@ class Pathways():
 
     def file_appender_tool(self):
         self.full_file_count = 1
-        print(self.start_path)
-        file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.', path = self.start_path)
+        file_ident_success, message_or_path = self.obFileFinder.ident_files('Select files to append.', start_path = self.start_path)
 
         if file_ident_success:
             first_file = message_or_path.pop()
             self.start_path = (first_file.rpartition('\\')[0]).replace('\\\\', '\\')
-            print('File name: ', self.start_path)
             self.set_perm_file()
 
             self.df_second_product = self.obFileFinder.read_xlsx(first_file)
@@ -436,7 +434,7 @@ class Pathways():
         self.region_name = 'us-west-2'
 
         # ident path
-        file_success, clean_image_paths = self.obFileFinder.ident_directory('Select image directory to process:')
+        file_success, clean_image_paths = self.obFileFinder.ident_directory('Select image directory to process:', start_path = self.start_path)
 
         if not file_success:
             return False, 'No files selected'
@@ -604,7 +602,7 @@ class Pathways():
             return False, 'No file available.'
 
     def ingest_data_pathway(self, is_testing, ingestion_action_selected):
-        self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+ingestion_action_selected, path = self.start_path)
+        self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+ingestion_action_selected, start_path = self.start_path)
         if self.success == False:
             return self.success, message_or_path
 
@@ -721,7 +719,7 @@ class Pathways():
 
 
     def update_data_pathway(self, is_testing, update_action_selected):
-        self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+update_action_selected, path = self.start_path)
+        self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+update_action_selected, start_path = self.start_path)
         if self.success == False:
             return self.success, message_or_path
 
@@ -867,7 +865,7 @@ class Pathways():
 
 
         else:
-            self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+contract_selected, path = self.start_path)
+            self.success, message_or_path = self.obFileFinder.ident_file('Select product data file: '+contract_selected, start_path = self.start_path)
             if self.success == False:
                 return self.success, message_or_path
 
