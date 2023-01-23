@@ -67,8 +67,8 @@ class FileFinder():
 
     # this will be depricated
     # it's only used for images, and that's a stupid way to do it
-    def ident_directory(self, window_title = 'Please select files', path = None):
-        obFileDialog = FileDialogObject('files_dialog', window_title)
+    def ident_directory(self, window_title = 'Please select files', path = ''):
+        obFileDialog = FileDialogObject('files_dialog', window_title, path = path)
         file_names = obFileDialog.get_file_names()
         file_set = []
 
