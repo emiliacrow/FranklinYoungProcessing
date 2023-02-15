@@ -509,7 +509,7 @@ class IngestionObject:
         return df_vendor_lookup
 
     def manual_ingest_vendor(self, atmp_name = '', atmp_code = '',lst_vendor_names=[]):
-        lst_req_fields = [['VendorName', 45, 'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"', atmp_name,'required'],
+        lst_req_fields = [['VendorName', 45, 'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"', atmp_name,'REQUIRED'],
                           ['VendorCode', 45, 'This is the not so pretty name<br>like "Consolidated Ster"', atmp_code,'required'],
                           ['FOBOrigin', 45, 'This is an indicator for FOB', 'N','']]
         fob_origin = -1
