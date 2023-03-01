@@ -79,7 +79,6 @@ class BasePrice(BasicProcessObject):
             return False
 
 
-
     def process_product_line(self, df_line_product):
         success = True
         df_collect_product_base_data = df_line_product.copy()
@@ -103,6 +102,16 @@ class BasePrice(BasicProcessObject):
         return success, df_line_product
 
 
+    def set_vendor_discount(self, fy_cost, vendor_list_price):
+        if vendor_list_price == fy_cost or vendor_list_price <= 0:
+            fy_discount_percent = 0
+        else:
+            fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
+
+        self.obReporter.update_report('Alert', 'Discount was calculated')
+        return fy_discount_percent
+
+
     def set_vendor_list(self, fy_cost, fy_discount_percent):
         if fy_discount_percent == 0:
             vendor_list_price = round(fy_cost, 2)
@@ -113,14 +122,59 @@ class BasePrice(BasicProcessObject):
         return vendor_list_price
 
 
-    def set_vendor_discount(self, fy_cost, vendor_list_price):
-        if vendor_list_price == fy_cost or vendor_list_price <= 0:
-            fy_discount_percent = 0
-        else:
-            fy_discount_percent = round(1 - (fy_cost / vendor_list_price), 2)
+    def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
+        # do math
+        fy_sell_price_long = fy_landed_cost * markup_sell
 
-        self.obReporter.update_report('Alert', 'Discount was calculated')
-        return fy_discount_percent
+        #print('printing the long fy sell price val:', fy_sell_price_long)
+        # initial rounding and formatting
+        fy_sell_price = round(fy_sell_price_long, 4)
+        str_fy_sell_price = "{:.4f}".format(fy_sell_price)
+
+        # evaluate the last two digits and do second rounding
+        final_digit = str_fy_sell_price[-2:]
+        #print('printing the stringy fy sell price val:', str_fy_sell_price)
+        if str_fy_sell_price[-2:] == '50':
+            fy_sell_price = round(fy_sell_price+0.0001, 2)
+        elif str_fy_sell_price[-1] == '5':
+            fy_sell_price = round(fy_sell_price+0.00001, 2)
+        else:
+            fy_sell_price = round(fy_sell_price, 2)
+
+        #print('printing the final fy sell price val:', fy_sell_price)
+        df_collect_product_base_data['FySellPrice'] = [fy_sell_price]
+
+        # do math
+        fy_list_price_long = float(fy_landed_cost * markup_list)
+
+        #print('printing the long fy list price val:', fy_list_price_long)
+        # initial rounding and formatting
+        fy_list_price = round(fy_list_price_long, 4)
+        str_fy_list_price = "{:.4f}".format(fy_list_price)
+        #print('printing the stringy fy list price val:', str_fy_list_price)
+
+        # evaluate the last two digits and do second rounding
+        final_digit = str_fy_list_price[-2:]
+        if str_fy_list_price[-2:] == '50':
+            #print('first cap')
+            fy_list_price = round(fy_list_price+0.0001, 2)
+        elif str_fy_list_price[-1] == '5':
+            #print('second cap')
+            fy_list_price = round(fy_list_price+0.00001, 2)
+        else:
+            #print('third cap')
+            fy_list_price = round(fy_list_price, 2)
+
+        #print('printing the final fy list price val:', fy_list_price)
+        df_collect_product_base_data['FyListPrice'] = [fy_list_price]
+
+        # TODO check that this is working right
+        try:
+            df_collect_product_base_data['ECommerceDiscount'] = [round(1 - float(fy_sell_price / fy_list_price), 2)]
+        except ZeroDivisionError:
+            df_collect_product_base_data['ECommerceDiscount'] = [0]
+
+        return df_collect_product_base_data
 
 
     def set_fallback_margin(self, fy_landed_cost, fy_list_price):
@@ -138,54 +192,6 @@ class BasePrice(BasicProcessObject):
         except ZeroDivisionError:
             markup_sell = 0
         return markup_sell
-
-
-    def set_pricing_rons_way(self, df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list):
-        # do math
-        fy_sell_price_long = fy_landed_cost * markup_sell
-
-        # initial rounding and formatting
-        fy_sell_price = round(fy_sell_price_long, 4)
-        str_fy_sell_price = "{:.4f}".format(fy_sell_price)
-        # evaluate the last two digits and do second rounding
-        final_digit = str_fy_sell_price[-2:]
-        if str_fy_sell_price[-2:] == '50':
-            fy_sell_price = round(fy_sell_price+0.0001, 2)
-
-        elif str_fy_sell_price[-1] == '5':
-            fy_sell_price = round(fy_sell_price+0.00001, 2)
-
-        else:
-            fy_sell_price = round(fy_sell_price, 2)
-
-        df_collect_product_base_data['FySellPrice'] = [fy_sell_price]
-
-        # do math
-        fy_list_price_long = float(fy_landed_cost * markup_list)
-
-        # initial rounding and formatting
-        fy_list_price = round(fy_list_price_long, 4)
-        str_fy_list_price = "{:.4f}".format(fy_list_price)
-        # evaluate the last two digits and do second rounding
-        final_digit = str_fy_list_price[-2:]
-        if str_fy_list_price[-2:] == '50':
-            fy_list_price = round(fy_list_price+0.0001, 2)
-
-        elif str_fy_list_price[-1] == '5':
-            fy_list_price = round(fy_list_price+0.00001, 2)
-
-        else:
-            fy_list_price = round(fy_list_price, 2)
-
-        df_collect_product_base_data['FyListPrice'] = [fy_list_price]
-
-        # TODO check that this is working right
-        try:
-            df_collect_product_base_data['ECommerceDiscount'] = [round(1 - float(fy_sell_price / fy_list_price), 2)]
-        except ZeroDivisionError:
-            df_collect_product_base_data['ECommerceDiscount'] = [0]
-
-        return df_collect_product_base_data
 
 
     def process_ecom_discount(self, df_collect_product_base_data, row):
@@ -456,18 +462,20 @@ class BasePrice(BasicProcessObject):
             # we check if there's a value
             if 'DateCatalogReceived' in row:
                 date_catalog_received = row['DateCatalogReceived']
+                # we format the value
+                try:
+                    date_catalog_received = int(date_catalog_received)
+                    date_catalog_received = xlrd.xldate_as_datetime(date_catalog_received, 0)
+                except ValueError:
+                    date_catalog_received = str(row['DateCatalogReceived'])
+
             elif 'db_DateCatalogReceived' in row:
                 date_catalog_received = str(row['db_DateCatalogReceived'])
             else:
                 self.obReporter.update_report('Fail','Catalog received date missing')
                 return False, df_line_product
 
-            # we format the value
-            try:
-                date_catalog_received = int(date_catalog_received)
-                date_catalog_received = xlrd.xldate_as_datetime(date_catalog_received, 0)
-            except ValueError:
-                date_catalog_received = str(row['DateCatalogReceived'])
+
             if isinstance(date_catalog_received, datetime.datetime) == False:
                 try:
                     date_catalog_received = datetime.datetime.strptime(date_catalog_received, '%Y-%m-%d %H:%M:%S')
@@ -537,6 +545,7 @@ class BasePrice(BasicProcessObject):
                                                           htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id)
 
         return success, df_line_product
+
 
     def trigger_ingest_cleanup(self):
         self.obIngester.set_product_notes_cleanup()

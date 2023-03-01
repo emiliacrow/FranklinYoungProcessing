@@ -731,20 +731,22 @@ class FyProductUpdate(BasicProcessObject):
             print('markup', markup_sell)
             x = input('x')
 
+        #print('printing the long fy sell price val:', fy_sell_price_long)
         # initial rounding and formatting
         fy_sell_price = round(fy_sell_price_long, 4)
         str_fy_sell_price = "{:.4f}".format(fy_sell_price)
+
         # evaluate the last two digits and do second rounding
         final_digit = str_fy_sell_price[-2:]
+        #print('printing the stringy fy sell price val:', str_fy_sell_price)
         if str_fy_sell_price[-2:] == '50':
             fy_sell_price = round(fy_sell_price+0.0001, 2)
-
         elif str_fy_sell_price[-1] == '5':
             fy_sell_price = round(fy_sell_price+0.00001, 2)
-
         else:
             fy_sell_price = round(fy_sell_price, 2)
 
+        #print('printing the final fy sell price val:', fy_sell_price)
         df_collect_product_base_data['FySellPrice'] = [fy_sell_price]
 
         # do math
@@ -755,20 +757,25 @@ class FyProductUpdate(BasicProcessObject):
             print('mark up', markup_list)
             x = input('x')
 
+        #print('printing the long fy list price val:', fy_list_price_long)
         # initial rounding and formatting
         fy_list_price = round(fy_list_price_long, 4)
         str_fy_list_price = "{:.4f}".format(fy_list_price)
+        #print('printing the stringy fy list price val:', str_fy_list_price)
+
         # evaluate the last two digits and do second rounding
         final_digit = str_fy_list_price[-2:]
         if str_fy_list_price[-2:] == '50':
+            #print('first cap')
             fy_list_price = round(fy_list_price+0.0001, 2)
-
         elif str_fy_list_price[-1] == '5':
+            #print('second cap')
             fy_list_price = round(fy_list_price+0.00001, 2)
-
         else:
+            #print('third cap')
             fy_list_price = round(fy_list_price, 2)
 
+        #print('printing the final fy list price val:', fy_list_price)
         df_collect_product_base_data['FyListPrice'] = [fy_list_price]
 
         return df_collect_product_base_data
