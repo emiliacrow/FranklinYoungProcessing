@@ -300,10 +300,11 @@ class BasePrice(BasicProcessObject):
         success, fy_landed_cost = self.row_check(row,'FyLandedCost')
         if success:
             success, fy_landed_cost = self.float_check(fy_landed_cost, 'FyLandedCost')
+            fy_landed_cost = round(fy_landed_cost, 2)
             df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
 
         if not success:
-            fy_landed_cost = fy_cost + estimated_freight
+            fy_landed_cost = round(fy_cost + estimated_freight, 2)
             self.obReporter.update_report('Alert', 'FyLandedCost was calculated')
             df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
 
