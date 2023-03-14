@@ -1054,7 +1054,7 @@ class DataRunner(threading.Thread):
             try:
                 obCursor.callproc(self.proc_name, args = each_item)
             except OperationalError as e:
-                print(e)
+                print(self.proc_name, e)
                 fail_retries.append(each_item)
 
         # this is for executing many in the DB which can be faster
@@ -1077,6 +1077,18 @@ class DataRunner(threading.Thread):
         self.connection.close()
 
         print('Runner {0} report end: {1}'.format(self.name, self.proc_name))
+
+    def call_proc(self, obCursor, proc_name, item_args, attempt = 1):
+        #consider better handling of
+        if attempt < 4:
+            try:
+                obCursor.callproc(self.proc_name, args=each_item)
+                return True
+            except OperationalError:
+                time.sleep(20)
+                self.call_proc(obCursor, proc_name, item_args, attempt+1)
+        else:
+            return False
 
 
 def get_lookup(conx, proc_name, column_names,filter_val=None):
