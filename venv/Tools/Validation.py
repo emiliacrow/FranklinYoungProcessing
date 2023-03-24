@@ -48,7 +48,7 @@ class Validator:
         return return_val
 
     def clean_part_number(self,str_to_clean, leave_gap = False):
-        pattern = '(\W)'
+        pattern = '(\W|\_)'
         if leave_gap:
             str_to_clean = re.sub(pattern, ' ', str_to_clean)
         else:
@@ -287,10 +287,10 @@ class Validator:
 
 def test_frame():
     obVal = Validator()
-    desc = 'This is an example of a large down quote? &ldquo; did you see it?'
+    desc = 'SWARE_INSTALL'
 
     print(desc)
-    desc = obVal.clean_description(desc)
+    desc = obVal.clean_part_number(desc)
     print(desc)
 
 
