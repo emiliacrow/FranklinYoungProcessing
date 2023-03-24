@@ -287,7 +287,7 @@ class Validator:
 
 def test_frame():
     obVal = Validator()
-    desc = 'SWARE_INSTALL'
+    desc = 'SWARE_INSTALL##1F-F'
 
     print(desc)
     desc = obVal.clean_part_number(desc)
