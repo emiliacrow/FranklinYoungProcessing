@@ -1,6 +1,6 @@
 # CreatedBy: Emilia Crow
 # CreateDate: 20210609
-# Updated: 20220318
+# Updated: 20230328
 # CreateFor: Franklin Young International
 
 import xlrd
@@ -83,12 +83,11 @@ class ECATPrice(BasicProcessObject):
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             if 'ContractedManufacturerPartNumber' in row:
-                contract_manu_number = row['ContractedManufacturerPartNumber']
+                contract_manu_number = str(row['ContractedManufacturerPartNumber'])
 
                 if 'db_ContractedManufacturerPartNumber' in row:
                     if contract_manu_number == '':
-                        db_contract_manu_number = row['db_ContractedManufacturerPartNumber']
-                        contract_manu_number = db_contract_manu_number
+                        db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
                         return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
                         self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
 
