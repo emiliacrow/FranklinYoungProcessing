@@ -282,25 +282,35 @@ class FyProductUpdate(BasicProcessObject):
             lst_ids = []
             for colName, row in df_attribute.iterrows():
                 category = str(row['FyCategory']).strip()
+                if category == '':
+                    new_category_id = -1
+                    lst_ids.append(new_category_id)
+                    continue
 
+                #replace gaps
                 while '/ ' in category:
                     category = category.replace('/ ', '/')
 
                 while ' /' in category:
                     category = category.replace(' /', '/')
 
+                # the name of the category is the bottom-most level
                 category_name = (category.rpartition('/')[2]).strip()
 
+                # normalize casing
                 self.df_category_names['CategoryNameLower'] = self.df_category_names['CategoryName'].str.lower()
 
+                # ident by name
                 if category_name in self.df_category_names['CategoryName'].values:
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['CategoryName'] == category_name), 'CategoryId'].values[0]
 
+                # compare by normalized name
                 elif category_name.lower() in self.df_category_names['CategoryNameLower'].values:
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['CategoryNameLower'] == category_name.lower()), 'CategoryId'].values[0]
 
+                # try the whole category
                 elif category in self.df_category_names['Category'].values:
                     new_category_id = self.df_category_names.loc[
                         (self.df_category_names['Category'] == category), 'CategoryId'].values[0]
@@ -346,6 +356,14 @@ class FyProductUpdate(BasicProcessObject):
 
             self.df_product = self.df_product.merge(df_attribute,
                                                      how='left', on=['FyCategory'])
+        # try to pull the current values
+        # this might not be necessary
+        elif 'ProductDescriptionId' in self.df_product.columns:
+            print('get category by product description')
+            self.df_fill_category = self.obDal.get_fy_product_category()
+            self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['ProductDescriptionId'])
+            del self.df_fill_category
+
         else:
             self.df_fill_category = self.obDal.get_product_category()
             self.df_product = self.df_product.merge(self.df_fill_category,how='left',on=['ProductId'])

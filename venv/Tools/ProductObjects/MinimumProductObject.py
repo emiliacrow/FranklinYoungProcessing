@@ -90,6 +90,10 @@ class MinimumProduct(BasicProcessObject):
             lst_ids = []
             for colName, row in df_attribute.iterrows():
                 category = str(row['Category']).strip()
+                if category == '':
+                    new_category_id = -1
+                    lst_ids.append(new_category_id)
+                    continue
 
                 while '/ ' in category:
                     category = category.replace('/ ', '/')
