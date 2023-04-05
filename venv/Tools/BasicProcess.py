@@ -1080,14 +1080,14 @@ class BasicProcessObject:
         return df_collect_ids
 
 
-    def process_manufacturer(self, df_collect_product_base_data, row, skip_manufacturers = False):
+    def process_manufacturer(self, df_collect_product_base_data, row):
         manufacturer = row['ManufacturerName']
         manufacturer = manufacturer.strip().replace('  ',' ')
 
         if 'UnitOfIssue' in row:
             unit_of_issue = self.normalize_units(row['UnitOfIssue'])
 
-        if 'FyUnitOfIssue' in row:
+        elif 'FyUnitOfIssue' in row:
             unit_of_issue = self.normalize_units(row['FyUnitOfIssue'])
 
         else:
@@ -1129,7 +1129,6 @@ class BasicProcessObject:
             self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
             df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
             df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-
             return True, df_collect_product_base_data, new_prefix
 
         elif (manufacturer.upper() in self.df_manufacturer_translator['ManufacturerName'].unique()):
@@ -1159,46 +1158,10 @@ class BasicProcessObject:
 
                 return True, df_collect_product_base_data, new_prefix
             else:
-                if skip_manufacturers:
-                    return False, df_collect_product_base_data, '0000'
-
-                manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
-                manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
-
-                new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=supplier, lst_manufacturer_names=manufacturer_name_list)
-                self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
-                # this needs to return the prefix so it can be used
-
-                new_prefix = self.df_manufacturer_translator.loc[
-                    (self.df_manufacturer_translator['ManufacturerId'] == str(new_manufacturer_id)), 'FyManufacturerPrefix'].values[0]
-
-                self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
-                df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
-                df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-
-                return True, df_collect_product_base_data, new_prefix
-
-        else:
-            if skip_manufacturers:
                 return False, df_collect_product_base_data, '0000'
 
-            manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
-            manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
-
-
-            new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer, lst_manufacturer_names=manufacturer_name_list)
-
-            self.df_manufacturer_translator = self.obIngester.get_manufacturer_lookup()
-            # this needs to return the prefix so it can be used
-
-            new_prefix = self.df_manufacturer_translator.loc[
-                (self.df_manufacturer_translator['ManufacturerId'] == str(new_manufacturer_id)), 'FyManufacturerPrefix'].values[0]
-
-            self.manufacturer_repeater[manufacturer] = [new_manufacturer_id, new_prefix]
-            df_collect_product_base_data['ManufacturerId'] = [new_manufacturer_id]
-            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
-
-            return True, df_collect_product_base_data, new_prefix
+        else:
+            return False, df_collect_product_base_data, '0000'
 
 
     def test_product_number(self, fy_product_number):
@@ -1339,7 +1302,7 @@ class ReporterObject():
             self.update_report('Fail', 'Failed at exit')
 
     def report_new_manufacturer(self):
-        self.update_report('Fail', 'Manufacturer must be ingested')
+        self.update_report('Fail', 'New Manufacturer must be ingested')
 
     def price_report(self,is_good):
         if is_good:

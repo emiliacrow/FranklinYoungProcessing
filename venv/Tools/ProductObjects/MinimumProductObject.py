@@ -331,7 +331,9 @@ class MinimumProduct(BasicProcessObject):
 
             if 'FyCatalogNumber' not in row:
                 success, df_collect_product_base_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_product_base_data, row)
-
+                if not success:
+                    self.obReporter.report_new_manufacturer()
+                    return success, df_collect_attribute_data
 
             if ('CategoryId' not in row):
                 self.obReporter.update_report('Alert','No category assigned.')

@@ -19,9 +19,8 @@ class FileProcessor(BasicProcessObject):
     sup_fields = []
     att_fields = []
     gen_fields = []
-    def __init__(self,df_product, user, password, is_testing, proc_to_set, aws_access_key_id, aws_secret_access_key, skip_manufacturers = False):
+    def __init__(self,df_product, user, password, is_testing, proc_to_set, aws_access_key_id, aws_secret_access_key):
         self.proc_to_run = proc_to_set
-        self.skip_manufacturers = skip_manufacturers
         super().__init__(df_product, user, password, is_testing)
         self.name = 'File Processor'
         self.lindas_increase = 0.25
@@ -356,9 +355,10 @@ class FileProcessor(BasicProcessObject):
         success = True
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            success, df_collect_attribute_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row, self.skip_manufacturers)
+            success, df_collect_attribute_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
 
             if not success:
+                self.obReporter.report_new_manufacturer()
                 return success, df_collect_attribute_data
 
             if 'UnitOfIssue' in row:

@@ -163,16 +163,10 @@ class Pathways():
                 else:
                     self.obFileFinder.write_xlsx(self.df_product,'split_fail')
 
-            else:
-                skip_manufacturers = False
-                if file_action_selected == 'Assign FyPartNumbers':
-                    self.obYNBox = YesNoDialog('Skip new manufacturers?')
-                    self.obYNBox.initUI('Append file dialog.', 'Would you like to skip ingesting new manufacturers?', icon='append-a')
-                    if self.obYNBox.yes_selected == True:
-                        skip_manufacturers = True
+            elif file_action_selected == 'Assign FyPartNumbers':
 
                 self.df_product = self.obFileFinder.read_xlsx()
-                self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected, self.aws_access_key_id, self.aws_secret_access_key,skip_manufacturers = True)
+                self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected, self.aws_access_key_id, self.aws_secret_access_key)
                 self.success, self.message = self.obFileProcessor.begin_process()
                 self.df_product = self.obFileProcessor.get_df()
 
