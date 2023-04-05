@@ -1087,6 +1087,9 @@ class BasicProcessObject:
         if 'UnitOfIssue' in row:
             unit_of_issue = self.normalize_units(row['UnitOfIssue'])
 
+        if 'FyUnitOfIssue' in row:
+            unit_of_issue = self.normalize_units(row['FyUnitOfIssue'])
+
         else:
             unit_of_issue = 'EA'
             df_collect_product_base_data['UnitOfIssue'] = [unit_of_issue]
