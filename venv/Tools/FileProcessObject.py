@@ -351,11 +351,40 @@ class FileProcessor(BasicProcessObject):
         return True, df_collect_product_base_data
 
 
+    def vendor_exists_check(self, vendor_name):
+        vendor_name = vendor_name.upper()
+        if vendor_name in self.df_vendor_translator['VendorCode'].values:
+            new_vendor_id = self.df_vendor_translator.loc[
+                (self.df_vendor_translator['VendorCode'] == vendor_name), 'VendorId'].values[0]
+        elif vendor_name in self.df_vendor_translator['VendorName'].values:
+            new_vendor_id = self.df_vendor_translator.loc[
+                (self.df_vendor_translator['VendorName'] == vendor_name), 'VendorId'].values[0]
+        else:
+            new_vendor_id = -1
+        return new_vendor_id
+
     def assign_fy_part_numbers(self, df_line_product):
         success = True
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             success, df_collect_attribute_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
+
+            if 'VendorName' in row:
+                vendor_name = row['VendorName']
+                new_vendor_id = self.vendor_exists_check(vendor_name)
+                if new_vendor_id == -1:
+                    self.obReporter.update_report('Alert','New Vendor Name must be ingested')
+            if 'PrimaryVendorName' in row:
+                vendor_name = row['PrimaryVendorName']
+                new_vendor_id = self.vendor_exists_check(vendor_name)
+                if new_vendor_id == -1:
+                    self.obReporter.update_report('Alert','New Vendor Name (PrimaryVendorName) must be ingested')
+            if 'SecondaryVendorName' in row:
+                vendor_name = row['SecondaryVendorName']
+                new_vendor_id = self.vendor_exists_check(vendor_name)
+                if new_vendor_id == -1:
+                    self.obReporter.update_report('Alert','New Vendor Name (SecondaryVendorName) must be ingested')
+
 
             if not success:
                 self.obReporter.report_new_manufacturer()
