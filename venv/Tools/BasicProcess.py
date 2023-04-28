@@ -882,32 +882,18 @@ class BasicProcessObject:
         pass
 
     def normalize_units(self, units):
+        dct_uoi_map = {'BG':['BG','BAG','BAGS'],'BO':['BO'],'BT':['BT','BOTTLE','BOTTLES'],'BX':['BX','BOX','BOXES'],'CA':['CA','CS','CASE','CASES'],'CT':['CT','CARTON','CARTONS'],'DA':['DA'],'DR':['DR','DRUM','DRUMS'],'DZ':['DZ','DOZEN','DOZENS'],'EA':['EA','EACH','EACHES','ITEM','ITEMS','TEST','TESTS','TST','TSTS','PC','PCS','PIECE','PIECES'],'FT':['FT','FOOT'],'GA':['GA','GALLON'],'GL':['GL','GRAMSPERLITER'],'GM':['GM','GRAMSPERSQ.METER'],'GR':['GR','GRAM'],'HR':['HR','HOURS'],'IN':['IN','INCH'],'JR':['JR','JAR','JARS'],'KG':['KG','KILOGRAM'],'KT':['KT','KIT','KITS'],'LB':['LB','POUND'],'MO':['MO','MONTHS'],'MR':['MR','METER'],'OZ':['OZ','OUNCE'],'PK':['PK','PAK','PACK','PACKS','PACKAGE','PACKAGES','PKGS','PKG'],'PL':['PL','PALLET'],'PR':['PR','PAIR','PAIRS'],'PT':['PT','PINT'],'RK':['RK','ROLL-METRIC'],'RL':['RL','ROLL','ROLLS'],'RM':['RM','REAM'],'SE':['SE'],'SP':['SP','SHELFPACKAGE'],'ST':['ST','SET','SETS'],'TB':['TB','TUBE'],'VI':['VI','VIAL'],'YD':['YD','YARD'],'YR':['YR']}
+        dct_uoi_translator = {}
+        for each_key in dct_uoi_map:
+            for each_val in dct_uoi_map[each_key]:
+                dct_uoi_translator[each_val] = each_key
+
         units = units.upper()
-
-        if units in ['BOTTLE','BOTTLES']:
-            units = 'BT'
-        elif units in ['BOX','BOXES']:
-            units = 'BX'
-        elif units in ['CARTON','CARTONS']:
-            units = 'CT'
-        elif units in ['CS','CASE','CASES']:
-            units = 'CA'
-        elif units in ['EACH','EACHES','ITEM','ITEMS','TEST','TESTS','TST','TSTS']:
-            units = 'EA'
-        elif units in ['JAR','JARS']:
-            units = 'JR'
-        elif units in ['KIT','KITS']:
-            units = 'KT'
-        elif units in ['PAK','PAKS','PACK','PACKS','PACKAGE','PACKAGES']:
-            units = 'PK'
-        elif units in ['PAIR','PAIRS']:
-            units = 'PR'
-        elif units in ['ROLL','ROLLS']:
-            units = 'RL'
-        elif units in ['SET','SETS']:
-            units = 'ST'
-
-        return units
+        try:
+            translated_uoi = dct_uoi_translator[units]
+        except Exception as e:
+            translated_uoi = units
+        return translated_uoi
 
     def row_check(self, row, name_to_check):
         try:
@@ -1344,6 +1330,61 @@ class GSAPrice(BasicProcessObject):
     # as will all the other pricing pathways
 
 ## class add more here
+
+
+def test_normalize_units(units):
+    dct_uoi_map = {'BG':['BG','BAG','BAGS'],'BO':['BO'],'BT':['BT','BOTTLE','BOTTLES'],'BX':['BX','BOX','BOXES'],'CA':['CA','CS','CASE','CASES'],'CT':['CT','CARTON','CARTONS'],'DA':['DA'],'DR':['DR','DRUM','DRUMS'],'DZ':['DZ','DOZEN','DOZENS'],'EA':['EA','EACH','EACHES','ITEM','ITEMS','TEST','TESTS','TST','TSTS','PC','PCS','PIECE','PIECES'],'FT':['FT','FOOT'],'GA':['GA','GALLON'],'GL':['GL','GRAMSPERLITER'],'GM':['GM','GRAMSPERSQ.METER'],'GR':['GR','GRAM'],'HR':['HR','HOURS'],'IN':['IN','INCH'],'JR':['JR','JAR','JARS'],'KG':['KG','KILOGRAM'],'KT':['KT','KIT','KITS'],'LB':['LB','POUND'],'MO':['MO','MONTHS'],'MR':['MR','METER'],'OZ':['OZ','OUNCE'],'PK':['PK','PAK','PACK','PACKS','PACKAGE','PACKAGES','PKGS','PKG'],'PL':['PL','PALLET'],'PR':['PR','PAIR','PAIRS'],'PT':['PT','PINT'],'RK':['RK','ROLL-METRIC'],'RL':['RL','ROLL','ROLLS'],'RM':['RM','REAM'],'SE':['SE'],'SP':['SP','SHELFPACKAGE'],'ST':['ST','SET','SETS'],'TB':['TB','TUBE'],'VI':['VI','VIAL'],'YD':['YD','YARD'],'YR':['YR']}
+    dct_uoi_translator = {}
+    for each_key in dct_uoi_map:
+        for each_val in dct_uoi_map[each_key]:
+            dct_uoi_translator[each_val] = each_key
+
+    units = units.upper()
+    try:
+        translated_uoi = dct_uoi_translator[units]
+    except Exception as e:
+        translated_uoi = units
+    return translated_uoi
+
+
+def test_frame():
+    dct_uoi_map = {'BG':['BG', 'BAG', 'BAGS'], 'BO':['BO'], 'BT':['BT', 'BOTTLE', 'BOTTLES'],
+                   'BX':['BX', 'BOX', 'BOXES'], 'CA':['CA', 'CS', 'CASE', 'CASES'], 'CT':['CT', 'CARTON', 'CARTONS'],
+                   'DA':['DA'], 'DR':['DR', 'DRUM', 'DRUMS'], 'DZ':['DZ', 'DOZEN', 'DOZENS'],
+                   'EA':['EA', 'EACH', 'EACHES', 'ITEM', 'ITEMS', 'TEST', 'TESTS', 'TST', 'TSTS', 'PC', 'PCS', 'PIECE',
+                         'PIECES'], 'FT':['FT', 'FOOT'], 'GA':['GA', 'GALLON'], 'GL':['GL', 'GRAMSPERLITER'],
+                   'GM':['GM', 'GRAMSPERSQ.METER'], 'GR':['GR', 'GRAM'], 'HR':['HR', 'HOURS'], 'IN':['IN', 'INCH'],
+                   'JR':['JR', 'JAR', 'JARS'], 'KG':['KG', 'KILOGRAM'], 'KT':['KT', 'KIT', 'KITS'],
+                   'LB':['LB', 'POUND'], 'MO':['MO', 'MONTHS'], 'MR':['MR', 'METER'], 'OZ':['OZ', 'OUNCE'],
+                   'PK':['PK', 'PAK', 'PACK', 'PACKS', 'PACKAGE', 'PACKAGES', 'PKGS', 'PKG'], 'PL':['PL', 'PALLET'],
+                   'PR':['PR', 'PAIR', 'PAIRS'], 'PT':['PT', 'PINT'], 'RK':['RK', 'ROLL-METRIC'],
+                   'RL':['RL', 'ROLL', 'ROLLS'], 'RM':['RM', 'REAM'], 'SE':['SE'], 'SP':['SP', 'SHELFPACKAGE'],
+                   'ST':['ST', 'SET', 'SETS'], 'TB':['TB', 'TUBE'], 'VI':['VI', 'VIAL'], 'YD':['YD', 'YARD'],
+                   'YR':['YR']}
+    test_uois = ['BG','BAG','BAGS','BO','BT','BOTTLE','BOTTLES','BX','BOX','BOXES','CA','CS','CASE','CASES','CT','CARTON','CARTONS','DA','DR','DRUM','DRUMS','DZ','DOZEN','DOZENS','EA','EACH','EACHES','ITEM','ITEMS','TEST','TESTS','TST','TSTS','PC','PCS','PIECE','PIECES','FT','FOOT','GA','GALLON','GL','GRAMSPERLITER','GM','GRAMSPERSQ.METER','GR','GRAM','HR','HOURS','IN','INCH','JR','JAR','JARS','KG','KILOGRAM','KT','KIT','KITS','LB','POUND','MO','MONTHS','MR','METER','OZ','OUNCE','PK','PAK','PACK','PACKS','PACKAGE','PACKAGES','PKGS','PKG','PL','PALLET','PR','PAIR','PAIRS','PT','PINT','RK','ROLL-METRIC','RL','ROLL','ROLLS','RM','REAM','SE','SP','SHELFPACKAGE','ST','SET','SETS','TB','TUBE','VI','VIAL','YD','YARD','YR']
+    test_results = {}
+
+    for each_uoi in test_uois:
+        result_uoi = test_normalize_units(each_uoi)
+        if result_uoi not in test_results:
+            test_results[result_uoi] = [each_uoi]
+        elif each_uoi not in test_results[result_uoi]:
+            test_results[result_uoi].append(each_uoi)
+
+    if test_results == dct_uoi_map:
+        print("Pass")
+    else:
+        print(test_results)
+        print(dct_uoi_map)
+        print("Fail")
+
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    test_frame()
+
+
 
 
 ## end ##

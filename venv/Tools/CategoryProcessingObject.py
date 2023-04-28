@@ -30,7 +30,7 @@ class CategoryProcessor(BasicProcessObject):
             self.req_fields = ['ManufacturerPartNumber', 'VendorProductDescription']
 
         if self.proc_to_run == 'Category Training':
-            self.req_fields = ['Word1','Word2','Category','IsGood']
+            self.req_fields = ['ProductDescription','Category','IsGood']
 
         if self.proc_to_run == 'Category Assignment':
             self.req_fields = ['FyProductNumber', 'ManufacturerPartNumber', 'VendorProductDescription']
@@ -101,12 +101,27 @@ class CategoryProcessor(BasicProcessObject):
     def category_evaluation(self, df_line_product):
         self.success = True
         df_return_line_product = df_line_product.copy()
+
+        dct_category_map = {}
+        dct_word_counter = {}
+
+
         for colName, row in df_line_product.iterrows():
-            word1 = row['Word1'].lower()
-            word2 = row['Word2'].lower()
+            product_description = row['ProductDescription'].lower()
             category = row['Category']
             is_good = row['IsGood']
-            return_id = self.obDal.set_word_category_associations(word1, word2, category, is_good)
+
+            if category not in dct_category_map:
+                dct_category_map[category] = {}
+
+
+
+
+
+
+
+
+            #return_id = self.obDal.set_word_category_associations(word1, word2, category, is_good)
 
         return True, df_return_line_product
 
@@ -499,3 +514,17 @@ class CategoryProcessor(BasicProcessObject):
 
 
 
+
+
+def test_frame():
+    in_string = 'LAB COAT WHITE BUTTON MENS XL 1EA/25CS'
+    print(in_string)
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    test_frame()
+
+
+
+### end ###
