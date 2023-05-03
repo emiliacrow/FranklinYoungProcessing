@@ -257,7 +257,7 @@ class DalObject:
         df_category_lookup.loc[df_category_lookup['is_good'] == 0, 'is_good'] = -1
         return df_category_lookup
 
-    def set_word_category_associations(self,newWord1,newWord2,newCategory,isGood = 1,newCount = 1):
+    def set_word_category_associations(self,newWord1,newWord2,newCategory, isGood = 1, newCount = 1):
         proc_name = 'gardener.set_word_cat_associations'
         proc_args = (newWord1.lower(),newWord2.lower(),newCategory,isGood,newCount)
         return_id = self.id_cap(proc_name, proc_args)

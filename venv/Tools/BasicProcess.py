@@ -1040,6 +1040,8 @@ class BasicProcessObject:
                 test_val = 0
             elif test_val.lower() in ['y','yes']:
                 test_val = 1
+            else:
+                test_val = -1
 
         if test_val not in [0, 1]:
             self.obReporter.update_report('Alert', 'Review {0}'.format(isCol))

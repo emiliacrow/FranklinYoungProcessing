@@ -23,6 +23,7 @@ class CategoryProcessor(BasicProcessObject):
         self.proc_to_run = proc_to_set
         super().__init__(df_product, user, password, is_testing)
         self.name = 'Category Processor'
+        print('Cat object created')
 
 
     def header_viability(self):
@@ -30,7 +31,8 @@ class CategoryProcessor(BasicProcessObject):
             self.req_fields = ['ManufacturerPartNumber', 'VendorProductDescription']
 
         if self.proc_to_run == 'Category Training':
-            self.req_fields = ['ProductDescription','Category','IsGood']
+            print('Set headers')
+            self.req_fields = ['FyProductDescription','FyCategory']
 
         if self.proc_to_run == 'Category Assignment':
             self.req_fields = ['FyProductNumber', 'ManufacturerPartNumber', 'VendorProductDescription']
@@ -48,6 +50,7 @@ class CategoryProcessor(BasicProcessObject):
         if self.proc_to_run == 'Category Picker':
             self.success, self.message = self.run_picker_process()
         if self.proc_to_run == 'Category Training':
+            print('run cat process')
             self.success, self.message = self.run_training_process()
         if self.proc_to_run == 'Category Assignment':
             self.df_word_cat_associations = self.obDal.get_word_category_associations()
@@ -59,6 +62,9 @@ class CategoryProcessor(BasicProcessObject):
         count_of_items = len(self.df_product.index)
         self.dct_counts = {}
         self.collect_return_dfs = []
+        self.dct_category_map = {}
+        self.dct_word_counter = {}
+        self.lst_word_pairs_to_collect = []
         self.set_progress_bar(count_of_items, self.name+'[extraction step]')
         p_bar = 0
         good = 0
@@ -74,6 +80,7 @@ class CategoryProcessor(BasicProcessObject):
                 self.obReporter.report_line_viability(True)
 
                 success, return_df_line_product = self.category_evaluation(df_line_product)
+
                 self.obReporter.final_report(success)
 
             else:
@@ -90,6 +97,20 @@ class CategoryProcessor(BasicProcessObject):
             p_bar+=1
             self.obProgressBarWindow.update_bar(p_bar)
 
+        self.combine_categories_recommendations()
+        count_of_items = len(self.lst_word_pairs_to_collect)
+        p_bar = 0
+        self.set_progress_bar(count_of_items, self.name+'[combine and ingest step]')
+        for each_pair_to_collect in self.lst_word_pairs_to_collect:
+            pair_count = each_pair_to_collect[0]
+            word_one = each_pair_to_collect[1]
+            word_two = each_pair_to_collect[2]
+            category = each_pair_to_collect[3]
+            return_id = self.obDal.set_word_category_associations(word_one, word_two, category, 1,
+                                                                  pair_count)
+            p_bar+=1
+            self.obProgressBarWindow.update_bar(p_bar)
+
         self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
         self.df_product = self.return_df_product
         self.obProgressBarWindow.close()
@@ -101,29 +122,71 @@ class CategoryProcessor(BasicProcessObject):
     def category_evaluation(self, df_line_product):
         self.success = True
         df_return_line_product = df_line_product.copy()
-
-        dct_category_map = {}
-        dct_word_counter = {}
+        block_words = ['all','and','are','but','cannot','did','does','each','easily','easy','for','from','has','have','into','its','itself','may','more','new','often','only','other','others','our','per','than','that','the','then','there','therefore','these','this','use','used','using','when','where','who','why','with','yes','you','youll','your']
 
 
         for colName, row in df_line_product.iterrows():
-            product_description = row['ProductDescription'].lower()
-            category = row['Category']
-            is_good = row['IsGood']
+            product_description = row['FyProductDescription'].lower()
+            category = row['FyCategory']
 
-            if category not in dct_category_map:
-                dct_category_map[category] = {}
+            if category not in self.dct_category_map:
+                self.dct_category_map[category] = {}
+
+            print(product_description)
+            clean_product_description = self.obValidator.clean_part_number(product_description, leave_gap = True)
+            print(clean_product_description)
+            lst_description = clean_product_description.split()
+
+            last_word = ''
+            for each_word in lst_description:
+                if each_word not in self.dct_word_counter:
+                    self.dct_word_counter[each_word] = {'Count':1,'Categories':[category]}
+                else:
+                    self.dct_word_counter[each_word]['Count'] += 1
+                    if category not in self.dct_word_counter[each_word]['Categories']:
+                        self.dct_word_counter[each_word]['Categories'].append(category)
+
+                if each_word in block_words:
+                    continue
+
+                if len(each_word) <= 2:
+                    continue
+
+                elif len(each_word) <= 10:
+                    print(last_word, each_word)
+
+                if last_word == '':
+                    last_word = each_word
+                    continue
+
+                if last_word not in self.dct_category_map[category]:
+                    self.dct_category_map[category][last_word] = {each_word:1}
+                elif each_word not in self.dct_category_map[category][last_word]:
+                    self.dct_category_map[category][last_word][each_word] = 1
+                else:
+                    self.dct_category_map[category][last_word][each_word] += 1
+
+                last_word = each_word
 
 
-
-
-
-
-
-
-            #return_id = self.obDal.set_word_category_associations(word1, word2, category, is_good)
 
         return True, df_return_line_product
+
+    def combine_categories_recommendations(self):
+        for each_category in self.dct_category_map:
+            for each_word in self.dct_category_map[each_category]:
+                for each_sec_word in self.dct_category_map[each_category][each_word]:
+                    pair_count = self.dct_category_map[each_category][each_word][each_sec_word]
+
+                    print(pair_count, each_word, each_sec_word, each_category)
+                    self.lst_word_pairs_to_collect.append([pair_count, each_word, each_sec_word, each_category])
+                    return_id = self.obDal.set_word_category_associations(each_word, each_sec_word, each_category, 1, pair_count)
+
+        self.dct_word_counter.sort(key=lambda x:x[2])
+        for each_word in self.dct_word_counter:
+            count = self.dct_word_counter[each_word]['Count']
+            spread = len(self.dct_word_counter[each_word]['Categories'])
+            print(each_word, count, spread)
 
 
     def category_assignment(self,df_product_line):
