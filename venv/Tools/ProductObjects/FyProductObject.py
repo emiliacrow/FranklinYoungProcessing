@@ -442,6 +442,11 @@ class FyProductUpdate(BasicProcessObject):
                 self.obReporter.update_report('Fail','There\'s an error in your product number')
                 return False, df_collect_product_base_data
 
+            if 'BlockedManufacturer' in row:
+                if int(row['BlockedManufacturer']) == 1:
+                    self.obReporter.update_report('Fail','This manufacturer name is blocked from processing')
+                    return False, df_collect_product_base_data
+
 
             for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle',
                               'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved']:
