@@ -22,6 +22,7 @@ class VAPrice(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
+        self.batch_process_manufacturer()
 
         self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
@@ -46,6 +47,11 @@ class VAPrice(BasicProcessObject):
 
 
     def filter_check_in(self, row):
+        if 'BlockedManufacturer' in row:
+            if int(row['BlockedManufacturer']) == 1:
+                self.obReporter.update_report('Fail', 'This manufacturer name is blocked from processing')
+                return False
+            
         if 'ProductDescriptionId' in row:
             self.obReporter.update_report('Pass', 'This is an FyProduct update')
             return True

@@ -77,6 +77,8 @@ class FileProcessor(BasicProcessObject):
             self.df_override_lookup = self.df_override_lookup.drop(columns=['FyProductNumber','UnitOfIssue'])
             match_set = ['ManufacturerName', 'ManufacturerPartNumber']
             self.df_product = self.df_product.merge(self.df_override_lookup, how='left', on = match_set)
+            
+            self.batch_process_manufacturer()
 
         if self.proc_to_run == 'Load Manufacturer Default Image':
             self.batch_process_manufacturer()
@@ -368,6 +370,11 @@ class FileProcessor(BasicProcessObject):
         df_collect_attribute_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
             success, df_collect_attribute_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
+
+            if 'BlockedManufacturer' in row:
+                if int(row['BlockedManufacturer']) == 1:
+                    self.obReporter.update_report('Fail','This manufacturer name is blocked from processing')
+                    return False, df_collect_attribute_data
 
             if 'VendorName' in row:
                 vendor_name = row['VendorName']
