@@ -313,7 +313,7 @@ class IngestionObject:
     def manual_ingest_manufacturer(self, atmp_sup = '', atmp_man = '',lst_manufacturer_names=[]):
         lst_req_fields = [['SupplierName',45,'This is the ugly version of the name<br>like "perkinelmer health sciences, inc"', atmp_sup,'required'],
                           ['ManufacturerName',45,'This is the standardized name<br>like "PERKINELMER"', atmp_man,'required'],
-                          ['DirectVendorName',45,'This is the vendor with direct relationship<br>like "PERKIN ELMER HEALTH SCIENCES"', '','']]
+                          ['DirectVendorName',45,'This is the vendor with direct relationship<br>like "PERKIN ELMER HEALTH SCIENCES"', '','not required']]
 
         obTextBox = TextBoxObject(lst_req_fields, title='Manufacturer entry',lst_for_dropdown=lst_manufacturer_names)
         obTextBox.exec()
@@ -322,13 +322,19 @@ class IngestionObject:
         if ('ManufacturerName' in entered_values.keys()) and ('SupplierName' in entered_values.keys()):
             manufacturer_name = (str(entered_values['ManufacturerName'])).upper()
             supplier_name = (str(entered_values['SupplierName'])).lower()
-            direct_vendor = (str(entered_values['DirectVendorName'])).lower()
+            print(manufacturer_name, supplier_name)
+            try:
+                direct_vendor = (str(entered_values['DirectVendorName'])).lower()
+            except KeyError:
+                direct_vendor = ''
 
-            if manufacturer_name == supplier_name.upper() and manufacturer_name != atmp_sup.upper():
+            if manufacturer_name == supplier_name.upper() and manufacturer_name != atmp_sup.upper() and atmp_sup != '':
                 supplier_name = atmp_sup.lower()
 
         else:
             return 0
+
+        print(manufacturer_name, supplier_name)
 
         if (manufacturer_name != '') and (supplier_name != ''):
             man_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, DirectVendorName=direct_vendor)
