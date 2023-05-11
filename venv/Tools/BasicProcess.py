@@ -300,12 +300,13 @@ class BasicProcessObject:
         lst_is_blocked = []
 
         for colName, row in df_attribute.iterrows():
-            manufacturer_name = row['ManufacturerName'].upper()
+            manufacturer_name = str(row['ManufacturerName']).upper()
             manufacturer_name = self.obValidator.clean_manufacturer_name(manufacturer_name,False)
             while '  ' in manufacturer_name:
                 manufacturer_name = manufacturer_name.replace('  ',' ')
 
             new_manufacturer_name = manufacturer_name
+            print('manufacturer name', new_manufacturer_name)
             if manufacturer_name == '':
                 new_manufacturer_id = -1
             elif manufacturer_name.lower() in self.df_manufacturer_translator['SupplierName'].values:
@@ -313,6 +314,11 @@ class BasicProcessObject:
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()),'ManufacturerId'].values[0]
                 new_manufacturer_name = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()),'ManufacturerName'].values[0]
+            elif manufacturer_name.upper() in self.df_manufacturer_translator['SupplierName'].values:
+                new_manufacturer_id = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.upper()),'ManufacturerId'].values[0]
+                new_manufacturer_name = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.upper()),'ManufacturerName'].values[0]
             elif manufacturer_name in self.df_manufacturer_translator['ManufacturerName'].values:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name),'ManufacturerId'].values[0]
