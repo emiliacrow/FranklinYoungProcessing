@@ -305,6 +305,8 @@ class BasicProcessObject:
             while '  ' in manufacturer_name:
                 manufacturer_name = manufacturer_name.replace('  ',' ')
 
+            b_is_blocked = 0
+
             new_manufacturer_name = manufacturer_name
             print('manufacturer name', new_manufacturer_name)
             if manufacturer_name == '':
@@ -323,14 +325,14 @@ class BasicProcessObject:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name),'ManufacturerId'].values[0]
             else:
-                manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
-                manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
-                new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer_name.lower(), atmp_man=manufacturer_name, lst_manufacturer_names=manufacturer_name_list)
+                b_is_blocked = 1
+                new_manufacturer_id = -1
+                #manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
+                #manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
+                #new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer_name.lower(), atmp_man=manufacturer_name, lst_manufacturer_names=manufacturer_name_list)
 
             if new_manufacturer_name in blocked_manufacturers:
                 b_is_blocked = 1
-            else:
-                b_is_blocked = 0
 
             lst_ids.append(new_manufacturer_id)
             lst_names.append(new_manufacturer_name)
