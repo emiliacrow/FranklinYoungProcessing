@@ -1260,12 +1260,15 @@ class BasicProcessObject:
 
         if 'ManufacturerId' in row:
             new_manufacturer_id = row['ManufacturerId']
-            new_prefix = self.df_manufacturer_translator.loc[
-                (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
+            if new_manufacturer_id != -1:
+                new_prefix = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['ManufacturerId'] == new_manufacturer_id), ['FyManufacturerPrefix']].values[0][0]
 
-            df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+                df_collect_product_base_data['FyManufacturerPrefix'] = [new_prefix]
+                return True, df_collect_product_base_data, new_prefix
 
-            return True, df_collect_product_base_data, new_prefix
+            else:
+                return False, df_collect_product_base_data, '0000'
 
 
         if manufacturer in self.manufacturer_repeater:

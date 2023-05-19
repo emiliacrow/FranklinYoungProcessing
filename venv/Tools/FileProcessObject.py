@@ -371,6 +371,10 @@ class FileProcessor(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             success, df_collect_attribute_data, fy_manufacturer_prefix = self.process_manufacturer(df_collect_attribute_data, row)
 
+            if not success:
+                self.obReporter.update_report('Fail','This manufacturer name not in DB')
+                return False, df_collect_attribute_data
+
             if 'BlockedManufacturer' in row:
                 if int(row['BlockedManufacturer']) == 1:
                     self.obReporter.update_report('Fail','This manufacturer name is blocked from processing')
