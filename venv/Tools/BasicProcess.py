@@ -1268,6 +1268,7 @@ class BasicProcessObject:
                 return True, df_collect_product_base_data, new_prefix
 
             else:
+                print('Failed lookup: {0}'.format(manufacturer))
                 return False, df_collect_product_base_data, '0000'
 
 
