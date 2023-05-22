@@ -293,6 +293,7 @@ class IngestionObject:
             supplier_name = supplier_name.strip().lower()
             manufacturer_name = str(row['ManufacturerName'])
 
+
             if (row['FYManufacturerPrefix'] != ''):
                 manufacturer_prefix = int(row['FYManufacturerPrefix'])
 
