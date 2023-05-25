@@ -19,6 +19,7 @@ from sqlalchemy import create_engine
 class S3Object:
     def __init__(self, aws_access_key_id, aws_secret_access_key):
         self.name = 'Simple Stanley'
+        # this is gonna have to be smarter
         self.region_name = 'us-west-2'
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
@@ -39,13 +40,15 @@ class S3Object:
     def get_object_list(self, bucket):
         s3_client = boto3.client('s3', region_name=self.region_name, aws_access_key_id=self.aws_access_key_id,
                                    aws_secret_access_key=self.aws_secret_access_key)
-        s3_objects = s3_client.list_objects(Bucket=bucket)
-        lst_objects = []
-        banked_objects = s3_objects['Contents']
-        for each_banked_object in banked_objects:
-            doc_name = each_banked_object['Key']
-            lst_objects.append(doc_name)
 
+        lst_objects = []
+        paginator = s3_client.get_paginator('list_objects_v2')
+        pages = paginator.paginate(Bucket=bucket)
+
+        for page in pages:
+            for each_banked_object in page['Contents']:
+                doc_name = each_banked_object['Key']
+                lst_objects.append(doc_name)
         return lst_objects
 
 
@@ -67,14 +70,14 @@ class DalObject:
 
     def set_testing(self, is_testing):
         if is_testing:
-            self.__host = 'sequoia-1-aurora-instance-1.cfvzdoug1xvb.us-west-2.rds.amazonaws.com'
+            self.__host = 'aurora-sequoia-1-test-cluster.cluster-ctjmonskvld5.us-east-1.rds.amazonaws.com'
             self.__uid = self.user
             self.__pwd = self.password
             self.__port = 3306
             self.dbname = 'sequoia'
             self.driver = '{SQL server}'
         else:
-            self.__host = 'sequoia-1.cfvzdoug1xvb.us-west-2.rds.amazonaws.com'
+            self.__host = 'sequoia-1-aurora-instance-1.cfvzdoug1xvb.us-west-2.rds.amazonaws.com'
             self.__uid = self.user
             self.__pwd = self.password
             self.__port = 3306
@@ -1117,6 +1120,12 @@ def get_lookup(conx, proc_name, column_names,filter_val=None):
 
 
 def test_local_connect():
+    ob_s3 = S3Object('AKIA54NDLGO6LSBEON5R','Kc8uTXR54yOzI874iKEgouOb+TDK18PjBj3rmtSw')
+    lst_s3_objects = ob_s3.get_object_list('franklin-young-image-bank')
+
+    for each in lst_s3_objects:
+        print(each)
+
     tell_all = 'Look, man, whatever.'
     print(tell_all)
 

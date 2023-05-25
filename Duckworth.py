@@ -248,7 +248,7 @@ class DuckworthWindow(QWidget):
 
     def is_testing_buttons(self):
         # all the stuffing for the is testing value
-        self.testing_button = QRadioButton('Sequoia-Production')
+        self.testing_button = QRadioButton('Aurora-Production')
         self.testing_button.setStyleSheet('QRadioButton{border: 1px solid black; background-color: pink}')
         self.testing_button.setChecked(False)
         self.testing_button.toggled.connect(lambda: self.testing_button_action(self.testing_button))
@@ -270,11 +270,11 @@ class DuckworthWindow(QWidget):
 
     def testing_button_action(self, button):
         if button.isChecked():
-            self.testing_button.setText('Aurora')
+            self.testing_button.setText('Aurora-test2')
             self.testing_button.setStyleSheet('QRadioButton{border: 1px solid black; background-color: lightblue}')
             self.is_testing = True
         else:
-            self.testing_button.setText('Sequoia-Production')
+            self.testing_button.setText('Aurora-Production')
             self.testing_button.setStyleSheet('QRadioButton{border: 1px solid black; background-color: pink}')
             self.is_testing = False
 
