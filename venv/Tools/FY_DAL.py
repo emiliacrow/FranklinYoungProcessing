@@ -1120,12 +1120,6 @@ def get_lookup(conx, proc_name, column_names,filter_val=None):
 
 
 def test_local_connect():
-    ob_s3 = S3Object('AKIA54NDLGO6LSBEON5R','Kc8uTXR54yOzI874iKEgouOb+TDK18PjBj3rmtSw')
-    lst_s3_objects = ob_s3.get_object_list('franklin-young-image-bank')
-
-    for each in lst_s3_objects:
-        print(each)
-
     tell_all = 'Look, man, whatever.'
     print(tell_all)
 
