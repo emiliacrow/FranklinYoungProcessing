@@ -204,7 +204,7 @@ class DalObject:
 
     def get_manufacturer_lookup(self):
         proc_name = 'sequoia.get_Manufacturer_lookup'
-        column_names = ['ManufacturerId','ManufacturerName','SupplierName','FyManufacturerPrefix']
+        column_names = ['ManufacturerId','ManufacturerName','SupplierName','FyManufacturerPrefix', 'BlockManufacturer']
         df_manufacturer_lookup = self.get_lookup(proc_name,column_names)
         return df_manufacturer_lookup
 

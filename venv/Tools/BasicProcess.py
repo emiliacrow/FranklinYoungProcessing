@@ -315,24 +315,29 @@ class BasicProcessObject:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()),'ManufacturerId'].values[0]
                 new_manufacturer_name = self.df_manufacturer_translator.loc[
-                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()),'ManufacturerName'].values[0]
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()), 'ManufacturerName'].values[0]
+                b_is_blocked = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()), 'BlockManufacturer'].values[0]
+
             elif manufacturer_name.upper() in self.df_manufacturer_translator['SupplierName'].values:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.upper()),'ManufacturerId'].values[0]
                 new_manufacturer_name = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.upper()),'ManufacturerName'].values[0]
+                b_is_blocked = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.upper()), 'BlockManufacturer'].values[0]
+
             elif manufacturer_name in self.df_manufacturer_translator['ManufacturerName'].values:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name),'ManufacturerId'].values[0]
+                b_is_blocked = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name), 'BlockManufacturer'].values[0]
             else:
                 b_is_blocked = 1
                 new_manufacturer_id = -1
                 #manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
                 #manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
                 #new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer_name.lower(), atmp_man=manufacturer_name, lst_manufacturer_names=manufacturer_name_list)
-
-            if new_manufacturer_name in blocked_manufacturers:
-                b_is_blocked = 1
 
             lst_ids.append(new_manufacturer_id)
             lst_names.append(new_manufacturer_name)
