@@ -53,8 +53,6 @@ def test_odds(obDal):
 
 def test_ven_man(obDal):
     # feeds attribute table
-    get_id = obDal.country_cap('New Manford City', 'MC', 'NMC')
-    print(get_id)
     get_id = obDal.manufacturer_cap('New Manufacturer', 1)
     print(get_id)
     # tests lowest level insert
@@ -115,4 +113,7 @@ def test_prices(obDal,test_dt):
     print(get_id)
     get_id = obDal.product_promo_cap(35.5,test_dt,test_dt,15,.15,30,8)
     print(get_id)
+
+
+
 

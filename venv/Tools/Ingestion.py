@@ -278,8 +278,8 @@ class IngestionObject:
             return -1
 
     # manufacturer functions
-    def ingest_manufacturer(self, manufacturer_name, supplier_name, manufacturer_prefix = -1):
-        return_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, FyManufacturerPrefix=manufacturer_prefix)
+    def ingest_manufacturer(self, manufacturer_name, supplier_name, manufacturer_prefix = -1, block_manufacturer = 0):
+        return_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, FyManufacturerPrefix=manufacturer_prefix, block_manufacturer = block_manufacturer)
         return return_id
 
     def ingest_manufacturers(self,df_manufacturers):
@@ -314,7 +314,8 @@ class IngestionObject:
     def manual_ingest_manufacturer(self, atmp_sup = '', atmp_man = '',lst_manufacturer_names=[]):
         lst_req_fields = [['SupplierName',45,'This is the ugly version of the name<br>like "perkinelmer health sciences, inc"', atmp_sup,'required'],
                           ['ManufacturerName',45,'This is the standardized name<br>like "PERKINELMER"', atmp_man,'required'],
-                          ['DirectVendorName',45,'This is the vendor with direct relationship<br>like "PERKIN ELMER HEALTH SCIENCES"', '','not required']]
+                          ['DirectVendorName',45,'This is the vendor with direct relationship<br>like "PERKIN ELMER HEALTH SCIENCES"', '','not required'],
+                          ['BlockManufacturer',3,'Yes/No', '','not required']]
 
         obTextBox = TextBoxObject(lst_req_fields, title='Manufacturer entry',lst_for_dropdown=lst_manufacturer_names)
         obTextBox.exec()
@@ -325,9 +326,19 @@ class IngestionObject:
             supplier_name = (str(entered_values['SupplierName'])).lower()
             print(manufacturer_name, supplier_name)
             try:
-                direct_vendor = (str(entered_values['DirectVendorName'])).lower()
+                direct_vendor = (str(entered_values['DirectVendorName'])).upper()
             except KeyError:
                 direct_vendor = ''
+
+            try:
+                block_manufacturer = (str(entered_values['BlockManufacturer'])).lower()
+                if block_manufacturer in ['yes','y',1]:
+                    block_manufacturer = 1
+                else:
+                    block_manufacturer = 0
+
+            except KeyError:
+                block_manufacturer = 0
 
             if manufacturer_name == supplier_name.upper() and manufacturer_name != atmp_sup.upper() and atmp_sup != '':
                 supplier_name = atmp_sup.lower()
@@ -338,7 +349,7 @@ class IngestionObject:
         print(manufacturer_name, supplier_name)
 
         if (manufacturer_name != '') and (supplier_name != ''):
-            man_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, DirectVendorName=direct_vendor)
+            man_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, DirectVendorName=direct_vendor, block_manufacturer = block_manufacturer)
             return man_id
         else:
             return -1
