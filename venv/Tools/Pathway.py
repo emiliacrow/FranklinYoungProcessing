@@ -172,6 +172,15 @@ class Pathways():
 
                 self.obFileFinder.write_xlsx(self.df_product,'file_process')
 
+            elif file_action_selected == 'Load Manufacturer Default Image':
+
+                self.df_product = self.obFileFinder.read_xlsx()
+                self.obFileProcessor = FileProcessor(self.df_product, self.user, self.password, is_testing, file_action_selected, self.aws_access_key_id, self.aws_secret_access_key)
+                self.success, self.message = self.obFileProcessor.begin_process()
+                self.df_product = self.obFileProcessor.get_df()
+
+                self.obFileFinder.write_xlsx(self.df_product,'defualt_image')
+
 
         return self.success, self.message
 
@@ -200,6 +209,17 @@ class Pathways():
         self.message = self.perform_file_split(split_on, b_sub_dir=True)
 
         return True, self.message
+
+
+
+
+
+
+
+
+
+
+
 
 
     def perform_file_split(self, split_on, b_sub_dir = False):
