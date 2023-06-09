@@ -118,7 +118,7 @@ class GSAPrice(BasicProcessObject):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            product_description_id = row['ProductDescriptionId']
+            product_description_id = int(row['ProductDescriptionId'])
 
             fy_product_number = row['FyProductNumber']
             if 'GSAOnContract' in row:
