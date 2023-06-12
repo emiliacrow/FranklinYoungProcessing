@@ -944,6 +944,7 @@ class BasicProcessObject:
         except ValueError:
             return False, float_name_val
 
+
     def run_process(self):
         self.obReporter = ReporterObject()
         self.set_progress_bar(10, 'Batch preprocessing')
