@@ -612,27 +612,46 @@ class FyProductUpdate(BasicProcessObject):
         freight_success, estimated_freight = self.row_check(row, 'EstimatedFreight')
         if freight_success:
             freight_success, estimated_freight = self.float_check(estimated_freight,'EstimatedFreight')
-            df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+            if freight_success:
+                df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+            else:
+                estimated_freight = -1
+                df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
 
-        else:
+        if not freight_success:
             freight_success, estimated_freight = self.row_check(row, 'PrimaryEstimatedFreight')
             if freight_success:
                 freight_success, estimated_freight = self.float_check(estimated_freight,'PrimaryEstimatedFreight')
-                df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
-            else:
-                freight_success, estimated_freight = self.row_check(row, 'db_PrimaryEstimatedFreight')
                 if freight_success:
-                    freight_success, estimated_freight = self.float_check(estimated_freight,'db_PrimaryEstimatedFreight')
                     df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
                 else:
-                    freight_success, estimated_freight = self.row_check(row, 'CurrentEstimatedFreight')
-                    if freight_success:
-                        freight_success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFreight')
-                        df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
-                    else:
-                        estimated_freight = 0
-                        df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
-                        self.obReporter.update_report('Alert', 'EstimatedFreight value was set to 0')
+                    estimated_freight = -1
+                    df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+
+        if not freight_success:
+            freight_success, estimated_freight = self.row_check(row, 'db_PrimaryEstimatedFreight')
+            if freight_success:
+                freight_success, estimated_freight = self.float_check(estimated_freight,'db_PrimaryEstimatedFreight')
+                if freight_success:
+                    df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+                else:
+                    estimated_freight = -1
+                    df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+
+        if not freight_success:
+            freight_success, estimated_freight = self.row_check(row, 'CurrentEstimatedFreight')
+            if freight_success:
+                freight_success, estimated_freight = self.float_check(estimated_freight,'CurrentEstimatedFreight')
+                if freight_success:
+                    df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+                else:
+                    estimated_freight = -1
+                    df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+
+            elif estimated_freight != -1:
+                estimated_freight = 0
+                df_collect_product_base_data['EstimatedFreight'] = [estimated_freight]
+                self.obReporter.update_report('Alert', 'EstimatedFreight value was set to 0')
 
         if 'FyLandedCost' in row:
             fy_landed_cost = round(row['FyLandedCost'], 2)
@@ -1623,7 +1642,10 @@ class FyProductUpdate(BasicProcessObject):
             fy_cost = -1
 
         if 'EstimatedFreight' in row:
-            estimated_freight = float(row['EstimatedFreight'])
+            try:
+                estimated_freight = float(row['EstimatedFreight'])
+            except ValueError:
+                estimated_freight = -1
         else:
             estimated_freight = -1
 
