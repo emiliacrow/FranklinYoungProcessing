@@ -1041,8 +1041,10 @@ class FyProductUpdate(BasicProcessObject):
         fy_manufacturer_part_number = manufacturer_part_number
         if 'FyManufacturerPartNumber' in row:
             fy_manufacturer_part_number = str(row['FyManufacturerPartNumber'])
-        elif str(row['FyUnitOfIssue']) != 'EA' and manufacturer_part_number != '':
-            fy_manufacturer_part_number = manufacturer_part_number + ' ' + str(row['FyUnitOfIssue'])
+        else:
+            fy_manufacturer_part_number = manufacturer_part_number
+        #elif str(row['FyUnitOfIssue']) != 'EA' and manufacturer_part_number != '':
+        #    fy_manufacturer_part_number = manufacturer_part_number + ' ' + str(row['FyUnitOfIssue'])
 
 
         manufacturer_id = -1
