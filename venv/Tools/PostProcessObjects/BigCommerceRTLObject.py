@@ -148,19 +148,6 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 update_asset = -1
 
-            fy_is_discontinued = -1
-            success, fy_is_discontinued = self.process_boolean(row, 'FyIsDiscontinued')
-            if success:
-                df_collect_product_base_data['FyIsDiscontinued'] = [fy_is_discontinued]
-            else:
-                fy_is_discontinued = -1
-
-            db_fy_is_discontinued = -1
-            success, db_fy_is_discontinued = self.process_boolean(row, 'db_FyIsDiscontinued')
-            if success:
-                df_collect_product_base_data['db_FyIsDiscontinued'] = [db_fy_is_discontinued]
-            else:
-                db_fy_is_discontinued = -1
 
             is_discontinued = -1
             success, is_discontinued = self.process_boolean(row, 'VendorIsDiscontinued')
@@ -176,11 +163,25 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 db_is_discontinued = -1
 
+            fy_is_discontinued = -1
+            success, fy_is_discontinued = self.process_boolean(row, 'FyIsDiscontinued')
+            if success:
+                df_collect_product_base_data['FyIsDiscontinued'] = [fy_is_discontinued]
+            else:
+                fy_is_discontinued = -1
+
+            db_fy_is_discontinued = -1
+            success, db_fy_is_discontinued = self.process_boolean(row, 'db_FyIsDiscontinued')
+            if success:
+                df_collect_product_base_data['db_FyIsDiscontinued'] = [db_fy_is_discontinued]
+            else:
+                db_fy_is_discontinued = -1
 
             try:
                 db_fy_allow_purchases = int(row['db_AllowPurchases'])
             except:
                 db_fy_allow_purchases = -1
+
 
             fy_product_notes = ''
             if 'FyProductNotes' in row:
@@ -489,7 +490,22 @@ class BigCommerceRTLObject(BasicProcessObject):
 
 
 
+            elif fy_is_discontinued == 1 or is_discontinued == 1:
+                df_collect_product_base_data['BCPriceUpdateToggle'] = [1]
+                df_collect_product_base_data['BCDataUpdateToggle'] = [1]
+                df_collect_product_base_data['FyAllowPurchases'] = [0]
+                df_collect_product_base_data['FyIsVisible'] = [0]
+                print("BOING!")
+            elif (fy_is_discontinued == -1 or is_discontinued == -1) and (db_FyIsDiscontinued == 1 or db_IsDiscontinued == 1):
+                df_collect_product_base_data['BCPriceUpdateToggle'] = [1]
+                df_collect_product_base_data['BCDataUpdateToggle'] = [1]
+                df_collect_product_base_data['FyAllowPurchases'] = [0]
+                df_collect_product_base_data['FyIsVisible'] = [0]
+                print("BING! BONG!")
+
             else:
+
+
                 success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
                 if success:
                     df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
