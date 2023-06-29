@@ -496,7 +496,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                 df_collect_product_base_data['FyAllowPurchases'] = [0]
                 df_collect_product_base_data['FyIsVisible'] = [0]
                 print("BOING!")
-            elif (fy_is_discontinued == -1 or is_discontinued == -1) and (db_FyIsDiscontinued == 1 or db_IsDiscontinued == 1):
+            elif (fy_is_discontinued == -1 or is_discontinued == -1) and (db_fy_is_discontinued == 1 or db_is_discontinued == 1):
                 df_collect_product_base_data['BCPriceUpdateToggle'] = [1]
                 df_collect_product_base_data['BCDataUpdateToggle'] = [1]
                 df_collect_product_base_data['FyAllowPurchases'] = [0]
