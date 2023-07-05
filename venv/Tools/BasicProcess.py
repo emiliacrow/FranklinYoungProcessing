@@ -1013,6 +1013,7 @@ class BasicProcessObject:
         self.set_progress_bar(10,'Appending data...')
         self.obProgressBarWindow.update_unknown()
 
+
         try:
             self.return_df_product = pandas.concat(self.collect_return_dfs)
         except pandas.errors.InvalidIndexError:
