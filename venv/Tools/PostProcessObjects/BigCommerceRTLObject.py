@@ -504,47 +504,28 @@ class BigCommerceRTLObject(BasicProcessObject):
 
 
             elif fy_is_discontinued == 1 or is_discontinued == 1:
-                success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
-                if success:
-                    df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
-                else:
-                    price_toggle = 1
-
-                success, data_toggle = self.process_boolean(row, 'BCDataUpdateToggle')
-                if success:
-                    df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
-                else:
-                    data_toggle = 1
-
-                df_collect_product_base_data['BCPriceUpdateToggle'] = [1]
-                df_collect_product_base_data['BCDataUpdateToggle'] = [1]
-                df_collect_product_base_data['FyAllowPurchases'] = [0]
-                df_collect_product_base_data['FyIsVisible'] = [0]
+                price_toggle = 1
+                data_toggle = 1
+                fy_allow_purchases = 0
+                fy_is_visible = 0
+                df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
+                df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+                df_collect_product_base_data['FyAllowPurchases'] = [fy_allow_purchases]
+                df_collect_product_base_data['FyIsVisible'] = [fy_is_visible]
                 print("BOING!")
 
             elif (fy_is_discontinued == -1 or is_discontinued == -1) and (db_fy_is_discontinued == 1 or db_is_discontinued == 1):
-
-                success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
-                if success:
-                    df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
-                else:
-                    price_toggle = 1
-
-                success, data_toggle = self.process_boolean(row, 'BCDataUpdateToggle')
-                if success:
-                    df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
-                else:
-                    data_toggle = 1
-
-                df_collect_product_base_data['BCPriceUpdateToggle'] = [1]
-                df_collect_product_base_data['BCDataUpdateToggle'] = [1]
-                df_collect_product_base_data['FyAllowPurchases'] = [0]
-                df_collect_product_base_data['FyIsVisible'] = [0]
+                price_toggle = 1
+                data_toggle = 1
+                fy_allow_purchases = 0
+                fy_is_visible = 0
+                df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
+                df_collect_product_base_data['BCDataUpdateToggle'] = [data_toggle]
+                df_collect_product_base_data['FyAllowPurchases'] = [fy_allow_purchases]
+                df_collect_product_base_data['FyIsVisible'] = [fy_is_visible]
                 print("BING! BONG!")
 
             else:
-
-
                 success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
                 if success:
                     df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
@@ -574,8 +555,6 @@ class BigCommerceRTLObject(BasicProcessObject):
 
         # at this point we've evaluated all the data
         if (price_toggle != -1 or data_toggle != -1 or is_discontinued != -1 or fy_is_discontinued != -1 or fy_allow_purchases != -1 or fy_is_visible != -1):
-
-
             db_price_toggle = int(row['db_BCPriceUpdateToggle'])
             db_data_toggle = int(row['db_BCPriceUpdateToggle'])
             db_fy_is_visible = int(row['db_IsVisible'])
