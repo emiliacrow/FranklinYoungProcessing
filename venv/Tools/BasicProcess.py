@@ -1013,11 +1013,8 @@ class BasicProcessObject:
         self.set_progress_bar(10,'Appending data...')
         self.obProgressBarWindow.update_unknown()
 
-        # this uses df.append to combine all the df product objects together
         try:
-            #self.return_df_product = pandas.DataFrame(self.collect_return_dfs)
             self.return_df_product = pandas.concat(self.collect_return_dfs)
-            #self.return_df_product = self.return_df_product.append(self.collect_return_dfs)
         except pandas.errors.InvalidIndexError:
             print('Invalid index error 1: this represents a bug')
 
