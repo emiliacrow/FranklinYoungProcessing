@@ -17,7 +17,7 @@ class BigCommerceRTLObject(BasicProcessObject):
                   'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','HTMETOnContract','HTMEPricingApproved','HTMEProductNotes',
                   'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes','ProductNotes',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
-                  'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate']
+                  'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate','FyDenyINTRAMALLSContractDate', 'FyDenyINTRAMALLSContractDate']
 
     att_fields = []
     gen_fields = []
@@ -682,14 +682,44 @@ class BigCommerceRTLObject(BasicProcessObject):
                 except ValueError:
                     deny_htme_date = str(row['FyDenyHTMEContractDate'])
 
+            success, deny_intramalls = self.process_boolean(row, 'FyDenyINTRAMALLSContract')
+            if success:
+                df_collect_product_base_data['FyDenyINTRAMALLSContract'] = [deny_intramalls]
+            else:
+                deny_intramalls = -1
+
+            deny_intramalls_date = -1
+            if 'FyDenyINTRAMALLSContractDate' in row:
+                deny_intramalls_date = row['FyDenyINTRAMALLSContractDate']
+                try:
+                    deny_intramalls_date = int(deny_intramalls_date)
+                    deny_intramalls_date = xlrd.xldate_as_datetime(deny_intramalls_date, 0)
+                except ValueError:
+                    deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
+
+                if isinstance(deny_intramalls_date, datetime.datetime) == False:
+                    try:
+                        deny_intramalls_date = datetime.datetime.strptime(deny_intramalls_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
+                        self.obReporter.update_report('Alert','Check FyDenyINTRAMALLSContractDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check FyDenyINTRAMALLSContractDate')
+
+                try:
+                    deny_intramalls_date = int(row['FyDenyINTRAMALLSContractDate'])
+                    deny_intramalls_date = (xlrd.xldate_as_datetime(deny_intramalls_date, 0)).date()
+                except ValueError:
+                    deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
+
             if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_fy_is_discontinued != fy_is_discontinued or db_fy_allow_purchases != fy_allow_purchases or db_fy_is_visible != fy_is_visible:
                 self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date)
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date)
             elif self.full_run:
                 self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date)
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date)
 
 
         if (update_asset != -1):

@@ -890,7 +890,8 @@ class DalObject:
                         'db_ECATOnContract', 'db_ECATModNumber', 'db_ECATPricingApproved',
                         'db_HTMEOnContract', 'db_HTMEModNumber', 'db_HTMEPricingApproved',
                         'db_GSAOnContract', 'db_GSAModNumber', 'db_GSAPricingApproved',
-                        'db_VAOnContract', 'db_VAModNumber', 'db_VAPricingApproved']
+                        'db_VAOnContract', 'db_VAModNumber', 'db_VAPricingApproved',
+                        'db_INTRAMALLSOnContract', 'db_INTRAMALLSModNumber', 'db_INTRAMALLSPricingApproved']
         df_toggles = self.get_lookup(proc_name,column_names)
         return df_toggles
 
@@ -983,7 +984,7 @@ class DalObject:
 
     def set_bc_toggles(self, lst_bc_toggles):
         proc_name = 'sequoia.set_BC_toggles2'
-        proc_statement = 'CALL `sequoia`.`set_BC_toggles2`(%s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`set_BC_toggles2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)
         runner.start()
