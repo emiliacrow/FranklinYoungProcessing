@@ -81,6 +81,7 @@ class HeaderTranslator():
                             'VAEligible':['VAEligible', 'VA Eligible', 'VA Is Eligible', 'VA IsEligible'],
                             'ECATEligible':['ECATEligible', 'ECAT Eligible', 'ECAT Is Eligible', 'ECAT IsEligible'],
                             'HTMEEligible':['HTMEEligible', 'HTME Eligible', 'HTME Is Eligible', 'HTME IsEligible'],
+                            'INTRAMALLSEligible':['INTRAMALLSEligible', 'INTRAMALLS Eligible', 'INTRAMALLS Is Eligible', 'INTRAMALLS IsEligible'],
                             'VendorIsDiscontinued':['IsDiscontinued', 'VendorIsDiscontinued', 'Discontinued', 'is discontinued','Is Discontinued', 'is_discontinued', 'vendor_is_discontinued', 'Vendor_Is_Discontinued'],
 
 
@@ -124,6 +125,11 @@ class HeaderTranslator():
                             'FyDenyECATContractDate':['FyDenyECATContractDate','DenyECATContractDate','Deny ECAT Contract Date','Deny ECAT Date','Fy Deny ECAT Contract Date','Fy Deny ECAT Date'],
                             'FyDenyHTMEContract':['FyDenyHTMEContract','DenyHTMEContract','Deny HTME Contract','Deny HTME','Fy Deny HTME Contract','Fy Deny HTME'],
                             'FyDenyHTMEContractDate':['FyDenyHTMEContractDate','DenyHTMEContractDate','Deny HTME Contract Date','Deny HTME Date','Fy Deny HTME Contract Date','Fy Deny HTME Date'],
+                            'FyDenyINTRAMALLSContract':['FyDenyINTRAMALLSContract', 'DenyINTRAMALLSContract', 'Deny INTRAMALLS Contract',
+                                                  'Deny INTRAMALLS', 'Fy Deny INTRAMALLS Contract', 'Fy Deny INTRAMALLS'],
+                            'FyDenyINTRAMALLSContractDate':['FyDenyINTRAMALLSContractDate', 'DenyINTRAMALLSContractDate',
+                                                      'Deny INTRAMALLS Contract Date', 'INTRAMALLS HTME Date',
+                                                      'Fy Deny INTRAMALLS Contract Date', 'Fy Deny INTRAMALLS Date'],
 
                             'FyIsDiscontinued':['FyIsDiscontinued', 'fy is discontinued', 'Fy Is Discontinued',
                                                 'fy_is_discontinued', 'Fy_Is_Discontinued'],
@@ -160,6 +166,7 @@ class HeaderTranslator():
                             'HTMEOnContract':['HTMEOnContract', 'HTME On Contract', 'HTME On Contract'],
                             'GSAOnContract':['GSAOnContract', 'GSA On Contract', 'GSA On Contract'],
                             'VAOnContract':['VAOnContract', 'VA On Contract', 'VA On Contract'],
+                            'INTRAMALLSOnContract':['INTRAMALLSOnContract', 'INTRAMALLS On Contract', 'INTRAMALLS On Contract'],
 
                             'GSAApprovedGrossMarginPercent':['GSAApprovedGrossMarginPercent'],
                             'GSAProposedGrossMarginPercent':['GSAProposedGrossMarginPercent'],
@@ -167,6 +174,8 @@ class HeaderTranslator():
                             'VAProposedGrossMarginPercent':['VAProposedGrossMarginPercent'],
                             'ECATApprovedGrossMarginPercent':['ECATApprovedGrossMarginPercent'],
                             'ECATProposedGrossMarginPercent':['ECATProposedGrossMarginPercent'],
+                            'INTRAMALLSApprovedGrossMarginPercent':['INTRAMALLSApprovedGrossMarginPercent'],
+                            'INTRAMALLSProposedGrossMarginPercent':['INTRAMALLSProposedGrossMarginPercent'],
 
 
 # GSA
@@ -247,12 +256,15 @@ class HeaderTranslator():
                             'HTMEProductPriceId':['HTMEProductPriceId'],
                             'GSAProductPriceId':['GSAProductPriceId'],
                             'VAProductPriceId':['VAProductPriceId'],
+                            'INTRAMALLSProductPriceId':['INTRAMALLSProductPriceId'],
+
                             'Filter':['Filter'],
                             'TakePriority':['TakePriority'],
                             'db_ProductNumberOverride':['db_ProductNumberOverride'],
                             'db_FyProductNotes':['db_FyProductNotes'],
                             'db_GSAProductNotes':['db_GSAProductNotes'],
                             'db_ECATProductNotes':['db_ECATProductNotes'],
+                            'db_INTRAMALLSProductNotes':['db_INTRAMALLSProductNotes'],
                             'CategoryId':['CategoryId'],
                             'RecommendedStorageId':['RecommendedStorageId'],
                             'CountryOfOriginId':['CountryOfOriginId'],
