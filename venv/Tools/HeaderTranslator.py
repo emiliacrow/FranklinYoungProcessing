@@ -174,8 +174,6 @@ class HeaderTranslator():
                             'VAProposedGrossMarginPercent':['VAProposedGrossMarginPercent'],
                             'ECATApprovedGrossMarginPercent':['ECATApprovedGrossMarginPercent'],
                             'ECATProposedGrossMarginPercent':['ECATProposedGrossMarginPercent'],
-                            'INTRAMALLSApprovedGrossMarginPercent':['INTRAMALLSApprovedGrossMarginPercent'],
-                            'INTRAMALLSProposedGrossMarginPercent':['INTRAMALLSProposedGrossMarginPercent'],
 
 
 # GSA
@@ -265,6 +263,7 @@ class HeaderTranslator():
                             'db_GSAProductNotes':['db_GSAProductNotes'],
                             'db_ECATProductNotes':['db_ECATProductNotes'],
                             'db_INTRAMALLSProductNotes':['db_INTRAMALLSProductNotes'],
+
                             'CategoryId':['CategoryId'],
                             'RecommendedStorageId':['RecommendedStorageId'],
                             'CountryOfOriginId':['CountryOfOriginId'],
