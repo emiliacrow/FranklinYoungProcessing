@@ -2000,6 +2000,36 @@ class FyProductUpdate(BasicProcessObject):
             except ValueError:
                 deny_htme_date = str(row['FyDenyHTMEContractDate'])
 
+            success, deny_intramalls = self.process_boolean(row, 'FyDenyINTRAMALLSContract')
+            if success:
+                df_collect_product_base_data['FyDenyINTRAMALLSContract'] = [deny_intramalls]
+            else:
+                deny_intramalls = -1
+
+            deny_intramalls_date = -1
+            if 'FyDenyINTRAMALLSContractDate' in row:
+                deny_intramalls_date = row['FyDenyINTRAMALLSContractDate']
+                try:
+                    deny_intramalls_date = int(deny_intramalls_date)
+                    deny_intramalls_date = xlrd.xldate_as_datetime(deny_intramalls_date, 0)
+                except ValueError:
+                    deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
+
+                if isinstance(deny_intramalls_date, datetime.datetime) == False:
+                    try:
+                        deny_intramalls_date = datetime.datetime.strptime(deny_intramalls_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
+                        self.obReporter.update_report('Alert','Check FyDenyINTRAMALLSContractDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check FyDenyINTRAMALLSContractDate')
+
+                try:
+                    deny_intramalls_date = int(row['FyDenyINTRAMALLSContractDate'])
+                    deny_intramalls_date = (xlrd.xldate_as_datetime(deny_intramalls_date, 0)).date()
+                except ValueError:
+                    deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
+
 
         if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
