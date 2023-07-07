@@ -844,7 +844,7 @@ class IngestionObject:
                                       fy_list_price, is_discontinued, is_visible, allow_purchases,
                                       price_toggle, data_toggle,
                                       deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                       date_catalog_received, catalog_provided_by):
         if (len(self.product_description_update_collector) > self.load_limit):
             self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_manufacturer_part_number,fy_uoi_id, fy_uom_id, fy_uoi_qty,
@@ -858,7 +858,7 @@ class IngestionObject:
                                                               fy_list_price,is_discontinued, is_visible, allow_purchases,
                                                               price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                               date_catalog_received, catalog_provided_by))
             self.obDal.set_fy_product_description(self.product_description_update_collector)
             self.product_description_update_collector = []
@@ -874,7 +874,7 @@ class IngestionObject:
                                                               fy_list_price, is_discontinued, is_visible, allow_purchases,
                                                               price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                               date_catalog_received, catalog_provided_by))
 
 
