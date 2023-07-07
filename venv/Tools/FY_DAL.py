@@ -895,7 +895,6 @@ class DalObject:
         df_toggles = self.get_lookup(proc_name,column_names)
         return df_toggles
 
-
     def fy_product_description_insert_short(self, lst_descriptions):
         proc_name = 'sequoia.ProductDescription_insert3'
         proc_statement = 'CALL `sequoia`.`ProductDescription_insert3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'

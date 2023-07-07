@@ -23,9 +23,9 @@ class FyProductUpdate(BasicProcessObject):
                   'FyLandedCost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
                   'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
-                  'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate',
+                  'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate', 'FyDenyINTRAMALLSContractDate', 'FyDenyINTRAMALLSContractDate',
                   'GSA_Sin','VA_Sin', 'GSADiscountPercent','VADiscountPercent','MfcDiscountPercent',
-                  'WebsiteOnly','GSAEligible','VAEligible','ECATEligible','HTMEEligible',
+                  'WebsiteOnly','GSAEligible','VAEligible','ECATEligible','HTMEEligible','INTRAMALLSEligible',
                   'VendorIsDiscontinued','VendorProductNotes']
     att_fields = []
     gen_fields = []
@@ -88,8 +88,8 @@ class FyProductUpdate(BasicProcessObject):
                            'VendorId','VendorId_x','VendorId_y','UpdateManufacturerName','ManufacturerId',
                            'CategoryId','CategoryId_x','CategoryId_y',
                            'Report','Filter','ProductDescriptionId','db_FyProductName','db_FyProductDescription',
-                           'GSAProductPriceId','VAProductPriceId','ECATProductPriceId','HTMEProductPriceId',
-                           'db_GSAProductPriceId','db_VAProductPriceId','db_ECATProductPriceId','db_HTMEProductPriceId'}
+                           'GSAProductPriceId','VAProductPriceId','ECATProductPriceId','HTMEProductPriceId','INTRAMALLSProductPriceId',
+                           'db_GSAProductPriceId','db_VAProductPriceId','db_ECATProductPriceId','db_HTMEProductPriceId','db_INTRAMALLSProductPriceId'}
         current_headers = set(self.df_product.columns)
         remove_headers = list(current_headers.intersection(private_headers))
         if remove_headers != []:
@@ -1162,6 +1162,12 @@ class FyProductUpdate(BasicProcessObject):
         else:
             ecat_eligible = -1
 
+        success, intramalls_eligible = self.process_boolean(row, 'INTRAMALLSEligible')
+        if success:
+            df_collect_product_base_data['INTRAMALLSEligible'] = [intramalls_eligible]
+        else:
+            intramalls_eligible = -1
+
 
         success, deny_gsa = self.process_boolean(row, 'FyDenyGSAContract')
         if success:
@@ -1282,6 +1288,36 @@ class FyProductUpdate(BasicProcessObject):
                 deny_htme_date = (xlrd.xldate_as_datetime(deny_htme_date, 0)).date()
             except ValueError:
                 deny_htme_date = str(row['FyDenyHTMEContractDate'])
+
+            success, deny_intramalls = self.process_boolean(row, 'FyDenyINTRAMALLSContract')
+            if success:
+                df_collect_product_base_data['FyDenyINTRAMALLSContract'] = [deny_intramalls]
+            else:
+                deny_intramalls = -1
+
+            deny_intramalls_date = -1
+            if 'FyDenyINTRAMALLSContractDate' in row:
+                deny_intramalls_date = row['FyDenyINTRAMALLSContractDate']
+                try:
+                    deny_intramalls_date = int(deny_intramalls_date)
+                    deny_intramalls_date = xlrd.xldate_as_datetime(deny_intramalls_date, 0)
+                except ValueError:
+                    deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
+
+                if isinstance(deny_intramalls_date, datetime.datetime) == False:
+                    try:
+                        deny_intramalls_date = datetime.datetime.strptime(deny_intramalls_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
+                        self.obReporter.update_report('Alert','Check FyDenyINTRAMALLSContractDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check FyDenyINTRAMALLSContractDate')
+
+                try:
+                    deny_intramalls_date = int(row['FyDenyINTRAMALLSContractDate'])
+                    deny_intramalls_date = (xlrd.xldate_as_datetime(deny_intramalls_date, 0)).date()
+                except ValueError:
+                    deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
 
 
 
@@ -1441,7 +1477,7 @@ class FyProductUpdate(BasicProcessObject):
                                                                         fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
                                                                         price_toggle, data_toggle,
                                                                         deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                        deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                                        deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                         date_catalog_received, catalog_provided_by,
 
                                                                         gsa_on_contract, gsa_approved_base_price,
@@ -1476,7 +1512,7 @@ class FyProductUpdate(BasicProcessObject):
                                                               fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
                                                               price_toggle, data_toggle,
                                                                   deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                  deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                                  deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                   date_catalog_received, catalog_provided_by)
 
                 return True, df_collect_product_base_data
@@ -1980,7 +2016,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
                                                           deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                          deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                          deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                           date_catalog_received, catalog_provided_by)
 
 
