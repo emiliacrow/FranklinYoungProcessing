@@ -688,11 +688,11 @@ class IngestionObject:
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                       vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                      b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                      b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
                                       deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                       date_catalog_received, catalog_provided_by):
 
         if (len(self.product_description_insert_collector) > self.load_limit):
@@ -703,11 +703,11 @@ class IngestionObject:
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                       vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                      b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                      b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
                                       deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                       date_catalog_received, catalog_provided_by))
             self.obDal.fy_product_description_insert(self.product_description_insert_collector)
             self.product_description_insert_collector = []
@@ -719,11 +719,11 @@ class IngestionObject:
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                       vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                      b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                      b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
                                       deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                       date_catalog_received, catalog_provided_by))
 
     def insert_fy_product_description_cleanup(self):
@@ -739,13 +739,13 @@ class IngestionObject:
                                                                     fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                     fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                                     vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                                                    b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                                    b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                                     vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                     fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
                                                                     price_toggle, data_toggle,
                                                                     deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                     date_catalog_received, catalog_provided_by,
 
                                                                     gsa_on_contract, gsa_approved_base_price,
@@ -770,13 +770,13 @@ class IngestionObject:
                                                                     fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                     fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                                     vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                                                    b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                                    b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                                     vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                     fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
                                                                     price_toggle, data_toggle,
                                                                     deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                     date_catalog_received, catalog_provided_by,
 
                                                                     gsa_on_contract, gsa_approved_base_price,
@@ -803,13 +803,13 @@ class IngestionObject:
                                                                     fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                     fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                                     vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                                                    b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                                    b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                                     vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                     fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
                                                                     price_toggle, data_toggle,
                                                                     deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date,
+                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                     date_catalog_received, catalog_provided_by,
 
                                                                     gsa_on_contract, gsa_approved_base_price,
@@ -838,7 +838,7 @@ class IngestionObject:
                                       fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                       fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                       vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                      b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                      b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight,
                                       fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                       fy_list_price, is_discontinued, is_visible, allow_purchases,
@@ -852,7 +852,7 @@ class IngestionObject:
                                                               fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                               fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                               vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                                              b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                              b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                               vendor_list_price, discount, fy_cost, estimated_freight,
                                                               fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                               fy_list_price,is_discontinued, is_visible, allow_purchases,
@@ -868,7 +868,7 @@ class IngestionObject:
                                                               fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                               fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                               vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
-                                                              b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                              b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                               vendor_list_price, discount, fy_cost, estimated_freight,
                                                               fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                               fy_list_price, is_discontinued, is_visible, allow_purchases,
@@ -1179,6 +1179,56 @@ class IngestionObject:
     def update_gsa_product_price_cleanup(self):
         if self.product_update_collector != []:
             self.obDal.gsa_product_price_update(self.product_update_collector)
+
+
+
+    def intramalls_product_price_insert(self, newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedSellPrice, newApprovedListPrice,
+                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes):
+        if (len(self.product_insert_collector) > self.load_limit):
+            self.product_insert_collector.append(
+                (newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedSellPrice, newApprovedListPrice,
+                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
+            self.obDal.intramalls_product_price_insert(self.product_insert_collector)
+            self.product_insert_collector = []
+        else:
+            self.product_insert_collector.append((newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedSellPrice, newApprovedListPrice,
+                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
+
+    def insert_intramalls_product_price_cleanup(self):
+        if self.product_insert_collector != []:
+            self.obDal.intramalls_product_price_insert(self.product_insert_collector)
+
+
+    def intramalls_product_price_update(self, newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedSellPrice, newApprovedListPrice,
+                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes):
+        if (len(self.product_update_collector) > self.load_limit):
+            self.product_update_collector.append(
+                (newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedSellPrice, newApprovedListPrice,
+                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
+            self.obDal.intramalls_product_price_update(self.product_update_collector)
+            self.product_update_collector = []
+        else:
+            self.product_update_collector.append((newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedSellPrice, newApprovedListPrice,
+                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
+
+    def update_intramalls_product_price_cleanup(self):
+        if self.product_update_collector != []:
+            self.obDal.intramalls_product_price_update(self.product_update_collector)
+
+
+
 
 
     def htme_product_price_cap(self, newBaseProductPriceId, newFyProductNumber, newOnContract,

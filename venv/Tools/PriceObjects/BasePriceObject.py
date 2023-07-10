@@ -532,18 +532,24 @@ class BasePrice(BasicProcessObject):
         else:
             ecat_eligible = -1
 
+        success, intramalls_eligible = self.process_boolean(row, 'INTRAMALLSEligible')
+        if success:
+            df_collect_product_base_data['INTRAMALLSEligible'] = [intramalls_eligible]
+        else:
+            intramalls_eligible = -1
+
         success = True
         if str(row['Filter']) == 'Base Pricing':
             self.obIngester.insert_base_price(vendor_list_price, fy_discount_percent, fy_cost,
                                                           estimated_freight, fy_landed_cost, date_catalog_received, catalog_provided_by,
                                                           product_price_id, b_website_only, va_product_price_id, va_eligible, gsa_product_price_id, gsa_eligible,
-                                                          htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id)
+                                                          htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id, intramalls_eligible)
         elif str(row['Filter']) == 'Ready':
             base_price_id = row['BaseProductPriceId']
             self.obIngester.update_base_price(base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
                                                           estimated_freight, fy_landed_cost, date_catalog_received, catalog_provided_by,
                                                           product_price_id, b_website_only, va_product_price_id, va_eligible, gsa_product_price_id, gsa_eligible,
-                                                          htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id)
+                                                          htme_product_price_id, htme_eligible, ecat_product_price_id, ecat_eligible, fedmall_product_price_id, intramalls_eligible)
 
         return success, df_line_product
 

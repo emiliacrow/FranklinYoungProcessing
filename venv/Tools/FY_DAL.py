@@ -513,6 +513,22 @@ class DalObject:
         return df_base_price_lookup
 
 
+    def intramalls_product_price_insert(self,lst_intramalls_product_price):
+        proc_name = 'sequoia.INTRAMALLSProductPrice_insert2'
+        proc_statement = 'CALL `sequoia`.`INTRAMALLSProductPrice_insert2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_intramalls_product_price)
+        runner.start()
+
+    def intramalls_product_price_update(self,lst_intramalls_product_price):
+        proc_name = 'sequoia.INTRAMALLSProductPrice_update3'
+        proc_statement = 'CALL `sequoia`.`INTRAMALLSProductPrice_update3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        self.open_connection()
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_intramalls_product_price)
+        runner.start()
+
+
+
     def htme_product_price_cap(self,lst_htme_product_price):
         proc_name = 'sequoia.HTMEProductPrice_capture'
         proc_statement = 'CALL `sequoia`.`HTMEProductPrice_capture`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'

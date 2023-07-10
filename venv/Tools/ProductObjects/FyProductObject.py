@@ -1471,7 +1471,7 @@ class FyProductUpdate(BasicProcessObject):
                                                                         fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                         fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                                         vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
-                                                                        b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                                        b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                                         vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                         markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                         fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
@@ -1506,7 +1506,7 @@ class FyProductUpdate(BasicProcessObject):
                                                               fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                               fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                               vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
-                                                              b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                              b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                               vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                               markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                               fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
@@ -1879,6 +1879,12 @@ class FyProductUpdate(BasicProcessObject):
         else:
             ecat_eligible = -1
 
+        success, intramalls_eligible = self.process_boolean(row, 'INTRAMALLSEligible')
+        if success:
+            df_collect_product_base_data['INTRAMALLSEligible'] = [intramalls_eligible]
+        else:
+            intramalls_eligible = -1
+
 
         success, deny_gsa = self.process_boolean(row, 'FyDenyGSAContract')
         if success:
@@ -2041,7 +2047,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
-                                                          b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible,
+                                                          b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
