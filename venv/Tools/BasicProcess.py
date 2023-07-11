@@ -207,7 +207,7 @@ class BasicProcessObject:
     def define_new(self, b_match_vendor = False):
         clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_ProductNumberOverride','db_IsDiscontinued','db_FyIsDiscontinued',
                          'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes',
-                         'db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes','TakePriority','BlockedManufacturer']
+                         'db_ECATProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_INTRAMALLSProductNotes','db_VAProductNotes','TakePriority','BlockedManufacturer']
         for each_header in clear_headers:
             if each_header in self.df_product.columns:
                 self.df_product = self.df_product.drop(columns=[each_header])
@@ -235,9 +235,9 @@ class BasicProcessObject:
         self.df_product_notes = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['db_FyProductNotes']!= '')]
         drop_notes = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber','FyProductNumber',
                       'VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued','db_FyIsDiscontinued',
-                      'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
+                      'ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId']
         self.df_product_notes = self.df_product_notes.drop(columns=drop_notes)
-        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_ProductNumberOverride','db_FyProductNotes','db_VAProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_ECATProductNotes'])
+        self.df_product_agni_kai_lookup = self.df_product_agni_kai_lookup.drop(columns=['db_ProductNumberOverride','db_FyProductNotes','db_ECATProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_INTRAMALLSProductNotes','db_VAProductNotes'])
 
         # set up the different match types
         # all products in DB with pricing
@@ -248,7 +248,7 @@ class BasicProcessObject:
         # all products without pricing but with a vendor
         self.df_product_price_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] != 'Load Product Pricing')].copy()
         self.df_product_price_lookup['Filter'] = 'Base Pricing'
-        self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['BaseProductPriceId','db_IsDiscontinued','db_FyIsDiscontinued','ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId'])
+        self.df_product_price_lookup = self.df_product_price_lookup.drop(columns = ['BaseProductPriceId','db_IsDiscontinued','db_FyIsDiscontinued','ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId'])
 
         # all products without vendor
         self.df_product_minumum_lookup = self.df_product_agni_kai_lookup[(self.df_product_agni_kai_lookup['ProductPriceId'] == 'Load Product Pricing')].copy()
@@ -285,7 +285,7 @@ class BasicProcessObject:
         self.df_product['FyProductNumber'] = self.df_product[['FyProductNumber_x']]
 
         drop_columns = ['Filter','db_IsDiscontinued','db_FyIsDiscontinued','ProductId','ProductPriceId','BaseProductPriceId',
-                        'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId','VAProductPriceId',
+                        'ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId',
                         'ManufacturerName_x', 'ManufacturerName_y','VendorName_x','VendorName_y',
                         'FyProductNumber_x','FyProductNumber_y','VendorPartNumber_x','VendorPartNumber_y']
 
@@ -297,8 +297,9 @@ class BasicProcessObject:
             self.df_man_ven_matched_products = self.df_man_ven_matched_products[(self.df_man_ven_matched_products['Filter'] != 'New')]
 
             if len(self.df_product_remains_new.columns) > 0:
-                drop_new = ['Filter', 'ProductId', 'ProductPriceId', 'db_IsDiscontinued','db_FyIsDiscontinued', 'ECATProductPriceId',
-                            'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId','BaseProductPriceId']
+                drop_new = ['Filter', 'ProductId', 'ProductPriceId', 'db_IsDiscontinued','db_FyIsDiscontinued',
+                            'ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId',
+                            'VAProductPriceId','BaseProductPriceId']
                 self.df_product_remains_new = self.df_product_remains_new.drop(columns=drop_new)
 
                 self.df_product = pandas.concat([self.df_product, self.df_product_remains_new], ignore_index=True)
@@ -658,7 +659,7 @@ class BasicProcessObject:
 
         drop_1 = ['BaseProductPriceId','ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
                       'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y',
-                  'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
+                  'ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId']
         df_to_clean_case_1 = df_to_clean_case_1.drop(columns = drop_1)
 
         if len(df_to_clean_case_3.index) > 0:
@@ -670,7 +671,7 @@ class BasicProcessObject:
 
         drop_3 = ['ProductPriceId','BaseProductPriceId', 'ManufacturerName_x', 'FyProductNumber_x', 'VendorName_x',
                       'VendorPartNumber_x', 'VendorPartNumber_y', 'VendorName_y', 'FyProductNumber_y', 'ManufacturerName_y',
-                  'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
+                  'ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId']
         df_to_clean_case_3 = df_to_clean_case_3.drop(columns=drop_3)
 
         if len(df_to_clean_case_4.index) > 0:
@@ -682,7 +683,7 @@ class BasicProcessObject:
             df_to_clean_case_4['VendorPartNumber'] = df_to_clean_case_4[['VendorPartNumber_x']]
 
         drop_4 = ['ProductPriceId','BaseProductPriceId', 'ManufacturerName_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
-                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y','ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
+                      'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerName_y','ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId']
 
         df_to_clean_case_4 = df_to_clean_case_4.drop(columns = drop_4)
 
@@ -774,7 +775,7 @@ class BasicProcessObject:
         drop_6 = ['ProductPriceId','BaseProductPriceId','FyProductNumber_x','VendorName_x','VendorPartNumber_x',
                   'db_IsDiscontinued', 'db_FyIsDiscontinued',
                   'VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_x','ManufacturerPartNumber_y',
-                  'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId']
+                  'ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId']
         df_to_clean_case_6 = df_to_clean_case_6.drop(columns = drop_6)
 
         if len(df_to_clean_case_7.index) > 0:
@@ -850,7 +851,7 @@ class BasicProcessObject:
         df_partials['VendorPartNumber'] = df_partials[['VendorPartNumber_x']]
 
         drop_p = ['ProductPriceId','BaseProductPriceId',
-                  'ECATProductPriceId', 'HTMEProductPriceId', 'GSAProductPriceId', 'VAProductPriceId','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x',
+                  'ECATProductPriceId','GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x',
                   'VendorPartNumber_x','VendorPartNumber_y','VendorName_y','FyProductNumber_y','ManufacturerPartNumber_y']
         df_partials = df_partials.drop(columns = drop_p)
 

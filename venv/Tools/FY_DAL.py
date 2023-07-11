@@ -509,8 +509,8 @@ class DalObject:
     def get_gsa_contract_ids(self):
         proc_name = 'sequoia.get_GSAContractId_lookup'
         column_names = ['FyProductNumber','db_GSAProductPriceId']
-        df_base_price_lookup = self.get_lookup(proc_name,column_names)
-        return df_base_price_lookup
+        df_gsa_lookup = self.get_lookup(proc_name,column_names)
+        return df_gsa_lookup
 
 
     def intramalls_product_price_insert(self,lst_intramalls_product_price):
@@ -526,6 +526,19 @@ class DalObject:
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_intramalls_product_price)
         runner.start()
+
+    def get_intramalls_price_lookup(self):
+        proc_name = 'sequoia.get_INTRAMALLSPrice_lookup'
+        column_names = ['FyProductNumber','VendorPartNumber','INTRAMALLSOnContract', 'INTRAMALLSApprovedListPrice',
+                         'INTRAMALLSContractModificationNumber','INTRAMALLSApprovedPriceDate','INTRAMALLSPricingApproved']
+        df_intramalls_price_lookup = self.get_lookup(proc_name,column_names)
+        return df_intramalls_price_lookup
+
+    def get_intramalls_contract_ids(self):
+        proc_name = 'sequoia.get_INTRAMALLSContractId_lookup'
+        column_names = ['FyProductNumber','db_INTRAMALLSProductPriceId']
+        df_intramalls_lookup = self.get_lookup(proc_name,column_names)
+        return df_intramalls_lookup
 
 
 
@@ -741,11 +754,11 @@ class DalObject:
 
 
     def get_product_action_review_lookup(self):
-        proc_name = 'sequoia.get_ProductActionReview6_lookup'
+        proc_name = 'sequoia.get_ProductActionReview7_lookup'
         column_names = ['ProductId', 'ManufacturerName', 'ManufacturerPartNumber', 'FyCatalogNumber', 'db_ProductNumberOverride', 'ProductPriceId',
                         'FyProductNumber','VendorName','VendorPartNumber','BaseProductPriceId','db_IsDiscontinued','db_FyIsDiscontinued','db_FyProductNotes',
-                        'db_VAProductNotes', 'db_GSAProductNotes', 'db_HTMEProductNotes', 'db_ECATProductNotes',
-                        'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId']
+                        'db_ECATProductNotes', 'db_GSAProductNotes', 'db_HTMEProductNotes', 'db_INTRAMALLSProductNotes', 'db_VAProductNotes',
+                        'ECATProductPriceId', 'GSAProductPriceId', 'HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId']
         df_product_lookup = self.get_lookup(proc_name,column_names)
         return df_product_lookup
 
@@ -948,10 +961,10 @@ class DalObject:
 
 
     def get_fy_product_descriptions(self):
-        proc_name = 'sequoia.get_FyProductDescriptions3'
+        proc_name = 'sequoia.get_FyProductDescriptions4'
         column_names = ['ProductDescriptionId', 'FyProductNumber', 'db_FyProductName', 'db_FyProductDescription',
                         'CurrentVendorListPrice', 'CurrentDiscount','CurrentFyCost','CurrentEstimatedFreight','CurrentFyLandedCost', 'CurrentMarkUp_sell', 'CurrentMarkUp_list',
-                        'GSAProductPriceId','VAProductPriceId','ECATProductPriceId','HTMEProductPriceId']
+                        'ECATProductPriceId','GSAProductPriceId','HTMEProductPriceId','INTRAMALLSProductPriceId','VAProductPriceId']
         df_descriptions = self.get_lookup(proc_name,column_names)
         return df_descriptions
 
@@ -1038,6 +1051,13 @@ class DalObject:
         proc_statement = 'CALL `sequoia`.`set_gsa_toggles`(%s, %s, %s, %s);'
         self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_toggles)
+        runner.start()
+
+    def set_intramalls_toggles(self, lst_intramalls_toggles):
+        proc_name = 'sequoia.set_intramalls_toggles'
+        proc_statement = 'CALL `sequoia`.`set_intramalls_toggles`(%s, %s, %s, %s);'
+        self.open_connection(runner_limit=30)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_intramalls_toggles)
         runner.start()
 
     def set_va_toggles(self, lst_va_toggles):

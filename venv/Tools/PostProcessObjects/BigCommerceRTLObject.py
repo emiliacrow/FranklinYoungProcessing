@@ -14,8 +14,9 @@ class BigCommerceRTLObject(BasicProcessObject):
     req_fields = ['FyCatalogNumber','ManufacturerName', 'ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber']
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','VendorIsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
-                  'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','HTMETOnContract','HTMEPricingApproved','HTMEProductNotes',
-                  'GSAOnContract','GSAPricingApproved','GSAProductNotes','VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes','ProductNotes',
+                  'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','GSAOnContract','GSAPricingApproved','GSAProductNotes',
+                  'HTMETOnContract','HTMEPricingApproved','HTMEProductNotes','INTRAMALLSTOnContract','INTRAMALLSPricingApproved','INTRAMALLSProductNotes',
+                  'VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes','ProductNotes',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
                   'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate','FyDenyINTRAMALLSContractDate', 'FyDenyINTRAMALLSContractDate']
 
@@ -126,13 +127,17 @@ class BigCommerceRTLObject(BasicProcessObject):
             if 'ECATProductPriceId' in row:
                 ecat_id = int(row['ECATProductPriceId'])
 
+            gsa_id = -1
+            if 'GSAProductPriceId' in row:
+                gsa_id = int(row['GSAProductPriceId'])
+
             htme_id = -1
             if 'HTMEProductPriceId' in row:
                 htme_id = int(row['HTMEProductPriceId'])
 
-            gsa_id = -1
-            if 'GSAProductPriceId' in row:
-                gsa_id = int(row['GSAProductPriceId'])
+            intramalls_id = -1
+            if 'INTRAMALLSProductPriceId' in row:
+                intramalls_id = int(row['INTRAMALLSProductPriceId'])
 
             va_id = -1
             if 'VAProductPriceId' in row:
@@ -278,6 +283,74 @@ class BigCommerceRTLObject(BasicProcessObject):
                         ecat_product_notes = '{0}, {1}'.format(ecat_product_notes, notes_insert)
 
 
+            gsa_contract = -1
+            gsa_approved = -1
+            db_gsa_contract = 0
+            db_gsa_approved = 0
+            gsa_product_notes = ''
+            gsa_pending_del_flag = -1
+            if gsa_id != -1:
+                success, gsa_contract = self.process_boolean(row, 'GSAOnContract')
+                if success:
+                    df_collect_product_base_data['GSAOnContract'] = [gsa_contract]
+                else:
+                    gsa_contract = -1
+
+                success, gsa_approved = self.process_boolean(row, 'GSAPricingApproved')
+                if success:
+                    df_collect_product_base_data['GSAPricingApproved'] = [gsa_approved]
+                else:
+                    gsa_approved = -1
+
+                if 'GSAProductNotes' in row:
+                    gsa_product_notes = row['GSAProductNotes']
+
+                try:
+                    db_gsa_contract = int(row['db_GSAOnContract'])
+                    db_gsa_approved = int(row['db_GSAPricingApproved'])
+                except KeyError:
+                    db_gsa_contract = 0
+                    db_gsa_approved = 0
+
+
+                # test if this matches the first condition
+                # not discontinued, gets pending if db discontinued and db contracted
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_gsa_contract == 1 and db_gsa_approved == 1 and gsa_approved != 1:
+                    gsa_pending_del_flag = 1
+                    fy_is_discontinued = 0
+                    gsa_approved = 0
+
+                    if 'ending contract deletion,' not in product_notes:
+                        if product_notes == '':
+                            product_notes = 'Pending contract deletion, {0}'.format(str_now)
+                        else:
+                            product_notes = '{0}, pending contract deletion, {1}'.format(product_notes, str_now)
+
+                # if we're actually deleting from contract, we can add the notes
+                elif db_gsa_contract == 1 and gsa_contract == 0 and gsa_approved == 1:
+                    mod_number = ''
+                    if 'GSAContractModificationNumber' in row:
+                        mod_number = str(row['GSAContractModificationNumber'])
+
+                    db_mod_number = str(row['db_GSAModNumber'])
+
+                    approved_price_date = ''
+                    if 'GSAApprovedPriceDate' in row:
+                        approved_price_date = str(row['GSAApprovedPriceDate'])
+
+                    notes_insert = 'Deleted from contract'
+                    if mod_number != '':
+                        notes_insert = notes_insert+' with mod '+mod_number
+
+                    if approved_price_date != '':
+                        notes_insert = notes_insert + ', approved on ' + approved_price_date.partition(' ')[0]
+
+                    if gsa_product_notes == '':
+                        gsa_product_notes = notes_insert
+                    else:
+                        gsa_product_notes = '{0}, {1}'.format(gsa_product_notes, notes_insert)
+
+
             htme_contract = -1
             htme_approved = -1
             db_htme_contract = 0
@@ -346,42 +419,42 @@ class BigCommerceRTLObject(BasicProcessObject):
                         htme_product_notes = '{0}, {1}'.format(htme_product_notes, notes_insert)
 
 
-            gsa_contract = -1
-            gsa_approved = -1
-            db_gsa_contract = 0
-            db_gsa_approved = 0
-            gsa_product_notes = ''
-            gsa_pending_del_flag = -1
-            if gsa_id != -1:
-                success, gsa_contract = self.process_boolean(row, 'GSAOnContract')
+            intramalls_contract = -1
+            intramalls_approved = -1
+            db_intramalls_contract = 0
+            db_intramalls_approved = 0
+            intramalls_pending_del_flag = -1
+            intramalls_product_notes = ''
+            if intramalls_id != -1:
+                success, intramalls_contract = self.process_boolean(row, 'INTRAMALLSTOnContract')
                 if success:
-                    df_collect_product_base_data['GSAOnContract'] = [gsa_contract]
+                    df_collect_product_base_data['INTRAMALLSTOnContract'] = [intramalls_contract]
                 else:
-                    gsa_contract = -1
+                    intramalls_contract = -1
 
-                success, gsa_approved = self.process_boolean(row, 'GSAPricingApproved')
+                success, intramalls_approved = self.process_boolean(row, 'INTRAMALLSPricingApproved')
                 if success:
-                    df_collect_product_base_data['GSAPricingApproved'] = [gsa_approved]
+                    df_collect_product_base_data['INTRAMALLSPricingApproved'] = [intramalls_approved]
                 else:
-                    gsa_approved = -1
+                    intramalls_approved = -1
 
-                if 'GSAProductNotes' in row:
-                    gsa_product_notes = row['GSAProductNotes']
+                if 'INTRAMALLSProductNotes' in row:
+                    intramalls_product_notes = row['INTRAMALLSProductNotes']
 
                 try:
-                    db_gsa_contract = int(row['db_GSAOnContract'])
-                    db_gsa_approved = int(row['db_GSAPricingApproved'])
+                    db_intramalls_contract = int(row['db_INTRAMALLSOnContract'])
+                    db_intramalls_approved = int(row['db_INTRAMALLSPricingApproved'])
                 except KeyError:
-                    db_gsa_contract = 0
-                    db_gsa_approved = 0
+                    db_intramalls_contract = 0
+                    db_intramalls_approved = 0
 
 
                 # test if this matches the first condition
                 # not discontinued, gets pending if db discontinued and db contracted
-                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_gsa_contract == 1 and db_gsa_approved == 1 and gsa_approved != 1:
-                    gsa_pending_del_flag = 1
+                if db_fy_is_discontinued == 0 and fy_is_discontinued == 1 and db_intramalls_contract == 1 and db_intramalls_approved == 1 and intramalls_approved != 1:
+                    intramalls_pending_del_flag = 1
                     fy_is_discontinued = 0
-                    gsa_approved = 0
+                    intramalls_approved = 0
 
                     if 'ending contract deletion,' not in product_notes:
                         if product_notes == '':
@@ -390,16 +463,16 @@ class BigCommerceRTLObject(BasicProcessObject):
                             product_notes = '{0}, pending contract deletion, {1}'.format(product_notes, str_now)
 
                 # if we're actually deleting from contract, we can add the notes
-                elif db_gsa_contract == 1 and gsa_contract == 0 and gsa_approved == 1:
+                elif db_intramalls_contract == 1 and intramalls_contract == 0 and intramalls_approved == 1:
                     mod_number = ''
-                    if 'GSAContractModificationNumber' in row:
-                        mod_number = str(row['GSAContractModificationNumber'])
+                    if 'INTRAMALLSContractModificationNumber' in row:
+                        mod_number = str(row['INTRAMALLSContractModificationNumber'])
 
-                    db_mod_number = str(row['db_GSAModNumber'])
+                    db_mod_number = str(row['db_INTRAMALLSModNumber'])
 
                     approved_price_date = ''
-                    if 'GSAApprovedPriceDate' in row:
-                        approved_price_date = str(row['GSAApprovedPriceDate'])
+                    if 'INTRAMALLSApprovedPriceDate' in row:
+                        approved_price_date = str(row['INTRAMALLSApprovedPriceDate'])
 
                     notes_insert = 'Deleted from contract'
                     if mod_number != '':
@@ -408,10 +481,11 @@ class BigCommerceRTLObject(BasicProcessObject):
                     if approved_price_date != '':
                         notes_insert = notes_insert + ', approved on ' + approved_price_date.partition(' ')[0]
 
-                    if gsa_product_notes == '':
-                        gsa_product_notes = notes_insert
+                    if intramalls_product_notes == '':
+                        intramalls_product_notes = notes_insert
                     else:
-                        gsa_product_notes = '{0}, {1}'.format(gsa_product_notes, notes_insert)
+                        intramalls_product_notes = '{0}, {1}'.format(intramalls_product_notes, notes_insert)
+
 
 
             va_contract = -1
@@ -484,7 +558,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
 
             # if it's on contract we want to make sure they show
-            if (ecat_approved == 1 and ecat_contract == 1) or (htme_approved == 1 and htme_contract == 1) or (gsa_approved == 1 and gsa_contract == 1) or (va_approved == 1 and va_contract == 1):
+            if (ecat_approved == 1 and ecat_contract == 1) or (gsa_approved == 1 and gsa_contract == 1) or (htme_approved == 1 and htme_contract == 1) or (intramalls_approved == 1 and intramalls_contract == 1) or (va_approved == 1 and va_contract == 1):
                 self.obReporter.update_report('Alert','Toggles set based on contract status')
                 price_toggle = 1
                 df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
@@ -562,6 +636,37 @@ class BigCommerceRTLObject(BasicProcessObject):
             if 'ProductPriceId' in row:
                 price_id = int(row['ProductPriceId'])
 
+            success, deny_ecat = self.process_boolean(row, 'FyDenyECATContract')
+            if success:
+                df_collect_product_base_data['FyDenyECATContract'] = [deny_ecat]
+            else:
+                deny_ecat = -1
+
+            deny_ecat_date = -1
+            if 'FyDenyECATContractDate' in row:
+                deny_ecat_date = row['FyDenyECATContractDate']
+                try:
+                    deny_ecat_date = int(deny_ecat_date)
+                    deny_ecat_date = xlrd.xldate_as_datetime(deny_ecat_date, 0)
+                except ValueError:
+                    deny_ecat_date = str(row['FyDenyECATContractDate'])
+
+                if isinstance(deny_ecat_date, datetime.datetime) == False:
+                    try:
+                        deny_ecat_date = datetime.datetime.strptime(deny_ecat_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        deny_ecat_date = str(row['FyDenyECATContractDate'])
+                        self.obReporter.update_report('Alert','Check FyDenyECATContractDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check FyDenyECATContractDate')
+
+                try:
+                    deny_ecat_date = int(row['FyDenyECATContractDate'])
+                    deny_ecat_date = (xlrd.xldate_as_datetime(deny_ecat_date, 0)).date()
+                except ValueError:
+                    deny_ecat_date = str(row['FyDenyECATContractDate'])
+
+
             success, deny_gsa = self.process_boolean(row, 'FyDenyGSAContract')
             if success:
                 df_collect_product_base_data['FyDenyGSAContract'] = [deny_gsa]
@@ -592,65 +697,6 @@ class BigCommerceRTLObject(BasicProcessObject):
                 except ValueError:
                     deny_gsa_date = str(row['FyDenyGSAContractDate'])
 
-            success, deny_va = self.process_boolean(row, 'FyDenyVAContract')
-            if success:
-                df_collect_product_base_data['FyDenyVAContract'] = [deny_va]
-            else:
-                deny_va = -1
-
-            deny_va_date = -1
-            if 'FyDenyVAContractDate' in row:
-                deny_va_date = row['FyDenyVAContractDate']
-                try:
-                    deny_va_date = int(deny_va_date)
-                    deny_va_date = xlrd.xldate_as_datetime(deny_va_date, 0)
-                except ValueError:
-                    deny_va_date = str(row['FyDenyVAContractDate'])
-
-                if isinstance(deny_va_date, datetime.datetime) == False:
-                    try:
-                        deny_va_date = datetime.datetime.strptime(deny_va_date, '%Y-%m-%d %H:%M:%S')
-                    except ValueError:
-                        deny_va_date = str(row['FyDenyVAContractDate'])
-                        self.obReporter.update_report('Alert','Check FyDenyVAContractDate')
-                    except TypeError:
-                        self.obReporter.update_report('Alert','Check FyDenyVAContractDate')
-
-                try:
-                    deny_va_date = int(row['FyDenyVAContractDate'])
-                    deny_va_date = (xlrd.xldate_as_datetime(deny_va_date, 0)).date()
-                except ValueError:
-                    deny_va_date = str(row['FyDenyVAContractDate'])
-
-            success, deny_ecat = self.process_boolean(row, 'FyDenyECATContract')
-            if success:
-                df_collect_product_base_data['FyDenyECATContract'] = [deny_ecat]
-            else:
-                deny_ecat = -1
-
-            deny_ecat_date = -1
-            if 'FyDenyECATContractDate' in row:
-                deny_ecat_date = row['FyDenyECATContractDate']
-                try:
-                    deny_ecat_date = int(deny_ecat_date)
-                    deny_ecat_date = xlrd.xldate_as_datetime(deny_ecat_date, 0)
-                except ValueError:
-                    deny_ecat_date = str(row['FyDenyECATContractDate'])
-
-                if isinstance(deny_ecat_date, datetime.datetime) == False:
-                    try:
-                        deny_ecat_date = datetime.datetime.strptime(deny_ecat_date, '%Y-%m-%d %H:%M:%S')
-                    except ValueError:
-                        deny_ecat_date = str(row['FyDenyECATContractDate'])
-                        self.obReporter.update_report('Alert','Check FyDenyECATContractDate')
-                    except TypeError:
-                        self.obReporter.update_report('Alert','Check FyDenyECATContractDate')
-
-                try:
-                    deny_ecat_date = int(row['FyDenyECATContractDate'])
-                    deny_ecat_date = (xlrd.xldate_as_datetime(deny_ecat_date, 0)).date()
-                except ValueError:
-                    deny_ecat_date = str(row['FyDenyECATContractDate'])
 
             success, deny_htme = self.process_boolean(row, 'FyDenyHTMEContract')
             if success:
@@ -712,6 +758,36 @@ class BigCommerceRTLObject(BasicProcessObject):
                 except ValueError:
                     deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
 
+            success, deny_va = self.process_boolean(row, 'FyDenyVAContract')
+            if success:
+                df_collect_product_base_data['FyDenyVAContract'] = [deny_va]
+            else:
+                deny_va = -1
+
+            deny_va_date = -1
+            if 'FyDenyVAContractDate' in row:
+                deny_va_date = row['FyDenyVAContractDate']
+                try:
+                    deny_va_date = int(deny_va_date)
+                    deny_va_date = xlrd.xldate_as_datetime(deny_va_date, 0)
+                except ValueError:
+                    deny_va_date = str(row['FyDenyVAContractDate'])
+
+                if isinstance(deny_va_date, datetime.datetime) == False:
+                    try:
+                        deny_va_date = datetime.datetime.strptime(deny_va_date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        deny_va_date = str(row['FyDenyVAContractDate'])
+                        self.obReporter.update_report('Alert','Check FyDenyVAContractDate')
+                    except TypeError:
+                        self.obReporter.update_report('Alert','Check FyDenyVAContractDate')
+
+                try:
+                    deny_va_date = int(row['FyDenyVAContractDate'])
+                    deny_va_date = (xlrd.xldate_as_datetime(deny_va_date, 0)).date()
+                except ValueError:
+                    deny_va_date = str(row['FyDenyVAContractDate'])
+
             if db_price_toggle != price_toggle or db_data_toggle != data_toggle or db_is_discontinued != is_discontinued or db_fy_is_discontinued != fy_is_discontinued or db_fy_allow_purchases != fy_allow_purchases or db_fy_is_visible != fy_is_visible:
                 self.obIngester.set_bc_update_toggles(prod_desc_id, price_id, is_discontinued, fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
                                                               deny_gsa, deny_gsa_date, deny_va, deny_va_date,
@@ -734,6 +810,14 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 self.obReporter.update_report('Alert', 'No change to ECAT toggles')
 
+        if (gsa_contract != -1 or gsa_approved != -1 or gsa_product_notes != ''):
+            if db_gsa_contract != gsa_contract or db_gsa_approved != gsa_approved:
+                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes)
+            elif self.full_run:
+                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes)
+            else:
+                self.obReporter.update_report('Alert', 'No change to GSA toggles')
+
         if (htme_contract != -1 or htme_approved != -1 or htme_product_notes != ''):
             if db_htme_contract != htme_contract or db_htme_approved != htme_approved:
                 self.obIngester.set_htme_toggles(htme_id, fy_product_number, htme_contract, htme_approved, htme_pending_del_flag, htme_product_notes)
@@ -742,13 +826,13 @@ class BigCommerceRTLObject(BasicProcessObject):
             else:
                 self.obReporter.update_report('Alert', 'No change to HTME toggles')
 
-        if (gsa_contract != -1 or gsa_approved != -1 or gsa_product_notes != ''):
-            if db_gsa_contract != gsa_contract or db_gsa_approved != gsa_approved:
-                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes)
+        if (intramalls_contract != -1 or intramalls_approved != -1 or intramalls_product_notes != ''):
+            if db_intramalls_contract != intramalls_contract or db_intramalls_approved != intramalls_approved:
+                self.obIngester.set_intramalls_toggles(intramalls_id, fy_product_number, intramalls_contract, intramalls_approved, intramalls_pending_del_flag, intramalls_product_notes)
             elif self.full_run:
-                self.obIngester.set_gsa_toggles(gsa_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes)
+                self.obIngester.set_intramalls_toggles(intramalls_id, fy_product_number, intramalls_contract, intramalls_approved, intramalls_pending_del_flag, intramalls_product_notes)
             else:
-                self.obReporter.update_report('Alert', 'No change to GSA toggles')
+                self.obReporter.update_report('Alert', 'No change to INTRAMALLS toggles')
 
         if (va_contract != -1 or va_approved != -1 or va_product_notes != ''):
             if db_va_contract != va_contract or db_va_approved != va_approved:
@@ -769,8 +853,9 @@ class BigCommerceRTLObject(BasicProcessObject):
         self.obIngester.set_bc_update_toggles_cleanup()
         self.obIngester.set_update_asset_cleanup()
         self.obIngester.set_ecat_toggles_cleanup()
-        self.obIngester.set_htme_toggles_cleanup()
         self.obIngester.set_gsa_toggles_cleanup()
+        self.obIngester.set_htme_toggles_cleanup()
+        self.obIngester.set_intramalls_toggles_cleanup()
         self.obIngester.set_va_toggles_cleanup()
         self.obIngester.set_product_notes_cleanup()
 
