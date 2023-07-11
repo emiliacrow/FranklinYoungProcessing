@@ -1039,18 +1039,18 @@ class DalObject:
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_toggles)
         runner.start()
 
-    def set_htme_toggles(self, lst_htme_toggles):
-        proc_name = 'sequoia.set_htme_toggles'
-        proc_statement = 'CALL `sequoia`.`set_htme_toggles`(%s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit=30)
-        runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_toggles)
-        runner.start()
-
     def set_gsa_toggles(self, lst_gsa_toggles):
         proc_name = 'sequoia.set_gsa_toggles'
         proc_statement = 'CALL `sequoia`.`set_gsa_toggles`(%s, %s, %s, %s);'
         self.open_connection(runner_limit=30)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_gsa_toggles)
+        runner.start()
+
+    def set_htme_toggles(self, lst_htme_toggles):
+        proc_name = 'sequoia.set_htme_toggles'
+        proc_statement = 'CALL `sequoia`.`set_htme_toggles`(%s, %s, %s, %s, %s, %s);'
+        self.open_connection(runner_limit=30)
+        runner = DataRunner(self.connection, proc_name, proc_statement, lst_htme_toggles)
         runner.start()
 
     def set_intramalls_toggles(self, lst_intramalls_toggles):
