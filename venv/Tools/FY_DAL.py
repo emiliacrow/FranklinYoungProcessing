@@ -917,10 +917,10 @@ class DalObject:
         column_names = ['FyProductNumber', 'ProductDescriptionId', 'db_FyIsDiscontinued','db_AllowPurchases',
                         'db_IsVisible', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
                         'db_ECATOnContract', 'db_ECATModNumber', 'db_ECATPricingApproved',
-                        'db_HTMEOnContract', 'db_HTMEModNumber', 'db_HTMEPricingApproved',
                         'db_GSAOnContract', 'db_GSAModNumber', 'db_GSAPricingApproved',
-                        'db_VAOnContract', 'db_VAModNumber', 'db_VAPricingApproved',
-                        'db_INTRAMALLSOnContract', 'db_INTRAMALLSModNumber', 'db_INTRAMALLSPricingApproved']
+                        'db_HTMEOnContract', 'db_HTMEModNumber', 'db_HTMEPricingApproved',
+                        'db_INTRAMALLSOnContract', 'db_INTRAMALLSModNumber', 'db_INTRAMALLSPricingApproved',
+                        'db_VAOnContract', 'db_VAModNumber', 'db_VAPricingApproved']
         df_toggles = self.get_lookup(proc_name,column_names)
         return df_toggles
 
