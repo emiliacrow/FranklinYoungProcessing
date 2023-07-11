@@ -14,7 +14,7 @@ class INTRAMALLSPrice(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
-    gen_fields = ['ContractedManufacturerPartNumber']
+    gen_fields = []
 
     def __init__(self, df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
@@ -85,21 +85,6 @@ class INTRAMALLSPrice(BasicProcessObject):
         success = True
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            if 'ContractedManufacturerPartNumber' in row:
-                contract_manu_number = str(row['ContractedManufacturerPartNumber'])
-
-                if 'db_ContractedManufacturerPartNumber' in row:
-                    if contract_manu_number == '':
-                        db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
-                        return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
-                        self.obReporter.update_report('Alert', 'ContractedManufacturerPartNumber from DB')
-
-            elif 'db_ContractedManufacturerPartNumber' in row:
-                db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
-                return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
-                self.obReporter.update_report('Alert', 'ContractedManufacturerPartNumber from DB')
-            else:
-                return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
             # this is where we should try to capture the string literal '10.00%'
             # and make it what it should be
@@ -198,14 +183,14 @@ class INTRAMALLSPrice(BasicProcessObject):
         if intramalls_product_price_id == -1:
             self.obIngester.intramalls_product_price_insert(product_description_id, fy_product_number, on_contract,
                                                      approved_base_price,
-                                                     approved_sell_price, approved_list_price, contract_manu_number,
+                                                     approved_sell_price, approved_list_price,
                                                      contract_number, contract_mod_number, is_pricing_approved,
                                                      intramalls_approved_price_date, approved_percent, mfc_percent,
                                                      sin, intramalls_product_notes)
         else:
             self.obIngester.intramalls_product_price_update(intramalls_product_price_id, product_description_id, fy_product_number,
                                                      on_contract, approved_base_price,
-                                                     approved_sell_price, approved_list_price, contract_manu_number,
+                                                     approved_sell_price, approved_list_price,
                                                      contract_number, contract_mod_number, is_pricing_approved,
                                                      intramalls_approved_price_date, approved_percent, mfc_percent,
                                                      sin, intramalls_product_notes)
@@ -222,7 +207,7 @@ class UpdateINTRAMALLSPrice(INTRAMALLSPrice):
     sup_fields = []
     att_fields = []
     gen_fields = ['INTRAMALLSOnContract', 'INTRAMALLSApprovedListPrice', 'INTRAMALLSDiscountPercent', 'MfcDiscountPercent',
-                  'INTRAMALLSContractModificationNumber', 'INTRAMALLS_Sin', 'INTRAMALLSApprovedPriceDate', 'INTRAMALLSPricingApproved',
+                  'INTRAMALLSApprovedPriceDate', 'INTRAMALLSPricingApproved',
                   'ContractedManufacturerPartNumber']
 
     def __init__(self, df_product, user, password, is_testing):
