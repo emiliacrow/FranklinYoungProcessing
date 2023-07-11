@@ -36,8 +36,9 @@ class IngestionObject:
         self.product_notes_collector = []
 
         self.product_ecat_toggle_collector = []
-        self.product_htme_toggle_collector = []
         self.product_gsa_toggle_collector = []
+        self.product_htme_toggle_collector = []
+        self.product_intramalls_toggle_collector = []
         self.product_va_toggle_collector = []
 
 

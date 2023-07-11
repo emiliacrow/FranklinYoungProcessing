@@ -15,7 +15,7 @@ class BigCommerceRTLObject(BasicProcessObject):
 
     sup_fields = ['BCPriceUpdateToggle','BCDataUpdateToggle','VendorIsDiscontinued','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
                   'UpdateAssets','ECATOnContract','ECATPricingApproved','ECATProductNotes','GSAOnContract','GSAPricingApproved','GSAProductNotes',
-                  'HTMETOnContract','HTMEPricingApproved','HTMEProductNotes','INTRAMALLSTOnContract','INTRAMALLSPricingApproved','INTRAMALLSProductNotes',
+                  'HTMEOnContract','HTMEPricingApproved','HTMEProductNotes','INTRAMALLSOnContract','INTRAMALLSPricingApproved','INTRAMALLSProductNotes',
                   'VAOnContract','VAPricingApproved','VAProductNotes','FyProductNotes','ProductNotes',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
                   'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate','FyDenyINTRAMALLSContractDate', 'FyDenyINTRAMALLSContractDate']
@@ -426,9 +426,9 @@ class BigCommerceRTLObject(BasicProcessObject):
             intramalls_pending_del_flag = -1
             intramalls_product_notes = ''
             if intramalls_id != -1:
-                success, intramalls_contract = self.process_boolean(row, 'INTRAMALLSTOnContract')
+                success, intramalls_contract = self.process_boolean(row, 'INTRAMALLSOnContract')
                 if success:
-                    df_collect_product_base_data['INTRAMALLSTOnContract'] = [intramalls_contract]
+                    df_collect_product_base_data['INTRAMALLSOnContract'] = [intramalls_contract]
                 else:
                     intramalls_contract = -1
 
