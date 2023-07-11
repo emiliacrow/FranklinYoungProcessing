@@ -176,6 +176,8 @@ class HeaderTranslator():
                             'VAProposedGrossMarginPercent':['VAProposedGrossMarginPercent'],
                             'ECATApprovedGrossMarginPercent':['ECATApprovedGrossMarginPercent'],
                             'ECATProposedGrossMarginPercent':['ECATProposedGrossMarginPercent'],
+                            'INTRAMALLSApprovedGrossMarginPercent':['INTRAMALLSApprovedGrossMarginPercent'],
+                            'INTRAMALLSProposedGrossMarginPercent':['INTRAMALLSProposedGrossMarginPercent'],
 
                             'ECATApprovedListPrice':['ECATApprovedListPrice', 'ECATApprovedFYListPrice__value',
                                                      'ECATApprovedFYListPrice',
