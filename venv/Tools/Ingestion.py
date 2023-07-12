@@ -1211,23 +1211,20 @@ class IngestionObject:
 
     def intramalls_product_price_update(self, newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
                               newApprovedBasePrice,
-                              newApprovedSellPrice, newApprovedListPrice,
-                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newApprovedSellPrice, newApprovedListPrice,newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append(
                 (newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
                               newApprovedBasePrice,
-                              newApprovedSellPrice, newApprovedListPrice,
-                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newApprovedSellPrice, newApprovedListPrice,newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
             self.obDal.intramalls_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
                               newApprovedBasePrice,
-                              newApprovedSellPrice, newApprovedListPrice,
-                              newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+                              newApprovedSellPrice, newApprovedListPrice,newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
 
     def update_intramalls_product_price_cleanup(self):

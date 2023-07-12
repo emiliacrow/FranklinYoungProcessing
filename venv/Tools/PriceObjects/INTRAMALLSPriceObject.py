@@ -86,9 +86,6 @@ class INTRAMALLSPrice(BasicProcessObject):
         return_df_line_product = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
 
-            # this is where we should try to capture the string literal '10.00%'
-            # and make it what it should be
-            # I think there's some code for this in base price
             if 'INTRAMALLSDiscountPercent' in row:
                 approved_percent = float(row['INTRAMALLSDiscountPercent'])
 
@@ -106,7 +103,8 @@ class INTRAMALLSPrice(BasicProcessObject):
             else:
                 on_contract = -1
 
-            contract_number = 'GS-07F-0636W'
+            # todo: put the real value here
+            contract_number = 'IntraMalls Contract Number'
 
             if 'INTRAMALLSContractModificationNumber' in row:
                 contract_mod_number = row['INTRAMALLSContractModificationNumber']
@@ -137,8 +135,6 @@ class INTRAMALLSPrice(BasicProcessObject):
                     except TypeError:
                         self.obReporter.update_report('Alert', 'Check INTRAMALLSApprovedPriceDate')
 
-            contract_manu_number = row['ContractedManufacturerPartNumber']
-
             if 'INTRAMALLSApprovedBasePrice' in row:
                 approved_base_price = float(row['INTRAMALLSApprovedBasePrice'])
             else:
@@ -154,21 +150,6 @@ class INTRAMALLSPrice(BasicProcessObject):
             else:
                 approved_list_price = -1
 
-            if 'INTRAMALLSDiscountPercent' in row:
-                approved_percent = float(row['INTRAMALLSDiscountPercent'])
-            else:
-                approved_percent = -1
-
-            if 'MfcDiscountPercent' in row:
-                mfc_percent = float(row['MfcDiscountPercent'])
-            else:
-                mfc_percent = -1
-
-            if 'INTRAMALLS_Sin' in row:
-                sin = row['INTRAMALLS_Sin']
-            else:
-                sin = ''
-
             intramalls_product_notes = ''
             if 'INTRAMALLSProductNotes' in row:
                 intramalls_product_notes = str(row['INTRAMALLSProductNotes'])
@@ -181,19 +162,23 @@ class INTRAMALLSPrice(BasicProcessObject):
                 intramalls_product_price_id = int(row['db_INTRAMALLSProductPriceId'])
 
         if intramalls_product_price_id == -1:
-            self.obIngester.intramalls_product_price_insert(product_description_id, fy_product_number, on_contract,
-                                                     approved_base_price,
-                                                     approved_sell_price, approved_list_price,
-                                                     contract_number, contract_mod_number, is_pricing_approved,
-                                                     intramalls_approved_price_date, approved_percent, mfc_percent,
-                                                     sin, intramalls_product_notes)
-        else:
-            self.obIngester.intramalls_product_price_update(intramalls_product_price_id, product_description_id, fy_product_number,
+            self.obIngester.intramalls_product_price_insert(product_description_id, fy_product_number,
                                                      on_contract, approved_base_price,
                                                      approved_sell_price, approved_list_price,
                                                      contract_number, contract_mod_number, is_pricing_approved,
-                                                     intramalls_approved_price_date, approved_percent, mfc_percent,
-                                                     sin, intramalls_product_notes)
+                                                     intramalls_approved_price_date, intramalls_product_notes)
+        else:
+            newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
+            newApprovedBasePrice,
+            newApprovedSellPrice, newApprovedListPrice,
+            newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
+            newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes
+
+            self.obIngester.intramalls_product_price_update(intramalls_product_price_id, product_description_id, fy_product_number,
+                                                            on_contract, approved_base_price,
+                                                            approved_sell_price, approved_list_price,
+                                                            contract_mod_number, is_pricing_approved,
+                                                            intramalls_approved_price_date, intramalls_product_notes)
 
         return success, return_df_line_product
 
@@ -206,12 +191,13 @@ class UpdateINTRAMALLSPrice(INTRAMALLSPrice):
     req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
-    gen_fields = ['INTRAMALLSOnContract', 'INTRAMALLSApprovedListPrice', 'INTRAMALLSDiscountPercent', 'MfcDiscountPercent',
-                  'INTRAMALLSApprovedPriceDate', 'INTRAMALLSPricingApproved',
-                  'ContractedManufacturerPartNumber']
+    gen_fields = []
 
     def __init__(self, df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'INTRAMALLS Price Ingestion'
+
+
+
 
 ## end ##
