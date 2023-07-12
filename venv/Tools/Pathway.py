@@ -59,6 +59,8 @@ from Tools.PriceObjects.ECATPriceObject import ECATPrice
 from Tools.PriceObjects.ECATPriceObject import UpdateECATPrice
 from Tools.PriceObjects.HTMEPriceObject import HTMEPrice
 from Tools.PriceObjects.FEDMALLPriceObject import FEDMALLPrice
+from Tools.PriceObjects.INTRAMALLSPriceObject import INTRAMALLSPrice
+from Tools.PriceObjects.INTRAMALLSPriceObject import UpdateINTRAMALLSPrice
 
 
 class Pathways():
@@ -637,7 +639,7 @@ class Pathways():
         #    b_inter_files = True
 
         self.df_product = self.obFileFinder.read_xlsx()
-        all_steps = ['0-FyProduct Ingestion(1 step)','1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing']
+        all_steps = ['0-FyProduct Ingestion(1 step)','1-Minimum Product Ingestion(3 steps)','2-Full Product Ingestion(5 steps)','3-Fill Product Attributes(2 steps)','4-Minimum Product Price(3 steps)','5-Base Pricing(1 step)','GSA Pricing','VA Pricing',]
 
         # self.obYNBox.close()
 
@@ -729,6 +731,13 @@ class Pathways():
             self.obFileFinder.write_xlsx(self.df_product,'FEDMALLPrice')
             return self.success, self.message
 
+        if ingestion_action_selected == 'INTRAMALLS Pricing':
+            self.obNTRAMALLSPrice = NTRAMALLSPrice(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obNTRAMALLSPrice.begin_process()
+            self.df_product = self.obNTRAMALLSPrice.get_df()
+            self.obFileFinder.write_xlsx(self.df_product,'NTRAMALLSPrice')
+            return self.success, self.message
+
         return False, 'Process not built.'
 
 
@@ -761,7 +770,8 @@ class Pathways():
                      'Update VA Pricing',
                      'Update HTME Pricing',
                      'Update ECAT Pricing',
-                     'Update FEDMALL Pricing']
+                     'Update FEDMALL Pricing',
+                     'Update INTRAMALLS Pricing']
 
         self.obYNBox.close()
 
@@ -859,6 +869,13 @@ class Pathways():
             self.success, self.message = self.obFEDMALLPrice.begin_process()
             self.df_product = self.obFEDMALLPrice.get_df()
             self.obFileFinder.write_xlsx(self.df_product,'FEDMALLPrice')
+            return self.success, self.message
+
+        if update_action_selected == 'Update INTRAMALLS Pricing':
+            self.obINTRAMALLSPrice = INTRAMALLSPrice(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obINTRAMALLSPrice.begin_process()
+            self.df_product = self.obINTRAMALLSPrice.get_df()
+            self.obFileFinder.write_xlsx(self.df_product,'INTRAMALLSPrice')
             return self.success, self.message
 
         return False, 'Process not built.'

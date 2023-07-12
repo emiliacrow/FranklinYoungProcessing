@@ -89,8 +89,7 @@ class INTRAMALLSPrice(BasicProcessObject):
             else:
                 on_contract = -1
 
-            # todo: put the real value here
-            contract_number = 'IntraMalls Contract Number'
+            contract_number = 'IntraMalls7-2023'
 
             if 'INTRAMALLSContractModificationNumber' in row:
                 contract_mod_number = row['INTRAMALLSContractModificationNumber']
