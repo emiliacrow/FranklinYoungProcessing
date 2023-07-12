@@ -153,12 +153,6 @@ class INTRAMALLSPrice(BasicProcessObject):
                                                      contract_number, contract_mod_number, is_pricing_approved,
                                                      intramalls_approved_price_date, intramalls_product_notes)
         else:
-            newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
-            newApprovedBasePrice,
-            newApprovedSellPrice, newApprovedListPrice,
-            newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
-            newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes
-
             self.obIngester.intramalls_product_price_update(intramalls_product_price_id, product_description_id, fy_product_number,
                                                             on_contract, approved_base_price,
                                                             approved_sell_price, approved_list_price,

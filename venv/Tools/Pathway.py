@@ -732,10 +732,10 @@ class Pathways():
             return self.success, self.message
 
         if ingestion_action_selected == 'INTRAMALLS Pricing':
-            self.obNTRAMALLSPrice = NTRAMALLSPrice(self.df_product, self.user, self.password, is_testing)
-            self.success, self.message = self.obNTRAMALLSPrice.begin_process()
-            self.df_product = self.obNTRAMALLSPrice.get_df()
-            self.obFileFinder.write_xlsx(self.df_product,'NTRAMALLSPrice')
+            self.obINTRAMALLSPrice = INTRAMALLSPrice(self.df_product, self.user, self.password, is_testing)
+            self.success, self.message = self.obINTRAMALLSPrice.begin_process()
+            self.df_product = self.obINTRAMALLSPrice.get_df()
+            self.obFileFinder.write_xlsx(self.df_product,'INTRAMALLSPrice')
             return self.success, self.message
 
         return False, 'Process not built.'
