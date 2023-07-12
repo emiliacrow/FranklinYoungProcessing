@@ -72,24 +72,10 @@ class INTRAMALLSPrice(BasicProcessObject):
                 else:
                     df_collect_product_base_data[each_bool] = [-1]
 
-            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
-            if success == False:
-                self.obReporter.update_report('Fail', 'Failed in process contract')
-                return success, df_collect_product_base_data
-
         success, return_df_line_product = self.intramalls_product_price(df_collect_product_base_data)
 
         return success, return_df_line_product
 
-    def process_pricing(self, df_line_product):
-        success = True
-        return_df_line_product = df_line_product.copy()
-        for colName, row in df_line_product.iterrows():
-
-            if 'INTRAMALLSDiscountPercent' in row:
-                approved_percent = float(row['INTRAMALLSDiscountPercent'])
-
-        return success, return_df_line_product
 
     def intramalls_product_price(self, df_line_product):
         success = True
