@@ -1184,12 +1184,14 @@ class IngestionObject:
 
 
     def intramalls_product_price_insert(self, newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedBasePrice,
                               newApprovedSellPrice, newApprovedListPrice,
                               newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes):
         if (len(self.product_insert_collector) > self.load_limit):
             self.product_insert_collector.append(
                 (newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedBasePrice,
                               newApprovedSellPrice, newApprovedListPrice,
                               newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
@@ -1197,6 +1199,7 @@ class IngestionObject:
             self.product_insert_collector = []
         else:
             self.product_insert_collector.append((newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedBasePrice,
                               newApprovedSellPrice, newApprovedListPrice,
                               newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
@@ -1207,12 +1210,14 @@ class IngestionObject:
 
 
     def intramalls_product_price_update(self, newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedBasePrice,
                               newApprovedSellPrice, newApprovedListPrice,
                               newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append(
                 (newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedBasePrice,
                               newApprovedSellPrice, newApprovedListPrice,
                               newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
@@ -1220,6 +1225,7 @@ class IngestionObject:
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newINTRAMALLSProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
+                              newApprovedBasePrice,
                               newApprovedSellPrice, newApprovedListPrice,
                               newContractNumber, newContractModificatactionNumber, newINTRAMALLSPricingApproved,
                               newINTRAMALLSApprovedPriceDate, newINTRAMALLSProductNotes))
