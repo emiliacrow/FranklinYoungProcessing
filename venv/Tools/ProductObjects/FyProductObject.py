@@ -21,7 +21,7 @@ class FyProductUpdate(BasicProcessObject):
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost', 'PrimaryVendorListPrice','PrimaryFyCost',
                   'FyLandedCost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
-                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
+                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued',
                   'FyDenyGSAContract', 'FyDenyGSAContractDate','FyDenyVAContract', 'FyDenyVAContractDate',
                   'FyDenyECATContract', 'FyDenyECATContractDate','FyDenyHTMEContractDate', 'FyDenyHTMEContractDate', 'FyDenyINTRAMALLSContractDate', 'FyDenyINTRAMALLSContractDate',
                   'GSA_Sin','VA_Sin', 'GSADiscountPercent','VADiscountPercent','MfcDiscountPercent',
@@ -448,7 +448,7 @@ class FyProductUpdate(BasicProcessObject):
                     return False, df_collect_product_base_data
 
 
-            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle',
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','BCPriceUpdateToggle','BCDataUpdateToggle',
                               'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
@@ -1003,20 +1003,6 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_is_discontinued = 0
 
-        fy_is_visible = -1
-        success, fy_is_visible = self.process_boolean(row, 'FyIsVisible')
-        if success:
-            df_collect_product_base_data['FyIsVisible'] = [fy_is_visible]
-        else:
-            fy_is_visible = 1
-
-        fy_allow_purchases = -1
-        success, fy_allow_purchases = self.process_boolean(row, 'FyAllowPurchases')
-        if success:
-            df_collect_product_base_data['FyAllowPurchases'] = [fy_allow_purchases]
-        else:
-            fy_allow_purchases = 1
-
         success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
         if success:
             df_collect_product_base_data['BCPriceUpdateToggle'] = [price_toggle]
@@ -1473,7 +1459,7 @@ class FyProductUpdate(BasicProcessObject):
                                                                         b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                                         vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                         markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
-                                                                        fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
+                                                                        fy_list_price, fy_is_discontinued,
                                                                         price_toggle, data_toggle,
                                                                         deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                                         deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
@@ -1508,7 +1494,7 @@ class FyProductUpdate(BasicProcessObject):
                                                               b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                               vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                               markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
-                                                              fy_list_price, fy_is_discontinued, fy_is_visible, fy_allow_purchases,
+                                                              fy_list_price, fy_is_discontinued,
                                                               price_toggle, data_toggle,
                                                                   deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                                   deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
@@ -1786,8 +1772,6 @@ class FyProductUpdate(BasicProcessObject):
             fy_product_notes = str(row['FyProductNotes'])
 
         fy_is_discontinued = row['FyIsDiscontinued']
-        fy_is_visible = row['FyIsVisible']
-        fy_allow_purchases = row['FyAllowPurchases']
 
         success, price_toggle = self.process_boolean(row, 'BCPriceUpdateToggle')
         if success:
@@ -2038,7 +2022,7 @@ class FyProductUpdate(BasicProcessObject):
 
         if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
-                or fy_is_discontinued != -1 or fy_is_visible != -1 or fy_allow_purchases != -1 or price_toggle != -1 or data_toggle != -1 or date_catalog_received != -1):
+                or fy_is_discontinued != -1 or price_toggle != -1 or data_toggle != -1 or date_catalog_received != -1):
 
             self.obIngester.update_fy_product_description(fy_product_desc_id, fy_product_name, fy_product_description,
                                                           fy_coo_id, fy_manufacturer_part_number, fy_uoi_id, fy_uom_id, fy_uoi_qty, fy_lead_time, fy_is_hazardous,
@@ -2049,7 +2033,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
-                                                          fy_is_discontinued, fy_is_visible, fy_allow_purchases, price_toggle, data_toggle,
+                                                          fy_is_discontinued, price_toggle, data_toggle,
                                                           deny_gsa, deny_gsa_date, deny_va, deny_va_date,
                                                           deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                           date_catalog_received, catalog_provided_by)
@@ -2290,7 +2274,7 @@ class FyProductIngest(FyProductUpdate):
                   'FyShelfLifeMonths','FyControlledCode','FyIsLatexFree','FyIsGreen','FyColdChain',
                   'FyProductNotes', 'VendorListPrice','FyCost','FyUnitOfMeasure',
                   'FyLandedCost','FyLandedCostMarkupPercent_FySell','FyLandedCostMarkupPercent_FyList',
-                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued','FyAllowPurchases','FyIsVisible',
+                  'BCDataUpdateToggle', 'BCPriceUpdateToggle','FyIsDiscontinued',
                   'WebsiteOnly','ECATEligible','GSAEligible','HTMEEligible','INTRAMALLSEligible','VAEligible',
                   'VendorIsDiscontinued','VendorProductNotes']
     att_fields = []
@@ -2305,7 +2289,7 @@ class FyProductIngest(FyProductUpdate):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
-            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','FyIsVisible','FyAllowPurchases','BCPriceUpdateToggle','BCDataUpdateToggle']:
+            for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','BCPriceUpdateToggle','BCDataUpdateToggle']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
