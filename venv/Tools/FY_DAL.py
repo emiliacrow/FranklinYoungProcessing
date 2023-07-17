@@ -445,14 +445,14 @@ class DalObject:
 
     def ecat_product_price_insert(self,lst_ecat_product_price):
         proc_name = 'sequoia.ECATProductPrice_insert2'
-        proc_statement = 'CALL `sequoia`.`ECATProductPrice_insert2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`ECATProductPrice_insert3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=2)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
         runner.start()
 
     def ecat_product_price_update(self,lst_ecat_product_price):
         proc_name = 'sequoia.ECATProductPrice_update3'
-        proc_statement = 'CALL `sequoia`.`ECATProductPrice_update3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
+        proc_statement = 'CALL `sequoia`.`ECATProductPrice_update4`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=2)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
         runner.start()
@@ -565,7 +565,7 @@ class DalObject:
 
     def get_htme_price_lookup(self):
         proc_name = 'sequoia.get_HTMEPrice_lookup'
-        column_names = ['FyProductNumber', 'VendorPartNumber', 'HTMEOnContract', 'ECATApprovedListPrice', 'db_ContractedManufacturerPartNumber',
+        column_names = ['FyProductNumber', 'VendorPartNumber', 'HTMEOnContract', 'HTMEApprovedListPrice', 'db_ContractedManufacturerPartNumber',
                         'HTMEContractModificationNumber', 'HTMEApprovedPriceDate', 'HTMEPricingApproved']
         df_htme_price_lookup = self.get_lookup(proc_name, column_names)
         return df_htme_price_lookup

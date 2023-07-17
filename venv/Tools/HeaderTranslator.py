@@ -185,6 +185,7 @@ class HeaderTranslator():
                             'ECATDiscountPercent':['ECATApprovedPercent', 'ECATChannelDiscount', 'ECATDiscount',
                                                    'ECATDiscountPercent', 'ECAT Channel Discount',
                                                    'ECAT Discount', 'ecat_channel_discount', 'ECAT Approved Channel%'],
+                            'ECATApprovedLandedCost':['ECATApprovedLandedCost', 'ECATLandedCost', 'ECAT Landed Cost'],
                             'ECATApprovedBasePrice':['ECATApprovedBasePrice', 'ECATBasePrice', 'ECAT Base Price'],
                             'ECATApprovedSellPrice':['ECATApprovedSellPrice', 'ECATSellPrice', 'ECAT Sell Price'],
                             'ECATContractNumber':['ECATContractNumber'],

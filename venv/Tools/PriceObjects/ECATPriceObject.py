@@ -13,7 +13,7 @@ class ECATPrice(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
-    gen_fields = ['ContractedManufacturerPartNumber']
+    gen_fields = []
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
@@ -74,36 +74,11 @@ class ECATPrice(BasicProcessObject):
                 else:
                     df_collect_product_base_data[each_bool] = [-1]
 
-            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
                 self.obReporter.update_report('Fail','Failed in process contract')
                 return success, df_collect_product_base_data
 
         success, return_df_line_product = self.ecat_product_price(df_collect_product_base_data)
-
-        return success, return_df_line_product
-
-
-    def process_pricing(self, df_line_product):
-        success = True
-        return_df_line_product = df_line_product.copy()
-        for colName, row in df_line_product.iterrows():
-            if 'ContractedManufacturerPartNumber' in row:
-                contract_manu_number = str(row['ContractedManufacturerPartNumber'])
-
-                if 'db_ContractedManufacturerPartNumber' in row:
-                    if contract_manu_number == '':
-                        db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
-                        return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
-                        self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
-
-            elif 'db_ContractedManufacturerPartNumber' in row:
-                contract_manu_number = db_contract_manu_number
-                return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
-                self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
-            else:
-                return_df_line_product['ContractedManufacturerPartNumber'] = ''
-
 
         return success, return_df_line_product
 
@@ -149,7 +124,10 @@ class ECATPrice(BasicProcessObject):
                     except TypeError:
                         self.obReporter.update_report('Alert','Check ECATApprovedPriceDate')
 
-            contract_manu_number = row['ContractedManufacturerPartNumber']
+            if 'ECATApprovedLandedCost' in row:
+                approved_landed_cost = float(row['ECATApprovedLandedCost'])
+            else:
+                approved_landed_cost = -1
 
             if 'ECATApprovedSellPrice' in row:
                 approved_sell_price = float(row['ECATApprovedSellPrice'])
@@ -179,12 +157,12 @@ class ECATPrice(BasicProcessObject):
 
         if ecat_product_price_id == -1:
             self.obIngester.ecat_product_price_insert(product_description_id, fy_product_number, on_contract,
-                                               approved_sell_price, approved_list_price, contract_manu_number,
+                                               approved_landed_cost, approved_sell_price, approved_list_price,
                                                contract_number, contract_mod_number, is_pricing_approved,
                                                ecat_approved_price_date, max_markup, ecat_product_notes)
         else:
             self.obIngester.ecat_product_price_update(ecat_product_price_id, product_description_id, fy_product_number, on_contract,
-                                               approved_sell_price, approved_list_price, contract_manu_number,
+                                               approved_landed_cost, approved_sell_price, approved_list_price,
                                                contract_number, contract_mod_number, is_pricing_approved,
                                                ecat_approved_price_date, max_markup, ecat_product_notes)
 
@@ -195,15 +173,18 @@ class ECATPrice(BasicProcessObject):
         self.obIngester.insert_ecat_product_price_cleanup()
         self.obIngester.update_ecat_product_price_cleanup()
 
+
 class UpdateECATPrice(ECATPrice):
     req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
-    gen_fields = ['ContractedManufacturerPartNumber','ECATOnContract', 'ECATApprovedListPrice', 'ECATMaxMarkup', 'ECATContractModificationNumber',
+    gen_fields = ['ECATOnContract', 'ECATApprovedLandedCost','ECATApprovedListPrice', 'ECATMaxMarkup', 'ECATContractModificationNumber',
                   'ECATApprovedPriceDate','ECATPricingApproved']
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
         self.name = 'ECAT Price Update'
+
+
 
 ## end ##
