@@ -1137,20 +1137,20 @@ class IngestionObject:
             self.obDal.gsa_product_price_cap(self.product_collector)
 
     def gsa_product_price_insert(self, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice,
-                              newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                              newApprovedSellPrice, newApprovedListPrice,
                               newContractNumber, newContractModificatactionNumber, newGSAPricingApproved,
                               newGSAApprovedPriceDate, newApprovedPercent, newMFCPercent,
                               newGSA_SIN, newGSAProductNotes):
         if (len(self.product_insert_collector) > self.load_limit):
             self.product_insert_collector.append(
                 (newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice,
-                 newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber,
+                 newApprovedListPrice, newContractNumber, newContractModificatactionNumber,
                  newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newMFCPercent, newGSA_SIN, newGSAProductNotes))
             self.obDal.gsa_product_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
             self.product_insert_collector.append((newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice,
-                                           newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                                           newApprovedSellPrice, newApprovedListPrice,
                                            newContractNumber, newContractModificatactionNumber, newGSAPricingApproved,
                                                   newGSAApprovedPriceDate, newApprovedPercent, newMFCPercent, newGSA_SIN, newGSAProductNotes))
 
@@ -1160,20 +1160,20 @@ class IngestionObject:
 
 
     def gsa_product_price_update(self, newGSAProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice,
-                              newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                              newApprovedSellPrice, newApprovedListPrice,
                               newContractNumber, newContractModificatactionNumber, newGSAPricingApproved,
                               newGSAApprovedPriceDate, newApprovedPercent, newMFCPercent,
                               newGSA_SIN, newGSAProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append(
                 (newGSAProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice,
-                 newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber,
+                 newApprovedListPrice, newContractNumber, newContractModificatactionNumber,
                  newGSAPricingApproved, newGSAApprovedPriceDate, newApprovedPercent, newMFCPercent, newGSA_SIN, newGSAProductNotes))
             self.obDal.gsa_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
             self.product_update_collector.append((newGSAProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice,
-                                           newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                                           newApprovedSellPrice, newApprovedListPrice,
                                            newContractNumber, newContractModificatactionNumber, newGSAPricingApproved,
                                                   newGSAApprovedPriceDate, newApprovedPercent, newMFCPercent, newGSA_SIN, newGSAProductNotes))
 
@@ -1313,30 +1313,30 @@ class IngestionObject:
 
 
     def va_product_price_insert(self, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice,
-                                newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                                newApprovedSellPrice, newApprovedListPrice,
                                 newContractNumber, newContractModificatactionNumber, newVAPricingApproved,
                                 newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes):
         if (len(self.product_insert_collector) > self.load_limit):
-            self.product_insert_collector.append((newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes))
+            self.product_insert_collector.append((newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes))
             self.obDal.va_product_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
-            self.product_insert_collector.append((newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes))
+            self.product_insert_collector.append((newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes))
 
     def va_product_price_insert_cleanup(self):
         if self.product_insert_collector != []:
             self.obDal.va_product_price_insert(self.product_insert_collector)
 
     def va_product_price_update(self, newVAProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract,
-                                newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber,
+                                newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice,
                                 newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate,
                                 newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes):
         if (len(self.product_update_collector) > self.load_limit):
-            self.product_update_collector.append((newVAProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes))
+            self.product_update_collector.append((newVAProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes))
             self.obDal.va_product_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
-            self.product_update_collector.append((newVAProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractedManufacturerPartNumber, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes))
+            self.product_update_collector.append((newVAProductPriceId, newProductDescriptionId, newFyProductNumber, newOnContract, newApprovedBasePrice, newApprovedSellPrice, newApprovedListPrice, newContractNumber, newContractModificatactionNumber, newVAPricingApproved, newVAApprovedPriceDate, newApprovedPercent, newMFCPercent, newVA_SIN, newVAProductNotes))
 
     def va_product_price_update_cleanup(self):
         if self.product_update_collector != []:

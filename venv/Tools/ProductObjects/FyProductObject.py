@@ -2055,7 +2055,6 @@ class FyProductUpdate(BasicProcessObject):
     def gsa_product_price(self, row):
         product_description_id = row['ProductDescriptionId']
         fy_product_number = row['FyProductNumber']
-        contract_manu_number = ''
         contract_number = 'GS-07F-0636W'
 
         if 'GSAOnContract' in row:
@@ -2140,13 +2139,13 @@ class FyProductUpdate(BasicProcessObject):
                 or sin != '' or gsa_product_notes != ''):
             if gsa_product_price_id == -1:
                 self.obIngester.gsa_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
-                                                  approved_sell_price, approved_list_price, contract_manu_number,
+                                                  approved_sell_price, approved_list_price,
                                                   contract_number, contract_mod_number, is_pricing_approved,
                                                   gsa_approved_price_date, approved_percent, mfc_percent,
                                                   sin, gsa_product_notes)
             else:
                 self.obIngester.gsa_product_price_update(gsa_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
-                                                  approved_sell_price, approved_list_price, contract_manu_number,
+                                                  approved_sell_price, approved_list_price,
                                                   contract_number, contract_mod_number, is_pricing_approved,
                                                   gsa_approved_price_date, approved_percent, mfc_percent,
                                                   sin, gsa_product_notes)
@@ -2155,7 +2154,6 @@ class FyProductUpdate(BasicProcessObject):
     def va_product_price(self, row):
         product_description_id = row['ProductDescriptionId']
         fy_product_number = row['FyProductNumber']
-        contract_manu_number = ''
         contract_number = 'GS-07F-0636W'
 
         if 'VAOnContract' in row:
@@ -2239,13 +2237,13 @@ class FyProductUpdate(BasicProcessObject):
                 or sin != '' or va_product_notes != ''):
             if va_product_price_id == -1:
                 self.obIngester.va_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
-                                                  approved_sell_price, approved_list_price, contract_manu_number,
+                                                  approved_sell_price, approved_list_price,
                                                   contract_number, contract_mod_number, is_pricing_approved,
                                                   va_approved_price_date, approved_percent, mfc_percent,
                                                   sin, va_product_notes)
             else:
                 self.obIngester.va_product_price_update(va_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
-                                                  approved_sell_price, approved_list_price, contract_manu_number,
+                                                  approved_sell_price, approved_list_price,
                                                   contract_number, contract_mod_number, is_pricing_approved,
                                                   va_approved_price_date, approved_percent, mfc_percent,
                                                   sin, va_product_notes)

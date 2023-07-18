@@ -13,7 +13,7 @@ class VAPrice(BasicProcessObject):
     req_fields = ['FyProductNumber']
     sup_fields = []
     att_fields = []
-    gen_fields = ['ContractedManufacturerPartNumber']
+    gen_fields = []
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
@@ -75,35 +75,11 @@ class VAPrice(BasicProcessObject):
                 else:
                     df_collect_product_base_data[each_bool] = [-1]
 
-            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
             if success == False:
                 self.obReporter.update_report('Fail','Failed in process contract')
                 return success, df_collect_product_base_data
 
         success, return_df_line_product = self.va_product_price(df_collect_product_base_data)
-
-        return success, return_df_line_product
-
-
-    def process_pricing(self, df_line_product):
-        success = True
-        return_df_line_product = df_line_product.copy()
-        for colName, row in df_line_product.iterrows():
-            if 'ContractedManufacturerPartNumber' in row:
-                contract_manu_number = str(row['ContractedManufacturerPartNumber'])
-
-                if 'db_ContractedManufacturerPartNumber' in row:
-                    if contract_manu_number == '':
-                        db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
-                        return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
-                        self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
-
-            elif 'db_ContractedManufacturerPartNumber' in row:
-                db_contract_manu_number = str(row['db_ContractedManufacturerPartNumber'])
-                return_df_line_product['ContractedManufacturerPartNumber'] = db_contract_manu_number
-                self.obReporter.update_report('Alert','ContractedManufacturerPartNumber from DB')
-            else:
-                return_df_line_product['ContractedManufacturerPartNumber'] = ''
 
         return success, return_df_line_product
 
@@ -149,8 +125,6 @@ class VAPrice(BasicProcessObject):
                     except TypeError:
                         self.obReporter.update_report('Alert','Check VAApprovedPriceDate')
 
-            contract_manu_number = row['ContractedManufacturerPartNumber']
-
             if 'VAApprovedBasePrice' in row:
                 approved_base_price = float(row['VAApprovedBasePrice'])
             else:
@@ -195,14 +169,14 @@ class VAPrice(BasicProcessObject):
 
         if va_product_price_id == -1:
             self.obIngester.va_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
-                                             approved_sell_price, approved_list_price, contract_manu_number,
+                                             approved_sell_price, approved_list_price,
                                              contract_number, contract_mod_number, is_pricing_approved,
                                              va_approved_price_date, approved_percent,
                                              mfc_percent, sin, va_product_notes)
         else:
             # this may need to collect a reason why it's being put off contract
             self.obIngester.va_product_price_update(va_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
-                                             approved_sell_price, approved_list_price, contract_manu_number,
+                                             approved_sell_price, approved_list_price,
                                              contract_number, contract_mod_number, is_pricing_approved,
                                              va_approved_price_date, approved_percent,
                                              mfc_percent, sin, va_product_notes)
@@ -223,7 +197,7 @@ class UpdateVAPrice(VAPrice):
     sup_fields = []
     att_fields = []
     gen_fields = ['VAOnContract', 'VAApprovedListPrice', 'VADiscountPercent', 'MfcDiscountPercent',
-                  'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','ContractedManufacturerPartNumber','VAPricingApproved']
+                  'VAContractModificationNumber', 'VA_Sin','VAApprovedPriceDate','VAPricingApproved']
 
     def __init__(self,df_product, user, password, is_testing):
         super().__init__(df_product, user, password, is_testing)
