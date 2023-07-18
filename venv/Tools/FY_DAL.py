@@ -501,7 +501,7 @@ class DalObject:
 
     def get_gsa_price_lookup(self):
         proc_name = 'sequoia.get_GSAPrice_lookup'
-        column_names = ['FyProductNumber','VendorPartNumber','GSAOnContract','db_ContractedManufacturerPartNumber', 'GSAApprovedListPrice',
+        column_names = ['FyProductNumber','VendorPartNumber','GSAOnContract', 'GSAApprovedListPrice',
                          'GSAApprovedPercent', 'db_MfcDiscountPercent', 'GSAContractModificationNumber','GSAApprovedPriceDate','GSAPricingApproved']
         df_gsa_price_lookup = self.get_lookup(proc_name,column_names)
         return df_gsa_price_lookup
@@ -600,7 +600,7 @@ class DalObject:
 
     def get_va_price_lookup(self):
         proc_name = 'sequoia.get_VAPrice_lookup'
-        column_names = ['FyProductNumber','VendorPartNumber','VAOnContract','db_ContractedManufacturerPartNumber', 'VAApprovedListPrice',
+        column_names = ['FyProductNumber','VendorPartNumber','VAOnContract', 'VAApprovedListPrice',
                          'VAApprovedPercent', 'db_MfcDiscountPercent', 'VAContractModificationNumber','VAApprovedPriceDate','VAPricingApproved']
         df_base_price_lookup = self.get_lookup(proc_name,column_names)
         return df_base_price_lookup
