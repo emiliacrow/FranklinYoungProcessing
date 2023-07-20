@@ -1462,70 +1462,70 @@ class IngestionObject:
             self.obDal.set_update_asset(self.product_update_asset_collector)
 
 
-    def set_ecat_toggles(self,base_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes):
+    def set_ecat_toggles(self,base_id, fy_product_number, ecat_contract, ecat_approved, ecat_product_notes):
         if (len(self.product_ecat_toggle_collector) > self.load_limit):
-            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes))
+            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved, ecat_product_notes))
             self.obDal.set_ecat_toggles(self.product_ecat_toggle_collector)
             self.product_ecat_toggle_collector = []
 
         else:
-            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved, ecat_pending_del_flag, ecat_product_notes))
+            self.product_ecat_toggle_collector.append((base_id, fy_product_number, ecat_contract, ecat_approved, ecat_product_notes))
 
     def set_ecat_toggles_cleanup(self):
         if self.product_ecat_toggle_collector != []:
             self.obDal.set_ecat_toggles(self.product_ecat_toggle_collector)
 
 
-    def set_gsa_toggles(self,base_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes):
+    def set_gsa_toggles(self,base_id, fy_product_number, gsa_contract, gsa_approved, gsa_product_notes):
         if (len(self.product_gsa_toggle_collector) > self.load_limit):
-            self.product_gsa_toggle_collector.append((base_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes))
+            self.product_gsa_toggle_collector.append((base_id, fy_product_number, gsa_contract, gsa_approved, gsa_product_notes))
             self.obDal.set_gsa_toggles(self.product_gsa_toggle_collector)
             self.product_gsa_toggle_collector = []
 
         else:
-            self.product_gsa_toggle_collector.append((base_id, fy_product_number, gsa_contract, gsa_approved, gsa_pending_del_flag, gsa_product_notes))
+            self.product_gsa_toggle_collector.append((base_id, fy_product_number, gsa_contract, gsa_approved, gsa_product_notes))
 
     def set_gsa_toggles_cleanup(self):
         if self.product_gsa_toggle_collector != []:
             self.obDal.set_gsa_toggles(self.product_gsa_toggle_collector)
 
 
-    def set_htme_toggles(self,base_id, fy_product_number, htme_contract, htme_approved, htme_pending_del_flag, htme_product_notes):
+    def set_htme_toggles(self,base_id, fy_product_number, htme_contract, htme_approved, htme_product_notes):
         if (len(self.product_htme_toggle_collector) > self.load_limit):
-            self.product_htme_toggle_collector.append((base_id, fy_product_number, htme_contract, htme_approved, htme_pending_del_flag, htme_product_notes))
+            self.product_htme_toggle_collector.append((base_id, fy_product_number, htme_contract, htme_approved, htme_product_notes))
             self.obDal.set_htme_toggles(self.product_htme_toggle_collector)
             self.product_htme_toggle_collector = []
 
         else:
-            self.product_htme_toggle_collector.append((base_id, fy_product_number, htme_contract, htme_approved, htme_pending_del_flag, htme_product_notes))
+            self.product_htme_toggle_collector.append((base_id, fy_product_number, htme_contract, htme_approved, htme_product_notes))
 
     def set_htme_toggles_cleanup(self):
         if self.product_htme_toggle_collector != []:
             self.obDal.set_htme_toggles(self.product_htme_toggle_collector)
 
 
-    def set_intramalls_toggles(self,base_id, fy_product_number, intramalls_contract, intramalls_approved, intramalls_pending_del_flag, intramalls_product_notes):
+    def set_intramalls_toggles(self,base_id, fy_product_number, intramalls_contract, intramalls_approved, intramalls_product_notes):
         if (len(self.product_intramalls_toggle_collector) > self.load_limit):
-            self.product_intramalls_toggle_collector.append((base_id, fy_product_number, intramalls_contract, intramalls_approved, intramalls_pending_del_flag, intramalls_product_notes))
+            self.product_intramalls_toggle_collector.append((base_id, fy_product_number, intramalls_contract, intramalls_approved, intramalls_product_notes))
             self.obDal.set_intramalls_toggles(self.product_intramalls_toggle_collector)
             self.product_intramalls_toggle_collector = []
 
         else:
-            self.product_intramalls_toggle_collector.append((base_id, fy_product_number, intramalls_contract, intramalls_approved, intramalls_pending_del_flag, intramalls_product_notes))
+            self.product_intramalls_toggle_collector.append((base_id, fy_product_number, intramalls_contract, intramalls_approved, intramalls_product_notes))
 
     def set_intramalls_toggles_cleanup(self):
         if self.product_intramalls_toggle_collector != []:
             self.obDal.set_intramalls_toggles(self.product_intramalls_toggle_collector)
 
 
-    def set_va_toggles(self,base_id, fy_product_number, va_contract, va_approved, va_pending_del_flag, va_product_notes):
+    def set_va_toggles(self,base_id, fy_product_number, va_contract, va_approved, va_product_notes):
         if (len(self.product_va_toggle_collector) > self.load_limit):
-            self.product_va_toggle_collector.append((base_id, fy_product_number, va_contract, va_approved, va_pending_del_flag, va_product_notes))
+            self.product_va_toggle_collector.append((base_id, fy_product_number, va_contract, va_approved, va_product_notes))
             self.obDal.set_va_toggles(self.product_va_toggle_collector)
             self.product_va_toggle_collector = []
 
         else:
-            self.product_va_toggle_collector.append((base_id, fy_product_number, va_contract, va_approved, va_pending_del_flag, va_product_notes))
+            self.product_va_toggle_collector.append((base_id, fy_product_number, va_contract, va_approved, va_product_notes))
 
     def set_va_toggles_cleanup(self):
         if self.product_va_toggle_collector != []:
