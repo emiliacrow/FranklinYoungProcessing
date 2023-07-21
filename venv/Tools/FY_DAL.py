@@ -931,21 +931,21 @@ class DalObject:
         runner.start()
 
     def fy_product_description_insert(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_insert8'
+        proc_name = 'sequoia.ProductDescription_insert9'
         proc_statement = 'CALL `sequoia`.`ProductDescription_insert8`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit = 15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
 
     def fy_product_description_contract_insert(self, lst_contract_descriptions):
-        proc_name = 'sequoia.ProductDescription_contract_insert9'
+        proc_name = 'sequoia.ProductDescription_contract_insert10'
         proc_statement = 'CALL `sequoia`.`ProductDescription_insert9`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit = 15)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_contract_descriptions)
         runner.start()
 
     def set_fy_product_description(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_update8'
+        proc_name = 'sequoia.ProductDescription_update9'
         proc_statement = 'CALL `sequoia`.`ProductDescription_update8`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
@@ -1010,7 +1010,7 @@ class DalObject:
 
 
     def set_bc_toggles(self, lst_bc_toggles):
-        proc_name = 'sequoia.set_BC_toggles3'
+        proc_name = 'sequoia.set_BC_toggles4'
         proc_statement = 'CALL `sequoia`.`set_BC_toggles2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)

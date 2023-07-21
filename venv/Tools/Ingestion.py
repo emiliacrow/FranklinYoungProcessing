@@ -692,8 +692,6 @@ class IngestionObject:
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
-                                      deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                       date_catalog_received, catalog_provided_by):
 
         if (len(self.product_description_insert_collector) > self.load_limit):
@@ -707,8 +705,6 @@ class IngestionObject:
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
-                                      deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                       date_catalog_received, catalog_provided_by))
             self.obDal.fy_product_description_insert(self.product_description_insert_collector)
             self.product_description_insert_collector = []
@@ -723,8 +719,6 @@ class IngestionObject:
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
                                       fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
-                                      deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                       date_catalog_received, catalog_provided_by))
 
     def insert_fy_product_description_cleanup(self):
@@ -745,8 +739,6 @@ class IngestionObject:
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                     fy_list_price, fy_is_discontinued,
                                                                     price_toggle, data_toggle,
-                                                                    deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                     date_catalog_received, catalog_provided_by,
 
                                                                     gsa_on_contract, gsa_approved_base_price,
@@ -776,8 +768,6 @@ class IngestionObject:
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                     fy_list_price, fy_is_discontinued,
                                                                     price_toggle, data_toggle,
-                                                                    deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                     date_catalog_received, catalog_provided_by,
 
                                                                     gsa_on_contract, gsa_approved_base_price,
@@ -809,8 +799,6 @@ class IngestionObject:
                                                                     markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                     fy_list_price, fy_is_discontinued,
                                                                     price_toggle, data_toggle,
-                                                                    deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                    deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                     date_catalog_received, catalog_provided_by,
 
                                                                     gsa_on_contract, gsa_approved_base_price,
@@ -844,8 +832,6 @@ class IngestionObject:
                                       fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                       fy_list_price, is_discontinued,
                                       price_toggle, data_toggle,
-                                      deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                      deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                       date_catalog_received, catalog_provided_by):
         if (len(self.product_description_update_collector) > self.load_limit):
             self.product_description_update_collector.append((fy_product_desc_id, fy_product_name, fy_product_description, fy_coo_id, fy_manufacturer_part_number,fy_uoi_id, fy_uom_id, fy_uoi_qty,
@@ -858,8 +844,6 @@ class IngestionObject:
                                                               fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                               fy_list_price,is_discontinued,
                                                               price_toggle, data_toggle,
-                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                               date_catalog_received, catalog_provided_by))
             self.obDal.set_fy_product_description(self.product_description_update_collector)
             self.product_description_update_collector = []
@@ -874,8 +858,6 @@ class IngestionObject:
                                                               fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                               fy_list_price, is_discontinued,
                                                               price_toggle, data_toggle,
-                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                               date_catalog_received, catalog_provided_by))
 
 
@@ -1412,21 +1394,15 @@ class IngestionObject:
 
 
 
-    def set_bc_update_toggles(self, prod_desc_id, price_id, is_discontinued, fy_is_discontinued, price_toggle, data_toggle,
-                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date):
+    def set_bc_update_toggles(self, prod_desc_id, price_id, is_discontinued, fy_is_discontinued, price_toggle, data_toggle):
         if (len(self.product_bc_toggle_collector) > self.load_limit):
-            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, price_toggle, data_toggle,
-                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date))
+            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, price_toggle, data_toggle))
             self.product_bc_toggle_collector.sort(key=lambda x:x[0], reverse=True)
             self.obDal.set_bc_toggles(self.product_bc_toggle_collector)
             self.product_bc_toggle_collector = []
 
         else:
-            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, price_toggle, data_toggle,
-                                                              deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                              deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date))
+            self.product_bc_toggle_collector.append((prod_desc_id, price_id, is_discontinued, fy_is_discontinued, price_toggle, data_toggle))
 
     def set_bc_update_toggles_cleanup(self):
         if self.product_bc_toggle_collector != []:

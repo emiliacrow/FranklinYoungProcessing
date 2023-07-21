@@ -1155,157 +1155,6 @@ class FyProductUpdate(BasicProcessObject):
             va_eligible = -1
 
 
-        success, deny_ecat = self.process_boolean(row, 'FyDenyECATContract')
-        if success:
-            df_collect_product_base_data['FyDenyECATContract'] = [deny_ecat]
-        else:
-            deny_ecat = -1
-
-        deny_ecat_date = -1
-        if 'FyDenyECATContractDate' in row:
-            deny_ecat_date = row['FyDenyECATContractDate']
-            try:
-                deny_ecat_date = int(deny_ecat_date)
-                deny_ecat_date = xlrd.xldate_as_datetime(deny_ecat_date, 0)
-            except ValueError:
-                deny_ecat_date = str(row['FyDenyECATContractDate'])
-
-            if isinstance(deny_ecat_date, datetime.datetime) == False:
-                try:
-                    deny_ecat_date = datetime.datetime.strptime(deny_ecat_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_ecat_date = str(row['FyDenyECATContractDate'])
-                    self.obReporter.update_report('Alert', 'Check FyDenyECATContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert', 'Check FyDenyECATContractDate')
-
-            try:
-                deny_ecat_date = int(row['FyDenyECATContractDate'])
-                deny_ecat_date = (xlrd.xldate_as_datetime(deny_ecat_date, 0)).date()
-            except ValueError:
-                deny_ecat_date = str(row['FyDenyECATContractDate'])
-
-        success, deny_gsa = self.process_boolean(row, 'FyDenyGSAContract')
-        if success:
-            df_collect_product_base_data['FyDenyGSAContract'] = [deny_gsa]
-        else:
-            deny_gsa = -1
-
-        deny_gsa_date = -1
-        if 'FyDenyGSAContractDate' in row:
-            deny_gsa_date = row['FyDenyGSAContractDate']
-            try:
-                deny_gsa_date = int(deny_gsa_date)
-                deny_gsa_date = xlrd.xldate_as_datetime(deny_gsa_date, 0)
-            except ValueError:
-                deny_gsa_date = str(row['FyDenyGSAContractDate'])
-
-            if isinstance(deny_gsa_date, datetime.datetime) == False:
-                try:
-                    deny_gsa_date = datetime.datetime.strptime(deny_gsa_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_gsa_date = str(row['FyDenyGSAContractDate'])
-                    self.obReporter.update_report('Alert','Check FyDenyGSAContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert','Check FyDenyGSAContractDate')
-            
-            try:
-                deny_gsa_date = int(row['FyDenyGSAContractDate'])
-                deny_gsa_date = (xlrd.xldate_as_datetime(deny_gsa_date, 0)).date()
-            except ValueError:
-                deny_gsa_date = str(row['FyDenyGSAContractDate'])
-
-        success, deny_htme = self.process_boolean(row, 'FyDenyHTMEContract')
-        if success:
-            df_collect_product_base_data['FyDenyHTMEContract'] = [deny_htme]
-        else:
-            deny_htme = -1
-
-        deny_htme_date = -1
-        if 'FyDenyHTMEContractDate' in row:
-            deny_htme_date = row['FyDenyHTMEContractDate']
-            try:
-                deny_htme_date = int(deny_htme_date)
-                deny_htme_date = xlrd.xldate_as_datetime(deny_htme_date, 0)
-            except ValueError:
-                deny_htme_date = str(row['FyDenyHTMEContractDate'])
-
-            if isinstance(deny_htme_date, datetime.datetime) == False:
-                try:
-                    deny_htme_date = datetime.datetime.strptime(deny_htme_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_htme_date = str(row['FyDenyHTMEContractDate'])
-                    self.obReporter.update_report('Alert', 'Check FyDenyHTMEContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert', 'Check FyDenyHTMEContractDate')
-
-            try:
-                deny_htme_date = int(row['FyDenyHTMEContractDate'])
-                deny_htme_date = (xlrd.xldate_as_datetime(deny_htme_date, 0)).date()
-            except ValueError:
-                deny_htme_date = str(row['FyDenyHTMEContractDate'])
-
-        success, deny_intramalls = self.process_boolean(row, 'FyDenyINTRAMALLSContract')
-        if success:
-            df_collect_product_base_data['FyDenyINTRAMALLSContract'] = [deny_intramalls]
-        else:
-            deny_intramalls = -1
-
-        deny_intramalls_date = -1
-        if 'FyDenyINTRAMALLSContractDate' in row:
-            deny_intramalls_date = row['FyDenyINTRAMALLSContractDate']
-            try:
-                deny_intramalls_date = int(deny_intramalls_date)
-                deny_intramalls_date = xlrd.xldate_as_datetime(deny_intramalls_date, 0)
-            except ValueError:
-                deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
-
-            if isinstance(deny_intramalls_date, datetime.datetime) == False:
-                try:
-                    deny_intramalls_date = datetime.datetime.strptime(deny_intramalls_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
-                    self.obReporter.update_report('Alert', 'Check FyDenyINTRAMALLSContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert', 'Check FyDenyINTRAMALLSContractDate')
-
-            try:
-                deny_intramalls_date = int(row['FyDenyINTRAMALLSContractDate'])
-                deny_intramalls_date = (xlrd.xldate_as_datetime(deny_intramalls_date, 0)).date()
-            except ValueError:
-                deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
-
-        success, deny_va = self.process_boolean(row, 'FyDenyVAContract')
-        if success:
-            df_collect_product_base_data['FyDenyVAContract'] = [deny_va]
-        else:
-            deny_va = -1
-
-        deny_va_date = -1
-        if 'FyDenyVAContractDate' in row:
-            deny_va_date = row['FyDenyVAContractDate']
-            try:
-                deny_va_date = int(deny_va_date)
-                deny_va_date = xlrd.xldate_as_datetime(deny_va_date, 0)
-            except ValueError:
-                deny_va_date = str(row['FyDenyVAContractDate'])
-
-            if isinstance(deny_va_date, datetime.datetime) == False:
-                try:
-                    deny_va_date = datetime.datetime.strptime(deny_va_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_va_date = str(row['FyDenyVAContractDate'])
-                    self.obReporter.update_report('Alert','Check FyDenyVAContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert','Check FyDenyVAContractDate')
-            
-            try:
-                deny_va_date = int(row['FyDenyVAContractDate'])
-                deny_va_date = (xlrd.xldate_as_datetime(deny_va_date, 0)).date()
-            except ValueError:
-                deny_va_date = str(row['FyDenyVAContractDate'])
-
-
         if (fy_product_name != '' and fy_product_description != '' and fy_coo_id != -1 and fy_uoi_id != -1 and
                 fy_uom_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1 and manufacturer_part_number != '' and
                 manufacturer_id != -1 and vendor_part_number != '' and date_catalog_received != -1):
@@ -1461,8 +1310,6 @@ class FyProductUpdate(BasicProcessObject):
                                                                         markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                         fy_list_price, fy_is_discontinued,
                                                                         price_toggle, data_toggle,
-                                                                        deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                        deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                         date_catalog_received, catalog_provided_by,
 
                                                                         gsa_on_contract, gsa_approved_base_price,
@@ -1496,8 +1343,6 @@ class FyProductUpdate(BasicProcessObject):
                                                               markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                               fy_list_price, fy_is_discontinued,
                                                               price_toggle, data_toggle,
-                                                                  deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                                  deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                                   date_catalog_received, catalog_provided_by)
 
                 return True, df_collect_product_base_data
@@ -1869,157 +1714,6 @@ class FyProductUpdate(BasicProcessObject):
             va_eligible = -1
 
 
-        success, deny_ecat = self.process_boolean(row, 'FyDenyECATContract')
-        if success:
-            df_collect_product_base_data['FyDenyECATContract'] = [deny_ecat]
-        else:
-            deny_ecat = -1
-
-        deny_ecat_date = -1
-        if 'FyDenyECATContractDate' in row:
-            deny_ecat_date = row['FyDenyECATContractDate']
-            try:
-                deny_ecat_date = int(deny_ecat_date)
-                deny_ecat_date = xlrd.xldate_as_datetime(deny_ecat_date, 0)
-            except ValueError:
-                deny_ecat_date = str(row['FyDenyECATContractDate'])
-
-            if isinstance(deny_ecat_date, datetime.datetime) == False:
-                try:
-                    deny_ecat_date = datetime.datetime.strptime(deny_ecat_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_ecat_date = str(row['FyDenyECATContractDate'])
-                    self.obReporter.update_report('Alert','Check FyDenyECATContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert','Check FyDenyECATContractDate')
-
-            try:
-                deny_ecat_date = int(row['FyDenyECATContractDate'])
-                deny_ecat_date = (xlrd.xldate_as_datetime(deny_ecat_date, 0)).date()
-            except ValueError:
-                deny_ecat_date = str(row['FyDenyECATContractDate'])
-
-        success, deny_gsa = self.process_boolean(row, 'FyDenyGSAContract')
-        if success:
-            df_collect_product_base_data['FyDenyGSAContract'] = [deny_gsa]
-        else:
-            deny_gsa = -1
-
-        deny_gsa_date = -1
-        if 'FyDenyGSAContractDate' in row:
-            deny_gsa_date = row['FyDenyGSAContractDate']
-            try:
-                deny_gsa_date = int(deny_gsa_date)
-                deny_gsa_date = xlrd.xldate_as_datetime(deny_gsa_date, 0)
-            except ValueError:
-                deny_gsa_date = str(row['FyDenyGSAContractDate'])
-
-            if isinstance(deny_gsa_date, datetime.datetime) == False:
-                try:
-                    deny_gsa_date = datetime.datetime.strptime(deny_gsa_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_gsa_date = str(row['FyDenyGSAContractDate'])
-                    self.obReporter.update_report('Alert','Check FyDenyGSAContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert','Check FyDenyGSAContractDate')
-
-            try:
-                deny_gsa_date = int(row['FyDenyGSAContractDate'])
-                deny_gsa_date = (xlrd.xldate_as_datetime(deny_gsa_date, 0)).date()
-            except ValueError:
-                deny_gsa_date = str(row['FyDenyGSAContractDate'])
-
-        success, deny_htme = self.process_boolean(row, 'FyDenyHTMEContract')
-        if success:
-            df_collect_product_base_data['FyDenyHTMEContract'] = [deny_htme]
-        else:
-            deny_htme = -1
-
-        deny_htme_date = -1
-        if 'FyDenyHTMEContractDate' in row:
-            deny_htme_date = row['FyDenyHTMEContractDate']
-            try:
-                deny_htme_date = int(deny_htme_date)
-                deny_htme_date = xlrd.xldate_as_datetime(deny_htme_date, 0)
-            except ValueError:
-                deny_htme_date = str(row['FyDenyHTMEContractDate'])
-
-            if isinstance(deny_htme_date, datetime.datetime) == False:
-                try:
-                    deny_htme_date = datetime.datetime.strptime(deny_htme_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_htme_date = str(row['FyDenyHTMEContractDate'])
-                    self.obReporter.update_report('Alert','Check FyDenyHTMEContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert','Check FyDenyHTMEContractDate')
-
-            try:
-                deny_htme_date = int(row['FyDenyHTMEContractDate'])
-                deny_htme_date = (xlrd.xldate_as_datetime(deny_htme_date, 0)).date()
-            except ValueError:
-                deny_htme_date = str(row['FyDenyHTMEContractDate'])
-
-        success, deny_intramalls = self.process_boolean(row, 'FyDenyINTRAMALLSContract')
-        if success:
-            df_collect_product_base_data['FyDenyINTRAMALLSContract'] = [deny_intramalls]
-        else:
-            deny_intramalls = -1
-
-        deny_intramalls_date = -1
-        if 'FyDenyINTRAMALLSContractDate' in row:
-            deny_intramalls_date = row['FyDenyINTRAMALLSContractDate']
-            try:
-                deny_intramalls_date = int(deny_intramalls_date)
-                deny_intramalls_date = xlrd.xldate_as_datetime(deny_intramalls_date, 0)
-            except ValueError:
-                deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
-
-            if isinstance(deny_intramalls_date, datetime.datetime) == False:
-                try:
-                    deny_intramalls_date = datetime.datetime.strptime(deny_intramalls_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
-                    self.obReporter.update_report('Alert','Check FyDenyINTRAMALLSContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert','Check FyDenyINTRAMALLSContractDate')
-
-            try:
-                deny_intramalls_date = int(row['FyDenyINTRAMALLSContractDate'])
-                deny_intramalls_date = (xlrd.xldate_as_datetime(deny_intramalls_date, 0)).date()
-            except ValueError:
-                deny_intramalls_date = str(row['FyDenyINTRAMALLSContractDate'])
-
-        success, deny_va = self.process_boolean(row, 'FyDenyVAContract')
-        if success:
-            df_collect_product_base_data['FyDenyVAContract'] = [deny_va]
-        else:
-            deny_va = -1
-
-        deny_va_date = -1
-        if 'FyDenyVAContractDate' in row:
-            deny_va_date = row['FyDenyVAContractDate']
-            try:
-                deny_va_date = int(deny_va_date)
-                deny_va_date = xlrd.xldate_as_datetime(deny_va_date, 0)
-            except ValueError:
-                deny_va_date = str(row['FyDenyVAContractDate'])
-
-            if isinstance(deny_va_date, datetime.datetime) == False:
-                try:
-                    deny_va_date = datetime.datetime.strptime(deny_va_date, '%Y-%m-%d %H:%M:%S')
-                except ValueError:
-                    deny_va_date = str(row['FyDenyVAContractDate'])
-                    self.obReporter.update_report('Alert','Check FyDenyVAContractDate')
-                except TypeError:
-                    self.obReporter.update_report('Alert','Check FyDenyVAContractDate')
-
-            try:
-                deny_va_date = int(row['FyDenyVAContractDate'])
-                deny_va_date = (xlrd.xldate_as_datetime(deny_va_date, 0)).date()
-            except ValueError:
-                deny_va_date = str(row['FyDenyVAContractDate'])
-
-
         if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
                 or fy_is_discontinued != -1 or price_toggle != -1 or data_toggle != -1 or date_catalog_received != -1):
@@ -2034,8 +1728,6 @@ class FyProductUpdate(BasicProcessObject):
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
                                                           fy_is_discontinued, price_toggle, data_toggle,
-                                                          deny_gsa, deny_gsa_date, deny_va, deny_va_date,
-                                                          deny_ecat, deny_ecat_date, deny_htme, deny_htme_date, deny_intramalls, deny_intramalls_date,
                                                           date_catalog_received, catalog_provided_by)
 
 
