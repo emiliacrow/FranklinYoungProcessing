@@ -201,8 +201,8 @@ class BigCommerceRTLObject(BasicProcessObject):
                 fy_product_notes = fy_product_notes.replace('NULL', '')
 
             product_notes = ''
-            if 'ProductNotes' in row:
-                product_notes = row['ProductNotes']
+            if 'VendorProductNotes' in row:
+                product_notes = row['VendorProductNotes']
                 product_notes = product_notes.replace('NULL', '')
 
 
