@@ -691,7 +691,7 @@ class IngestionObject:
                                       vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
-                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, price_toggle, data_toggle,
                                       date_catalog_received, catalog_provided_by):
 
         if (len(self.product_description_insert_collector) > self.load_limit):
@@ -704,7 +704,7 @@ class IngestionObject:
                                       vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
-                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, price_toggle, data_toggle,
                                       date_catalog_received, catalog_provided_by))
             self.obDal.fy_product_description_insert(self.product_description_insert_collector)
             self.product_description_insert_collector = []
@@ -718,7 +718,7 @@ class IngestionObject:
                                       vendor_product_notes, vendor_is_discontinued, VendorProductName, VendorProductDescription, CountryOfOriginId,
                                       b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                       vendor_list_price, discount, fy_cost, estimated_freight, fy_landed_cost, markup_percent_fy_sell,
-                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, is_visible, allow_purchases, price_toggle, data_toggle,
+                                      fy_sell_price, markup_percent_fy_list, fy_list_price, is_discontinued, price_toggle, data_toggle,
                                       date_catalog_received, catalog_provided_by))
 
     def insert_fy_product_description_cleanup(self):
