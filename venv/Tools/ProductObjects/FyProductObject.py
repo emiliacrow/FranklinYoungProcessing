@@ -1049,6 +1049,10 @@ class FyProductUpdate(BasicProcessObject):
         if 'ManufacturerId' in row:
             manufacturer_id = int(row['ManufacturerId'])
 
+        default_image_id = -1
+        if 'DefaultImageId' in row:
+            default_image_id = int(row['DefaultImageId'])
+
         is_product_number_override = 0
         if 'IsProductNumberOverride' in row:
             is_product_number_override = int(row['IsProductNumberOverride'])
@@ -1310,7 +1314,7 @@ class FyProductUpdate(BasicProcessObject):
 
             if (mfc_percent != -1 or gsa_approved_percent != -1 or va_approved_percent != -1 or gsa_sin != '' or va_sin != ''):
                 self.obIngester.insert_fy_product_description_contract(fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
-                                                                        manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
+                                                                        manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
                                                                         fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
                                                                         vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
                                                                         secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
@@ -1343,7 +1347,7 @@ class FyProductUpdate(BasicProcessObject):
             else:
                 # this needs to proper ingest the info
                 self.obIngester.insert_fy_product_description(fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
-                                                              manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
+                                                              manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
                                                               fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
                                                               vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
                                                               secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,

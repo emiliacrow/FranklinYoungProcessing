@@ -682,7 +682,7 @@ class IngestionObject:
             self.obDal.fy_product_description_insert_short(self.product_description_insert_collector)
 
 
-    def insert_fy_product_description(self, fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override, manufacturer_id,
+    def insert_fy_product_description(self, fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override, manufacturer_id, default_image_id,
                                       fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
                                       product_tax_class, vendor_part_number,
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
@@ -695,7 +695,7 @@ class IngestionObject:
                                       date_catalog_received, catalog_provided_by):
 
         if (len(self.product_description_insert_collector) > self.load_limit):
-            self.product_description_insert_collector.append((fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override, manufacturer_id,
+            self.product_description_insert_collector.append((fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override, manufacturer_id, default_image_id,
                                       fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
                                       product_tax_class, vendor_part_number,
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
@@ -709,7 +709,7 @@ class IngestionObject:
             self.obDal.fy_product_description_insert(self.product_description_insert_collector)
             self.product_description_insert_collector = []
         else:
-            self.product_description_insert_collector.append((fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override, manufacturer_id,
+            self.product_description_insert_collector.append((fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override, manufacturer_id, default_image_id,
                                       fy_product_number, fy_product_name, fy_product_description, fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty,
                                       product_tax_class, vendor_part_number,
                                       fy_lead_time, fy_is_hazardous, primary_vendor_id, secondary_vendor_id,
@@ -727,7 +727,7 @@ class IngestionObject:
 
 
     def insert_fy_product_description_contract(self,fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
-                                                                    manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
+                                                                    manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
                                                                     fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
                                                                     vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
                                                                     secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
@@ -756,7 +756,7 @@ class IngestionObject:
                                                                     va_sin, va_product_notes):
         if (len(self.product_description_contract_insert_collector) > self.load_limit):
             self.product_description_contract_insert_collector.append((fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
-                                                                    manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
+                                                                    manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
                                                                     fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
                                                                     vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
                                                                     secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
@@ -787,7 +787,7 @@ class IngestionObject:
             self.product_description_contract_insert_collector = []
         else:
             self.product_description_contract_insert_collector.append((fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
-                                                                    manufacturer_id, fy_product_number, fy_product_name, fy_product_description,
+                                                                    manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
                                                                     fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
                                                                     vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,
                                                                     secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
