@@ -73,6 +73,7 @@ class HeaderTranslator():
                             'ECommerceDiscount':['ECommerceDiscount'],
                             'FySellGrossMargin':['FySellGrossMargin'],
                             'FySellGrossMarginPercent':['FySellGrossMarginPercent'],
+                            'DefaultImageId':['DefaultImageId'],
 
                             'ProductSortOrder':['ProductSortOrder','Product Sort Order','FyProductSortOrder','Fy Product Sort Order'],
 
