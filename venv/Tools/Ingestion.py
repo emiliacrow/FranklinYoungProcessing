@@ -980,13 +980,13 @@ class IngestionObject:
                           fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
                           newWebsiteOnly= -1, newVAProductPriceId=-1, newVAEligible = -1,
                           newGSAProductPriceId=-1, newGSAEligible = -1, newHTMEProductPriceId=-1, newHTMEEligible = -1,
-                          newECATProductPriceId=-1, newECATEligible = -1,  newFEDMALLProductPriceId=-1):
+                          newECATProductPriceId=-1, newECATEligible = -1,  newFEDMALLProductPriceId=-1, newINTRAMALLSProductPriceId=-1):
         if (len(self.product_insert_collector) > self.load_limit):
             self.product_insert_collector.append((vendor_list_price, fy_discount_percent, fy_cost,
                                                   estimated_freight, fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
                                                   newWebsiteOnly, newVAProductPriceId, newVAEligible,
                                                   newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
-                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId))
+                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId, newINTRAMALLSProductPriceId))
             self.obDal.base_price_insert(self.product_insert_collector)
             self.product_insert_collector = []
         else:
@@ -994,7 +994,7 @@ class IngestionObject:
                                                   estimated_freight, fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
                                                   newWebsiteOnly, newVAProductPriceId, newVAEligible,
                                                   newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
-                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId))
+                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId, newINTRAMALLSProductPriceId))
 
     def insert_base_price_cleanup(self):
         if self.product_insert_collector != []:
@@ -1004,13 +1004,13 @@ class IngestionObject:
                           fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
                           newWebsiteOnly= -1, newVAProductPriceId=-1, newVAEligible = -1,
                           newGSAProductPriceId=-1, newGSAEligible = -1, newHTMEProductPriceId=-1, newHTMEEligible = -1,
-                          newECATProductPriceId=-1, newECATEligible = -1,  newFEDMALLProductPriceId=-1):
+                          newECATProductPriceId=-1, newECATEligible = -1,  newFEDMALLProductPriceId=-1, newINTRAMALLSProductPriceId=-1):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append((base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
                                                   estimated_freight, fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
                                                   newWebsiteOnly, newVAProductPriceId, newVAEligible,
                                                   newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
-                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId))
+                                                  newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId, newINTRAMALLSProductPriceId))
             self.obDal.base_price_update(self.product_update_collector)
             self.product_update_collector = []
         else:
@@ -1018,7 +1018,7 @@ class IngestionObject:
                                                   estimated_freight, fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
                                                   newWebsiteOnly, newVAProductPriceId, newVAEligible,
                                                   newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
-                                                  newECATProductPriceId, newECATEligible, newFEDMALLProductPriceId))
+                                                  newECATProductPriceId, newECATEligible, newFEDMALLProductPriceId, newINTRAMALLSProductPriceId))
 
     def update_base_price_cleanup(self):
         if self.product_update_collector != []:
