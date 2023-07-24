@@ -679,25 +679,34 @@ class FyProductUpdate(BasicProcessObject):
         db_mul_success, db_markup_list = self.row_check(row, 'CurrentMarkUp_list')
         if db_mul_success:
             db_mul_success, db_markup_list = self.float_check(db_markup_list, 'CurrentMarkUp_list')
-            if db_markup_list <= 0:
-                db_mul_success = False
-                self.obReporter.update_report('Alert','DB Markup List negative')
-            elif db_markup_list <= 1:
-                db_mul_success = False
-                self.obReporter.update_report('Alert','DB Markup List too low')
+            if db_mul_success:
+                if db_markup_list <= 0:
+                    db_mul_success = False
+                    self.obReporter.update_report('Alert','DB Markup List negative')
+                elif db_markup_list <= 1:
+                    db_mul_success = False
+                    self.obReporter.update_report('Alert','DB Markup List too low')
+            else:
+                mus_success = False
+                self.obReporter.update_report('Fail','DB Markup List too low was not a number')
 
         # get the markups from the file
         mus_success, markup_sell = self.row_check(row, 'FyLandedCostMarkupPercent_FySell')
         if mus_success:
             mus_success, markup_sell = self.float_check(markup_sell, 'FyLandedCostMarkupPercent_FySell')
-            if markup_sell <= 0:
-                mus_success = False
-                self.obReporter.update_report('Alert','Markup Sell negative')
-            elif markup_sell <= 1:
-                mus_success = False
-                self.obReporter.update_report('Alert','Markup Sell too low')
+            if mus_success:
+                if markup_sell <= 0:
+                    mus_success = False
+                    self.obReporter.update_report('Alert','Markup Sell negative')
+                elif markup_sell <= 1:
+                    mus_success = False
+                    self.obReporter.update_report('Alert','Markup Sell too low')
+                else:
+                    df_collect_product_base_data['FyLandedCostMarkupPercent_FySell'] = [markup_sell]
             else:
-                df_collect_product_base_data['FyLandedCostMarkupPercent_FySell'] = [markup_sell]
+                mus_success = False
+                self.obReporter.update_report('Fail','Markup Sell was not a number')
+
 
         if not mus_success and db_mus_success:
             markup_sell = db_markup_sell
@@ -707,14 +716,17 @@ class FyProductUpdate(BasicProcessObject):
         mul_success, markup_list = self.row_check(row, 'FyLandedCostMarkupPercent_FyList')
         if mul_success:
             mul_success, markup_list = self.float_check(markup_list, 'FyLandedCostMarkupPercent_FyList')
-            if markup_list <= 0:
-                mul_success = False
-                self.obReporter.update_report('Alert','Markup List negative')
-            elif markup_list <= 1:
-                mul_success = False
-                self.obReporter.update_report('Alert','Markup List too low')
+            if mul_success:
+                if markup_list <= 0:
+                    mul_success = False
+                    self.obReporter.update_report('Alert','Markup List negative')
+                elif markup_list <= 1:
+                    mul_success = False
+                    self.obReporter.update_report('Alert','Markup List too low')
+                else:
+                    df_collect_product_base_data['FyLandedCostMarkupPercent_FyList'] = [markup_list]
             else:
-                df_collect_product_base_data['FyLandedCostMarkupPercent_FyList'] = [markup_list]
+                self.obReporter.update_report('Fail','Markup List was not a number')
 
         if not mul_success and db_mul_success:
             markup_list = db_markup_list

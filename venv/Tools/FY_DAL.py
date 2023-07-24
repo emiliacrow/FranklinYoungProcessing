@@ -203,8 +203,8 @@ class DalObject:
         return return_id
 
     def get_manufacturer_lookup(self):
-        proc_name = 'sequoia.get_Manufacturer_lookup'
-        column_names = ['ManufacturerId','ManufacturerName','SupplierName','FyManufacturerPrefix', 'BlockManufacturer']
+        proc_name = 'sequoia.get_Manufacturer_lookup2'
+        column_names = ['ManufacturerId','ManufacturerName','SupplierName','FyManufacturerPrefix', 'BlockManufacturer','DefaultImageId']
         df_manufacturer_lookup = self.get_lookup(proc_name,column_names)
         return df_manufacturer_lookup
 
@@ -933,14 +933,14 @@ class DalObject:
     def fy_product_description_insert(self, lst_descriptions):
         proc_name = 'sequoia.ProductDescription_insert9'
         proc_statement = 'CALL `sequoia`.`ProductDescription_insert8`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit = 15)
+        self.open_connection(runner_limit = 1)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
 
     def fy_product_description_contract_insert(self, lst_contract_descriptions):
         proc_name = 'sequoia.ProductDescription_contract_insert10'
         proc_statement = 'CALL `sequoia`.`ProductDescription_insert9`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
-        self.open_connection(runner_limit = 15)
+        self.open_connection(runner_limit = 1)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_contract_descriptions)
         runner.start()
 

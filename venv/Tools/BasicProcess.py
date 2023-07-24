@@ -150,6 +150,7 @@ class BasicProcessObject:
         lst_ids = []
         lst_names = []
         lst_is_blocked = []
+        lst_default_images = []
 
         for colName, row in df_attribute.iterrows():
             manufacturer_name = str(row['ManufacturerName']).upper()
@@ -158,9 +159,9 @@ class BasicProcessObject:
                 manufacturer_name = manufacturer_name.replace('  ',' ')
 
             b_is_blocked = 0
+            default_image_id = -1
 
             new_manufacturer_name = manufacturer_name
-            print('manufacturer name', new_manufacturer_name)
             if manufacturer_name == '':
                 new_manufacturer_id = -1
             elif manufacturer_name.lower() in self.df_manufacturer_translator['SupplierName'].values:
@@ -170,6 +171,8 @@ class BasicProcessObject:
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()), 'ManufacturerName'].values[0]
                 b_is_blocked = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()), 'BlockManufacturer'].values[0]
+                default_image_id = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.lower()), 'DefaultImageId'].values[0]
 
             elif manufacturer_name.upper() in self.df_manufacturer_translator['SupplierName'].values:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
@@ -178,26 +181,37 @@ class BasicProcessObject:
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.upper()),'ManufacturerName'].values[0]
                 b_is_blocked = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.upper()), 'BlockManufacturer'].values[0]
+                default_image_id = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['SupplierName'] == manufacturer_name.upper()), 'DefaultImageId'].values[0]
 
             elif manufacturer_name in self.df_manufacturer_translator['ManufacturerName'].values:
                 new_manufacturer_id = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name),'ManufacturerId'].values[0]
                 b_is_blocked = self.df_manufacturer_translator.loc[
                     (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name), 'BlockManufacturer'].values[0]
+                default_image_id = self.df_manufacturer_translator.loc[
+                    (self.df_manufacturer_translator['ManufacturerName'] == manufacturer_name), 'DefaultImageId'].values[0]
             else:
                 b_is_blocked = 1
                 new_manufacturer_id = -1
+                default_image_id = -1
                 #manufacturer_name_list = self.df_manufacturer_translator["ManufacturerName"].tolist()
                 #manufacturer_name_list = list(dict.fromkeys(manufacturer_name_list))
                 #new_manufacturer_id = self.obIngester.manual_ingest_manufacturer(atmp_sup=manufacturer_name.lower(), atmp_man=manufacturer_name, lst_manufacturer_names=manufacturer_name_list)
+            if b_is_blocked == 1:
+                print('manufacturer name', new_manufacturer_name)
+            else:
+                print('manufacturer name', new_manufacturer_name)
 
             lst_ids.append(new_manufacturer_id)
             lst_names.append(new_manufacturer_name)
             lst_is_blocked.append(b_is_blocked)
+            lst_default_images.append(default_image_id)
 
         df_attribute['ManufacturerId'] = lst_ids
         df_attribute['UpdateManufacturerName'] = lst_names
         df_attribute['BlockedManufacturer'] = lst_is_blocked
+        df_attribute['DefaultImageId'] = lst_default_images
 
         self.df_product = self.df_product.merge(df_attribute, how='left', on=['ManufacturerName'])
 
