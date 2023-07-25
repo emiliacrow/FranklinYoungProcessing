@@ -959,6 +959,58 @@ class BasicProcessObject:
         except ValueError:
             return False, float_name_val
 
+    def handle_percent_val(self, in_val):
+        out_val = ''
+        success = True
+        try:
+            out_val = float(in_val)
+        except TypeError:
+            success = False
+        except ValueError:
+            success = False
+
+        if success:
+            print('it is a float')
+            if out_val >= 0:
+                print('is pos')
+                return success, out_val
+            else:
+                print('{0} must be a positive number.'.format(out_val))
+                success = False
+                return success, out_val
+
+        print('it is a string')
+        if '%' in in_val:
+            print('it has a percent')
+            out_val = in_val.replace('%', '')
+            success = True
+        else:
+            print('it has no a percent')
+            success = False
+            return False, in_val
+
+        if success:
+            try:
+                out_val = float(out_val) / 100
+                print('it can be mathed')
+
+                if out_val >= 0:
+                    print('is pos')
+                    return success, out_val
+                else:
+                    print('{0} must be a positive number.'.format(out_val))
+                    success = False
+                    return success, out_val
+
+                return True, out_val
+            except TypeError:
+                print('it cannot be mathed')
+                return False, in_val
+            except ValueError:
+                print('it cannot be mathed')
+                return False, in_val
+
+        return success, out_val
 
     def run_process(self):
         self.obReporter = ReporterObject()
@@ -1393,7 +1445,35 @@ def test_normalize_units(units):
     return translated_uoi
 
 
+
 def test_frame():
+    perc = 0.02
+    print(handle_percent_val(perc))
+    perc = 20
+    print(handle_percent_val(perc))
+    perc = -20
+    print(handle_percent_val(perc))
+    perc = '0.02'
+    print(handle_percent_val(perc))
+    perc = '-0.02'
+    print(handle_percent_val(perc))
+    perc = '20.02'
+    print(handle_percent_val(perc))
+    perc = '2%'
+    print(handle_percent_val(perc))
+    perc = '2.00%'
+    print(handle_percent_val(perc))
+    perc = '-2.00%'
+    print(handle_percent_val(perc))
+
+
+    perc = '20% discount'
+    print(handle_percent_val(perc))
+
+    print("test")
+
+
+def test_frame_uoi():
     dct_uoi_map = {'BG':['BG', 'BAG', 'BAGS'], 'BO':['BO'], 'BT':['BT', 'BOTTLE', 'BOTTLES'],
                    'BX':['BX', 'BOX', 'BOXES'], 'CA':['CA', 'CS', 'CASE', 'CASES'], 'CT':['CT', 'CARTON', 'CARTONS'],
                    'DA':['DA'], 'DR':['DR', 'DRUM', 'DRUMS'], 'DZ':['DZ', 'DOZEN', 'DOZENS'],

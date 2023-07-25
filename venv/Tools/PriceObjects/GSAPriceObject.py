@@ -92,7 +92,8 @@ class GSAPrice(BasicProcessObject):
             # and make it what it should be
             # I think there's some code for this in base price
             if 'GSADiscountPercent' in row:
-                approved_percent = float(row['GSADiscountPercent'])
+                approved_percent = row['GSADiscountPercent']
+                success, approved_percent = self.handle_percent_val(approved_percent)
 
 
         return success, return_df_line_product

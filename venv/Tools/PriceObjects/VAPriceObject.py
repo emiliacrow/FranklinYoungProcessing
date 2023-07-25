@@ -142,9 +142,13 @@ class VAPrice(BasicProcessObject):
 
 
             if 'VADiscountPercent' in row:
-                approved_percent = float(row['VADiscountPercent'])
+                approved_percent = row['VADiscountPercent']
+                success, approved_percent = self.handle_percent_val(approved_percent)
+                if not success:
+                    return success, return_df_line_product
             else:
                 approved_percent = -1
+
 
             if 'MfcDiscountPercent' in row:
                 mfc_percent = row['MfcDiscountPercent']
