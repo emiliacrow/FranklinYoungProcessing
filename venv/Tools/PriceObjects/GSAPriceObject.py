@@ -74,27 +74,7 @@ class GSAPrice(BasicProcessObject):
                 else:
                     df_collect_product_base_data[each_bool] = [-1]
 
-            success, df_collect_product_base_data = self.process_pricing(df_collect_product_base_data)
-            if success == False:
-                self.obReporter.update_report('Fail','Failed in process contract')
-                return success, df_collect_product_base_data
-
         success, return_df_line_product = self.gsa_product_price(df_collect_product_base_data)
-
-        return success, return_df_line_product
-
-
-    def process_pricing(self, df_line_product):
-        success = True
-        return_df_line_product = df_line_product.copy()
-        for colName, row in df_line_product.iterrows():
-            # this is where we should try to capture the string literal '10.00%'
-            # and make it what it should be
-            # I think there's some code for this in base price
-            if 'GSADiscountPercent' in row:
-                approved_percent = row['GSADiscountPercent']
-                success, approved_percent = self.handle_percent_val(approved_percent)
-
 
         return success, return_df_line_product
 
@@ -159,11 +139,17 @@ class GSAPrice(BasicProcessObject):
 
             if 'GSADiscountPercent' in row:
                 approved_percent = float(row['GSADiscountPercent'])
+                success, approved_percent = self.handle_percent_val(approved_percent)
+                if not success:
+                    return success, return_df_line_product
             else:
                 approved_percent = -1
 
             if 'MfcDiscountPercent' in row:
                 mfc_percent = float(row['MfcDiscountPercent'])
+                success, mfc_percent = self.handle_percent_val(mfc_percent)
+                if not success:
+                    return success, return_df_line_product
             else:
                 mfc_percent = -1
 
