@@ -130,10 +130,7 @@ class BasicProcessObject:
                 new_vendor_id = self.df_vendor_translator.loc[
                     (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
             else:
-                vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
-                vendor_name_list = list(dict.fromkeys(vendor_name_list))
-
-                new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
+                new_vendor_id = -1
 
             lst_ids.append(new_vendor_id)
 
@@ -518,11 +515,13 @@ class BasicProcessObject:
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_14'), 'Filter'] = 'manufacturer_part_number_change'
 
+        self.df_product.loc[(self.df_product['VendorId'] == -1), 'Filter'] = 'check_vendor'
         self.df_product.loc[(self.df_product['Filter'] == 'check_vendor'), 'Alert'] = 'Verify your VendorName'
 
         self.df_product.loc[(self.df_product['Filter'] == 'vendor_part_number_change'), 'Alert'] = 'Vendor Part Number Change'
         self.df_product.loc[(self.df_product['Filter'] == 'manufacturer_part_number_change'), 'Alert'] = 'Manufacturer Part Number Change'
         self.df_product.loc[(self.df_product['Filter'] == 'check_vendor_and_manu_part'), 'Alert'] = 'Manufacturer Part Number Change, check Vendor'
+
 
 
         self.df_product.loc[(self.df_product['Filter'] == 'Possible_Duplicate'), 'TakePriority'] = 'A'

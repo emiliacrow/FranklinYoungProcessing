@@ -138,7 +138,7 @@ class GSAPrice(BasicProcessObject):
 
 
             if 'GSADiscountPercent' in row:
-                approved_percent = float(row['GSADiscountPercent'])
+                approved_percent = row['GSADiscountPercent']
                 success, approved_percent = self.handle_percent_val(approved_percent)
                 if not success:
                     return success, return_df_line_product
@@ -146,7 +146,7 @@ class GSAPrice(BasicProcessObject):
                 approved_percent = -1
 
             if 'MfcDiscountPercent' in row:
-                mfc_percent = float(row['MfcDiscountPercent'])
+                mfc_percent = row['MfcDiscountPercent']
                 success, mfc_percent = self.handle_percent_val(mfc_percent)
                 if not success:
                     return success, return_df_line_product

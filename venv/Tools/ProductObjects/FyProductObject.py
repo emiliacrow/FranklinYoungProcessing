@@ -76,6 +76,7 @@ class FyProductUpdate(BasicProcessObject):
 
         if 'PrimaryVendorId' in self.df_product.columns:
             self.df_fy_vendor_price_lookup = self.obDal.get_fy_product_vendor_prices()
+            self.df_fy_vendor_price_lookup['PrimaryVendorId'] = self.df_fy_vendor_price_lookup['PrimaryVendorId'].astype(int)
             self.df_product = self.df_product.merge(self.df_fy_vendor_price_lookup,how='left',on=['FyProductNumber','PrimaryVendorId'])
 
         # add secondary?
@@ -196,6 +197,7 @@ class FyProductUpdate(BasicProcessObject):
             lst_ids = []
             for colName, row in df_attribute.iterrows():
                 vendor_name = row['VendorName'].upper()
+
                 if vendor_name == '':
                     new_vendor_id = -1
                 elif vendor_name in self.df_vendor_translator['VendorCode'].values:
@@ -205,10 +207,7 @@ class FyProductUpdate(BasicProcessObject):
                     new_vendor_id = self.df_vendor_translator.loc[
                         (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
                 else:
-                    vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
-                    vendor_name_list = list(dict.fromkeys(vendor_name_list))
-
-                    new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
+                    new_vendor_id = -1
 
                 lst_ids.append(new_vendor_id)
 
@@ -224,7 +223,7 @@ class FyProductUpdate(BasicProcessObject):
             for colName, row in df_attribute.iterrows():
                 vendor_name = row['PrimaryVendorName'].upper()
                 if vendor_name == '':
-                    new_vendor_id = -1
+                    new_vendor_id = 0
                 elif vendor_name in self.df_vendor_translator['VendorCode'].values:
                     new_vendor_id = self.df_vendor_translator.loc[
                         (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
@@ -232,10 +231,7 @@ class FyProductUpdate(BasicProcessObject):
                     new_vendor_id = self.df_vendor_translator.loc[
                         (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
                 else:
-                    vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
-                    vendor_name_list = list(dict.fromkeys(vendor_name_list))
-
-                    new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
+                    new_vendor_id = 0
 
                 lst_ids.append(new_vendor_id)
 
@@ -252,7 +248,7 @@ class FyProductUpdate(BasicProcessObject):
                 vendor_name = row['SecondaryVendorName'].upper()
 
                 if vendor_name == '':
-                    new_vendor_id = -1
+                    new_vendor_id = 0
                 elif vendor_name in self.df_vendor_translator['VendorCode'].values:
                     new_vendor_id = self.df_vendor_translator.loc[
                         (self.df_vendor_translator['VendorCode'] == vendor_name),'VendorId'].values[0]
@@ -260,10 +256,7 @@ class FyProductUpdate(BasicProcessObject):
                     new_vendor_id = self.df_vendor_translator.loc[
                         (self.df_vendor_translator['VendorName'] == vendor_name),'VendorId'].values[0]
                 else:
-                    vendor_name_list = self.df_vendor_translator["VendorName"].tolist()
-                    vendor_name_list = list(dict.fromkeys(vendor_name_list))
-
-                    new_vendor_id = self.obIngester.manual_ingest_vendor(atmp_name=vendor_name,atmp_code=vendor_name,lst_vendor_names=vendor_name_list)
+                    new_vendor_id = 0
 
                 lst_ids.append(new_vendor_id)
 
@@ -455,6 +448,24 @@ class FyProductUpdate(BasicProcessObject):
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
                     df_collect_product_base_data[each_bool] = [-1]
+
+            if ('VendorId' in row):
+                vendor_id = row['VendorId']
+                if vendor_id == -1:
+                    self.obReporter.update_report('Fail','Bad vendor name.')
+                    return False, df_collect_product_base_data
+
+            if ('PrimaryVendorId' in row):
+                primary_vendor_id = row['PrimaryVendorId']
+                if primary_vendor_id == -1:
+                    self.obReporter.update_report('Fail','Bad primary vendor name.')
+                    return False, df_collect_product_base_data
+
+            if ('SecondaryVendorId' in row):
+                secondary_vendor_id = row['SecondaryVendorId']
+                if secondary_vendor_id == -1:
+                    self.obReporter.update_report('Fail','Bad secondary vendor name.')
+                    return False, df_collect_product_base_data
 
 
             # check if it is update or not
@@ -1094,7 +1105,8 @@ class FyProductUpdate(BasicProcessObject):
 
         if 'Discount' in row:
             fy_discount_percent = float(row['Discount'])
-            if fy_discount_percent == float(-1):
+            success, fy_discount_percent = self.handle_percent_val(fy_discount_percent)
+            if not success:
                 fy_discount_percent = 0
         else:
             fy_discount_percent = 0
@@ -1228,12 +1240,18 @@ class FyProductUpdate(BasicProcessObject):
 
 
             if 'GSADiscountPercent' in row:
-                gsa_approved_percent = float(row['GSADiscountPercent'])
+                gsa_approved_percent = row['GSADiscountPercent']
+                success, gsa_approved_percent = self.handle_percent_val(gsa_approved_percent)
+                if not success:
+                    return success, return_df_line_product
             else:
                 gsa_approved_percent = -1
 
             if 'MfcDiscountPercent' in row:
-                mfc_percent = float(row['MfcDiscountPercent'])
+                mfc_percent = row['MfcDiscountPercent']
+                success, mfc_percent = self.handle_percent_val(mfc_percent)
+                if not success:
+                    return success, return_df_line_product
             else:
                 mfc_percent = -1
 
@@ -1299,6 +1317,9 @@ class FyProductUpdate(BasicProcessObject):
 
             if 'VADiscountPercent' in row:
                 va_approved_percent = float(row['VADiscountPercent'])
+                success, va_approved_percent = self.handle_percent_val(va_approved_percent)
+                if not success:
+                    return success, return_df_line_product
             else:
                 va_approved_percent = -1
 
@@ -1539,6 +1560,7 @@ class FyProductUpdate(BasicProcessObject):
             secondary_vendor_id = -1
 
         fy_landed_cost = row['FyLandedCost']
+
         try:
             markup_percent_fy_sell = row['FyLandedCostMarkupPercent_FySell']
         except KeyError:

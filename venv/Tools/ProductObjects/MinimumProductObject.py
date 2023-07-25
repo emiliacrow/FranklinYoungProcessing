@@ -338,6 +338,12 @@ class MinimumProduct(BasicProcessObject):
             if ('CategoryId' not in row):
                 self.obReporter.update_report('Alert','No category assigned.')
 
+            if ('VendorId' in row):
+                vendor_id = row['VendorId']
+                if vendor_id == -1:
+                    self.obReporter.update_report('Fail','Bad vendor name.')
+                    return False, df_collect_product_base_data
+
             if ('ShippingInstructionsId' not in row):
                 success, df_collect_product_base_data = self.process_shipping(df_collect_product_base_data, row)
                 if success == False:
