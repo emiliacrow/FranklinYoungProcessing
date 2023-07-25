@@ -152,6 +152,9 @@ class VAPrice(BasicProcessObject):
 
             if 'MfcDiscountPercent' in row:
                 mfc_percent = row['MfcDiscountPercent']
+                success, mfc_percent = self.handle_percent_val(mfc_percent)
+                if not success:
+                    return success, return_df_line_product
             else:
                 mfc_percent = -1
 
