@@ -913,8 +913,8 @@ class DalObject:
 
 
     def get_toggles_full(self):
-        proc_name = 'sequoia.get_Toggles5'
-        column_names = ['FyProductNumber', 'ProductDescriptionId', 'db_FyIsDiscontinued', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle',
+        proc_name = 'sequoia.get_Toggles6'
+        column_names = ['FyProductNumber', 'ProductDescriptionId', 'db_FyIsDiscontinued', 'db_BCDataUpdateToggle', 'db_BCPriceUpdateToggle', 'db_AVInclusionToggle',
                         'db_ECATOnContract', 'db_ECATModNumber', 'db_ECATPricingApproved',
                         'db_GSAOnContract', 'db_GSAModNumber', 'db_GSAPricingApproved',
                         'db_HTMEOnContract', 'db_HTMEModNumber', 'db_HTMEPricingApproved',
@@ -931,21 +931,21 @@ class DalObject:
         runner.start()
 
     def fy_product_description_insert(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_insert10'
+        proc_name = 'sequoia.ProductDescription_insert11'
         proc_statement = 'CALL `sequoia`.`ProductDescription_insert8`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit = 1)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
         runner.start()
 
     def fy_product_description_contract_insert(self, lst_contract_descriptions):
-        proc_name = 'sequoia.ProductDescription_contract_insert11'
+        proc_name = 'sequoia.ProductDescription_contract_insert12'
         proc_statement = 'CALL `sequoia`.`ProductDescription_insert9`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit = 1)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_contract_descriptions)
         runner.start()
 
     def set_fy_product_description(self, lst_descriptions):
-        proc_name = 'sequoia.ProductDescription_update9'
+        proc_name = 'sequoia.ProductDescription_update10'
         proc_statement = 'CALL `sequoia`.`ProductDescription_update8`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_descriptions)
@@ -1010,7 +1010,7 @@ class DalObject:
 
 
     def set_bc_toggles(self, lst_bc_toggles):
-        proc_name = 'sequoia.set_BC_toggles4'
+        proc_name = 'sequoia.set_BC_toggles5'
         proc_statement = 'CALL `sequoia`.`set_BC_toggles2`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection()
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_bc_toggles)

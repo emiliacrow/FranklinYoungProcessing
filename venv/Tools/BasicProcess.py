@@ -514,8 +514,11 @@ class BasicProcessObject:
         self.df_product.loc[(self.df_product['Filter'] == 'case_9'), 'Filter'] = 'Ready'
 
         self.df_product.loc[(self.df_product['Filter'] == 'case_14'), 'Filter'] = 'manufacturer_part_number_change'
+        try:
+            self.df_product.loc[(self.df_product['VendorId'] == -1), 'Filter'] = 'check_vendor'
+        except KeyError:
+            pass
 
-        self.df_product.loc[(self.df_product['VendorId'] == -1), 'Filter'] = 'check_vendor'
         self.df_product.loc[(self.df_product['Filter'] == 'check_vendor'), 'Alert'] = 'Verify your VendorName'
 
         self.df_product.loc[(self.df_product['Filter'] == 'vendor_part_number_change'), 'Alert'] = 'Vendor Part Number Change'

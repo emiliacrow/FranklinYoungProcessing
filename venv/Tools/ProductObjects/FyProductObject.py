@@ -77,6 +77,7 @@ class FyProductUpdate(BasicProcessObject):
         if 'PrimaryVendorId' in self.df_product.columns:
             self.df_fy_vendor_price_lookup = self.obDal.get_fy_product_vendor_prices()
             self.df_fy_vendor_price_lookup['PrimaryVendorId'] = self.df_fy_vendor_price_lookup['PrimaryVendorId'].astype(int)
+            self.df_product['PrimaryVendorId'] = self.df_product['PrimaryVendorId'].astype(int)
             self.df_product = self.df_product.merge(self.df_fy_vendor_price_lookup,how='left',on=['FyProductNumber','PrimaryVendorId'])
 
         # add secondary?
@@ -1038,6 +1039,12 @@ class FyProductUpdate(BasicProcessObject):
         else:
             data_toggle = 1
 
+        success, av_toggle = self.process_boolean(row, 'AVInclusionToggle')
+        if success:
+            df_collect_product_base_data['AVInclusionToggle'] = [av_toggle]
+        else:
+            av_toggle = 1
+
         if ' ' in fy_product_number:
             fy_catalog_number = fy_product_number.partition(' ')[0]
         else:
@@ -1346,7 +1353,7 @@ class FyProductUpdate(BasicProcessObject):
                                                                         vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                         markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                                         fy_list_price, fy_is_discontinued,
-                                                                        price_toggle, data_toggle,
+                                                                        price_toggle, data_toggle, av_toggle,
                                                                         date_catalog_received, catalog_provided_by,
 
                                                                         gsa_on_contract, gsa_approved_base_price,
@@ -1379,7 +1386,7 @@ class FyProductUpdate(BasicProcessObject):
                                                               vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                               markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
                                                               fy_list_price, fy_is_discontinued,
-                                                              price_toggle, data_toggle,
+                                                              price_toggle, data_toggle, av_toggle,
                                                                   date_catalog_received, catalog_provided_by)
 
                 return True, df_collect_product_base_data
@@ -1668,6 +1675,12 @@ class FyProductUpdate(BasicProcessObject):
         else:
             data_toggle = 1
 
+        success, av_toggle = self.process_boolean(row, 'AVInclusionToggle')
+        if success:
+            df_collect_product_base_data['AVInclusionToggle'] = [av_toggle]
+        else:
+            av_toggle = - 1
+
         date_catalog_received = -1
         if 'DateCatalogReceived' in row:
             date_catalog_received = row['DateCatalogReceived']
@@ -1765,7 +1778,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
-                                                          fy_is_discontinued, price_toggle, data_toggle,
+                                                          fy_is_discontinued, price_toggle, data_toggle, av_toggle,
                                                           date_catalog_received, catalog_provided_by)
 
 

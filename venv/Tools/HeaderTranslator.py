@@ -152,6 +152,7 @@ class HeaderTranslator():
 
                             'BCPriceUpdateToggle':['BCPriceUpdateToggle','BCPriceToggle','BC Price Update Toggle','BC Price Toggle'],
                             'BCDataUpdateToggle':['BCDataUpdateToggle','BCDataToggle','BC Data Update Toggle','BC Data Toggle'],
+                            'AVInclusionToggle':['AVInclusionToggle','AVToggle','AV Inclusion Toggle','AV Toggle'],
 
 
                             # contract values
