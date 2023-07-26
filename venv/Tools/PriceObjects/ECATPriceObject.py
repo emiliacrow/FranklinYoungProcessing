@@ -74,10 +74,6 @@ class ECATPrice(BasicProcessObject):
                 else:
                     df_collect_product_base_data[each_bool] = [-1]
 
-            if success == False:
-                self.obReporter.update_report('Fail','Failed in process contract')
-                return success, df_collect_product_base_data
-
         success, return_df_line_product = self.ecat_product_price(df_collect_product_base_data)
 
         return success, return_df_line_product

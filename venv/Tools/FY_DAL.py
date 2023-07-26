@@ -444,14 +444,14 @@ class DalObject:
         runner.start()
 
     def ecat_product_price_insert(self,lst_ecat_product_price):
-        proc_name = 'sequoia.ECATProductPrice_insert2'
+        proc_name = 'sequoia.ECATProductPrice_insert3'
         proc_statement = 'CALL `sequoia`.`ECATProductPrice_insert3`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=2)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
         runner.start()
 
     def ecat_product_price_update(self,lst_ecat_product_price):
-        proc_name = 'sequoia.ECATProductPrice_update3'
+        proc_name = 'sequoia.ECATProductPrice_update4'
         proc_statement = 'CALL `sequoia`.`ECATProductPrice_update4`(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'
         self.open_connection(runner_limit=2)
         runner = DataRunner(self.connection, proc_name, proc_statement, lst_ecat_product_price)
