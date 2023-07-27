@@ -666,7 +666,7 @@ class FyProductUpdate(BasicProcessObject):
                 self.obReporter.update_report('Alert', 'EstimatedFreight value was set to 0')
 
         if 'FyLandedCost' in row:
-            fy_landed_cost = round(row['FyLandedCost'], 2)
+            fy_landed_cost = round(float(row['FyLandedCost']), 2)
             df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
 
         elif fy_cost_success and freight_success:
