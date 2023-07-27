@@ -213,17 +213,6 @@ class Pathways():
         return True, self.message
 
 
-
-
-
-
-
-
-
-
-
-
-
     def perform_file_split(self, split_on, b_sub_dir = False):
         self.full_file_count = 0
 

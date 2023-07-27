@@ -70,7 +70,7 @@ class DalObject:
 
     def set_testing(self, is_testing):
         if is_testing:
-            self.__host = 'aurora-sequoia-1-test-cluster.cluster-ctjmonskvld5.us-east-1.rds.amazonaws.com'
+            self.__host = 'sequoia-test-aurora-cluster.cluster-ctjmonskvld5.us-east-1.rds.amazonaws.com'
             self.__uid = self.user
             self.__pwd = self.password
             self.__port = 3306
