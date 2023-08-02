@@ -121,6 +121,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
         images_from_file = []
 
+        # depricated
         if '|' in asset_path:
             lst_asset_path = asset_path.split('|')
             for each_asset_path in lst_asset_path:

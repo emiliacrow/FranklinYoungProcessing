@@ -986,7 +986,7 @@ class FyProductUpdate(BasicProcessObject):
             fy_controlled_code = -1
         else:
             fy_controlled_code = int(row['FyControlledCode'])
-            if -1 > fy_controlled_code or fy_controlled_code > 5:
+            if 0 > fy_controlled_code or fy_controlled_code > 5:
                 fy_controlled_code = -1
 
         if 'FyNAICSCodeId' not in row:
