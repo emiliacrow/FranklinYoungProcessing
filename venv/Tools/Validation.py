@@ -103,15 +103,18 @@ class Validator:
 
         return look_up_val
 
+
     def imperial_validation(self,in_term):
         out_term = in_term.replace('\'','ft.')
         out_term = out_term.replace('\"','in.')
         return out_term
 
+
     def regular_standards(self, in_phrase):
         # this will house all the standardization of characters and terms and such
         out_phrase = in_phrase.replace('–','-')
         return out_phrase
+
 
     def remove_unicode(self,in_phrase):
         out_phrase = in_phrase.replace('Î»','(lambda)')
