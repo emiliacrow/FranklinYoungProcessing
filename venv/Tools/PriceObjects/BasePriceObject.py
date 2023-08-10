@@ -307,7 +307,7 @@ class BasePrice(BasicProcessObject):
         # we get the values from the DB because that's what we rely on
         db_mus_success, db_markup_sell = self.row_check(row, 'db_MarkUp_sell')
         if db_mus_success:
-            db_mus_success, db_markup_sell = self.float_check(db_markup_sell, 'db_MarkUp_sell')
+            db_mus_success, db_markup_sell = self.handle_percent_val(db_markup_sell)
             if db_markup_sell <= 0:
                 db_mus_success = False
                 self.obReporter.update_report('Alert','DB Markup Sell negative')
@@ -317,7 +317,7 @@ class BasePrice(BasicProcessObject):
 
         db_mul_success, db_markup_list = self.row_check(row, 'db_MarkUp_list')
         if db_mul_success:
-            db_mul_success, db_markup_list = self.float_check(db_markup_list, 'db_MarkUp_list')
+            db_mul_success, db_markup_list = self.handle_percent_val(db_markup_list)
             if db_markup_list <= 0:
                 db_mul_success = False
                 self.obReporter.update_report('Alert','DB Markup List negative')
@@ -328,7 +328,7 @@ class BasePrice(BasicProcessObject):
         # get the markups from the file
         mus_success, markup_sell = self.row_check(row, 'FyLandedCostMarkupPercent_FySell')
         if mus_success:
-            mus_success, markup_sell = self.float_check(markup_sell, 'FyLandedCostMarkupPercent_FySell')
+            mus_success, markup_sell = self.handle_percent_val(markup_sell)
             if markup_sell <= 0:
                 mus_success = False
                 self.obReporter.update_report('Alert','Markup Sell negative')
@@ -345,7 +345,7 @@ class BasePrice(BasicProcessObject):
 
         mul_success, markup_list = self.row_check(row, 'FyLandedCostMarkupPercent_FyList')
         if mul_success:
-            mul_success, markup_list = self.float_check(markup_list, 'FyLandedCostMarkupPercent_FyList')
+            mul_success, markup_list = self.handle_percent_val(markup_list)
             if markup_list <= 0:
                 mul_success = False
                 self.obReporter.update_report('Alert','Markup List negative')
