@@ -961,6 +961,7 @@ class BasicProcessObject:
         except ValueError:
             return False, float_name_val
 
+
     def handle_percent_val(self, in_val):
         out_val = ''
         success = True
