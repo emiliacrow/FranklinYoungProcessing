@@ -197,17 +197,14 @@ class BasePrice(BasicProcessObject):
     def process_ecom_discount(self, df_collect_product_base_data, row):
         ecommerce_discount = -1
         if 'ECommerceDiscount' in row:
-            try:
-                ecommerce_discount = round(float(row['ECommerceDiscount']), 2)
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad ECommerceDiscount value')
-                return False, df_collect_product_base_data, ecommerce_discount
+            success, ecommerce_discount = self.handle_percent_val(ecommerce_discount)
+            if not success:
+                return success, df_collect_product_base_data, ecommerce_discount
+
         elif 'MfcDiscountPercent' in row:
-            try:
-                ecommerce_discount = round(float(row['MfcDiscountPercent']), 2)
-            except ValueError:
-                self.obReporter.update_report('Fail', 'Bad MfcDiscountPercent value')
-                return False, df_collect_product_base_data, ecommerce_discount
+            success, ecommerce_discount = self.handle_percent_val(ecommerce_discount)
+            if not success:
+                return success, df_collect_product_base_data, ecommerce_discount
 
         if ecommerce_discount < 0:
             return False, df_collect_product_base_data, ecommerce_discount
@@ -246,17 +243,15 @@ class BasePrice(BasicProcessObject):
         # try to get the discount from the file
         discount_success, fy_discount_percent = self.row_check(row,'Discount')
         if discount_success:
-            discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'Discount')
+            discount_success, fy_discount_percent = self.handle_percent_val(fy_discount_percent)
             df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
         # if neither one worked, we try to get the discount from the db
         if not vlp_success and not discount_success:
-            discount_success, fy_discount_percent = self.row_check(row,'db_Discount')
+            discount_success, fy_discount_percent = self.handle_percent_val(fy_discount_percent)
             if discount_success:
-                discount_success, fy_discount_percent = self.float_check(fy_discount_percent,'db_Discount')
-                if discount_success:
-                    self.obReporter.update_report('Alert', 'Discount pulled from database')
-                    df_collect_product_base_data['Discount'] = [fy_discount_percent]
+                self.obReporter.update_report('Alert', 'Discount pulled from database')
+                df_collect_product_base_data['Discount'] = [fy_discount_percent]
 
             if not discount_success:
                 vlp_success, vendor_list_price = self.row_check(row,'db_VendorListPrice')
