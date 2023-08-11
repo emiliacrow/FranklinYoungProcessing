@@ -428,7 +428,6 @@ class MinimumProductPrice(BasicProcessObject):
         else:
             fy_manufacturer_part_number = manufacturer_part_number
 
-
         fy_catalog_number = str(row['FyCatalogNumber'])
         if fy_catalog_number[5] == '0':
             if manufacturer_part_number[0] != '0' and manufacturer_part_number != '':
