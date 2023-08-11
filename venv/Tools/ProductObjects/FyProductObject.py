@@ -1059,8 +1059,15 @@ class FyProductUpdate(BasicProcessObject):
             fy_manufacturer_part_number = str(row['FyManufacturerPartNumber'])
         else:
             fy_manufacturer_part_number = manufacturer_part_number
-        #elif str(row['FyUnitOfIssue']) != 'EA' and manufacturer_part_number != '':
-        #    fy_manufacturer_part_number = manufacturer_part_number + ' ' + str(row['FyUnitOfIssue'])
+
+        # this checks for dropped 0
+        if fy_catalog_number[5] == '0':
+            if manufacturer_part_number[0] != '0':
+                self.obReporter.update_report('Fail', 'ManufacturerPartNumber dropped zeros')
+                return False, df_collect_product_base_data
+            if fy_manufacturer_part_number[0] != '0':
+                self.obReporter.update_report('Fail', 'FyManufacturerPartNumber dropped zeros')
+                return False, df_collect_product_base_data
 
 
         manufacturer_id = -1
