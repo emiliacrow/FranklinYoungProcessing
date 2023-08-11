@@ -53,7 +53,7 @@ def excepthook(exc_type, exc_value, exc_tb):
 
     alert = QMessageBox()
     alert.setIcon(QMessageBox.Critical)
-    alert.setWindowTitle('A Crash Occurred!')
+    alert.setWindowTitle('A Crash Has Occurred!')
 
     error_msg = 'Error Message:\n' + (error_call.partition('\"')[2]).partition('\"')[0]
     alert.setText(error_msg)
