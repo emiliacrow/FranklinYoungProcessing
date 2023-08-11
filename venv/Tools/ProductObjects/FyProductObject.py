@@ -1257,7 +1257,7 @@ class FyProductUpdate(BasicProcessObject):
                 gsa_approved_percent = row['GSADiscountPercent']
                 success, gsa_approved_percent = self.handle_percent_val(gsa_approved_percent)
                 if not success:
-                    return success, return_df_line_product
+                    return success, df_collect_product_base_data
             else:
                 gsa_approved_percent = -1
 
@@ -1265,7 +1265,7 @@ class FyProductUpdate(BasicProcessObject):
                 mfc_percent = row['MfcDiscountPercent']
                 success, mfc_percent = self.handle_percent_val(mfc_percent)
                 if not success:
-                    return success, return_df_line_product
+                    return success, df_collect_product_base_data
             else:
                 mfc_percent = -1
 
@@ -1333,7 +1333,7 @@ class FyProductUpdate(BasicProcessObject):
                 va_approved_percent = float(row['VADiscountPercent'])
                 success, va_approved_percent = self.handle_percent_val(va_approved_percent)
                 if not success:
-                    return success, return_df_line_product
+                    return success, df_collect_product_base_data
             else:
                 va_approved_percent = -1
 
@@ -1537,6 +1537,12 @@ class FyProductUpdate(BasicProcessObject):
         else:
             fy_manufacturer_part_number = ''
 
+        fy_catalog_number = str(row['FyCatalogNumber'])
+        # this checks for dropped 0
+        if fy_catalog_number[5] == '0':
+            if fy_manufacturer_part_number[0] != '0':
+                self.obReporter.update_report('Fail', 'FyManufacturerPartNumber dropped zeros')
+                return False, df_collect_product_base_data
 
         if 'PrimaryVendorId' in row:
             primary_vendor_id = int(row['PrimaryVendorId'])
