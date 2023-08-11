@@ -37,7 +37,6 @@ class MinimumProductPrice(BasicProcessObject):
 
 
     def process_primary_vendor(self, df_collect_product_base_data, row):
-        df_collect_product_base_data
         if 'PrimaryVendorName' in row:
             vendor_name = row['PrimaryVendorName'].upper()
             if vendor_name in self.df_vendor_translator['VendorCode'].values:
@@ -420,9 +419,25 @@ class MinimumProductPrice(BasicProcessObject):
             fy_lead_time = -1
 
         if 'ManufacturerPartNumber' in row:
-            fy_manufacturer_part_number = str(row['ManufacturerPartNumber'])
+            manufacturer_part_number = str(row['ManufacturerPartNumber'])
         else:
-            fy_manufacturer_part_number = ''
+            manufacturer_part_number = ''
+
+        if 'FyManufacturerPartNumber' in row:
+            fy_manufacturer_part_number = str(row['FyManufacturerPartNumber'])
+        else:
+            fy_manufacturer_part_number = manufacturer_part_number
+
+
+        fy_catalog_number = str(row['FyCatalogNumber'])
+        if fy_catalog_number[5] == '0':
+            if manufacturer_part_number[0] != '0' and manufacturer_part_number != '':
+                self.obReporter.update_report('Fail', 'ManufacturerPartNumber dropped zeros')
+                return False, df_collect_product_base_data
+            if fy_manufacturer_part_number[0] != '0' and fy_manufacturer_part_number != '':
+                self.obReporter.update_report('Fail', 'FyManufacturerPartNumber dropped zeros')
+                return False, df_collect_product_base_data
+
 
         if len(fy_product_name) > 80:
             self.obReporter.update_report('Alert','FyProductName might be too long for some contracts.')
