@@ -1057,8 +1057,6 @@ class FyProductUpdate(BasicProcessObject):
         fy_manufacturer_part_number = manufacturer_part_number
         if 'FyManufacturerPartNumber' in row:
             fy_manufacturer_part_number = str(row['FyManufacturerPartNumber'])
-        else:
-            fy_manufacturer_part_number = manufacturer_part_number
 
         # this checks for dropped 0
         if fy_catalog_number[5] == '0':
@@ -2067,7 +2065,7 @@ class FyProductIngest(FyProductUpdate):
 
         df_line_product = df_collect_product_base_data.copy()
         for colName, row in df_line_product.iterrows():
-            success, df_collect_product_base_data  = self.process_fy_description(df_collect_product_base_data, row)
+            success, df_collect_product_base_data = self.process_fy_description(df_collect_product_base_data, row)
 
         return success, df_collect_product_base_data
 
