@@ -1358,13 +1358,16 @@ class FyProductUpdate(BasicProcessObject):
             if ' ' in fy_product_number:
                 if fy_unit_of_issue == 'EA':
                     # if the FPN has a space and it's EA that's a mismatch; EA doesn't have space
+                    self.obReporter.update_report('Fail', 'FyProductNumber and FyUOI mismatch')
                     return False, df_collect_product_base_data
                 elif fy_product_number.partition(' ')[2] != fy_unit_of_issue:
                     # the popped tail FPN should match the FyUOI
+                    self.obReporter.update_report('Fail', 'FyProductNumber and FyUOI mismatch')
                     return False, df_collect_product_base_data
 
             elif fy_unit_of_issue != 'EA':
                 # if it doesn't have a space it should be EA
+                self.obReporter.update_report('Fail', 'FyProductNumber and FyUOI mismatch')
                 return False, df_collect_product_base_data
 
             if (gsa_mfc_percent != -1 or va_mfc_percent != -1 or gsa_approved_percent != -1 or va_approved_percent != -1 or gsa_sin != '' or va_sin != ''):
@@ -1797,6 +1800,22 @@ class FyProductUpdate(BasicProcessObject):
         else:
             va_eligible = -1
 
+        fy_product_number = str(row['FyProductNumber'])
+        fy_unit_of_issue = str(row['FyUnitOfIssue'])
+        if ' ' in fy_product_number:
+            if fy_unit_of_issue == 'EA':
+                # if the FPN has a space and it's EA that's a mismatch; EA doesn't have space
+                self.obReporter.update_report('Fail', 'FyProductNumber and FyUOI mismatch')
+                return False, df_collect_product_base_data
+            elif fy_product_number.partition(' ')[2] != fy_unit_of_issue:
+                # the popped tail FPN should match the FyUOI
+                self.obReporter.update_report('Fail', 'FyProductNumber and FyUOI mismatch')
+                return False, df_collect_product_base_data
+
+        elif fy_unit_of_issue != 'EA':
+            # if it doesn't have a space it should be EA
+            self.obReporter.update_report('Fail', 'FyProductNumber and FyUOI mismatch')
+            return False, df_collect_product_base_data
 
         if (fy_product_name != '' or fy_product_description != '' or fy_manufacturer_part_number != '' or fy_coo_id != -1 or fy_uoi_id != -1 or fy_uom_id != -1
                 or fy_uoi_qty != -1 or fy_lead_time != -1 or fy_is_hazardous != -1 or primary_vendor_id != -1 or secondary_vendor_id != -1
