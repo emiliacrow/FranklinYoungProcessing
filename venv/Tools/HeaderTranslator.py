@@ -256,7 +256,7 @@ class HeaderTranslator():
                             'GSAMfcDiscountPercent':['GSAMfcDiscountPercent', 'GSA Mfc Discount Percent', 'gsa_mfc_disc(%)',
                                                    'approved GSA MFC per','GSA_MFC_Discount','GSA MFC %'],
 
-                            'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price','MFCPercent'],
+                            'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price'],
 
                             'ChangedDate':['ChangedDate'],
                             'ChangedBy':['ChangedBy'],
