@@ -251,8 +251,11 @@ class HeaderTranslator():
                             'VA_Sin':['VA_Sin','VA_SIN','VA Sin','VA SIN','VASin','VA Sin #','VASin#'],
 # ECAT
 
-                            'MfcDiscountPercent':['MfcDiscountPercent', 'Mfc Discount Percent', 'mfc_disc(%)',
-                                                  'approved MFC per','VA_MFC_Discount','GSA_MFC_Discount','MFC %'],
+                            'VAMfcDiscountPercent':['VAMfcDiscountPercent', 'VA Mfc Discount Percent', 'va_mfc_disc(%)',
+                                                   'approved VA MFC per','VA_MFC_Discount','VA MFC %'],
+                            'GSAMfcDiscountPercent':['GSAMfcDiscountPercent', 'GSA Mfc Discount Percent', 'gsa_mfc_disc(%)',
+                                                   'approved GSA MFC per','GSA_MFC_Discount','GSA MFC %'],
+
                             'MfcPrice':['MfcPrice', 'Approved MFC Price', 'Mfc Price','MFCPercent'],
 
                             'ChangedDate':['ChangedDate'],

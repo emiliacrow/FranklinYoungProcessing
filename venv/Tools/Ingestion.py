@@ -746,14 +746,14 @@ class IngestionObject:
                                                                     gsa_contract_number, gsa_contract_mod_number,
                                                                     gsa_is_pricing_approved,
                                                                     gsa_approved_price_date, gsa_approved_percent,
-                                                                    mfc_percent, gsa_sin, gsa_product_notes,
+                                                                    gsa_mfc_percent, gsa_sin, gsa_product_notes,
 
                                                                     va_on_contract, va_approved_base_price,
                                                                     va_approved_sell_price, va_approved_list_price,
                                                                     va_contract_number, va_contract_mod_number,
                                                                     va_is_pricing_approved,
                                                                     va_approved_price_date, va_approved_percent,
-                                                                    va_sin, va_product_notes):
+                                                                    va_mfc_percent, va_sin, va_product_notes):
         if (len(self.product_description_contract_insert_collector) > self.load_limit):
             self.product_description_contract_insert_collector.append((fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
                                                                     manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
@@ -775,14 +775,14 @@ class IngestionObject:
                                                                     gsa_contract_number, gsa_contract_mod_number,
                                                                     gsa_is_pricing_approved,
                                                                     gsa_approved_price_date, gsa_approved_percent,
-                                                                    mfc_percent, gsa_sin, gsa_product_notes,
+                                                                    gsa_mfc_percent, gsa_sin, gsa_product_notes,
 
                                                                     va_on_contract, va_approved_base_price,
                                                                     va_approved_sell_price, va_approved_list_price,
                                                                     va_contract_number, va_contract_mod_number,
                                                                     va_is_pricing_approved,
                                                                     va_approved_price_date, va_approved_percent,
-                                                                    va_sin, va_product_notes))
+                                                                    va_mfc_percent, va_sin, va_product_notes))
             self.obDal.fy_product_description_contract_insert(self.product_description_contract_insert_collector)
             self.product_description_contract_insert_collector = []
         else:
@@ -806,14 +806,14 @@ class IngestionObject:
                                                                     gsa_contract_number, gsa_contract_mod_number,
                                                                     gsa_is_pricing_approved,
                                                                     gsa_approved_price_date, gsa_approved_percent,
-                                                                    mfc_percent, gsa_sin, gsa_product_notes,
+                                                                    gsa_mfc_percent, gsa_sin, gsa_product_notes,
 
                                                                     va_on_contract, va_approved_base_price,
                                                                     va_approved_sell_price, va_approved_list_price,
                                                                     va_contract_number, va_contract_mod_number,
                                                                     va_is_pricing_approved,
                                                                     va_approved_price_date, va_approved_percent,
-                                                                    va_sin, va_product_notes))
+                                                                    va_mfc_percent, va_sin, va_product_notes))
 
     def insert_fy_product_description_contract_cleanup(self):
         if self.product_description_contract_insert_collector != []:

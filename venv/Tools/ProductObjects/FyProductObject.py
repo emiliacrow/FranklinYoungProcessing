@@ -1259,13 +1259,13 @@ class FyProductUpdate(BasicProcessObject):
             else:
                 gsa_approved_percent = -1
 
-            if 'MfcDiscountPercent' in row:
-                mfc_percent = row['MfcDiscountPercent']
-                success, mfc_percent = self.handle_percent_val(mfc_percent)
+            if 'GSAMfcDiscountPercent' in row:
+                gsa_mfc_percent = row['GSAMfcDiscountPercent']
+                success, gsa_mfc_percent = self.handle_percent_val(gsa_mfc_percent)
                 if not success:
                     return success, df_collect_product_base_data
             else:
-                mfc_percent = -1
+                gsa_mfc_percent = -1
 
             if 'GSA_Sin' in row:
                 gsa_sin = row['GSA_Sin']
@@ -1335,6 +1335,14 @@ class FyProductUpdate(BasicProcessObject):
             else:
                 va_approved_percent = -1
 
+            if 'VAMfcDiscountPercent' in row:
+                va_mfc_percent = row['VAMfcDiscountPercent']
+                success, va_mfc_percent = self.handle_percent_val(va_mfc_percent)
+                if not success:
+                    return success, df_collect_product_base_data
+            else:
+                va_mfc_percent = -1
+
             if 'VA_Sin' in row:
                 va_sin = row['VA_Sin']
             else:
@@ -1345,7 +1353,21 @@ class FyProductUpdate(BasicProcessObject):
                 va_product_notes = str(row['VAProductNotes'])
 
 
-            if (mfc_percent != -1 or gsa_approved_percent != -1 or va_approved_percent != -1 or gsa_sin != '' or va_sin != ''):
+            fy_unit_of_issue = str(row['FyUnitOfIssue'])
+
+            if ' ' in fy_product_number:
+                if fy_unit_of_issue == 'EA':
+                    # if the FPN has a space and it's EA that's a mismatch; EA doesn't have space
+                    return False, df_collect_product_base_data
+                elif fy_product_number.partition(' ')[2] != fy_unit_of_issue:
+                    # the popped tail FPN should match the FyUOI
+                    return False, df_collect_product_base_data
+
+            elif fy_unit_of_issue != 'EA':
+                # if it doesn't have a space it should be EA
+                return False, df_collect_product_base_data
+
+            if (gsa_mfc_percent != -1 or va_mfc_percent != -1 or gsa_approved_percent != -1 or va_approved_percent != -1 or gsa_sin != '' or va_sin != ''):
                 self.obIngester.insert_fy_product_description_contract(fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
                                                                         manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
                                                                         fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
@@ -1366,14 +1388,14 @@ class FyProductUpdate(BasicProcessObject):
                                                                         gsa_contract_number, gsa_contract_mod_number,
                                                                         gsa_is_pricing_approved,
                                                                         gsa_approved_price_date, gsa_approved_percent,
-                                                                        mfc_percent, gsa_sin, gsa_product_notes,
+                                                                        gsa_mfc_percent, gsa_sin, gsa_product_notes,
 
                                                                         va_on_contract, va_approved_base_price,
                                                                         va_approved_sell_price, va_approved_list_price,
                                                                         va_contract_number, va_contract_mod_number,
                                                                         va_is_pricing_approved,
                                                                         va_approved_price_date, va_approved_percent,
-                                                                        va_sin, va_product_notes
+                                                                        va_mfc_percent, va_sin, va_product_notes
 
                                                                        )
                 return True, df_collect_product_base_data
