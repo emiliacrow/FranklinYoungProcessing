@@ -64,7 +64,7 @@ class MinimumProduct(BasicProcessObject):
             self.obReporter.update_report('Alert', 'Passed filtering as a new product')
             return True
 
-        elif row['Filter'] in ['Partial', 'Base Pricing','ConfigurationChange']:
+        elif row['Filter'] in ['Partial', 'Base Pricing','ConfigurationChange','check_vendor']:
             self.obReporter.update_report('Alert', 'Passed filtering as new configuration')
             return True
 
@@ -498,7 +498,7 @@ class UpdateMinimumProduct(MinimumProduct):
                 self.obReporter.update_report('Alert', 'Passed filtering as a new product but not processed')
                 return False
 
-        elif row['Filter'] in ['Ready', 'Partial','Base Pricing','ConfigurationChange']:
+        elif row['Filter'] in ['Ready', 'Partial','Base Pricing','ConfigurationChange','check_vendor']:
             self.obReporter.update_report('Alert', 'Passed filtering as updatable')
             return True
 
