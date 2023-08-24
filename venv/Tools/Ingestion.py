@@ -726,7 +726,7 @@ class IngestionObject:
             self.obDal.fy_product_description_insert(self.product_description_insert_collector)
 
 
-    def insert_fy_product_description_contract(self,fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
+    def insert_fy_product_description_contract(self, fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
                                                                     manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
                                                                     fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
                                                                     vendor_part_number, fy_lead_time, fy_is_hazardous, primary_vendor_id,

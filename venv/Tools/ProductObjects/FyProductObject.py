@@ -36,11 +36,17 @@ class FyProductUpdate(BasicProcessObject):
 
 
     def batch_preprocessing(self):
-
-
         self.remove_private_headers()
         self.df_uois_lookup = self.obDal.get_unit_of_issue_symbol_lookup()
         self.batch_process_country()
+
+        df2 = self.df_product.pivot_table(columns=['FyProductNumber'], aggfunc='size')
+        df2.rename_axis()
+        df2 = df2.to_frame().reset_index()
+        df2.rename(columns={0: 'CountDuplicates', 'index': 'FyProductNumber'}, inplace=1)
+
+        self.df_product = self.df_product.merge(df2, how='left', on=['FyProductNumber'])
+
 
         if 'ManufacturerName' in self.df_product.columns:
             self.batch_process_manufacturer()
@@ -65,6 +71,8 @@ class FyProductUpdate(BasicProcessObject):
 
         self.batch_process_primary_vendor()
 
+        self.df_product['FyCatalogNumber'] = self.df_product['FyProductNumber'].str.partition(' ')[0]
+
         self.df_fy_description_lookup = self.obDal.get_fy_product_descriptions()
         self.df_product = self.df_product.merge(self.df_fy_description_lookup,how='left',on=['FyProductNumber'])
 
@@ -79,6 +87,7 @@ class FyProductUpdate(BasicProcessObject):
             self.df_fy_vendor_price_lookup['PrimaryVendorId'] = self.df_fy_vendor_price_lookup['PrimaryVendorId'].astype(int)
             self.df_product['PrimaryVendorId'] = self.df_product['PrimaryVendorId'].astype(int)
             self.df_product = self.df_product.merge(self.df_fy_vendor_price_lookup,how='left',on=['FyProductNumber','PrimaryVendorId'])
+
 
         # add secondary?
 
@@ -441,6 +450,12 @@ class FyProductUpdate(BasicProcessObject):
                     self.obReporter.update_report('Fail','This manufacturer name is blocked from processing')
                     return False, df_collect_product_base_data
 
+            if 'CountDuplicates' in row:
+                if int(row['CountDuplicates']) > 1:
+                    self.obReporter.update_report('Fail','FyProductNumber is duplicated, review')
+                    return False, df_collect_product_base_data
+
+
 
             for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','BCPriceUpdateToggle','BCDataUpdateToggle',
                               'GSAOnContract','GSAPricingApproved','VAOnContract','VAPricingApproved']:
@@ -488,7 +503,7 @@ class FyProductUpdate(BasicProcessObject):
         for colName, row in df_line_product.iterrows():
             # check if it is update or not
             if 'ProductDescriptionId' in df_line_product.columns:
-                success, df_collect_product_base_data  = self.update_fy_description(df_collect_product_base_data, row)
+                success, df_collect_product_base_data = self.update_fy_description(df_collect_product_base_data, row)
                 if success:
                     self.gsa_product_price(row)
                     self.va_product_price(row)
@@ -1045,11 +1060,6 @@ class FyProductUpdate(BasicProcessObject):
         else:
             av_toggle = 1
 
-        if ' ' in fy_product_number:
-            fy_catalog_number = fy_product_number.partition(' ')[0]
-        else:
-            fy_catalog_number = fy_product_number
-
         manufacturer_part_number = ''
         if 'ManufacturerPartNumber' in row:
             manufacturer_part_number = str(row['ManufacturerPartNumber'])
@@ -1058,6 +1068,7 @@ class FyProductUpdate(BasicProcessObject):
         if 'FyManufacturerPartNumber' in row:
             fy_manufacturer_part_number = str(row['FyManufacturerPartNumber'])
 
+        fy_catalog_number = str(row['FyCatalogNumber'])
         # this checks for dropped 0
         if fy_catalog_number[5] == '0':
             if manufacturer_part_number[0] != '0':
@@ -2082,12 +2093,18 @@ class FyProductIngest(FyProductUpdate):
         success = True
         df_collect_product_base_data = df_line_product.copy()
         for colName, row in df_line_product.iterrows():
+            if 'CountDuplicates' in row:
+                if int(row['CountDuplicates']) > 1:
+                    self.obReporter.update_report('Fail','FyProductNumber is duplicated, review')
+                    return False, df_collect_product_base_data
+
             for each_bool in ['FyIsGreen', 'FyIsLatexFree', 'FyIsHazardous','FyIsDiscontinued','BCPriceUpdateToggle','BCDataUpdateToggle']:
                 success, return_val = self.process_boolean(row, each_bool)
                 if success:
                     df_collect_product_base_data[each_bool] = [return_val]
                 else:
                     df_collect_product_base_data[each_bool] = [-1]
+
 
             # check if it is update or not
             if 'ProductDescriptionId' in df_line_product.columns:
