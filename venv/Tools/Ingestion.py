@@ -497,8 +497,8 @@ class IngestionObject:
             return -1
 
     # vendor funtions
-    def ingest_vendor(self, vendor_code, vendor_name, fob_origin):
-        return_id = self.obDal.vendor_cap(vendor_code, vendor_name, newFOBOrigin=fob_origin)
+    def ingest_vendor(self, vendor_code, vendor_name, vendor_notes, fob_origin):
+        return_id = self.obDal.vendor_cap(vendor_code, vendor_name, vendor_notes, newFOBOrigin=fob_origin)
         return return_id
 
     def ingest_vendors(self, df_vendors):
@@ -516,8 +516,8 @@ class IngestionObject:
             if fob_origin_text == 'Y':
                 fob_origin = 1
 
-            return_id = self.ingest_vendor(vendor_code, vendor_name,fob_origin)
-            ingested_set.append([return_id,vendor_name,vendor_code])
+            return_id = self.ingest_vendor(vendor_code, vendor_name, vendor_notes, fob_origin)
+            ingested_set.append([return_id, vendor_name, vendor_notes, vendor_code])
 
             p_bar += 1
             self.obProgressBarWindow.update_bar(p_bar)
@@ -532,6 +532,7 @@ class IngestionObject:
     def manual_ingest_vendor(self, atmp_name = '', atmp_code = '',lst_vendor_names=[]):
         lst_req_fields = [['VendorName', 45, 'This is the standard name<br>like "CONSOLIDATED STERILIZER SYSTEMS"', atmp_name,'REQUIRED'],
                           ['VendorCode', 45, 'This is the not so pretty name<br>like "Consolidated Ster"', atmp_code,'required'],
+                          ['VendorNotes', 2000, 'This describes any special handling<br>like "do not add standard markups, use 23$"', '',''],
                           ['FOBOrigin', 45, 'This is an indicator for FOB', 'N','']]
         fob_origin = -1
 
@@ -542,6 +543,7 @@ class IngestionObject:
         if ('VendorName' in entered_values.keys()) and ('VendorCode' in entered_values.keys()):
             vendor_name = entered_values['VendorName'].upper()
             vendor_code = entered_values['VendorCode'].upper()
+            vendor_notes = entered_values['VendorNotes']
             fob_origin_text = entered_values['FOBOrigin'].upper()
             if fob_origin_text == 'Y':
                 fob_origin = 1
@@ -550,7 +552,7 @@ class IngestionObject:
             return 0
 
         if (vendor_name != '') and (vendor_code != ''):
-            ven_id = self.obDal.vendor_cap(vendor_code, vendor_name, newFOBOrigin = fob_origin)
+            ven_id = self.obDal.vendor_cap(vendor_code, vendor_name, newVendorNotes = vendor_notes, newFOBOrigin = fob_origin)
             return ven_id
         else:
             return -1

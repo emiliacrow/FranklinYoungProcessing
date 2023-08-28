@@ -1573,9 +1573,10 @@ class FyProductUpdate(BasicProcessObject):
         fy_catalog_number = str(row['FyCatalogNumber'])
         # this checks for dropped 0
         if fy_catalog_number[5] == '0':
-            if fy_manufacturer_part_number[0] != '0':
-                self.obReporter.update_report('Fail', 'FyManufacturerPartNumber dropped zeros')
-                return False, df_collect_product_base_data
+            if len(fy_manufacturer_part_number) > 0:
+                if fy_manufacturer_part_number[0] != '0':
+                    self.obReporter.update_report('Fail', 'FyManufacturerPartNumber dropped zeros')
+                    return False, df_collect_product_base_data
 
         if 'PrimaryVendorId' in row:
             primary_vendor_id = int(row['PrimaryVendorId'])
