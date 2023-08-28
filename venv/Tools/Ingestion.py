@@ -335,7 +335,7 @@ class IngestionObject:
 
             try:
                 block_manufacturer = (str(entered_values['BlockManufacturer'])).lower()
-                if block_manufacturer in ['yes','y',1]:
+                if block_manufacturer in ['yes', 'y', '1', 1]:
                     block_manufacturer = 1
                 else:
                     block_manufacturer = 0
