@@ -315,6 +315,7 @@ class IngestionObject:
     def manual_ingest_manufacturer(self, atmp_sup = '', atmp_man = '',lst_manufacturer_names=[]):
         lst_req_fields = [['SupplierName',45,'This is the ugly version of the name<br>like "perkinelmer health sciences, inc"', atmp_sup,'required'],
                           ['ManufacturerName',45,'This is the standardized name<br>like "PERKINELMER"', atmp_man,'required'],
+                          ['ManufacturerNotes',2000,'This describes any special handling<br>like "do not add standard markups, use 23$"', '','not required'],
                           ['DirectVendorName',45,'This is the vendor with direct relationship<br>like "PERKIN ELMER HEALTH SCIENCES"', '','not required'],
                           ['BlockManufacturer',3,'Yes/No', '','not required']]
 
@@ -325,6 +326,7 @@ class IngestionObject:
         if ('ManufacturerName' in entered_values.keys()) and ('SupplierName' in entered_values.keys()):
             manufacturer_name = (str(entered_values['ManufacturerName'])).upper()
             supplier_name = (str(entered_values['SupplierName'])).lower()
+            manufacturer_notes = str(entered_values['ManufacturerNotes'])
             print(manufacturer_name, supplier_name)
             try:
                 direct_vendor = (str(entered_values['DirectVendorName'])).upper()
@@ -350,7 +352,7 @@ class IngestionObject:
         print(manufacturer_name, supplier_name)
 
         if (manufacturer_name != '') and (supplier_name != ''):
-            man_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, DirectVendorName=direct_vendor, block_manufacturer = block_manufacturer)
+            man_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, ManufacturerNotes= manufacturer_notes, DirectVendorName=direct_vendor, block_manufacturer = block_manufacturer)
             return man_id
         else:
             return -1
