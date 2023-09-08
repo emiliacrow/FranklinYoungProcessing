@@ -1169,6 +1169,11 @@ class FyProductUpdate(BasicProcessObject):
         else:
             country_of_origin_id = -1
 
+        if 'MinimumOrderQty' in row:
+            minimum_order_qty = str(row['MinimumOrderQty'])
+        else:
+            minimum_order_qty = ''
+
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
         if success:
             df_collect_product_base_data['WebsiteOnly'] = [b_website_only]
@@ -1388,7 +1393,7 @@ class FyProductUpdate(BasicProcessObject):
                                                                         secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                                         fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                         fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                                        vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
+                                                                        vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id, minimum_order_qty,
                                                                         b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                                         vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                         markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1421,7 +1426,7 @@ class FyProductUpdate(BasicProcessObject):
                                                               secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                               fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                               fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                              vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
+                                                              vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id, minimum_order_qty,
                                                               b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                               vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                               markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1667,7 +1672,7 @@ class FyProductUpdate(BasicProcessObject):
 
             if fy_cold_chain not in ['A','F','R']:
                 fy_cold_chain = ''
-                df_collect_product_base_data['FyColdChain'] = ['']
+                df_collect_product_base_data['FyColdChain'] = ['U']
 
         if 'FyControlledCode' not in row:
             df_collect_product_base_data['FyControlledCode'] = [-1]
@@ -1773,6 +1778,10 @@ class FyProductUpdate(BasicProcessObject):
             country_of_origin_id = int(row['CountryOfOriginId'])
         else:
             country_of_origin_id = -1
+        if 'MinimumOrderQty' in row:
+            minimum_order_qty = str(row['MinimumOrderQty'])
+        else:
+            minimum_order_qty = ''
 
 
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
@@ -1838,7 +1847,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           primary_vendor_id, secondary_vendor_id,
                                                           fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                          vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id,
+                                                          vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id, minimum_order_qty,
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,

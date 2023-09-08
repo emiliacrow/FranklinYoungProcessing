@@ -298,6 +298,7 @@ class HeaderTranslator():
                             'CategoryId':['CategoryId'],
                             'RecommendedStorageId':['RecommendedStorageId'],
                             'CountryOfOriginId':['CountryOfOriginId'],
+                            'MinimumOrderQty':['MinimumOrderQty'],
                             'FyCountryOfOriginId':['FyCountryOfOriginId'],
                             'ExpectedLeadTimeId':['ExpectedLeadTimeId'],
                             'IsFreeShipping':['IsFreeShipping'],
