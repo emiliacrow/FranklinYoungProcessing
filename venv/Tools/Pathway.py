@@ -297,7 +297,9 @@ class Pathways():
                 self.obProgressBar.show()
                 self.obProgressBar.update_unknown()
 
-                self.df_second_product = self.df_second_product.append(self.df_intermediate_product)
+                # this leaves NA in emtpy places
+                # self.df_second_product = pandas.concat([self.df_second_product, self.df_intermediate_product])
+                self.df_second_product = self.df_second_product.append(self.df_intermediate_product, ignore_index = True)
 
                 self.obProgressBar.close()
 
