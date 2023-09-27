@@ -605,6 +605,7 @@ class MinimumProductPrice(BasicProcessObject):
                 country_of_origin_id = int(row['CountryOfOriginId'])
             else:
                 country_of_origin_id = -1
+
             if 'MinimumOrderQty' in row:
                 minimum_order_qty = str(row['MinimumOrderQty'])
             else:

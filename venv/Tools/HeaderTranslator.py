@@ -59,7 +59,8 @@ class HeaderTranslator():
                             'UnitOfIssue':['UnitOfIssue', 'Unit Of Issue', 'UnitOfIssueSymbol', 'Unit Of Issue Symbol', 'UOI', 'uoi','unit_of_issue','unit of issue'],
                             'UnitOfMeasure':['UnitOfMeasure','Unit Of Measure','UnitOfMeasureSymbol','Unit Of Measure Symbol','UOM','uom','unit_of_measure','unit of measure','uom_std','UOM - STD','Unit code for Pack Quantity'],
 
-                            'FyIsHazardous':['IsHazardous','Is Hazardous','Hazardous','is_hazardous','FyIsHazardous','fy_is_hazardous'],
+                            'IsHazardous': ['Is Hazardous', 'Hazardous', 'is_hazardous'],
+                            'FyIsHazardous':['FyIsHazardous','fy_is_hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
                             'LeadTime':['LeadTimes','LeadTime','LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
                             'LeadTimeExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],

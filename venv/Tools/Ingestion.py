@@ -1005,13 +1005,13 @@ class IngestionObject:
             self.obDal.base_price_insert(self.product_insert_collector)
 
     def update_base_price(self, base_price_id, vendor_list_price, fy_discount_percent, fy_cost, estimated_freight,
-                          fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
+                          fy_landed_cost, date_catalog_received, catalog_provided_by, product_price_id,
                           newWebsiteOnly= -1, newVAProductPriceId=-1, newVAEligible = -1,
                           newGSAProductPriceId=-1, newGSAEligible = -1, newHTMEProductPriceId=-1, newHTMEEligible = -1,
                           newECATProductPriceId=-1, newECATEligible = -1,  newFEDMALLProductPriceId=-1, newINTRAMALLSProductPriceId=-1):
         if (len(self.product_update_collector) > self.load_limit):
             self.product_update_collector.append((base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
-                                                  estimated_freight, fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
+                                                  estimated_freight, fy_landed_cost, date_catalog_received, catalog_provided_by, product_price_id,
                                                   newWebsiteOnly, newVAProductPriceId, newVAEligible,
                                                   newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
                                                   newECATProductPriceId, newECATEligible,newFEDMALLProductPriceId, newINTRAMALLSProductPriceId))
@@ -1019,7 +1019,7 @@ class IngestionObject:
             self.product_update_collector = []
         else:
             self.product_update_collector.append((base_price_id, vendor_list_price, fy_discount_percent, fy_cost,
-                                                  estimated_freight, fy_landed_cost, date_catalog_recieved, catalog_provided_by, product_price_id,
+                                                  estimated_freight, fy_landed_cost, date_catalog_received, catalog_provided_by, product_price_id,
                                                   newWebsiteOnly, newVAProductPriceId, newVAEligible,
                                                   newGSAProductPriceId, newGSAEligible, newHTMEProductPriceId, newHTMEEligible,
                                                   newECATProductPriceId, newECATEligible, newFEDMALLProductPriceId, newINTRAMALLSProductPriceId))
