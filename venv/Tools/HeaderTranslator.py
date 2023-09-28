@@ -62,7 +62,7 @@ class HeaderTranslator():
                             'IsHazardous': ['IsHazardous','Is Hazardous', 'Hazardous', 'is_hazardous'],
                             'FyIsHazardous':['FyIsHazardous','fy_is_hazardous'],
                             'HazardCode':['HazardCode','Hazard Code','Hazardous Code'],
-                            'LeadTime':['LeadTimes','LeadTime','LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
+                            'LeadTimeDays':['LeadTimeDays', 'LeadTimes','LeadTime','LeadTimeDays','Lead Time Days','Lead Time','lead_time_days', 'Lead Times', 'Lead Time', 'lead_time'],
                             'LeadTimeExpedited':['LeadTimeDaysExpedited','Lead Time Days Expedited','Lead Time Expedited','expedited_lead_time_days','expedited_lead_time'],
 
                             'VendorListPrice':['Vendor List Price','VendorListPrice','VendorList','Vendor List','List Price','primary_vendor_list_price','vendor_list_price'],

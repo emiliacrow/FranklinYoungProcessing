@@ -1173,6 +1173,10 @@ class FyProductUpdate(BasicProcessObject):
             minimum_order_qty = str(row['MinimumOrderQty'])
         else:
             minimum_order_qty = ''
+        if 'LeadTimeDays' in row:
+            vendor_lead_time_days = int(row['LeadTimeDays'])
+        else:
+            vendor_lead_time_days = -1
 
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
         if success:
@@ -1393,7 +1397,8 @@ class FyProductUpdate(BasicProcessObject):
                                                                         secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                                         fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                         fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                                        vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id, minimum_order_qty,
+                                                                        vendor_product_notes, vendor_is_discontinued, vendor_product_name,
+                                                                       vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days,
                                                                         b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                                         vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                         markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1426,7 +1431,8 @@ class FyProductUpdate(BasicProcessObject):
                                                               secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                               fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                               fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                              vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id, minimum_order_qty,
+                                                              vendor_product_notes, vendor_is_discontinued, vendor_product_name,
+                                                              vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days,
                                                               b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                               vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                               markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1783,6 +1789,11 @@ class FyProductUpdate(BasicProcessObject):
         else:
             minimum_order_qty = ''
 
+        if 'LeadTimeDays' in row:
+            vendor_lead_time_days = int(row['LeadTimeDays'])
+        else:
+            vendor_lead_time_days = -1
+
 
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
         if success:
@@ -1847,7 +1858,8 @@ class FyProductUpdate(BasicProcessObject):
                                                           primary_vendor_id, secondary_vendor_id,
                                                           fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
-                                                          vendor_product_notes, vendor_is_discontinued, vendor_product_name, vendor_product_description, country_of_origin_id, minimum_order_qty,
+                                                          vendor_product_notes, vendor_is_discontinued, vendor_product_name,
+                                                          vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days,
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
