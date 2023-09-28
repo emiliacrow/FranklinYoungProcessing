@@ -1178,6 +1178,23 @@ class FyProductUpdate(BasicProcessObject):
         else:
             vendor_lead_time_days = -1
 
+        if 'FyIsHazardous' in row:
+            success, fy_is_hazardous = self.process_boolean(row, 'FyIsHazardous')
+            if success:
+                df_collect_product_base_data['FyIsHazardous'] = [fy_is_hazardous]
+            else:
+                fy_is_hazardous = -1
+        else:
+            fy_is_hazardous = -1
+        if 'IsHazardous' in row:
+            success, is_hazardous = self.process_boolean(row, 'IsHazardous')
+            if success:
+                df_collect_product_base_data['IsHazardous'] = [is_hazardous]
+            else:
+                is_hazardous = -1
+        else:
+            is_hazardous = -1
+
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
         if success:
             df_collect_product_base_data['WebsiteOnly'] = [b_website_only]
@@ -1219,11 +1236,32 @@ class FyProductUpdate(BasicProcessObject):
                 fy_uom_id != -1 and fy_uoi_qty != -1 and fy_lead_time != -1 and primary_vendor_id != -1 and manufacturer_part_number != '' and
                 manufacturer_id != -1 and vendor_part_number != '' and date_catalog_received != -1):
 
+            if 'db_ECATProductPriceId' in row:
+                db_ecat_product_price_id = int(row['db_ECATProductPriceId'])
+            else:
+                db_ecat_product_price_id = -1
+
+            if 'db_HTMEProductPriceId' in row:
+                db_htme_product_price_id = int(row['db_HTMEProductPriceId'])
+            else:
+                db_htme_product_price_id = -1
+
+            if 'db_INTRAMALLSProductPriceId' in row:
+                db_intramalls_product_price_id = int(row['db_INTRAMALLSProductPriceId'])
+            else:
+                db_intramalls_product_price_id = -1
+
+
             success, gsa_on_contract = self.process_boolean(row, 'GSAOnContract')
             if success:
                 df_collect_product_base_data['GSAOnContract'] = [gsa_on_contract]
             else:
                 gsa_on_contract = -1
+
+            if 'db_GSAProductPriceId' in row:
+                db_gsa_product_price_id = int(row['db_GSAProductPriceId'])
+            else:
+                db_gsa_product_price_id = -1
 
             gsa_contract_number = 'GS-07F-0636W'
 
@@ -1302,6 +1340,11 @@ class FyProductUpdate(BasicProcessObject):
                 df_collect_product_base_data['VAOnContract'] = [va_on_contract]
             else:
                 va_on_contract = -1
+
+            if 'db_VAProductPriceId' in row:
+                db_va_product_price_id = int(row['db_VAProductPriceId'])
+            else:
+                db_va_product_price_id = -1
 
             va_contract_number = 'VA797H-16-D-0024/SPE2D1-16-D-0019'
             if 'VAContractModificationNumber' in row:
@@ -1389,7 +1432,7 @@ class FyProductUpdate(BasicProcessObject):
                     self.obReporter.update_report('Fail', 'FyProductNumber and FyUOI mismatch')
                     return False, df_collect_product_base_data
 
-            if (gsa_mfc_percent != -1 or va_mfc_percent != -1 or gsa_approved_percent != -1 or va_approved_percent != -1 or gsa_sin != '' or va_sin != ''):
+            if (gsa_mfc_percent != -1 or va_mfc_percent != -1 or gsa_approved_percent != -1 or va_approved_percent != -1 or gsa_sin != '' or va_sin != '') and (db_gsa_product_price_id != -1 and db_va_product_price_id != -1):
                 self.obIngester.insert_fy_product_description_contract(fy_catalog_number, fy_manufacturer_part_number, manufacturer_part_number, is_product_number_override,
                                                                         manufacturer_id, default_image_id, fy_product_number, fy_product_name, fy_product_description,
                                                                         fy_coo_id, fy_uoi_id, fy_uom_id, fy_uoi_qty, product_tax_class,
@@ -1397,8 +1440,9 @@ class FyProductUpdate(BasicProcessObject):
                                                                         secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                                         fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                                         fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                                       db_gsa_product_price_id, db_va_product_price_id, db_ecat_product_price_id, db_htme_product_price_id, db_intramalls_product_price_id,
                                                                         vendor_product_notes, vendor_is_discontinued, vendor_product_name,
-                                                                       vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days,
+                                                                       vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days, is_hazardous,
                                                                         b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                                         vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                                         markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1431,8 +1475,9 @@ class FyProductUpdate(BasicProcessObject):
                                                               secondary_vendor_id, fy_category_id, fy_is_green, fy_is_latex_free,
                                                               fy_cold_chain, fy_controlled_code, fy_naics_code_id, fy_unspsc_code_id,
                                                               fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
+                                                              db_gsa_product_price_id, db_va_product_price_id, db_ecat_product_price_id, db_htme_product_price_id, db_intramalls_product_price_id,
                                                               vendor_product_notes, vendor_is_discontinued, vendor_product_name,
-                                                              vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days,
+                                                              vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days, is_hazardous,
                                                               b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                               vendor_list_price, fy_discount_percent, fy_cost, estimated_freight, fy_landed_cost,
                                                               markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list,
@@ -1793,6 +1838,14 @@ class FyProductUpdate(BasicProcessObject):
             vendor_lead_time_days = int(row['LeadTimeDays'])
         else:
             vendor_lead_time_days = -1
+        if 'IsHazardous' in row:
+            success, is_hazardous = self.process_boolean(row, 'IsHazardous')
+            if success:
+                df_collect_product_base_data['IsHazardous'] = [is_hazardous]
+            else:
+                is_hazardous = -1
+        else:
+            is_hazardous = -1
 
 
         success, b_website_only = self.process_boolean(row, 'WebsiteOnly')
@@ -1859,7 +1912,7 @@ class FyProductUpdate(BasicProcessObject):
                                                           fy_category_id, fy_is_green, fy_is_latex_free, fy_cold_chain, fy_controlled_code,
                                                           fy_naics_code_id, fy_unspsc_code_id, fy_special_handling_id, fy_shelf_life_months, fy_product_notes,
                                                           vendor_product_notes, vendor_is_discontinued, vendor_product_name,
-                                                          vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days,
+                                                          vendor_product_description, country_of_origin_id, minimum_order_qty, vendor_lead_time_days, is_hazardous,
                                                           b_website_only, gsa_eligible, va_eligible, ecat_eligible, htme_eligible, intramalls_eligible,
                                                           vendor_list_price, discount, fy_cost, estimated_freight,
                                                           fy_landed_cost, markup_percent_fy_sell, fy_sell_price, markup_percent_fy_list, fy_list_price,
