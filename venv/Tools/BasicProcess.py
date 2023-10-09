@@ -216,7 +216,7 @@ class BasicProcessObject:
 
 
     def define_new(self, b_match_vendor = False):
-        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'ProductId','ProductPriceId','BaseProductPriceId','db_ProductNumberOverride','db_IsDiscontinued','db_FyIsDiscontinued',
+        clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'DefaultImageId', 'ProductId','ProductPriceId','BaseProductPriceId','db_ProductNumberOverride','db_IsDiscontinued','db_FyIsDiscontinued',
                          'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes',
                          'db_ECATProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_INTRAMALLSProductNotes','db_VAProductNotes','TakePriority','BlockedManufacturer']
         for each_header in clear_headers:
