@@ -283,7 +283,7 @@ class IngestionObject:
         return_id = self.obDal.manufacturer_cap(manufacturer_name, supplier_name, FyManufacturerPrefix=manufacturer_prefix, block_manufacturer = block_manufacturer)
         return return_id
 
-    def ingest_manufacturers(self,df_manufacturers):
+    def ingest_manufacturers(self, df_manufacturers):
         ingested_set = []
         self.set_progress_bar('Ingesting Manufacturers',len(df_manufacturers.index))
         p_bar = 0

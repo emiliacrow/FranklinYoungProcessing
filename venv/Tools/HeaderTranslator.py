@@ -25,6 +25,7 @@ class HeaderTranslator():
 
                             'IsFeaturedProduct':['IsFeaturedProduct'],
                             'VendorFyProductNumber':['VendorFyProductNumber'],
+                            'PossibleVendorPartNumber':['PossibleVendorPartNumber'],
 
                             'TAA Compliant':['TAA Compliant'],
 
