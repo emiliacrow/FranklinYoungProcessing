@@ -259,9 +259,11 @@ class MinimumProductPrice(BasicProcessObject):
             fy_product_number = row['FyProductNumber']
             b_pass_number_check = self.obValidator.review_product_number(fy_product_number)
             if not b_pass_number_check:
-                self.obReporter.update_report('Alert', 'Your product number contains outlawed characters, you must include the FyProductNumberOverride column.')
                 if not b_override:
                     return False, df_collect_product_base_data
+                else:
+                    self.obReporter.update_report('Alert',
+                                                  'Your product number contains outlawed characters, you must include the FyProductNumberOverride column.')
 
             if ('ProductTaxClass' not in row):
                 df_collect_product_base_data['ProductTaxClass'] = 'Default Tax Class'

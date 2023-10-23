@@ -215,7 +215,8 @@ class BasicProcessObject:
         self.df_product['ManufacturerName'] = self.df_product[['UpdateManufacturerName']]
 
 
-    def define_new(self, b_match_vendor = False):
+    def define_new(self, b_match_vendor = False, is_asset = False):
+        self.is_asset = is_asset
         clear_headers = ['UpdateManufacturerName', 'ManufacturerId', 'DefaultImageId', 'ProductId','ProductPriceId','BaseProductPriceId','db_ProductNumberOverride','db_IsDiscontinued','db_FyIsDiscontinued',
                          'ECATProductPriceId', 'HTMEProductPriceId','GSAProductPriceId','VAProductPriceId','db_FyProductNotes',
                          'db_ECATProductNotes','db_GSAProductNotes','db_HTMEProductNotes','db_INTRAMALLSProductNotes','db_VAProductNotes','TakePriority','BlockedManufacturer']
@@ -278,7 +279,9 @@ class BasicProcessObject:
         self.obProgressBarWindow.update_bar(3)
         self.df_product, self.df_pricing_matched_product, self.df_product_price_lookup = self.merge_and_split(self.df_product, self.df_product_price_lookup, merge_columns)
         self.df_price_agnostic_product_lookup = pandas.concat([self.df_full_product_lookup, self.df_product_price_lookup, self.df_product_minumum_lookup], ignore_index=True)
-        self.df_price_agnostic_product_lookup.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber','FyProductNumber','VendorName','VendorPartNumber'] , ignore_index = True, inplace = True)
+        self.df_price_agnostic_product_lookup.drop_duplicates(
+                ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber', 'FyProductNumber', 'VendorName',
+                 'VendorPartNumber'], ignore_index=True, inplace=True)
 
         # round 3
         print('Round 3')
@@ -547,7 +550,12 @@ class BasicProcessObject:
 
         self.df_product.sort_values(by=['FyCatalogNumber','FyProductNumber','VendorName','VendorPartNumber','ManufacturerName','ManufacturerPartNumber','TakePriority'] , inplace = True)
 
-        self.df_product.drop_duplicates(['FyCatalogNumber','FyProductNumber','VendorName','VendorPartNumber','ManufacturerName','ManufacturerPartNumber'] , ignore_index = True, inplace = True)
+        if self.is_asset:
+            self.df_product.drop_duplicates(['FyCatalogNumber','FyProductNumber','VendorName','VendorPartNumber','ManufacturerName','ManufacturerPartNumber', 'AssetPath','AssetType'] , ignore_index = True, inplace = True)
+        else:
+            self.df_product.drop_duplicates(
+                ['FyCatalogNumber', 'FyProductNumber', 'VendorName', 'VendorPartNumber', 'ManufacturerName',
+                 'ManufacturerPartNumber'], ignore_index=True, inplace=True)
 
 
     def man_ven_cleanup(self):
@@ -597,7 +605,12 @@ class BasicProcessObject:
         self.df_man_ven_matched_products['Filter'] = np.select(conditions, choices, default='New')
 
         self.df_man_ven_matched_products.sort_values(by=['FyCatalogNumber','ManufacturerName_x','ManufacturerPartNumber','FyProductNumber_x','VendorName_x','VendorPartNumber_x','Filter'] , inplace = True, ascending=False)
-        self.df_man_ven_matched_products.drop_duplicates(['FyCatalogNumber','ManufacturerName_x','ManufacturerPartNumber','FyProductNumber_x','VendorName_x','VendorPartNumber_x'] , ignore_index = True, inplace = True)
+        if self.is_asset:
+            self.df_man_ven_matched_products.drop_duplicates(['FyCatalogNumber','ManufacturerName_x','ManufacturerPartNumber','FyProductNumber_x','VendorName_x','VendorPartNumber_x','AssetPath','AssetType'] , ignore_index = True, inplace = True)
+        else:
+            self.df_man_ven_matched_products.drop_duplicates(
+                ['FyCatalogNumber', 'ManufacturerName_x', 'ManufacturerPartNumber', 'FyProductNumber_x', 'VendorName_x',
+                 'VendorPartNumber_x'], ignore_index=True, inplace=True)
 
         self.df_man_ven_matched_products = self.man_ven_match_x_y_cleaning(self.df_man_ven_matched_products)
 
@@ -649,7 +662,13 @@ class BasicProcessObject:
 
 
         self.df_fy_cat_matched_products.sort_values(by=['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x','Filter'] , inplace = True)
-        self.df_fy_cat_matched_products.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x'] , ignore_index = True, inplace = True)
+        if self.is_asset:
+            self.df_fy_cat_matched_products.drop_duplicates(['FyCatalogNumber','ManufacturerName','ManufacturerPartNumber_x','FyProductNumber_x','VendorName_x','VendorPartNumber_x','AssetPath','AssetType'] , ignore_index = True, inplace = True)
+        else:
+            self.df_fy_cat_matched_products.drop_duplicates(
+                ['FyCatalogNumber', 'ManufacturerName', 'ManufacturerPartNumber_x', 'FyProductNumber_x', 'VendorName_x',
+                 'VendorPartNumber_x'], ignore_index=True, inplace=True)
+
 
         self.df_fy_cat_matched_products =self.x_y_cleaning(self.df_fy_cat_matched_products)
 

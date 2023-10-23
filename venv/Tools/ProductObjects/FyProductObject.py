@@ -1186,6 +1186,7 @@ class FyProductUpdate(BasicProcessObject):
                 fy_is_hazardous = -1
         else:
             fy_is_hazardous = -1
+
         if 'IsHazardous' in row:
             success, is_hazardous = self.process_boolean(row, 'IsHazardous')
             if success:

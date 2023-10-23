@@ -29,7 +29,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.define_new()
+        self.define_new(is_asset=True)
         self.lst_image_objects = self.obS3.get_object_list('franklin-young-image-bank')
         self.lst_document_objects = self.obS3.get_object_list('franklin-young-document-bank')
 
@@ -89,6 +89,7 @@ class ProcessProductAssetObject(BasicProcessObject):
             if asset_type in ['Document','SafetyDataSheet','Certificate','Product_Brochure','Warranty','Image']:
                 success, df_collect_product_base_data = self.process_document(row, df_collect_product_base_data, asset_type)
             elif asset_type == 'BCImages':
+                # depricated
                 success, df_collect_product_base_data = self.process_bc_images(row, df_collect_product_base_data)
             elif asset_type == 'Video':
                 success, df_collect_product_base_data = self.process_video(row, df_collect_product_base_data)
@@ -103,6 +104,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def process_bc_images(self, row, df_collect_product_base_data):
+        ## DEPRICATED ##
         df_return_product = df_collect_product_base_data.copy()
         # this may also need to include functionality for changing the ACL for an asset.
         # which mean we might want to pull the asset list from S3 after all
@@ -291,6 +293,7 @@ class ProcessProductAssetObject(BasicProcessObject):
                 self.obReporter.update_report('Fail', 'This asset already exists.')
                 return False, df_return_product
             else:
+                # other documents are over written
                 self.obReporter.update_report('Alert', 'This product asset was overwritten.')
 
 
@@ -305,6 +308,7 @@ class ProcessProductAssetObject(BasicProcessObject):
             self.obS3.put_file(whole_path, s3_name, bucket)
             self.lst_document_objects.append(s3_name)
 
+        # images are linked to the product
         product_id = row['ProductId']
         asset_type = row['AssetType']
 
@@ -321,8 +325,6 @@ class ProcessProductAssetObject(BasicProcessObject):
             self.obReporter.update_report('Alert','AssetPreference set to 0')
 
         if asset_type != 'Image':
-            # this is a kinda stupid way of doing things here
-            # we should be splitting these and
             self.obIngester.set_productdocument_cap(product_id, s3_name, object_name, asset_type, document_preference)
 
         else:
@@ -338,6 +340,7 @@ class ProcessProductAssetObject(BasicProcessObject):
 
 
     def process_video(self, row, return_df_line_product):
+        # we just store the reference
         product_id = row['ProductId']
         video_path = row['AssetPath']
         video_caption = ''

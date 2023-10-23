@@ -18,7 +18,10 @@ class ProductAgniKaiObject(BasicProcessObject):
 
     def batch_preprocessing(self):
         self.remove_private_headers()
-        self.define_new(b_match_vendor = True)
+        if 'AssetPath' in self.df_product.columns:
+            self.define_new(b_match_vendor = True, is_asset = True)
+        else:
+            self.define_new(b_match_vendor = True)
 
 
     def remove_private_headers(self):
