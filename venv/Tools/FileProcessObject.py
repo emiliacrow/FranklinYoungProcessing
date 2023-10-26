@@ -408,7 +408,7 @@ class FileProcessor(BasicProcessObject):
             else:
                 return False, df_collect_attribute_data
 
-            if unit_of_issue not in ['BG','BO','BT','BX','CA','CT','DA','DR','DZ','EA','FT','GA','GL','GM','GR','HR','IN','JR','KG','KT','LB','MO','MR','OZ','PC','PK','PL','PR','PT','RK','RL','RM','SE','SP','ST','TB','UN','VI','YD','YR']:
+            if unit_of_issue not in ['BG','BO','BT','BX','CA','CT','DA','DR','DZ','EA','FT','GA','GL','GM','GR','HR','IN','JR','KG','KT','LB','MO','MR','OZ','PC','PK','PL','PR','PT','RK','RL','RM','SE','SP','ST','TB','TY','UN','VI','YD','YR']:
                 return False, df_collect_attribute_data
 
 
