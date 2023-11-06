@@ -635,6 +635,10 @@ class FyProductUpdate(BasicProcessObject):
             vendor_list_price = self.set_vendor_list(fy_cost, fy_discount_percent)
             df_collect_product_base_data['VendorListPrice'] = [vendor_list_price]
 
+        if (vendor_list_price != 0 and fy_cost != 0) and vendor_list_price < fy_cost:
+            self.obReporter.update_report('Fail', 'FyCost was larger than VendorListPrice')
+            return False, df_collect_product_base_data
+
         # checks for shipping costs
         freight_success, estimated_freight = self.row_check(row, 'EstimatedFreight')
         if freight_success:
