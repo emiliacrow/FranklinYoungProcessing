@@ -687,6 +687,11 @@ class FyProductUpdate(BasicProcessObject):
         if 'FyLandedCost' in row:
             fy_landed_cost = round(float(row['FyLandedCost']), 2)
             df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
+            if fy_cost_success and freight_success:
+                calc_fy_landed_cost = round(fy_cost + estimated_freight, 2)
+                if calc_fy_landed_cost != fy_landed_cost:
+                    self.obReporter.update_report('Fail', 'Provided FyLandedCost({0}) did not agree with calculation({1})'.format(str(fy_landed_cost), str(calc_fy_landed_cost)))
+                    return False, df_collect_product_base_data
 
         elif fy_cost_success and freight_success:
             fy_landed_cost = round(fy_cost + estimated_freight, 2)
