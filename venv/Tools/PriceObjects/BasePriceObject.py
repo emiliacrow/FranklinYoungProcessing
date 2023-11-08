@@ -298,10 +298,16 @@ class BasePrice(BasicProcessObject):
             fy_landed_cost = round(fy_landed_cost, 2)
             df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
 
+            calc_fy_landed_cost = round(fy_cost + estimated_freight, 2)
+            if calc_fy_landed_cost != fy_landed_cost:
+                self.obReporter.update_report('Fail', 'Provided FyLandedCost({0}) did not agree with calculation({1})'.format(str(fy_landed_cost), str(calc_fy_landed_cost)))
+                return False, df_collect_product_base_data
+
         if not success:
             fy_landed_cost = round(fy_cost + estimated_freight, 2)
             self.obReporter.update_report('Alert', 'FyLandedCost was calculated')
             df_collect_product_base_data['FyLandedCost'] = [fy_landed_cost]
+
 
 
         # we get the values from the DB because that's what we rely on
