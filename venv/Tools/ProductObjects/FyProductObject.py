@@ -639,6 +639,10 @@ class FyProductUpdate(BasicProcessObject):
             self.obReporter.update_report('Fail', 'FyCost was larger than VendorListPrice')
             return False, df_collect_product_base_data
 
+        elif (vendor_list_price != 0 and fy_cost == 0):
+            self.obReporter.update_report('Fail', 'FyCost was 0 when VendorListPrice had a value')
+            return False, df_collect_product_base_data
+
         # checks for shipping costs
         freight_success, estimated_freight = self.row_check(row, 'EstimatedFreight')
         if freight_success:
