@@ -794,6 +794,8 @@ class FyProductUpdate(BasicProcessObject):
         elif (not db_mus_success and mus_success) and (not db_mul_success and mul_success):
             self.obReporter.update_report('Alert', 'File markups were used')
 
+
+
         df_collect_product_base_data = self.set_pricing_rons_way(df_collect_product_base_data, row, fy_landed_cost, markup_sell, markup_list)
         return True, df_collect_product_base_data
 
@@ -1184,8 +1186,13 @@ class FyProductUpdate(BasicProcessObject):
 
         if 'MinimumOrderQty' in row:
             minimum_order_qty = str(row['MinimumOrderQty'])
+            if len(minimum_order_qty) > 3:
+                self.obReporter.update_report('Fail', 'MinimumOrderQty was too large.')
+                return False, df_collect_product_base_data
+
         else:
             minimum_order_qty = ''
+
         if 'LeadTimeDays' in row:
             vendor_lead_time_days = int(row['LeadTimeDays'])
         else:
@@ -1843,8 +1850,13 @@ class FyProductUpdate(BasicProcessObject):
             country_of_origin_id = int(row['CountryOfOriginId'])
         else:
             country_of_origin_id = -1
+
         if 'MinimumOrderQty' in row:
             minimum_order_qty = str(row['MinimumOrderQty'])
+            if len(minimum_order_qty) > 3:
+                self.obReporter.update_report('Fail', 'MinimumOrderQty was too large.')
+                return False, df_collect_product_base_data
+
         else:
             minimum_order_qty = ''
 
@@ -2007,10 +2019,10 @@ class FyProductUpdate(BasicProcessObject):
         else:
             approved_percent = -1
 
-        if 'MfcDiscountPercent' in row:
-            mfc_percent = float(row['MfcDiscountPercent'])
+        if 'GSAMfcDiscountPercent' in row:
+            gsa_mfc_percent = float(row['GSAMfcDiscountPercent'])
         else:
-            mfc_percent = -1
+            gsa_mfc_percent = -1
 
         if 'GSA_Sin' in row:
             sin = row['GSA_Sin']
@@ -2036,13 +2048,13 @@ class FyProductUpdate(BasicProcessObject):
                 self.obIngester.gsa_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
                                                   approved_sell_price, approved_list_price,
                                                   contract_number, contract_mod_number, is_pricing_approved,
-                                                  gsa_approved_price_date, approved_percent, mfc_percent,
+                                                  gsa_approved_price_date, approved_percent, gsa_mfc_percent,
                                                   sin, gsa_product_notes)
             else:
                 self.obIngester.gsa_product_price_update(gsa_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
                                                   approved_sell_price, approved_list_price,
                                                   contract_number, contract_mod_number, is_pricing_approved,
-                                                  gsa_approved_price_date, approved_percent, mfc_percent,
+                                                  gsa_approved_price_date, approved_percent, gsa_mfc_percent,
                                                   sin, gsa_product_notes)
 
 
@@ -2106,10 +2118,10 @@ class FyProductUpdate(BasicProcessObject):
         else:
             approved_percent = -1
 
-        if 'MfcDiscountPercent' in row:
-            mfc_percent = float(row['MfcDiscountPercent'])
+        if 'VAMfcDiscountPercent' in row:
+            va_mfc_percent = float(row['VAMfcDiscountPercent'])
         else:
-            mfc_percent = -1
+            va_mfc_percent = -1
 
         if 'VA_Sin' in row:
             sin = row['VA_Sin']
@@ -2134,13 +2146,13 @@ class FyProductUpdate(BasicProcessObject):
                 self.obIngester.va_product_price_insert(product_description_id, fy_product_number, on_contract, approved_base_price,
                                                   approved_sell_price, approved_list_price,
                                                   contract_number, contract_mod_number, is_pricing_approved,
-                                                  va_approved_price_date, approved_percent, mfc_percent,
+                                                  va_approved_price_date, approved_percent, va_mfc_percent,
                                                   sin, va_product_notes)
             else:
                 self.obIngester.va_product_price_update(va_product_price_id, product_description_id, fy_product_number, on_contract, approved_base_price,
                                                   approved_sell_price, approved_list_price,
                                                   contract_number, contract_mod_number, is_pricing_approved,
-                                                  va_approved_price_date, approved_percent, mfc_percent,
+                                                  va_approved_price_date, approved_percent, va_mfc_percent,
                                                   sin, va_product_notes)
 
 
