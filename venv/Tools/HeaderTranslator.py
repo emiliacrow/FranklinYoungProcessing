@@ -43,7 +43,7 @@ class HeaderTranslator():
                             'VendorProductName':['VendorProductName', 'Vendor Product Name', 'vendor_product_name',
                                                  'primary_vendor_product_name', 'ProductName', 'Product Name',
                                                  'product_name', 'prodname'],
-                            'VendorProductDescription':['VendorProductDescription', 'Vendor Product Description',
+                            'VendorProductDescription':['VendorProductDescription', 'VendorDescription','Vendor Product Description',
                                                         'vendor_product_description', 'VendorProductDesc',
                                                         'Vendor Product Desc', 'vendor_product_desc',
                                                         'ProductDescription', 'Product Description',
