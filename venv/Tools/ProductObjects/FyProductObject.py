@@ -916,7 +916,12 @@ class FyProductUpdate(BasicProcessObject):
             fy_uoi_qty = -1
 
         if 'FyLeadTimes' in row:
-            fy_lead_time = int(row['FyLeadTimes'])
+            try:
+                fy_lead_time = int(row['FyLeadTimes'])
+            except ValueError:
+                fy_lead_time = -1
+                self.obReporter.update_report('Fail','FyLeadTimes must be a number.')
+
         else:
             fy_lead_time = -1
 
@@ -1194,7 +1199,11 @@ class FyProductUpdate(BasicProcessObject):
             minimum_order_qty = ''
 
         if 'LeadTimeDays' in row:
-            vendor_lead_time_days = int(row['LeadTimeDays'])
+            try:
+                vendor_lead_time_days = int(row['LeadTimeDays'])
+            except ValueError:
+                vendor_lead_time_days = -1
+                self.obReporter.update_report('Fail','LeadTimeDays must be a number.')
         else:
             vendor_lead_time_days = -1
 
@@ -1861,7 +1870,11 @@ class FyProductUpdate(BasicProcessObject):
             minimum_order_qty = ''
 
         if 'LeadTimeDays' in row:
-            vendor_lead_time_days = int(row['LeadTimeDays'])
+            try:
+                vendor_lead_time_days = int(row['LeadTimeDays'])
+            except ValueError:
+                vendor_lead_time_days = -1
+                self.obReporter.update_report('Fail','LeadTimeDays must be a number.')
         else:
             vendor_lead_time_days = -1
         if 'IsHazardous' in row:
