@@ -116,6 +116,12 @@ class Validator:
         return out_phrase
 
 
+    def clean_image_path(self, in_path):
+        out_path = in_path
+        out_path = out_path.replace('%20','_')
+        out_path = out_path.replace('%26','and')
+        return out_path
+
     def remove_unicode(self,in_phrase):
         out_phrase = in_phrase.replace('Î»','(lambda)')
         out_phrase = out_phrase.replace('╬▓','(alpha)')

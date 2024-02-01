@@ -301,8 +301,14 @@ class ProcessProductAssetObject(BasicProcessObject):
         # only send to s3 if it doesn't already exist
         if asset_type == 'Image':
             if s3_name not in self.lst_image_objects:
-                self.obS3.put_file(whole_path, s3_name, bucket)
-                self.lst_image_objects.append(s3_name)
+                s3_name = self.obValidator.clean_image_path(s3_name)
+                if '%' in s3_name:
+                    self.obReporter.update_report('Fail','This image path has a percent in it.')
+                    return False, df_return_product
+
+                else:
+                    self.obS3.put_file(whole_path, s3_name, bucket)
+                    self.lst_image_objects.append(s3_name)
 
         elif s3_name not in self.lst_document_objects:
             self.obS3.put_file(whole_path, s3_name, bucket)
