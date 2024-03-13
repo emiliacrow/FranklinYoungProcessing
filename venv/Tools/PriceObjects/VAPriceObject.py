@@ -96,7 +96,7 @@ class VAPrice(BasicProcessObject):
             else:
                 on_contract = -1
 
-            contract_number = 'VA797H-16-D-0024/SPE2D1-16-D-0019'
+            contract_number = '36F797-20-D-0158'
             if 'VAContractModificationNumber' in row:
                 contract_mod_number = row['VAContractModificationNumber']
             else:
