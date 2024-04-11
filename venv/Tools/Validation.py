@@ -118,6 +118,7 @@ class Validator:
 
     def clean_image_path(self, in_path):
         out_path = in_path
+        out_path = out_path.replace(' ','_')
         out_path = out_path.replace('%20','_')
         out_path = out_path.replace('%26','and')
         return out_path
