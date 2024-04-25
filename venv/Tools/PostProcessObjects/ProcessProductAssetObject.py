@@ -117,6 +117,7 @@ class ProcessProductAssetObject(BasicProcessObject):
         # iterate assets
         asset_path = row['AssetPath']
         manufacturer_name = row['ManufacturerName']
+        manufacturer_prefix = str(row['FyManufacturerPrefix'])
 
         manufacturer_name = manufacturer_name.replace(',', '')
         manufacturer_name = manufacturer_name.replace(' ', '_')
@@ -202,7 +203,7 @@ class ProcessProductAssetObject(BasicProcessObject):
             if object_name == '':
                 continue
             image_caption = each_image_set[2]
-            s3_name = manufacturer_name + '/' + object_name
+            s3_name = manufacturer_prefix + '/' + object_name
 
             # this puts the object into s3
             # only send to s3 if it doesn't already exist
@@ -243,6 +244,7 @@ class ProcessProductAssetObject(BasicProcessObject):
         # iterate assets
         asset_path = row['AssetPath']
         manufacturer_name = row['ManufacturerName']
+        manufacturer_prefix = str(row['FyManufacturerPrefix'])
 
         if 'http' in asset_path:
             # asset path is a url to fetch
@@ -284,7 +286,7 @@ class ProcessProductAssetObject(BasicProcessObject):
         if 'FranklinYoungDefaultImage' in whole_path:
             s3_name = 'FranklinYoungDefaultImage/' + object_name
         else:
-            s3_name = manufacturer_name + '/' + object_name
+            s3_name = manufacturer_prefix + '/' + object_name
 
         # we check if the documents
         if 'CurrentAssetPath' in row:
@@ -339,7 +341,7 @@ class ProcessProductAssetObject(BasicProcessObject):
                 caption = row['ImageCaption']
             image_width, image_height = self.get_image_size(whole_path)
 
-            self.obIngester.set_productimage(product_id, manufacturer_name, s3_name, object_name, document_preference, caption, image_width, image_height)
+            self.obIngester.set_productimage(product_id, manufacturer_prefix, s3_name, object_name, document_preference, caption, image_width, image_height)
 
 
         return True, df_return_product
