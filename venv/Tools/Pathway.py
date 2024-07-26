@@ -66,7 +66,7 @@ from Tools.PriceObjects.INTRAMALLSPriceObject import UpdateINTRAMALLSPrice
 class Pathways():
     def __init__(self):
         self.name = 'The Way'
-        self.split_chunk_size = 10000
+        self.split_chunk_size = 100000
         self.full_file_count = 0
         self.np_nan = np.nan
         self.obFileFinder = FileFinder()
